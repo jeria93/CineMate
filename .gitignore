@@ -1,0 +1,39 @@
+# Xcode & macOS
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcworkspace
+*.xcscmblueprint
+*.xcodeproj/project.xcworkspace/xcuserdata
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+
+# Firebase
+GoogleService-Info.plist
+
+# API keys / secrets
+Secrets.plist
+
+# User-specific files
+*.personal.xcconfig
+
+# SwiftPM-generated workspace
+Carthage/Checkouts/
+
+# Xcode automatic provisioning profiles
+*.xcuserstate
