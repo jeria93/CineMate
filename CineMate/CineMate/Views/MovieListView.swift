@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MovieListView: View {
     @StateObject private var viewModel: MovieViewModel
+    @State private var selectedCategory: MovieCategory = .popular
 
     init(repository: MovieProtocol = MovieRepository()) {
         _viewModel = StateObject(wrappedValue: MovieViewModel(repository: repository))
@@ -16,29 +17,13 @@ struct MovieListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.isLoading {
-                    ProgressView("Loading movies...")
-                        .progressViewStyle(CircularProgressViewStyle())
-                } else if let error = viewModel.errorMessage {
-                    VStack(spacing: 10) {
-                        Text("Error: \(error)")
-                            .foregroundColor(.red)
-                        Button("Retry") {
-                            Task { await viewModel.fetchPopularMovies() }
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                } else {
-                    List(viewModel.movies) { movie in
-                        MovieRowView(movie: movie)
-                    }
-                    .listStyle(.plain)
-                }
+            VStack {
+                MovieCategoryPicker(selectedCategory: $viewModel.selectedCategory)
+                MovieListContentView(viewModel: viewModel)
             }
-            .navigationTitle("Popular Movies")
+            .navigationTitle(selectedCategory.displayName)
             .task {
-                await viewModel.fetchPopularMovies()
+                await viewModel.loadMovies()
             }
         }
     }
