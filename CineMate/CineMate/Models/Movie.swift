@@ -15,6 +15,11 @@ struct Movie: Identifiable, Codable {
     let backdropPath: String?
     let realeaseDate: String?
     let voteAverage: Double?
+
+    var posterURL: URL? {
+        guard let path = posterPath else { return nil }
+        return URL(string: "https://image.tmdb.org/t/p/w200\(path)")
+    }
 }
 
 struct MovieResult: Codable {
