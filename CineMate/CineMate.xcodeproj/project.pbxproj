@@ -23,6 +23,9 @@
 		0368AF902DF58064009B1F56 /* PosterImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AF8F2DF58064009B1F56 /* PosterImageView.swift */; };
 		0368AF922DF5BB3C009B1F56 /* MovieRowDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AF912DF5BB3C009B1F56 /* MovieRowDetails.swift */; };
 		0368AF942DF5BFB1009B1F56 /* MovieRowView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AF932DF5BFB1009B1F56 /* MovieRowView+Previews.swift */; };
+		0368AFC12DF61333009B1F56 /* MovieCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC02DF61333009B1F56 /* MovieCategory.swift */; };
+		0368AFC32DF61FA3009B1F56 /* MovieCategoryPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */; };
+		0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC42DF62312009B1F56 /* MovieListContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +46,9 @@
 		0368AF8F2DF58064009B1F56 /* PosterImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterImageView.swift; sourceTree = "<group>"; };
 		0368AF912DF5BB3C009B1F56 /* MovieRowDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieRowDetails.swift; sourceTree = "<group>"; };
 		0368AF932DF5BFB1009B1F56 /* MovieRowView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieRowView+Previews.swift"; sourceTree = "<group>"; };
+		0368AFC02DF61333009B1F56 /* MovieCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCategory.swift; sourceTree = "<group>"; };
+		0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCategoryPicker.swift; sourceTree = "<group>"; };
+		0368AFC42DF62312009B1F56 /* MovieListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +98,7 @@
 			children = (
 				030612332DF4BF4E0013F7AF /* Movie.swift */,
 				030612462DF4C05C0013F7AF /* SecretManager.swift */,
+				0368AFC02DF61333009B1F56 /* MovieCategory.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -147,6 +154,8 @@
 				030612642DF4CDAD0013F7AF /* PreviewData.swift */,
 				0368AF8F2DF58064009B1F56 /* PosterImageView.swift */,
 				0368AF912DF5BB3C009B1F56 /* MovieRowDetails.swift */,
+				0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */,
+				0368AFC42DF62312009B1F56 /* MovieListContentView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -224,6 +233,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0368AFC32DF61FA3009B1F56 /* MovieCategoryPicker.swift in Sources */,
 				030612652DF4CDAD0013F7AF /* PreviewData.swift in Sources */,
 				030612672DF4E5800013F7AF /* MovieListView.swift in Sources */,
 				030612492DF4C07F0013F7AF /* TMDBService.swift in Sources */,
@@ -236,6 +246,8 @@
 				0306122C2DF4BEB40013F7AF /* ContentView.swift in Sources */,
 				0306124D2DF4C3DF0013F7AF /* MovieRepository.swift in Sources */,
 				030612342DF4BF4E0013F7AF /* Movie.swift in Sources */,
+				0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */,
+				0368AFC12DF61333009B1F56 /* MovieCategory.swift in Sources */,
 				030612472DF4C05C0013F7AF /* SecretManager.swift in Sources */,
 				0368AF942DF5BFB1009B1F56 /* MovieRowView+Previews.swift in Sources */,
 			);
@@ -379,7 +391,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -407,7 +419,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

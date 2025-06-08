@@ -14,6 +14,13 @@ final class MovieViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
+
+    @Published var selectedCategory: MovieCategory = .popular {
+        didSet {
+            Task { await loadMovies() }
+        }
+    }
+
     private let repository: MovieProtocol
 
     init(repository: MovieProtocol = MovieRepository()) {
@@ -30,6 +37,23 @@ final class MovieViewModel: ObservableObject {
 
     func fetchUpComingMovies() async {
         await fetch { try await repository.fetchUpcomingMovies() }
+    }
+
+    func fetchTrendingMovies() async {
+        await fetch { try await repository.fetchTrendingMovies() }
+    }
+
+    func loadMovies() async {
+        switch selectedCategory {
+        case .popular:
+            await fetchPopularMovies()
+        case .topRated:
+            await fetchTopRatedMovies()
+        case .upcoming:
+            await fetchUpComingMovies()
+        case .trending:
+            await fetchTrendingMovies()
+        }
     }
 
     /// Handles fetching movies and updates the view model's state.
