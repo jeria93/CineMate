@@ -30,5 +30,5 @@ struct MovieListView: View {
 }
 
 #Preview {
-    MovieListView()
+    MovieListView(repository: MockMovieRepository())
 }
