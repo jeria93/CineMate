@@ -32,3 +32,7 @@ struct MovieListContentView: View {
         }
     }
 }
+
+#Preview {
+   MovieListContentView(viewModel: MockMovieViewModel())
+}

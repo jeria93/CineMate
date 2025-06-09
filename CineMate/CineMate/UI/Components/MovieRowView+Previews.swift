@@ -83,7 +83,7 @@ import SwiftUI
     }
 }
 
-//#Preview("Dark Mode") {
-//    MovieRowView(movie: PreviewData.starWars)
-//        .preferredColorScheme(.dark)
-//}
+#Preview("Dark Mode") {
+    MovieRowView(movie: PreviewData.starWars)
+        .preferredColorScheme(.dark)
+}

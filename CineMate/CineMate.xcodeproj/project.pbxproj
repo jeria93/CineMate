@@ -10,7 +10,6 @@
 		030612292DF4BEB40013F7AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 030612242DF4BEB40013F7AF /* Assets.xcassets */; };
 		0306122A2DF4BEB40013F7AF /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 030612272DF4BEB40013F7AF /* Secrets.plist */; };
 		0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612252DF4BEB40013F7AF /* CineMateApp.swift */; };
-		0306122C2DF4BEB40013F7AF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612262DF4BEB40013F7AF /* ContentView.swift */; };
 		030612342DF4BF4E0013F7AF /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612332DF4BF4E0013F7AF /* Movie.swift */; };
 		030612472DF4C05C0013F7AF /* SecretManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612462DF4C05C0013F7AF /* SecretManager.swift */; };
 		030612492DF4C07F0013F7AF /* TMDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612482DF4C07F0013F7AF /* TMDBService.swift */; };
@@ -26,13 +25,15 @@
 		0368AFC12DF61333009B1F56 /* MovieCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC02DF61333009B1F56 /* MovieCategory.swift */; };
 		0368AFC32DF61FA3009B1F56 /* MovieCategoryPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */; };
 		0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC42DF62312009B1F56 /* MovieListContentView.swift */; };
+		0368AFC72DF62A7A009B1F56 /* MockMovieRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */; };
+		0368AFC92DF62D3F009B1F56 /* MockMovieViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC82DF62D3F009B1F56 /* MockMovieViewModel.swift */; };
+		0368AFCB2DF63125009B1F56 /* MovieListView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFCA2DF63125009B1F56 /* MovieListView+Previews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		030612032DF4BA4B0013F7AF /* CineMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CineMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		030612242DF4BEB40013F7AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		030612252DF4BEB40013F7AF /* CineMateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CineMateApp.swift; sourceTree = "<group>"; };
-		030612262DF4BEB40013F7AF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		030612272DF4BEB40013F7AF /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		030612332DF4BF4E0013F7AF /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
 		030612462DF4C05C0013F7AF /* SecretManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretManager.swift; sourceTree = "<group>"; };
@@ -49,6 +50,9 @@
 		0368AFC02DF61333009B1F56 /* MovieCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCategory.swift; sourceTree = "<group>"; };
 		0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCategoryPicker.swift; sourceTree = "<group>"; };
 		0368AFC42DF62312009B1F56 /* MovieListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListContentView.swift; sourceTree = "<group>"; };
+		0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMovieRepository.swift; sourceTree = "<group>"; };
+		0368AFC82DF62D3F009B1F56 /* MockMovieViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMovieViewModel.swift; sourceTree = "<group>"; };
+		0368AFCA2DF63125009B1F56 /* MovieListView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieListView+Previews.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +85,9 @@
 		030612282DF4BEB40013F7AF /* CineMate */ = {
 			isa = PBXGroup;
 			children = (
-				030612612DF4CD3F0013F7AF /* Components */,
+				03A620C02DF774CA00C075E8 /* Features */,
+				0368AFCD2DF6362F009B1F56 /* UI */,
+				0368AFCC2DF63611009B1F56 /* Mocks */,
 				030612322DF4BEE90013F7AF /* Resources */,
 				030612312DF4BEE10013F7AF /* Views */,
 				030612302DF4BED90013F7AF /* ViewModels */,
@@ -107,7 +113,6 @@
 			isa = PBXGroup;
 			children = (
 				030612482DF4C07F0013F7AF /* TMDBService.swift */,
-				0306124A2DF4C3BE0013F7AF /* MovieProtocol.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -116,6 +121,7 @@
 			isa = PBXGroup;
 			children = (
 				0306124C2DF4C3DF0013F7AF /* MovieRepository.swift */,
+				0306124A2DF4C3BE0013F7AF /* MovieProtocol.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -131,8 +137,7 @@
 		030612312DF4BEE10013F7AF /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				030612262DF4BEB40013F7AF /* ContentView.swift */,
-				030612662DF4E5800013F7AF /* MovieListView.swift */,
+				0368AFCA2DF63125009B1F56 /* MovieListView+Previews.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -155,9 +160,58 @@
 				0368AF8F2DF58064009B1F56 /* PosterImageView.swift */,
 				0368AF912DF5BB3C009B1F56 /* MovieRowDetails.swift */,
 				0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */,
-				0368AFC42DF62312009B1F56 /* MovieListContentView.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		0368AFCC2DF63611009B1F56 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				0368AFC82DF62D3F009B1F56 /* MockMovieViewModel.swift */,
+				0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		0368AFCD2DF6362F009B1F56 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				030612612DF4CD3F0013F7AF /* Components */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		03A620C02DF774CA00C075E8 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				03A620C22DF7751B00C075E8 /* MovieDetail */,
+				03A620C12DF774D400C075E8 /* MovieList */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		03A620C12DF774D400C075E8 /* MovieList */ = {
+			isa = PBXGroup;
+			children = (
+				03A620C32DF7765D00C075E8 /* Views */,
+			);
+			path = MovieList;
+			sourceTree = "<group>";
+		};
+		03A620C22DF7751B00C075E8 /* MovieDetail */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MovieDetail;
+			sourceTree = "<group>";
+		};
+		03A620C32DF7765D00C075E8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				030612662DF4E5800013F7AF /* MovieListView.swift */,
+				0368AFC42DF62312009B1F56 /* MovieListContentView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,10 +295,12 @@
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
 				0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */,
 				0306124B2DF4C3BE0013F7AF /* MovieProtocol.swift in Sources */,
+				0368AFCB2DF63125009B1F56 /* MovieListView+Previews.swift in Sources */,
 				0306124F2DF4C7960013F7AF /* MovieViewModel.swift in Sources */,
 				0368AF902DF58064009B1F56 /* PosterImageView.swift in Sources */,
-				0306122C2DF4BEB40013F7AF /* ContentView.swift in Sources */,
+				0368AFC92DF62D3F009B1F56 /* MockMovieViewModel.swift in Sources */,
 				0306124D2DF4C3DF0013F7AF /* MovieRepository.swift in Sources */,
+				0368AFC72DF62A7A009B1F56 /* MockMovieRepository.swift in Sources */,
 				030612342DF4BF4E0013F7AF /* Movie.swift in Sources */,
 				0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */,
 				0368AFC12DF61333009B1F56 /* MovieCategory.swift in Sources */,

@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-final class MovieViewModel: ObservableObject {
+class MovieViewModel: ObservableObject {
 
     @Published var movies: [Movie] = []
     @Published var isLoading: Bool = false

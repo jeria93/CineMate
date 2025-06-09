@@ -14,12 +14,12 @@ struct PreviewData {
         id: 1,
         title: "Inception",
         overview: "A thief with the rare ability to enter people's dreams and steal their secrets from their subconscious.",
-        posterPath: "/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg",
+        posterPath: "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
         backdropPath: "/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
         realeaseDate: "2010-07-16",
         voteAverage: 8.3
     )
-    
+
     static let starWars = Movie(
         id: 11,
         title: "Star Wars: A New Hope",
@@ -29,18 +29,31 @@ struct PreviewData {
         realeaseDate: "1977-05-25",
         voteAverage: 8.2
     )
-    
+
+    static let matrix = Movie(
+        id: 603,
+        title: "The Matrix",
+        overview: "A computer hacker learns about the true nature of reality and his role in the war against its controllers.",
+        posterPath: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
+        backdropPath: "/ncEsesgOJDNrTUED89hYbA117wo.jpg",
+        realeaseDate: "1999-03-31",
+        voteAverage: 8.1
+    )
+
+    static let pulpFiction = Movie(
+        id: 680,
+        title: "Pulp Fiction",
+        overview: "The lives of two mob hitmen, a boxer, a gangster's wife, and a pair of diner bandits intertwine in four tales.",
+        posterPath: "/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg",
+        backdropPath: "/u8XsWsS8sWhtSlTqrcfjC1lm1kU.jpg",
+        realeaseDate: "1994-09-10",
+        voteAverage: 8.5
+    )
+
     static let moviesList: [Movie] = [
         inception,
         starWars,
-        Movie(
-            id: 3,
-            title: "Interstellar",
-            overview: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
-            posterPath: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-            backdropPath: "/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg",
-            realeaseDate: "2014-11-07",
-            voteAverage: 8.6
-        )
+        matrix,
+        pulpFiction
     ]
 }
