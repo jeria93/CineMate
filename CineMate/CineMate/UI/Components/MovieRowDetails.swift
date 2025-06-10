@@ -10,17 +10,21 @@ import SwiftUI
 struct MovieRowDetails: View {
 
     let movie: Movie
+    let spacing: CGFloat
+    let titleFont: Font
+    let overviewFont: Font
+    let showFullOverview: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(alignment: .leading, spacing: spacing) {
 
             Text(movie.title)
-                .font(.headline)
+                .font(titleFont)
 
             if let overview = movie.overview {
                 Text(overview)
-                    .font(.subheadline)
-                    .lineLimit(3)
+                    .font(overviewFont)
+                    .lineLimit(showFullOverview ? nil : 3)
                     .foregroundColor(.secondary)
             }
 
@@ -45,6 +49,22 @@ struct MovieRowDetails: View {
     }
 }
 
-#Preview {
-    MovieRowDetails(movie: PreviewData.starWars)
+#Preview("Compact layout") {
+    MovieRowDetails(
+        movie: PreviewData.starWars,
+        spacing: 5,
+        titleFont: .headline,
+        overviewFont: .subheadline,
+        showFullOverview: false
+    )
+}
+
+#Preview("Detailed layout") {
+    MovieRowDetails(
+        movie: PreviewData.starWars,
+        spacing: 16,
+        titleFont: .largeTitle.bold(),
+        overviewFont: .body,
+        showFullOverview: true
+    )
 }
