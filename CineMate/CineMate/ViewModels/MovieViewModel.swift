@@ -21,6 +21,20 @@ class MovieViewModel: ObservableObject {
         }
     }
 
+    @Published var favoriteMovies: Set<Int> = []
+
+    func toggleFavorite(for movie: Movie) {
+        if favoriteMovies.contains(movie.id) {
+            favoriteMovies.remove(movie.id)
+        } else {
+            favoriteMovies.insert(movie.id)
+        }
+    }
+
+    func isFavorite(_ movie: Movie) -> Bool {
+        favoriteMovies.contains(movie.id)
+    }
+
     private let repository: MovieProtocol
 
     init(repository: MovieProtocol = MovieRepository()) {

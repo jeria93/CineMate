@@ -25,7 +25,7 @@ struct PreviewData {
         title: "Star Wars: A New Hope",
         overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
         posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-        backdropPath: "/nrxzUoY5Qj9xiF4I7K5rI1D5GxD.jpg",
+        backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
         realeaseDate: "1977-05-25",
         voteAverage: 8.2
     )

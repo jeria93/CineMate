@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MovieDetailView: View {
     let movie: Movie
+    @ObservedObject var viewModel: MovieViewModel
 
     var body: some View {
         ScrollView {
@@ -18,7 +19,15 @@ struct MovieDetailView: View {
                 width: 300,
                 height: 450
             )
-            .padding(.bottom)
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    viewModel.toggleFavorite(for: movie)
+                } label: {
+                    Image(systemName: viewModel.isFavorite(movie) ? "heart.fill" : "heart")
+                        .foregroundColor(.red)
+                }
+                .padding()
+            }
 
             MovieRowDetails(
                 movie: movie,
@@ -35,5 +44,8 @@ struct MovieDetailView: View {
 }
 
 #Preview {
-    MovieDetailView(movie: PreviewData.starWars)
+    MovieDetailView(
+        movie: PreviewData.starWars,
+        viewModel: MovieViewModel(repository: MockMovieRepository())
+    )
 }
