@@ -16,6 +16,8 @@ struct Movie: Identifiable, Codable, Equatable {
     let realeaseDate: String?
     let voteAverage: Double?
 
+    let genres: [String]?
+
     var posterSmallURL: URL? {
         guard let path = posterPath else { return nil }
         return URL(string: "https://image.tmdb.org/t/p/w200\(path)")

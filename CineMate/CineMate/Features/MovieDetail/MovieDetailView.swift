@@ -43,3 +43,21 @@ struct MovieDetailView: View {
         viewModel: MovieViewModel(repository: MockMovieRepository())
     )
 }
+
+
+struct MovieGenresView: View {
+    let genres: [String]
+
+    var body: some View {
+        HStack {
+            ForEach(genres, id: \.self) { genre in
+                Text(genre)
+                    .font(.caption)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.accentColor.opacity(0.2))
+                    .clipShape(Capsule())
+            }
+        }
+    }
+}
