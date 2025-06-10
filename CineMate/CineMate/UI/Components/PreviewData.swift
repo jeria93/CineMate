@@ -17,7 +17,8 @@ struct PreviewData {
         posterPath: "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
         backdropPath: "/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
         realeaseDate: "2010-07-16",
-        voteAverage: 8.3
+        voteAverage: 8.3,
+        genres: ["Action", "Sci-Fi", "Thriller"]
     )
 
     static let starWars = Movie(
@@ -27,7 +28,8 @@ struct PreviewData {
         posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
         backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
         realeaseDate: "1977-05-25",
-        voteAverage: 8.2
+        voteAverage: 8.2,
+        genres: ["Adventure", "Sci-Fi", "Fantasy"]
     )
 
     static let matrix = Movie(
@@ -37,7 +39,8 @@ struct PreviewData {
         posterPath: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
         backdropPath: "/ncEsesgOJDNrTUED89hYbA117wo.jpg",
         realeaseDate: "1999-03-31",
-        voteAverage: 8.1
+        voteAverage: 8.1,
+        genres: ["Action", "Sci-Fi"]
     )
 
     static let pulpFiction = Movie(
@@ -47,7 +50,8 @@ struct PreviewData {
         posterPath: "/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg",
         backdropPath: "/u8XsWsS8sWhtSlTqrcfjC1lm1kU.jpg",
         realeaseDate: "1994-09-10",
-        voteAverage: 8.5
+        voteAverage: 8.5,
+        genres: ["Crime", "Drama"]
     )
 
     static let moviesList: [Movie] = [

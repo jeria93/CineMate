@@ -8,7 +8,18 @@
 import SwiftUI
 
 #Preview("Default / Working poster") {
-    MovieRowView(movie: PreviewData.starWars)
+    MovieRowView(
+        movie: Movie(
+            id: 11,
+            title: "Star Wars: A New Hope",
+            overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
+            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+            backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
+            realeaseDate: "1977-05-25",
+            voteAverage: 8.2,
+            genres: ["Action", "Adventure", "Sci-Fi"]
+        )
+    )
 }
 
 #Preview("No poster available") {
@@ -20,7 +31,8 @@ import SwiftUI
             posterPath: nil,
             backdropPath: nil,
             realeaseDate: "2023-01-01",
-            voteAverage: 7.0
+            voteAverage: 7.0,
+            genres: ["Drama"]
         )
     )
 }
@@ -30,14 +42,12 @@ import SwiftUI
         movie: Movie(
             id: 100,
             title: "Long Overview Example",
-            overview: String(
-                repeating: "A very long description of the movie to test line breaks and layout. ",
-                count: 5
-            ),
+            overview: String(repeating: "A very long description of the movie to test line breaks and layout. ", count: 5),
             posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
             backdropPath: nil,
             realeaseDate: "2023-01-01",
-            voteAverage: 8.0
+            voteAverage: 8.0,
+            genres: ["Biography", "History", "Drama"]
         )
     )
 }
@@ -51,7 +61,8 @@ import SwiftUI
             posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
             backdropPath: nil,
             realeaseDate: "2022-12-12",
-            voteAverage: 6.2
+            voteAverage: 6.2,
+            genres: ["Comedy"]
         )
     )
 }
@@ -66,7 +77,8 @@ import SwiftUI
                 posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
                 backdropPath: nil,
                 realeaseDate: "2021-11-11",
-                voteAverage: 10.0
+                voteAverage: 10.0,
+                genres: ["Fantasy", "Adventure"]
             )
         )
         MovieRowView(
@@ -77,13 +89,25 @@ import SwiftUI
                 posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
                 backdropPath: nil,
                 realeaseDate: "2020-10-10",
-                voteAverage: 1.0
+                voteAverage: 1.0,
+                genres: ["Horror"]
             )
         )
     }
 }
 
 #Preview("Dark Mode") {
-    MovieRowView(movie: PreviewData.starWars)
-        .preferredColorScheme(.dark)
+    MovieRowView(
+        movie: Movie(
+            id: 11,
+            title: "Star Wars: A New Hope",
+            overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
+            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+            backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
+            realeaseDate: "1977-05-25",
+            voteAverage: 8.2,
+            genres: ["Action", "Adventure", "Sci-Fi"]
+        )
+    )
+    .preferredColorScheme(.dark)
 }

@@ -35,6 +35,10 @@ struct MovieDetailInfoView: View {
                 }
             }
 
+            if let genres = movie.genres {
+                MovieGenresView(genres: genres)
+            }
+
             if let overview = movie.overview {
                 Text(overview)
                     .font(.body)
