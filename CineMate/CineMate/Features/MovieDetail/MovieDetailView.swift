@@ -29,14 +29,8 @@ struct MovieDetailView: View {
                 .padding()
             }
 
-            MovieRowDetails(
-                movie: movie,
-                spacing: 16,
-                titleFont: .largeTitle.bold(),
-                overviewFont: .body,
-                showFullOverview: true
-            )
-            .padding(.horizontal)
+            MovieDetailInfoView(movie: movie)
+                .padding(.horizontal)
         }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)
