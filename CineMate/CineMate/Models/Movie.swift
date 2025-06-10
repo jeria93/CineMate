@@ -25,6 +25,11 @@ struct Movie: Identifiable, Codable, Equatable {
         guard let path = posterPath else { return nil }
         return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
     }
+
+    var backdropURL: URL? {
+        guard let path = backdropPath else { return nil }
+        return URL(string: "https://image.tmdb.org/t/p/w780\(path)")
+    }
 }
 
 struct MovieResult: Codable {
