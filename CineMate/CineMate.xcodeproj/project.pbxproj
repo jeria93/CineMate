@@ -28,6 +28,7 @@
 		0368AFC72DF62A7A009B1F56 /* MockMovieRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */; };
 		0368AFC92DF62D3F009B1F56 /* MockMovieViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC82DF62D3F009B1F56 /* MockMovieViewModel.swift */; };
 		0368AFCB2DF63125009B1F56 /* MovieListView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFCA2DF63125009B1F56 /* MovieListView+Previews.swift */; };
+		03A620C62DF7782C00C075E8 /* MovieDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A620C52DF7782C00C075E8 /* MovieDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 		0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMovieRepository.swift; sourceTree = "<group>"; };
 		0368AFC82DF62D3F009B1F56 /* MockMovieViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMovieViewModel.swift; sourceTree = "<group>"; };
 		0368AFCA2DF63125009B1F56 /* MovieListView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieListView+Previews.swift"; sourceTree = "<group>"; };
+		03A620C52DF7782C00C075E8 /* MovieDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +203,7 @@
 		03A620C22DF7751B00C075E8 /* MovieDetail */ = {
 			isa = PBXGroup;
 			children = (
+				03A620C52DF7782C00C075E8 /* MovieDetailView.swift */,
 			);
 			path = MovieDetail;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 				0306124B2DF4C3BE0013F7AF /* MovieProtocol.swift in Sources */,
 				0368AFCB2DF63125009B1F56 /* MovieListView+Previews.swift in Sources */,
 				0306124F2DF4C7960013F7AF /* MovieViewModel.swift in Sources */,
+				03A620C62DF7782C00C075E8 /* MovieDetailView.swift in Sources */,
 				0368AF902DF58064009B1F56 /* PosterImageView.swift in Sources */,
 				0368AFC92DF62D3F009B1F56 /* MockMovieViewModel.swift in Sources */,
 				0306124D2DF4C3DF0013F7AF /* MovieRepository.swift in Sources */,

@@ -12,8 +12,19 @@ struct MovieRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 15) {
-            PosterImageView(url: movie.posterURL, title: movie.title)
-            MovieRowDetails(movie: movie)
+            PosterImageView(
+                url: movie.posterSmallURL,
+                title: movie.title,
+                width: 80,
+                height: 120
+            )
+            MovieRowDetails(
+                movie: movie,
+                spacing: 5,
+                titleFont: .headline,
+                overviewFont: .subheadline,
+                showFullOverview: false
+            )
             Spacer()
         }
         .padding(.vertical, 8)
