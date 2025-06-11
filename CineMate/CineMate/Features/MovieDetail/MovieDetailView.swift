@@ -38,6 +38,9 @@ struct MovieDetailView: View {
             }
             .padding(.horizontal)
 
+            ShareButtonView(movie: movie)
+                .padding(.top, 16)
+                .padding(.horizontal)
         }
         .task { await viewModel.loadMovieCredits(for: movie.id) }
         .navigationTitle(movie.title)
