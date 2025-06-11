@@ -8,11 +8,6 @@
 import Foundation
 
 final class MovieRepository: MovieProtocol {
-    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        print("Upcoming")
-        fatalError()
-    }
-    
     private let service: TMDBService
 
     init(service: TMDBService = TMDBService()) {
@@ -33,5 +28,9 @@ final class MovieRepository: MovieProtocol {
 
     func fetchUpcomingMovies() async throws -> [Movie] {
         try await service.fetchUpcomingMovies()
+    }
+
+    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
+        try await service.fetchMovieCredits(for: movieId)
     }
 }

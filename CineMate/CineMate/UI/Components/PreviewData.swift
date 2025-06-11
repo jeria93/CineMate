@@ -8,7 +8,6 @@
 import Foundation
 
 /// Provides static mock data for SwiftUI previews.
-/// Use `inception or star wars` for single item previews and `moviesList` for list previews.
 struct PreviewData {
     static let inception = Movie(
         id: 1,
@@ -16,7 +15,7 @@ struct PreviewData {
         overview: "A thief with the rare ability to enter people's dreams and steal their secrets from their subconscious.",
         posterPath: "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
         backdropPath: "/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
-        realeaseDate: "2010-07-16",
+        releaseDate: "2010-07-16",
         voteAverage: 8.3,
         genres: ["Action", "Sci-Fi", "Thriller"]
     )
@@ -27,7 +26,7 @@ struct PreviewData {
         overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
         posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
         backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
-        realeaseDate: "1977-05-25",
+        releaseDate: "1977-05-25",
         voteAverage: 8.2,
         genres: ["Adventure", "Sci-Fi", "Fantasy"]
     )
@@ -38,7 +37,7 @@ struct PreviewData {
         overview: "A computer hacker learns about the true nature of reality and his role in the war against its controllers.",
         posterPath: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
         backdropPath: "/ncEsesgOJDNrTUED89hYbA117wo.jpg",
-        realeaseDate: "1999-03-31",
+        releaseDate: "1999-03-31",
         voteAverage: 8.1,
         genres: ["Action", "Sci-Fi"]
     )
@@ -49,7 +48,7 @@ struct PreviewData {
         overview: "The lives of two mob hitmen, a boxer, a gangster's wife, and a pair of diner bandits intertwine in four tales.",
         posterPath: "/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg",
         backdropPath: "/u8XsWsS8sWhtSlTqrcfjC1lm1kU.jpg",
-        realeaseDate: "1994-09-10",
+        releaseDate: "1994-09-10",
         voteAverage: 8.5,
         genres: ["Crime", "Drama"]
     )
@@ -60,4 +59,17 @@ struct PreviewData {
         matrix,
         pulpFiction
     ]
+
+    static let starWarsCredits = MovieCredits(
+        id: 11,
+        cast: [
+            CastMember(name: "Mark Hamill", character: "Luke Skywalker"),
+            CastMember(name: "Harrison Ford", character: "Han Solo"),
+            CastMember(name: "Carrie Fisher", character: "Princess Leia")
+        ],
+        crew: [
+            CrewMember(name: "George Lucas", job: "Director"),
+            CrewMember(name: "Gary Kurtz", job: "Producer")
+        ]
+    )
 }

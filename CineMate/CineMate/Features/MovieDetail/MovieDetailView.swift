@@ -29,9 +29,17 @@ struct MovieDetailView: View {
                 .padding()
             }
 
-            MovieDetailInfoView(movie: movie)
-                .padding(.horizontal)
+            VStack(alignment: .leading, spacing: 16) {
+                MovieDetailInfoView(movie: movie)
+
+                if let credits = viewModel.movieCredits {
+                    MovieCreditsView(credits: credits)
+                }
+            }
+            .padding(.horizontal)
+
         }
+        .task { await viewModel.loadMovieCredits(for: movie.id) }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)
     }

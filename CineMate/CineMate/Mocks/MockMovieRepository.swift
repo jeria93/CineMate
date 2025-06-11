@@ -9,8 +9,7 @@ import Foundation
 
 final class MockMovieRepository: MovieProtocol {
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        print("Upcoming")
-        fatalError()
+        PreviewData.starWarsCredits
     }
     
     

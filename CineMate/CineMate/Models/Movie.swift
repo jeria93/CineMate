@@ -13,7 +13,7 @@ struct Movie: Identifiable, Codable, Equatable {
     let overview: String?
     let posterPath: String?
     let backdropPath: String?
-    let realeaseDate: String?
+    let releaseDate: String?
     let voteAverage: Double?
 
     let genres: [String]?

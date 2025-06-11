@@ -28,7 +28,7 @@ struct MovieRowDetails: View {
                     .foregroundColor(.secondary)
             }
 
-            if let releaseDate = movie.realeaseDate {
+            if let releaseDate = movie.releaseDate {
                 Text("Release: \(releaseDate)")
                     .font(.caption)
                     .foregroundColor(.secondary)
