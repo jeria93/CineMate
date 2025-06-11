@@ -41,6 +41,9 @@ struct MovieDetailView: View {
             ShareButtonView(movie: movie)
                 .padding(.top, 16)
                 .padding(.horizontal)
+
+            TMDBLinkButtonView(movie: movie)
+                .padding(.horizontal)
         }
         .task { await viewModel.loadMovieCredits(for: movie.id) }
         .navigationTitle(movie.title)
@@ -53,22 +56,4 @@ struct MovieDetailView: View {
         movie: PreviewData.starWars,
         viewModel: MovieViewModel(repository: MockMovieRepository())
     )
-}
-
-
-struct MovieGenresView: View {
-    let genres: [String]
-
-    var body: some View {
-        HStack {
-            ForEach(genres, id: \.self) { genre in
-                Text(genre)
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.accentColor.opacity(0.2))
-                    .clipShape(Capsule())
-            }
-        }
-    }
 }
