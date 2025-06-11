@@ -17,7 +17,7 @@ struct MovieDetailInfoView: View {
                 .font(.largeTitle.bold())
 
             HStack(spacing: 10) {
-                if let releaseDate = movie.realeaseDate {
+                if let releaseDate = movie.releaseDate {
                     Text("Release: \(releaseDate)")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -35,7 +35,7 @@ struct MovieDetailInfoView: View {
                 }
             }
 
-            if let genres = movie.genres {
+            if let genres = movie.genres, !genres.isEmpty {
                 MovieGenresView(genres: genres)
             }
 

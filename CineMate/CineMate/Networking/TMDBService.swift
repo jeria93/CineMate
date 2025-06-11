@@ -32,7 +32,12 @@ final class TMDBService {
         let result: MovieResult = try await request(path: "/movie/upcoming")
         return result.results
     }
-    
+
+    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
+        let path = "/movie/\(movieId)/credits"
+        return try await request(path: path)
+    }
+
     /// Generic method that sends a GET request to TMDB and decodes the response into any Decodable model.
     ///
     /// - Parameters:

@@ -15,7 +15,7 @@ import SwiftUI
             overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
             posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
             backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
-            realeaseDate: "1977-05-25",
+            releaseDate: "1977-05-25",
             voteAverage: 8.2,
             genres: ["Action", "Adventure", "Sci-Fi"]
         )
@@ -30,7 +30,7 @@ import SwiftUI
             overview: "This movie has no poster path – perfect for testing placeholder images.",
             posterPath: nil,
             backdropPath: nil,
-            realeaseDate: "2023-01-01",
+            releaseDate: "2023-01-01",
             voteAverage: 7.0,
             genres: ["Drama"]
         )
@@ -45,7 +45,7 @@ import SwiftUI
             overview: String(repeating: "A very long description of the movie to test line breaks and layout. ", count: 5),
             posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
             backdropPath: nil,
-            realeaseDate: "2023-01-01",
+            releaseDate: "2023-01-01",
             voteAverage: 8.0,
             genres: ["Biography", "History", "Drama"]
         )
@@ -60,7 +60,7 @@ import SwiftUI
             overview: nil,
             posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
             backdropPath: nil,
-            realeaseDate: "2022-12-12",
+            releaseDate: "2022-12-12",
             voteAverage: 6.2,
             genres: ["Comedy"]
         )
@@ -76,7 +76,7 @@ import SwiftUI
                 overview: "This movie has a perfect score!",
                 posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
                 backdropPath: nil,
-                realeaseDate: "2021-11-11",
+                releaseDate: "2021-11-11",
                 voteAverage: 10.0,
                 genres: ["Fantasy", "Adventure"]
             )
@@ -88,7 +88,7 @@ import SwiftUI
                 overview: "Lowest rated movie ever!",
                 posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
                 backdropPath: nil,
-                realeaseDate: "2020-10-10",
+                releaseDate: "2020-10-10",
                 voteAverage: 1.0,
                 genres: ["Horror"]
             )
@@ -104,7 +104,7 @@ import SwiftUI
             overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
             posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
             backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
-            realeaseDate: "1977-05-25",
+            releaseDate: "1977-05-25",
             voteAverage: 8.2,
             genres: ["Action", "Adventure", "Sci-Fi"]
         )
