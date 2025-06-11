@@ -15,7 +15,6 @@ struct Movie: Identifiable, Codable, Equatable {
     let backdropPath: String?
     let releaseDate: String?
     let voteAverage: Double?
-
     let genres: [String]?
 
     var posterSmallURL: URL? {
@@ -36,4 +35,10 @@ struct Movie: Identifiable, Codable, Equatable {
 
 struct MovieResult: Codable {
     let results: [Movie]
+}
+
+extension Movie {
+    var tmdbURL: URL {
+        URL(string: "https://www.themoviedb.org/movie/\(id)")!
+    }
 }
