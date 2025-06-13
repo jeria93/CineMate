@@ -16,6 +16,7 @@ class MovieViewModel: ObservableObject {
     @Published var movieCredits: MovieCredits?
     @Published var movieVideos: [MovieVideo]?
     @Published var recommendedMovies: [Movie]?
+    @Published var movieDetail: MovieDetail?
     @Published var selectedCategory: MovieCategory = .popular {
         didSet {
             Task { await loadMovies() }
@@ -40,6 +41,15 @@ class MovieViewModel: ObservableObject {
 
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
+    }
+
+    func loadMovieDetail(for movieId: Int) async {
+        do {
+            self.movieDetail = try await repository.fetchMovieDetails(for: movieId)
+        } catch {
+            print("Error fetching movie detail: \(error.localizedDescription)")
+            self.movieDetail = nil
+        }
     }
 
     func loadMovieVideos(for movieId: Int) async {

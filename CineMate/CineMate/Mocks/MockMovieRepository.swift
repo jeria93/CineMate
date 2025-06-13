@@ -8,6 +8,10 @@
 import Foundation
 
 final class MockMovieRepository: MovieProtocol {
+    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
+        PreviewData.starWarsDetail
+    }
+    
     
     func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
         PreviewData.moviesList
