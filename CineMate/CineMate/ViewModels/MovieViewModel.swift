@@ -35,6 +35,13 @@ class MovieViewModel: ObservableObject {
         favoriteMovies.contains(movie.id)
     }
 
+    func relatedMovies(for movie: Movie) -> [Movie] {
+        movies
+            .filter { $0.id != movie.id }
+            .prefix(10)
+            .map { $0 }
+    }
+
     private let repository: MovieProtocol
 
     init(repository: MovieProtocol = MovieRepository()) {

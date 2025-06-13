@@ -20,13 +20,10 @@ struct MovieDetailView: View {
                 height: 450
             )
             .overlay(alignment: .topTrailing) {
-                Button {
-                    viewModel.toggleFavorite(for: movie)
-                } label: {
-                    Image(systemName: viewModel.isFavorite(movie) ? "heart.fill" : "heart")
-                        .foregroundColor(.red)
-                }
-                .padding()
+                FavoriteButton(
+                    isFavorite: viewModel.isFavorite(movie),
+                    toggleAction: { viewModel.toggleFavorite(for: movie) }
+                )
             }
 
             VStack(alignment: .leading, spacing: 16) {
@@ -37,6 +34,8 @@ struct MovieDetailView: View {
                 }
             }
             .padding(.horizontal)
+
+            RelatedMoviesSection(movies: viewModel.relatedMovies(for: movie))
 
             ShareButtonView(movie: movie)
                 .padding(.top, 16)
