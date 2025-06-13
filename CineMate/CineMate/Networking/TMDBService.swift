@@ -38,6 +38,12 @@ final class TMDBService {
         return try await request(path: path)
     }
 
+    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
+        let path = "/movie/\(movieId)/videos"
+        let result: MovieVideoResult = try await request(path: path)
+        return result.results
+    }
+
     /// Generic method that sends a GET request to TMDB and decodes the response into any Decodable model.
     ///
     /// - Parameters:
@@ -67,3 +73,5 @@ final class TMDBService {
     }
     
 }
+
+// ide: skapa en extension om denna fil blir för lång, varje extension kan ha respektive endpoints, tex söka, hämta etc

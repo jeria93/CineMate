@@ -44,8 +44,13 @@ struct MovieDetailView: View {
 
             TMDBLinkButtonView(movie: movie)
                 .padding(.horizontal)
+
+            TrailerButtonView(movie: movie)
         }
-        .task { await viewModel.loadMovieCredits(for: movie.id) }
+        .task {
+            await viewModel.loadMovieCredits(for: movie.id)
+            await viewModel.loadMovieVideos(for: movie.id)
+        }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)
     }

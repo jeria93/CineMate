@@ -13,4 +13,5 @@ protocol MovieProtocol {
     func fetchTopRatedMovies() async throws -> [Movie]
     func fetchUpcomingMovies() async throws -> [Movie]
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits
+    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo]
 }

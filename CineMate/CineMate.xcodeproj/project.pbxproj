@@ -19,6 +19,10 @@
 		030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612622DF4CD5F0013F7AF /* MovieRowView.swift */; };
 		030612652DF4CDAD0013F7AF /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612642DF4CDAD0013F7AF /* PreviewData.swift */; };
 		030612672DF4E5800013F7AF /* MovieListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612662DF4E5800013F7AF /* MovieListView.swift */; };
+		030BC5432DFB5CA800D1F96F /* TrailerButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5422DFB5CA800D1F96F /* TrailerButtonView.swift */; };
+		030BC5452DFB604A00D1F96F /* MovieVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5442DFB604A00D1F96F /* MovieVideo.swift */; };
+		030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5472DFB6E9F00D1F96F /* Movie+TrailerURL.swift */; };
+		030BC54A2DFB6ECB00D1F96F /* TrailerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5492DFB6ECB00D1F96F /* TrailerHelper.swift */; };
 		030CA7A72DF8CADA00771212 /* MovieDetailInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030CA7A62DF8CADA00771212 /* MovieDetailInfoView.swift */; };
 		0368AF902DF58064009B1F56 /* PosterImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AF8F2DF58064009B1F56 /* PosterImageView.swift */; };
 		0368AF922DF5BB3C009B1F56 /* MovieRowDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AF912DF5BB3C009B1F56 /* MovieRowDetails.swift */; };
@@ -53,6 +57,11 @@
 		030612622DF4CD5F0013F7AF /* MovieRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieRowView.swift; sourceTree = "<group>"; };
 		030612642DF4CDAD0013F7AF /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		030612662DF4E5800013F7AF /* MovieListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListView.swift; sourceTree = "<group>"; };
+		030BC5422DFB5CA800D1F96F /* TrailerButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerButtonView.swift; sourceTree = "<group>"; };
+		030BC5442DFB604A00D1F96F /* MovieVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieVideo.swift; sourceTree = "<group>"; };
+		030BC5462DFB6AA300D1F96F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		030BC5472DFB6E9F00D1F96F /* Movie+TrailerURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Movie+TrailerURL.swift"; sourceTree = "<group>"; };
+		030BC5492DFB6ECB00D1F96F /* TrailerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerHelper.swift; sourceTree = "<group>"; };
 		030CA7A62DF8CADA00771212 /* MovieDetailInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailInfoView.swift; sourceTree = "<group>"; };
 		0368AF8F2DF58064009B1F56 /* PosterImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterImageView.swift; sourceTree = "<group>"; };
 		0368AF912DF5BB3C009B1F56 /* MovieRowDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieRowDetails.swift; sourceTree = "<group>"; };
@@ -103,6 +112,7 @@
 		030612282DF4BEB40013F7AF /* CineMate */ = {
 			isa = PBXGroup;
 			children = (
+				030BC5462DFB6AA300D1F96F /* Info.plist */,
 				03A620C02DF774CA00C075E8 /* Features */,
 				0368AFCD2DF6362F009B1F56 /* UI */,
 				0368AFCC2DF63611009B1F56 /* Mocks */,
@@ -113,6 +123,8 @@
 				0306122E2DF4BEC90013F7AF /* Networking */,
 				0306122D2DF4BEC30013F7AF /* Models */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
+				030BC5472DFB6E9F00D1F96F /* Movie+TrailerURL.swift */,
+				030BC5492DFB6ECB00D1F96F /* TrailerHelper.swift */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -124,6 +136,7 @@
 				030612462DF4C05C0013F7AF /* SecretManager.swift */,
 				0368AFC02DF61333009B1F56 /* MovieCategory.swift */,
 				03E3557D2DF9C060001F1001 /* MovieCredits.swift */,
+				030BC5442DFB604A00D1F96F /* MovieVideo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -182,6 +195,7 @@
 				0368AF8F2DF58064009B1F56 /* PosterImageView.swift */,
 				0368AF912DF5BB3C009B1F56 /* MovieRowDetails.swift */,
 				0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */,
+				030BC5422DFB5CA800D1F96F /* TrailerButtonView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -323,10 +337,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				0368AFC32DF61FA3009B1F56 /* MovieCategoryPicker.swift in Sources */,
+				030BC54A2DFB6ECB00D1F96F /* TrailerHelper.swift in Sources */,
 				030612652DF4CDAD0013F7AF /* PreviewData.swift in Sources */,
 				030612672DF4E5800013F7AF /* MovieListView.swift in Sources */,
 				030612492DF4C07F0013F7AF /* TMDBService.swift in Sources */,
 				0368AF922DF5BB3C009B1F56 /* MovieRowDetails.swift in Sources */,
+				030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */,
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
 				0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */,
 				0306124B2DF4C3BE0013F7AF /* MovieProtocol.swift in Sources */,
@@ -335,8 +351,10 @@
 				0368AFCB2DF63125009B1F56 /* MovieListView+Previews.swift in Sources */,
 				0381F4D52DFA271800AC2ABB /* TMDBLinkButtonView.swift in Sources */,
 				0306124F2DF4C7960013F7AF /* MovieViewModel.swift in Sources */,
+				030BC5432DFB5CA800D1F96F /* TrailerButtonView.swift in Sources */,
 				0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */,
 				03A620C62DF7782C00C075E8 /* MovieDetailView.swift in Sources */,
+				030BC5452DFB604A00D1F96F /* MovieVideo.swift in Sources */,
 				0368AF902DF58064009B1F56 /* PosterImageView.swift in Sources */,
 				03C0162D2DFA1FD20028F421 /* ShareButtonView.swift in Sources */,
 				0368AFC92DF62D3F009B1F56 /* MockMovieViewModel.swift in Sources */,
@@ -487,6 +505,7 @@
 				DEVELOPMENT_TEAM = N693GNQH6J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CineMate/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -515,6 +534,7 @@
 				DEVELOPMENT_TEAM = N693GNQH6J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CineMate/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
