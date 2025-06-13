@@ -8,6 +8,7 @@
 import Foundation
 
 final class MovieRepository: MovieProtocol {
+
     private let service: TMDBService
 
     init(service: TMDBService = TMDBService()) {
@@ -35,6 +36,10 @@ final class MovieRepository: MovieProtocol {
     }
     func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
         try await service.fetchMovieVideos(for: movieId)
+    }
+
+    func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
+        try await service.fetchRecommendedMovies(for: movieId)
     }
 }
 // ide: skapa en extension om denna fil blir för lång, varje extension kan ha respektive endpoints, tex söka, hämta etc
