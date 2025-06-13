@@ -27,21 +27,19 @@ struct MovieDetailView: View {
             }
 
             VStack(alignment: .leading, spacing: 16) {
-                MovieDetailInfoView(movie: movie)
+                MovieDetailInfoView(movie: movie, viewModel: viewModel)
 
                 if let credits = viewModel.movieCredits {
                     MovieCreditsView(credits: credits)
                 }
+
+                MovieDetailActionBarView(movie: movie)
 
                 if let recommended = viewModel.recommendedMovies {
                     RelatedMoviesSection(movies: recommended, viewModel: viewModel)
                         .transition(.opacity)
                         .animation(.easeInOut(duration: 0.3), value: recommended)
                 }
-
-                ShareButtonView(movie: movie)
-                TMDBLinkButtonView(movie: movie)
-                TrailerButtonView(movie: movie)
             }
             .padding(.horizontal)
         }
@@ -49,15 +47,21 @@ struct MovieDetailView: View {
             await viewModel.loadMovieCredits(for: movie.id)
             await viewModel.loadMovieVideos(for: movie.id)
             await viewModel.fetchRecommendedMovies(for: movie.id)
+            await viewModel.loadMovieDetail(for: movie.id)
         }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-#Preview {
-    MovieDetailView(
+#Preview("With Credits & Detail") {
+    let vm = MovieViewModel(repository: MockMovieRepository())
+    vm.movieCredits = PreviewData.starWarsCredits
+    vm.movieDetail = PreviewData.starWarsDetail
+    vm.recommendedMovies = PreviewData.moviesList
+
+    return MovieDetailView(
         movie: PreviewData.starWars,
-        viewModel: MovieViewModel(repository: MockMovieRepository())
+        viewModel: vm
     )
 }

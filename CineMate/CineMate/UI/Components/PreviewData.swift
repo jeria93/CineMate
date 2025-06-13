@@ -63,9 +63,30 @@ struct PreviewData {
     static let starWarsCredits = MovieCredits(
         id: 11,
         cast: [
-            CastMember(name: "Mark Hamill", character: "Luke Skywalker"),
-            CastMember(name: "Harrison Ford", character: "Han Solo"),
-            CastMember(name: "Carrie Fisher", character: "Princess Leia")
+            CastMember(
+                id: 1,
+                name: "Mark Hamill",
+                character: "Luke Skywalker",
+                profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg"
+            ),
+            CastMember(
+                id: 2,
+                name: "Harrison Ford",
+                character: "Han Solo",
+                profilePath: "/nCJJ3NVksYNxIzEHcyC1XziwPVj.jpg"
+            ),
+            CastMember(
+                id: 3,
+                name: "Carrie Fisher",
+                character: "Princess Leia",
+                profilePath: "/lKYjvdlhFYnvvldzGfbrL2KkPA3.jpg"
+            ),
+            CastMember(
+                id: 4,
+                name: "Chewbacca",
+                character: nil,
+                profilePath: nil
+            )
         ],
         crew: [
             CrewMember(name: "George Lucas", job: "Director"),
@@ -82,4 +103,32 @@ struct PreviewData {
             type: "Trailer"
         )
     ]
+
+    static let starWarsDetail = MovieDetail(
+        id: 11,
+        runtime: 121,
+        budget: 11000000,
+        revenue: 775398007,
+        homepage: "http://www.starwars.com/films/star-wars-episode-iv-a-new-hope",
+        status: "Released",
+        productionCompanies: [
+            ProductionCompany(name: "Lucasfilm Ltd."),
+            ProductionCompany(name: "Twentieth Century Fox")
+        ],
+        productionCountries: [
+            ProductionCountry(name: "United States of America")
+        ]
+    )
+
+    static let emptyDetail = MovieDetail(
+        id: 0,
+        runtime: nil,
+        budget: nil,
+        revenue: nil,
+        homepage: nil,
+        status: nil,
+        productionCompanies: [],
+        productionCountries: []
+    )
 }
+// Skapa en för en tom lista/array?

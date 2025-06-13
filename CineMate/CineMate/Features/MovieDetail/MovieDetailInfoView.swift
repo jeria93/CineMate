@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MovieDetailInfoView: View {
     let movie: Movie
+    @ObservedObject var viewModel: MovieViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -44,10 +45,85 @@ struct MovieDetailInfoView: View {
                     .font(.body)
                     .foregroundColor(.secondary)
             }
+
+            if let detail = viewModel.movieDetail {
+                Divider()
+
+                if let runtime = detail.runtime {
+                    Text("Runtime: \(runtime / 60)h \(runtime % 60)m")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if !detail.productionCompanies.isEmpty {
+                    Text("Produced by: \(detail.productionCompanies.map { $0.name }.joined(separator: ", "))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if !detail.productionCountries.isEmpty {
+                    Text("Countries: \(detail.productionCountries.map { $0.name }.joined(separator: ", "))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if let budget = detail.budget, budget > 0 {
+                    Text("Budget: \(budget.formattedWithSeparator()) USD")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if let revenue = detail.revenue, revenue > 0 {
+                    Text("Revenue: \(revenue.formattedWithSeparator()) USD")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if let status = detail.status {
+                    Text("Status: \(status)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if let homepage = detail.homepage, let url = URL(string: homepage) {
+                    Link("🌐 Official Website", destination: url)
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+            }
         }
     }
 }
 
-#Preview {
-    MovieDetailInfoView(movie: PreviewData.starWars)
+#Preview("PreviewData") {
+    let vm = MovieViewModel(repository: MockMovieRepository())
+    vm.movieDetail = PreviewData.starWarsDetail
+
+    return MovieDetailInfoView(
+        movie: PreviewData.starWars,
+        viewModel: vm
+    )
+    .padding()
+}
+
+#Preview("Empty Detail") {
+    let vm = MovieViewModel(repository: MockMovieRepository())
+    vm.movieDetail = PreviewData.emptyDetail
+
+    return MovieDetailInfoView(
+        movie: PreviewData.starWars,
+        viewModel: vm
+    )
+    .padding()
+}
+
+
+
+extension Int {
+    func formattedWithSeparator() -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
+    }
 }

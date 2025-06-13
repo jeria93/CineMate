@@ -13,9 +13,16 @@ struct MovieCredits: Codable {
     let crew: [CrewMember]
 }
 
-struct CastMember: Codable {
+struct CastMember: Codable, Identifiable {
+    let id: Int
     let name: String
     let character: String?
+    let profilePath: String?
+
+    var profileURL: URL? {
+        guard let profilePath else { return nil }
+        return URL(string: "https://image.tmdb.org/t/p/w185\(profilePath)")
+    }
 }
 
 struct CrewMember: Codable {

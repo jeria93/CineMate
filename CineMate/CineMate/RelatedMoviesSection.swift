@@ -16,7 +16,6 @@ struct RelatedMoviesSection: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Related Movies")
                 .font(.headline)
-                .padding(.horizontal)
 
             if movies.isEmpty {
                 VStack(spacing: 8) {
@@ -43,7 +42,6 @@ struct RelatedMoviesSection: View {
                             .buttonStyle(.plain)
                         }
                     }
-                    .padding(.horizontal)
                 }
             }
         }
