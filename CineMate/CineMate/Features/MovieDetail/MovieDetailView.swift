@@ -32,23 +32,23 @@ struct MovieDetailView: View {
                 if let credits = viewModel.movieCredits {
                     MovieCreditsView(credits: credits)
                 }
+
+                if let recommended = viewModel.recommendedMovies {
+                    RelatedMoviesSection(movies: recommended, viewModel: viewModel)
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.3), value: recommended)
+                }
+
+                ShareButtonView(movie: movie)
+                TMDBLinkButtonView(movie: movie)
+                TrailerButtonView(movie: movie)
             }
             .padding(.horizontal)
-
-            RelatedMoviesSection(movies: viewModel.relatedMovies(for: movie))
-
-            ShareButtonView(movie: movie)
-                .padding(.top, 16)
-                .padding(.horizontal)
-
-            TMDBLinkButtonView(movie: movie)
-                .padding(.horizontal)
-
-            TrailerButtonView(movie: movie)
         }
         .task {
             await viewModel.loadMovieCredits(for: movie.id)
             await viewModel.loadMovieVideos(for: movie.id)
+            await viewModel.fetchRecommendedMovies(for: movie.id)
         }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)

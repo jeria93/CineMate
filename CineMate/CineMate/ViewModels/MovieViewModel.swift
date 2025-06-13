@@ -12,9 +12,10 @@ class MovieViewModel: ObservableObject {
 
     @Published var movies: [Movie] = []
     @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
+    @Published var errorMessage: String? // Behöver denna faktiskt vara @Published?
     @Published var movieCredits: MovieCredits?
     @Published var movieVideos: [MovieVideo]?
+    @Published var recommendedMovies: [Movie]?
     @Published var selectedCategory: MovieCategory = .popular {
         didSet {
             Task { await loadMovies() }
@@ -35,14 +36,7 @@ class MovieViewModel: ObservableObject {
         favoriteMovies.contains(movie.id)
     }
 
-    func relatedMovies(for movie: Movie) -> [Movie] {
-        movies
-            .filter { $0.id != movie.id }
-            .prefix(10)
-            .map { $0 }
-    }
-
-    private let repository: MovieProtocol
+    private(set) var repository: MovieProtocol
 
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
@@ -71,6 +65,18 @@ class MovieViewModel: ObservableObject {
             self.movieCredits = nil
         }
     }
+
+    func fetchRecommendedMovies(for movieId: Int) async {
+        do {
+            let movies = try await repository.fetchRecommendedMovies(for: movieId)
+            self.recommendedMovies = movies
+        } catch {
+            print("Error fetching recommendations: \(error.localizedDescription)")
+            self.recommendedMovies = nil
+        }
+    }
+
+
 
     func fetchPopularMovies() async {
         await fetch { try await repository.fetchPopularMovies() }
