@@ -36,4 +36,5 @@ Secrets.plist
 Carthage/Checkouts/
 
 # Xcode automatic provisioning profiles
-*.xcuserstate
+*.xcuserstate**/GoogleService-Info.plist
+**/Secrets.plist
