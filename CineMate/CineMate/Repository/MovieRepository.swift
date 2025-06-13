@@ -33,4 +33,8 @@ final class MovieRepository: MovieProtocol {
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
         try await service.fetchMovieCredits(for: movieId)
     }
+    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
+        try await service.fetchMovieVideos(for: movieId)
+    }
 }
+// ide: skapa en extension om denna fil blir för lång, varje extension kan ha respektive endpoints, tex söka, hämta etc

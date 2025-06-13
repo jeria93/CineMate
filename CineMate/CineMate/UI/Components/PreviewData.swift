@@ -72,4 +72,14 @@ struct PreviewData {
             CrewMember(name: "Gary Kurtz", job: "Producer")
         ]
     )
+
+    static let sampleVideos: [MovieVideo] = [
+        MovieVideo(
+            id: "12345",
+            key: "dQw4w9WgXcQ",
+            name: "Official Trailer",
+            site: "YouTube",
+            type: "Trailer"
+        )
+    ]
 }

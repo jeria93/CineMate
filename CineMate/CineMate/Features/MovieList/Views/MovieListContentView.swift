@@ -25,7 +25,11 @@ struct MovieListContentView: View {
                 }
             } else {
                 List(viewModel.movies) { movie in
-                    MovieRowView(movie: movie)
+                    NavigationLink {
+                        MovieDetailView(movie: movie, viewModel: viewModel)
+                    } label: {
+                        MovieRowView(movie: movie)
+                    }
                 }
                 .listStyle(.plain)
             }

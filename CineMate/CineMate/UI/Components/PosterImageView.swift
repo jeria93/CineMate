@@ -41,6 +41,7 @@ struct PosterImageView: View {
     }
 }
 
+//flytta dessa till egen previews mapp?
 #Preview("Working poster") {
     PosterImageView(
         url: URL(string: "https://image.tmdb.org/t/p/w200/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"),

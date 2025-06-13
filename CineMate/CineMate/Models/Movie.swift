@@ -42,3 +42,4 @@ extension Movie {
         URL(string: "https://www.themoviedb.org/movie/\(id)")!
     }
 }
+// Dela upp i extension ifall det blir för grötigt, fler filer men mer struktur.
