@@ -23,6 +23,7 @@
 		030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5472DFB6E9F00D1F96F /* Movie+TrailerURL.swift */; };
 		030BC54A2DFB6ECB00D1F96F /* TrailerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5492DFB6ECB00D1F96F /* TrailerHelper.swift */; };
 		030CA7A72DF8CADA00771212 /* MovieDetailInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030CA7A62DF8CADA00771212 /* MovieDetailInfoView.swift */; };
+		030E469E2DFDA7DD00285FE7 /* Secrets.example.plist in Resources */ = {isa = PBXBuildFile; fileRef = 030E469D2DFDA7DD00285FE7 /* Secrets.example.plist */; };
 		03652CE52DFC56830031DCAD /* MovieDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03652CE42DFC56830031DCAD /* MovieDetail.swift */; };
 		03668ABB2DFBB01400132847 /* RelatedMovieCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03668ABA2DFBB01400132847 /* RelatedMovieCardView.swift */; };
 		03668ABD2DFBB0FE00132847 /* RelatedMoviesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03668ABC2DFBB0FE00132847 /* RelatedMoviesSection.swift */; };
@@ -64,6 +65,7 @@
 		030BC5472DFB6E9F00D1F96F /* Movie+TrailerURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Movie+TrailerURL.swift"; sourceTree = "<group>"; };
 		030BC5492DFB6ECB00D1F96F /* TrailerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerHelper.swift; sourceTree = "<group>"; };
 		030CA7A62DF8CADA00771212 /* MovieDetailInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailInfoView.swift; sourceTree = "<group>"; };
+		030E469D2DFDA7DD00285FE7 /* Secrets.example.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.example.plist; sourceTree = "<group>"; };
 		03652CE42DFC56830031DCAD /* MovieDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetail.swift; sourceTree = "<group>"; };
 		03668ABA2DFBB01400132847 /* RelatedMovieCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedMovieCardView.swift; sourceTree = "<group>"; };
 		03668ABC2DFBB0FE00132847 /* RelatedMoviesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedMoviesSection.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				03668ABE2DFBB19000132847 /* FavoriteButton.swift */,
 				03652CE42DFC56830031DCAD /* MovieDetail.swift */,
 				038807D82DFCB4C2009DED36 /* MovieDetailActionBarView.swift */,
+				030E469D2DFDA7DD00285FE7 /* Secrets.example.plist */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -330,6 +333,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				030E469E2DFDA7DD00285FE7 /* Secrets.example.plist in Resources */,
 				030612292DF4BEB40013F7AF /* Assets.xcassets in Resources */,
 				0306122A2DF4BEB40013F7AF /* Secrets.plist in Resources */,
 			);
