@@ -30,6 +30,10 @@ These files are listed in `.gitignore` and protected by `.github/CODEOWNERS`:
 
 This ensures sensitive data is never committed to GitHub, even by mistake.
 
+> 🛡️ **Note:** `Secrets.plist` was accidentally committed earlier in development.  
+> In **June 2025**, the full Git history was sanitized using [`git-filter-repo`](https://github.com/newren/git-filter-repo) to ensure no sensitive data remains in any commit.
+> Only `Secrets.example.plist` remains for safe local use.
+
 ---
 
 ## Project Setup (Xcode)

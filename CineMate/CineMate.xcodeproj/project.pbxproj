@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		030612292DF4BEB40013F7AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 030612242DF4BEB40013F7AF /* Assets.xcassets */; };
-		0306122A2DF4BEB40013F7AF /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 030612272DF4BEB40013F7AF /* Secrets.plist */; };
 		0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612252DF4BEB40013F7AF /* CineMateApp.swift */; };
 		030612342DF4BF4E0013F7AF /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612332DF4BF4E0013F7AF /* Movie.swift */; };
 		030612472DF4C05C0013F7AF /* SecretManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030612462DF4C05C0013F7AF /* SecretManager.swift */; };
@@ -44,13 +43,13 @@
 		03C016292DFA1ED20028F421 /* MovieShareItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C016282DFA1ED20028F421 /* MovieShareItem.swift */; };
 		03C0162B2DFA1EF80028F421 /* ShareHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C0162A2DFA1EF80028F421 /* ShareHelper.swift */; };
 		03E3557E2DF9C060001F1001 /* MovieCredits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3557D2DF9C060001F1001 /* MovieCredits.swift */; };
+		03F317D42DFF5D15002BFEC4 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03F317D32DFF5D15002BFEC4 /* Secrets.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		030612032DF4BA4B0013F7AF /* CineMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CineMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		030612242DF4BEB40013F7AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		030612252DF4BEB40013F7AF /* CineMateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CineMateApp.swift; sourceTree = "<group>"; };
-		030612272DF4BEB40013F7AF /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		030612332DF4BF4E0013F7AF /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
 		030612462DF4C05C0013F7AF /* SecretManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretManager.swift; sourceTree = "<group>"; };
 		030612482DF4C07F0013F7AF /* TMDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBService.swift; sourceTree = "<group>"; };
@@ -86,6 +85,7 @@
 		03C016282DFA1ED20028F421 /* MovieShareItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieShareItem.swift; sourceTree = "<group>"; };
 		03C0162A2DFA1EF80028F421 /* ShareHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareHelper.swift; sourceTree = "<group>"; };
 		03E3557D2DF9C060001F1001 /* MovieCredits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCredits.swift; sourceTree = "<group>"; };
+		03F317D32DFF5D15002BFEC4 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,7 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				030612242DF4BEB40013F7AF /* Assets.xcassets */,
-				030612272DF4BEB40013F7AF /* Secrets.plist */,
+				03F317D32DFF5D15002BFEC4 /* Secrets.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -334,8 +334,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				030E469E2DFDA7DD00285FE7 /* Secrets.example.plist in Resources */,
+				03F317D42DFF5D15002BFEC4 /* Secrets.plist in Resources */,
 				030612292DF4BEB40013F7AF /* Assets.xcassets in Resources */,
-				0306122A2DF4BEB40013F7AF /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
