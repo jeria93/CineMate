@@ -32,7 +32,7 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 
 ---
 
-## 🔧 Project Setup (Xcode)
+## Project Setup (Xcode)
 
 ### 1 — Add `Secrets.plist`
 
@@ -80,17 +80,27 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 
 ---
 
-## 🔐 Google Sign-In Overview *(coming soon)*
+## Feature Preview
 
-```swift
-let credential = GoogleAuthProvider.credential(
-    withIDToken: idToken,
-    accessToken: accessToken
-)
-Auth.auth().signIn(with: credential) { result, error in
-    // Signed in to Firebase
-}
-```
+Here are two short demos of CineMate in action:
+
+### Movie Detail View
+This demo shows how users can explore a specific movie, watch the trailer, view cast members, and use the Share feature.
+
+![Movie Detail Demo](Assets/cinemate_detail.gif)
+
+---
+
+### Movie List View
+This demo shows the main screen where users can browse trending movies and access quick details.
+
+![Movie List Demo](Assets/cinemate_list.gif)
+
+
+## External Resources
+
+- [TMDB – The Movie Database](https://www.themoviedb.org/)
+- [Firebase](https://firebase.google.com/)
 
 ---
 
@@ -103,6 +113,9 @@ This app is part of my iOS development portfolio. It demonstrates:
 - UI/UX considerations with empty state views and genre filtering
 - Professional GitHub setup (CODEOWNERS, branch protection, secrets ignored)
 - Consideration for advanced patterns like Dependency Injection, SRP, and SoC
+- ⭐️ If you find CineMate useful or inspiring, feel free to leave a star on GitHub — every bit of support is appreciated.
+
+> This project is still evolving — new features and improvements are added continuously.
 
 > Want to learn more or collaborate?  
 **Connect on LinkedIn:** [nicholas-samuelsson-jeria](https://www.linkedin.com/in/nicholas-samuelsson-jeria-69778391)
@@ -128,8 +141,24 @@ CineMate
 
 ---
 
+## 🔐 Google Sign-In Overview *(planned)*
+
+> Support for Firebase Authentication is in progress.  
+> Below is a code example showing how sign-in will work:
+
+```swift
+let credential = GoogleAuthProvider.credential(
+    withIDToken: idToken,
+    accessToken: accessToken
+)
+Auth.auth().signIn(with: credential) { result, error in
+    // Signed in to Firebase
+}
+```
+
+---
+
 Enjoy exploring CineMate
 
 > *“Do. Or do not. There is no try.”*  
 > — Yoda
-
