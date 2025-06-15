@@ -87,14 +87,14 @@ Here are two short demos of CineMate in action:
 ### Movie Detail View
 This demo shows how users can explore a specific movie, watch the trailer, view cast members, and use the Share feature.
 
-![Movie Detail Demo](Assets/cinemate_detail.gif)
+<img src="Assets/cinemate_detail.gif" width="350" alt="Movie Detail Demo" />
 
 ---
 
 ### Movie List View
 This demo shows the main screen where users can browse trending movies and access quick details.
 
-![Movie List Demo](Assets/cinemate_list.gif)
+<img src="Assets/cinemate_list.gif" width="350" alt="Movie List Demo" />
 
 
 ## External Resources
