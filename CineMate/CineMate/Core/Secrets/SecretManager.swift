@@ -20,22 +20,20 @@ enum SecretManager {
     /// Loads a value from `Secrets.plist` based on the provided key.
     /// - Parameter key: The name of the key in `Secrets.plist`
     /// - Returns: The associated value as a `String`, or crashes the app if missing
-    static func load(_ key: String) -> String {
+    static func load(_ key: String) throws -> String {
         guard
             let url = Bundle.main.url(forResource: "Secrets", withExtension: "plist"),
             let data = try? Data(contentsOf: url),
             let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
             let value = plist[key] as? String
         else {
-            fatalError("Missing value for key: \(key)")
+            throw TMDBError.missingSecrets
         }
 
         return value
     }
 
     /// TMDB API key loaded from `Secrets.plist`
-    static var apiKey: String { load("TMDB_API_KEY") }
-
+    static var apiKey: String { try! load("TMDB_API_KEY") }
     /// TMDB Bearer token loaded from `Secrets.plist`
-    static var bearerToken: String { load("TMDB_BEARER_TOKEN") }
-}
+    static var bearerToken: String { try! load("TMDB_BEARER_TOKEN") }}

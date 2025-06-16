@@ -47,7 +47,7 @@ struct MovieDetailView: View {
             await viewModel.loadMovieCredits(for: movie.id)
             await viewModel.loadMovieVideos(for: movie.id)
             await viewModel.fetchRecommendedMovies(for: movie.id)
-            await viewModel.loadMovieDetail(for: movie.id)
+            await viewModel.loadMovieDetails(for: movie.id)
         }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)

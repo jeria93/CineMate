@@ -8,50 +8,45 @@
 import Foundation
 
 final class TMDBService {
-    
+
     private let baseURL = "https://api.themoviedb.org/3"
     private let session = URLSession.shared
 
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
-        let path = "/movie/\(movieId)"
-        return try await request(path: path)
+        return try await request(endpoint: .movieDetail(movieId))
     }
 
-    
     func fetchPopularMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(path: "/movie/popular")
+        let result: MovieResult = try await request(endpoint: .popular)
         return result.results
     }
-    
+
     func fetchTopRatedMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(path: "/movie/top_rated")
+        let result: MovieResult = try await request(endpoint: .topRated)
         return result.results
     }
-    
+
     func fetchTrendingMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(path: "/trending/movie/week")
+        let result: MovieResult = try await request(endpoint: .trending)
         return result.results
     }
-    
+
     func fetchUpcomingMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(path: "/movie/upcoming")
+        let result: MovieResult = try await request(endpoint: .upcoming)
         return result.results
     }
 
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        let path = "/movie/\(movieId)/credits"
-        return try await request(path: path)
+        return try await request(endpoint: .credits(movieId))
     }
 
     func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
-        let path = "/movie/\(movieId)/videos"
-        let result: MovieVideoResult = try await request(path: path)
+        let result: MovieVideoResult = try await request(endpoint: .videos(movieId))
         return result.results
     }
 
     func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
-        let path = "/movie/\(movieId)/recommendations"
-        let result: MovieResult = try await request(path: path)
+        let result: MovieResult = try await request(endpoint: .recommendations(movieId))
         return result.results
     }
 
@@ -62,27 +57,43 @@ final class TMDBService {
     ///   - queryItems: Optional query parameters to be appended to the request.
     /// - Returns: A decoded model of the specified type.
     /// - Throws: A `URLError` or decoding error if something goes wrong.
-    func request<Model: Decodable>(path: String, queryItems: [URLQueryItem] = []) async throws -> Model {
-        var components = URLComponents(string: "\(baseURL)\(path)")!
+    func request<Model: Decodable>(endpoint: TMDBEndpoint, queryItems: [URLQueryItem] = []) async throws -> Model {
+
+        guard var components = URLComponents(string: "\(baseURL)\(endpoint.path)") else {
+            throw TMDBError.badURL
+        }
         if !queryItems.isEmpty {
             components.queryItems = queryItems
         }
-        
-        guard let url = components.url else { throw URLError(.badURL) }
-        
+
+        guard let url = components.url else {
+            throw TMDBError.badURL
+        }
+
         var req = URLRequest(url: url)
         req.httpMethod = "GET"
         req.allHTTPHeaderFields = [
             "accept": "application/json",
             "Authorization": "Bearer \(SecretManager.bearerToken)"
         ]
-        
-        let (data, _) = try await session.data(for: req)
+
+        let (data, response) = try await session.data(for: req)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw TMDBError.invalidResponse
+        }
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw TMDBError.serverError(httpResponse.statusCode)
+        }
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return try decoder.decode(Model.self, from: data)
+
+        do {
+            return try decoder.decode(Model.self, from: data)
+        } catch {
+            throw TMDBError.decodingFailed
+        }
     }
-    
+
 }
 
 // ide: skapa en extension om denna fil blir för lång, varje extension kan ha respektive endpoints, tex söka, hämta etc
