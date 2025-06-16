@@ -9,10 +9,10 @@ import Foundation
 
 @MainActor
 class MovieViewModel: ObservableObject {
-
+    
     @Published var movies: [Movie] = []
     @Published var isLoading: Bool = false
-    @Published var errorMessage: String? // Behöver denna faktiskt vara @Published?
+    @Published var errorMessage: String?
     @Published var movieCredits: MovieCredits?
     @Published var movieVideos: [MovieVideo]?
     @Published var recommendedMovies: [Movie]?
@@ -22,9 +22,19 @@ class MovieViewModel: ObservableObject {
             Task { await loadMovies() }
         }
     }
-
+    
     @Published var favoriteMovies: Set<Int> = []
-
+    
+    
+    
+    private(set) var repository: MovieProtocol
+    
+    init(repository: MovieProtocol = MovieRepository()) {
+        self.repository = repository
+    }
+    
+    // MARK: - Favorites
+    
     func toggleFavorite(for movie: Movie) {
         if favoriteMovies.contains(movie.id) {
             favoriteMovies.remove(movie.id)
@@ -32,78 +42,56 @@ class MovieViewModel: ObservableObject {
             favoriteMovies.insert(movie.id)
         }
     }
-
+    
     func isFavorite(_ movie: Movie) -> Bool {
         favoriteMovies.contains(movie.id)
     }
-
-    private(set) var repository: MovieProtocol
-
-    init(repository: MovieProtocol = MovieRepository()) {
-        self.repository = repository
+    
+    // MARK: - Loaders
+    
+    
+    func loadMovieDetails(for movieId: Int) async {
+        await load({
+            try await repository.fetchMovieDetails(for: movieId)
+        }, assignTo: \.movieDetail)
     }
-
-    func loadMovieDetail(for movieId: Int) async {
-        do {
-            self.movieDetail = try await repository.fetchMovieDetails(for: movieId)
-        } catch {
-            print("Error fetching movie detail: \(error.localizedDescription)")
-            self.movieDetail = nil
-        }
-    }
-
-    func loadMovieVideos(for movieId: Int) async {
-        do {
-            let videos = try await repository.fetchMovieVideos(for: movieId)
-            self.movieVideos = videos
-        } catch {
-            print("Error fetching videos: \(error.localizedDescription)")
-            self.movieVideos = nil
-        }
-    }
-
-    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        try await repository.fetchMovieCredits(for: movieId)
-    }
-
+    
     func loadMovieCredits(for movieId: Int) async {
-        do {
-            let credits = try await repository.fetchMovieCredits(for: movieId)
-            self.movieCredits = credits
-        } catch {
-            print("Error fetching credits: \(error.localizedDescription)")
-            self.movieCredits = nil
-        }
+        await load({
+            try await repository.fetchMovieCredits(for: movieId)
+        }, assignTo: \.movieCredits)
     }
-
+    
+    func loadMovieVideos(for movieId: Int) async {
+        await load({
+            try await repository.fetchMovieVideos(for: movieId)
+        }, assignTo: \.movieVideos)
+    }
+    
     func fetchRecommendedMovies(for movieId: Int) async {
-        do {
-            let movies = try await repository.fetchRecommendedMovies(for: movieId)
-            self.recommendedMovies = movies
-        } catch {
-            print("Error fetching recommendations: \(error.localizedDescription)")
-            self.recommendedMovies = nil
-        }
+        await load({
+            try await repository.fetchRecommendedMovies(for: movieId)
+        }, assignTo: \.recommendedMovies)
     }
-
-
-
+    
+    // MARK: - Movie List (filter-based)
+    
     func fetchPopularMovies() async {
         await fetch { try await repository.fetchPopularMovies() }
     }
-
+    
     func fetchTopRatedMovies() async {
         await fetch { try await repository.fetchTopRatedMovies() }
     }
-
+    
     func fetchUpComingMovies() async {
         await fetch { try await repository.fetchUpcomingMovies() }
     }
-
+    
     func fetchTrendingMovies() async {
         await fetch { try await repository.fetchTrendingMovies() }
     }
-
+    
     func loadMovies() async {
         switch selectedCategory {
         case .popular:
@@ -116,13 +104,13 @@ class MovieViewModel: ObservableObject {
             await fetchTrendingMovies()
         }
     }
-
+    
     /// Handles fetching movies and updates the view model's state.
     /// - Parameter fetcher: Closure that fetches a list of movies.
     private func fetch(_ fetcher: () async throws -> [Movie]) async {
         isLoading = true
         defer { isLoading = false }
-
+        
         do {
             let result = try await fetcher()
             movies = result
@@ -131,4 +119,20 @@ class MovieViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
     }
+    
+    /// Loads any type of data asynchronously and assigns it to a specific @Published property using a keyPath.
+    /// - Parameters:
+    ///   - fetcher: An asynchronous function that returns a value of any type `T`.
+    ///   - keyPath: A writable keyPath to the `@Published` property in `MovieViewModel` where the result should be stored.
+    /// - Note: On error, the property is set to `nil` and the error is printed.
+    private func load<T>(_ fetcher: () async throws -> T, assignTo keyPath: ReferenceWritableKeyPath<MovieViewModel, T?>) async {
+        do {
+            let result = try await fetcher()
+            self[keyPath: keyPath] = result
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            self[keyPath: keyPath] = nil
+        }
+    }
+    
 }
