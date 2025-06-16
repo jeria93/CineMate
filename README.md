@@ -126,21 +126,27 @@ This app is part of my iOS development portfolio. It demonstrates:
 
 ---
 
-## Folder Structure (WIP)
+## Folder Structure
+
+The CineMate project follows a modular architecture with feature-based separation, MVVM, and reusable components.
 
 ```
-CineMate
-├── Features
-│   ├── MovieList
-│   ├── MovieDetail
-├── Services
-├── Models
-├── ViewModels
-├── Secrets.example.plist
-├── .github
-│   └── CODEOWNERS
-├── .gitignore
-└── README.md
+CineMate/
+├── App/                  # Entry point for the SwiftUI app
+├── Core/                 # Contains models, networking, secrets, repository interfaces
+│   ├── Models/
+│   ├── Networking/
+│   ├── Repository/
+│   ├── Secrets/
+│   └── Utils/
+├── Features/             # Feature-specific Views, ViewModels, and Components
+│   ├── MovieList/
+│   └── MovieDetail/
+├── UI/                   # Shared UI components (buttons, rows, etc.)
+│   └── Components/
+├── Mocks/                # Mock data for previews and testing
+├── Resources/            # Assets and secrets used by the app
+└── Info.plist
 ```
 
 ---
