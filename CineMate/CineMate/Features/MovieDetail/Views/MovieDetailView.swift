@@ -31,6 +31,7 @@ struct MovieDetailView: View {
 
                 if let credits = viewModel.movieCredits {
                     MovieCreditsView(credits: credits)
+                    CastCarouselView(cast: credits.cast)
                 }
 
                 MovieDetailActionBarView(movie: movie)

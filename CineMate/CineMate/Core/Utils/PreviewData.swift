@@ -130,5 +130,11 @@ struct PreviewData {
         productionCompanies: [],
         productionCountries: []
     )
+
+    static let longNameMember = CastMember(
+        id: 1000,
+        name: "Maximilian Alexander von Habsburg",
+        character: "Supreme Galactic Admiral and Councilman of the Outer Ring",
+        profilePath: nil
+    )
 }
-// Skapa en för en tom lista/array?
