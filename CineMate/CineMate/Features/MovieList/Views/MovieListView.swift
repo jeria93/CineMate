@@ -11,6 +11,7 @@ import SwiftUI
 struct MovieListView: View {
     @StateObject private var viewModel: MovieViewModel
     private let castViewModelProvider: () -> CastViewModel
+    @Environment(\.isPreview) private var isPreview
 
     init(
         viewModel: MovieViewModel,
@@ -32,6 +33,7 @@ struct MovieListView: View {
             }
             .navigationTitle(viewModel.selectedCategory.displayName)
             .task {
+                guard !isPreview else { return }
                 await viewModel.loadMovies()
             }
         }

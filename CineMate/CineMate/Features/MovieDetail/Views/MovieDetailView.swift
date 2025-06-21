@@ -11,6 +11,7 @@ struct MovieDetailView: View {
     let movie: Movie
     @ObservedObject var viewModel: MovieViewModel
     @StateObject var castViewModel: CastViewModel
+    @Environment(\.isPreview) private var isPreview
 
     var body: some View {
         ScrollView {
@@ -52,6 +53,7 @@ struct MovieDetailView: View {
             .padding(.horizontal)
         }
         .task {
+            guard !isPreview else { return }
             await viewModel.loadMovieCredits(for: movie.id)
             await viewModel.loadMovieVideos(for: movie.id)
             await viewModel.fetchRecommendedMovies(for: movie.id)

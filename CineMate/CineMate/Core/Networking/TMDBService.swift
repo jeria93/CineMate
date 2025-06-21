@@ -16,6 +16,10 @@ final class TMDBService {
         return try await request(endpoint: .movieDetail(movieId))
     }
 
+    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
+        return try await request(endpoint: .personDetail(personId))
+    }
+
     func fetchPopularMovies() async throws -> [Movie] {
         let result: MovieResult = try await request(endpoint: .popular)
         return result.results

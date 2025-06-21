@@ -12,7 +12,10 @@ struct CastMemberView: View {
 
     var body: some View {
         NavigationLink {
-            CastMemberDetailView(member: member)
+            CastMemberDetailView(
+                member: member,
+                viewModel: PersonViewModel(repository: MockMovieRepository())
+                )
         } label: {
             VStack(alignment: .center, spacing: 4) {
                 AsyncImage(url: member.profileURL) { phase in

@@ -11,6 +11,7 @@ struct RelatedMoviesSection: View {
     let movies: [Movie]
     let movieViewModel: MovieViewModel
     let castViewModelProvider: () -> CastViewModel
+    @Environment(\.isPreview) private var isPreview
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -35,34 +36,49 @@ struct RelatedMoviesSection: View {
                 }
                 .padding(.horizontal)
             }
+
+            if !isPreview && movies.isEmpty {
+                Text("No recommendations available.")
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+            }
         }
     }
 }
 
-#Preview("With Movies") {
-    let mockRepo = MockMovieRepository()
-    let viewModel = MovieViewModel(repository: mockRepo)
-
-    return RelatedMoviesSection(
-        movies: PreviewData.moviesList,
-        movieViewModel: viewModel,
-        castViewModelProvider: { CastViewModel(repository: mockRepo) }
-    )
-    .padding()
-    .background(Color(.systemBackground))
-    .border(.gray.opacity(0.3))
+#Preview("With Mock Movies") {
+    RelatedMoviesSection.previewWithMovies
 }
 
 #Preview("Empty State") {
-    let mockRepo = MockMovieRepository()
-    let viewModel = MovieViewModel(repository: mockRepo)
+    RelatedMoviesSection.previewEmpty
+}
 
-    return RelatedMoviesSection(
-        movies: [],
-        movieViewModel: viewModel,
-        castViewModelProvider: { CastViewModel(repository: mockRepo) }
-    )
-    .padding()
-    .background(Color(.systemBackground))
-    .border(.gray.opacity(0.3))
+extension RelatedMoviesSection {
+    static var previewWithMovies: some View {
+        let mockRepo = MockMovieRepository()
+        let viewModel = MovieViewModel(repository: mockRepo)
+        viewModel.recommendedMovies = PreviewData.moviesList
+
+        return RelatedMoviesSection(
+            movies: PreviewData.moviesList,
+            movieViewModel: viewModel,
+            castViewModelProvider: { CastViewModel(repository: mockRepo) }
+        )
+        .padding()
+        .background(Color(.systemBackground))
+    }
+
+    static var previewEmpty: some View {
+        let mockRepo = MockMovieRepository()
+        let viewModel = MovieViewModel(repository: mockRepo)
+
+        return RelatedMoviesSection(
+            movies: [],
+            movieViewModel: viewModel,
+            castViewModelProvider: { CastViewModel(repository: mockRepo) }
+        )
+        .padding()
+        .background(Color(.systemBackground))
+    }
 }

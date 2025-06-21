@@ -14,6 +14,11 @@ final class MovieRepository: MovieProtocol {
         self.service = service
     }
 
+    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
+        try await service.fetchPersonDetail(for: personId)
+    }
+
+
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
         try await service.fetchMovieDetails(for: movieId)
     }

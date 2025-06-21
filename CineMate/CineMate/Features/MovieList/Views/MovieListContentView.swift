@@ -10,6 +10,7 @@ import SwiftUI
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
     let castViewModelProvider: () -> CastViewModel
+    @Environment(\.isPreview) private var isPreview
 
     var body: some View {
         Group {
@@ -19,7 +20,9 @@ struct MovieListContentView: View {
                 VStack {
                     Text("Error: \(error)")
                     Button("Retry") {
-                        Task { await viewModel.loadMovies() }
+                        Task {
+                            guard isPreview == false else { return }
+                            await viewModel.loadMovies() }
                     }
                 }
             } else {

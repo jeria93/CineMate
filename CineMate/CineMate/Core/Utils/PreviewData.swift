@@ -137,4 +137,15 @@ struct PreviewData {
         character: "Supreme Galactic Admiral and Councilman of the Outer Ring",
         profilePath: nil
     )
+
+    static let markHamillPersonDetail = PersonDetail(
+        id: 1,
+        name: "Mark Hamill",
+        birthday: "1951-09-25",
+        deathday: nil,
+        biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker.",
+        placeOfBirth: "Oakland, California, USA",
+        profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg",
+        imdbId: "nm0000434"
+    )
 }
