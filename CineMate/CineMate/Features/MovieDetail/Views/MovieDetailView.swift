@@ -10,6 +10,7 @@ import SwiftUI
 struct MovieDetailView: View {
     let movie: Movie
     @ObservedObject var viewModel: MovieViewModel
+    @StateObject var castViewModel: CastViewModel
 
     var body: some View {
         ScrollView {
@@ -37,9 +38,15 @@ struct MovieDetailView: View {
                 MovieDetailActionBarView(movie: movie)
 
                 if let recommended = viewModel.recommendedMovies {
-                    RelatedMoviesSection(movies: recommended, viewModel: viewModel)
-                        .transition(.opacity)
-                        .animation(.easeInOut(duration: 0.3), value: recommended)
+                    RelatedMoviesSection(
+                        movies: recommended,
+                        movieViewModel: viewModel,
+                        castViewModelProvider: {
+                            CastViewModel(repository: viewModel.repository)
+                        }
+                    )
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.3), value: recommended)
                 }
             }
             .padding(.horizontal)
@@ -55,14 +62,22 @@ struct MovieDetailView: View {
     }
 }
 
-#Preview("With Credits & Detail") {
-    let vm = MovieViewModel(repository: MockMovieRepository())
-    vm.movieCredits = PreviewData.starWarsCredits
-    vm.movieDetail = PreviewData.starWarsDetail
-    vm.recommendedMovies = PreviewData.moviesList
+#Preview("Star Wars Detail") {
+    MovieDetailView.previewInstance()
+}
 
-    return MovieDetailView(
-        movie: PreviewData.starWars,
-        viewModel: vm
-    )
+extension MovieDetailView {
+    static func previewInstance() -> some View {
+        let repo = MockMovieRepository()
+        let movieVM = MovieViewModel(repository: repo)
+        movieVM.movieCredits = PreviewData.starWarsCredits
+        movieVM.movieDetail = PreviewData.starWarsDetail
+        let castVM = CastViewModel(repository: repo)
+
+        return MovieDetailView(
+            movie: PreviewData.starWars,
+            viewModel: movieVM,
+            castViewModel: castVM
+        )
+    }
 }

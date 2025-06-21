@@ -7,32 +7,19 @@
 
 import SwiftUI
 
-#Preview("Default list") {
-    MovieListView(repository: MockMovieRepository())
+extension MovieListView {
+    static func previewInstance() -> some View {
+        let repo = MockMovieRepository()
+        let vm = MovieViewModel(repository: repo)
+        vm.movies = PreviewData.moviesList
+
+        return MovieListView(
+            viewModel: vm,
+            castViewModelProvider: { CastViewModel(repository: repo) }
+        )
+    }
 }
 
-#Preview("Loading state") {
-    let viewModel = MockMovieViewModel()
-    viewModel.isLoading = true
-    return MovieListContentView(viewModel: viewModel)
-        .padding()
-}
-
-#Preview("Error state") {
-    let viewModel = MockMovieViewModel()
-    viewModel.errorMessage = "Oops! Something went wrong."
-    return MovieListContentView(viewModel: viewModel)
-        .padding()
-}
-
-#Preview("Empty list") {
-    let viewModel = MockMovieViewModel()
-    viewModel.movies = []
-    return MovieListContentView(viewModel: viewModel)
-        .padding()
-}
-
-#Preview("Dark Mode") {
-    MovieListView(repository: MockMovieRepository())
-        .preferredColorScheme(.dark)
+#Preview("MovieListView Preview") {
+    MovieListView.previewInstance()
 }
