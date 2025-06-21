@@ -8,27 +8,28 @@
 
 import SwiftUI
 
-#Preview("CastMember – Mark Hamill") {
-    CastMemberView(member: PreviewData.starWarsCredits.cast[0])
-        .previewStyle()
-}
+extension CastMemberView {
 
-#Preview("CastMember – Carrie Fisher") {
-    CastMemberView(member: PreviewData.starWarsCredits.cast[2])
-        .previewStyle()
-}
+    static var markHamillPreview: some View {
+        NavigationStack {
+            CastMemberView(member: PreviewData.starWarsCredits.cast[0])
+        }
+    }
 
-#Preview("CastMember – Unknown Role") {
-    CastMemberView(member: CastMember(
-        id: 999,
-        name: "Mystery Actor",
-        character: nil,
-        profilePath: nil
-    ))
-    .previewStyle()
-}
+    static var unknownActorPreview: some View {
+        NavigationStack {
+            CastMemberView(member: CastMember(
+                id: 999,
+                name: "Unknown Actor",
+                character: nil,
+                profilePath: nil
+            ))
+        }
+    }
 
-#Preview("CastMember – Long Name + Role") {
-    CastMemberView(member: PreviewData.longNameMember)
-        .previewStyle()
+    static var longNamePreview: some View {
+        NavigationStack {
+            CastMemberView(member: PreviewData.longNameMember)
+        }
+    }
 }
