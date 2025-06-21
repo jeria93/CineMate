@@ -9,56 +9,60 @@ import SwiftUI
 
 struct RelatedMoviesSection: View {
     let movies: [Movie]
-    let viewModel: MovieViewModel
+    let movieViewModel: MovieViewModel
+    let castViewModelProvider: () -> CastViewModel
 
     var body: some View {
-
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Related Movies")
-                .font(.headline)
-
-            if movies.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "film")
-                        .font(.largeTitle)
-                        .foregroundStyle(.gray)
-
-                    Text("No recommendations for this title yet")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 150)
+        VStack(alignment: .leading) {
+            Text("You might also like")
+                .font(.title2)
+                .bold()
                 .padding(.horizontal)
-            } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(movies) { movie in
-                            NavigationLink {
-                                MovieDetailView(movie: movie, viewModel: MovieViewModel(repository: viewModel.repository))
-                            } label: {
-                                RelatedMovieCardView(movie: movie)
-                            }
-                            .buttonStyle(.plain)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(movies) { movie in
+                        NavigationLink {
+                            MovieDetailView(
+                                movie: movie,
+                                viewModel: movieViewModel,
+                                castViewModel: castViewModelProvider()
+                            )
+                        } label: {
+                            RelatedMovieCardView(movie: movie)
                         }
                     }
                 }
+                .padding(.horizontal)
             }
         }
-        .padding(.top, 16)
     }
 }
 
 #Preview("With Movies") {
-    RelatedMoviesSection(movies: PreviewData.moviesList, viewModel: MockMovieViewModel())
-        .padding()
-        .background(Color(.systemBackground))
-        .border(.gray.opacity(0.3))
+    let mockRepo = MockMovieRepository()
+    let viewModel = MovieViewModel(repository: mockRepo)
+
+    return RelatedMoviesSection(
+        movies: PreviewData.moviesList,
+        movieViewModel: viewModel,
+        castViewModelProvider: { CastViewModel(repository: mockRepo) }
+    )
+    .padding()
+    .background(Color(.systemBackground))
+    .border(.gray.opacity(0.3))
 }
 
 #Preview("Empty State") {
-    RelatedMoviesSection(movies: [], viewModel: MockMovieViewModel())
-        .padding()
-        .background(Color(.systemBackground))
-        .border(.gray.opacity(0.3))
+    let mockRepo = MockMovieRepository()
+    let viewModel = MovieViewModel(repository: mockRepo)
+
+    return RelatedMoviesSection(
+        movies: [],
+        movieViewModel: viewModel,
+        castViewModelProvider: { CastViewModel(repository: mockRepo) }
+    )
+    .padding()
+    .background(Color(.systemBackground))
+    .border(.gray.opacity(0.3))
 }

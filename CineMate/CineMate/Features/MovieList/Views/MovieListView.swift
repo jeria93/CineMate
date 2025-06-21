@@ -7,21 +7,30 @@
 
 import SwiftUI
 
+
 struct MovieListView: View {
     @StateObject private var viewModel: MovieViewModel
-    @State private var selectedCategory: MovieCategory = .popular
+    private let castViewModelProvider: () -> CastViewModel
 
-    init(repository: MovieProtocol = MovieRepository()) {
-        _viewModel = StateObject(wrappedValue: MovieViewModel(repository: repository))
+    init(
+        viewModel: MovieViewModel,
+        castViewModelProvider: @escaping () -> CastViewModel
+    ) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.castViewModelProvider = castViewModelProvider
     }
 
     var body: some View {
         NavigationStack {
             VStack {
                 MovieCategoryPicker(selectedCategory: $viewModel.selectedCategory)
-                MovieListContentView(viewModel: viewModel)
+
+                MovieListContentView(
+                    viewModel: viewModel,
+                    castViewModelProvider: castViewModelProvider
+                )
             }
-            .navigationTitle(selectedCategory.displayName)
+            .navigationTitle(viewModel.selectedCategory.displayName)
             .task {
                 await viewModel.loadMovies()
             }
@@ -29,6 +38,6 @@ struct MovieListView: View {
     }
 }
 
-#Preview {
-    MovieListView(repository: MockMovieRepository())
+#Preview("MovieListView Preview") {
+    MovieListView.previewInstance()
 }

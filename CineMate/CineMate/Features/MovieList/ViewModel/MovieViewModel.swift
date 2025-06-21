@@ -25,11 +25,9 @@ class MovieViewModel: ObservableObject {
     
     @Published var favoriteMovies: Set<Int> = []
     
+    var repository: MovieProtocol
     
-    
-    private(set) var repository: MovieProtocol
-    
-    init(repository: MovieProtocol = MovieRepository()) {
+    init(repository: MovieProtocol) {
         self.repository = repository
     }
     
@@ -61,8 +59,8 @@ class MovieViewModel: ObservableObject {
             try await repository.fetchMovieCredits(for: movieId)
         }, assignTo: \.movieCredits)
     }
-
-//    Remove?
+    
+    //    Remove?
     func loadMovieVideos(for movieId: Int) async {
         await load({
             try await repository.fetchMovieVideos(for: movieId)

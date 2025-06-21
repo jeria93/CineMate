@@ -9,34 +9,44 @@ import SwiftUI
 
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
+    let castViewModelProvider: () -> CastViewModel
 
     var body: some View {
         Group {
             if viewModel.isLoading {
                 ProgressView("Loading movies...")
             } else if let error = viewModel.errorMessage {
-                VStack(spacing: 10) {
+                VStack {
                     Text("Error: \(error)")
-                        .foregroundColor(.red)
                     Button("Retry") {
                         Task { await viewModel.loadMovies() }
                     }
-                    .buttonStyle(.borderedProminent)
                 }
             } else {
                 List(viewModel.movies) { movie in
                     NavigationLink {
-                        MovieDetailView(movie: movie, viewModel: viewModel)
+                        MovieDetailView(
+                            movie: movie,
+                            viewModel: viewModel,
+                            castViewModel: castViewModelProvider()
+                        )
                     } label: {
                         MovieRowView(movie: movie)
                     }
                 }
-                .listStyle(.plain)
             }
         }
     }
 }
 
-#Preview {
-   MovieListContentView(viewModel: MockMovieViewModel())
+#Preview("List Preview") {
+    MovieListContentView.previewList
+}
+
+#Preview("Loading Preview") {
+    MovieListContentView.previewLoading
+}
+
+#Preview("Error Preview") {
+    MovieListContentView.previewError
 }

@@ -25,7 +25,6 @@ final class MockMovieRepository: MovieProtocol {
         PreviewData.starWarsCredits
     }
     
-    
     func fetchPopularMovies() async throws -> [Movie] {
         PreviewData.moviesList
     }

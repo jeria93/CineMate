@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-final class CastViewModel: CastViewModelProtocol {
+final class CastViewModel: ObservableObject {
     @Published var cast: [CastMember] = []
     @Published var crew: [CrewMember] = []
     @Published var isLoading = false
@@ -16,7 +16,7 @@ final class CastViewModel: CastViewModelProtocol {
 
     private let repository: MovieProtocol
 
-    init(repository: MovieProtocol = MovieRepository()) {
+    init(repository: MovieProtocol) {
         self.repository = repository
     }
 

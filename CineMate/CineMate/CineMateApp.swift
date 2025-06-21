@@ -8,10 +8,18 @@
 import SwiftUI
 
 @main
-struct CineMateApp: App {
+struct TMDBMiniAppApp: App {
     var body: some Scene {
         WindowGroup {
-            MovieListView()
+            let repository = MovieRepository()
+            let viewModel = MovieViewModel(repository: repository)
+
+            MovieListView(
+                viewModel: viewModel,
+                castViewModelProvider: {
+                    CastViewModel(repository: repository)
+                }
+            )
         }
     }
 }
