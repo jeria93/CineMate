@@ -10,7 +10,6 @@ import SwiftUI
 struct CastMemberDetailView: View {
     let member: CastMember
     @StateObject private var viewModel: PersonViewModel
-    @Environment(\.isPreview) private var isPreview
     init(member: CastMember, viewModel: PersonViewModel) {
         self.member = member
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -44,15 +43,15 @@ struct CastMemberDetailView: View {
 
                 if let detail = viewModel.personDetail {
                     if let birthday = detail.birthday {
-                        Text("🎂 Born: \(birthday)")
+                        Text("Born: \(birthday)")
                     }
 
                     if let deathday = detail.deathday {
-                        Text("🕯️ Died: \(deathday)")
+                        Text("Died: \(deathday)")
                     }
 
                     if let place = detail.placeOfBirth {
-                        Text("📍 Place of birth: \(place)")
+                        Text("Place of birth: \(place)")
                     }
 
                     if let bio = detail.biography, !bio.isEmpty {
@@ -83,6 +82,29 @@ struct CastMemberDetailView: View {
                     .padding(.top)
                 }
 
+                if !viewModel.personMovies.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Movies")
+                            .font(.headline)
+
+                        ForEach(viewModel.personMovies) { movie in
+                            VStack(alignment: .leading) {
+                                Text(movie.title)
+                                    .font(.subheadline)
+                                    .bold()
+                                if let date = movie.releaseDate {
+                                    Text("Released: \(date)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top)
+                }
+
                 if viewModel.isLoading {
                     ProgressView("Loading...")
                 }
@@ -96,9 +118,8 @@ struct CastMemberDetailView: View {
         .navigationTitle(member.name)
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            if !isPreview {
-                await viewModel.loadPersonDetail(for: member.id)
-            }
+            await viewModel.loadPersonDetail(for: member.id)
+            await viewModel.loadPersonMovieCredits(for: member.id)
         }
     }
 }

@@ -16,6 +16,7 @@ struct PersonDetail: Codable, Identifiable {
     let placeOfBirth: String?
     let profilePath: String?
     let imdbId: String?
+    let movieCredits: [Movie]
 
     var profileURL: URL? {
         guard let profilePath else { return nil }

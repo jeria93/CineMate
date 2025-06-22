@@ -9,10 +9,14 @@ import SwiftUI
 
 extension CastMemberDetailView {
     static var markHamillPreview: some View {
-        NavigationStack {
+        let repository = MockMovieRepository()
+        let viewModel = PersonViewModel(repository: repository)
+        viewModel.personDetail = PreviewData.markHamillPersonDetail
+
+        return NavigationStack {
             CastMemberDetailView(
-                member: PreviewData.starWarsCredits.cast[0],
-                viewModel: PersonViewModel(repository: MockMovieRepository())
+                member: PreviewData.starWarsCredits.cast.first!,
+                viewModel: viewModel
             )
         }
     }

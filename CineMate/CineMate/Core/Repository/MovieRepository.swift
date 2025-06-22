@@ -8,10 +8,15 @@
 import Foundation
 
 final class MovieRepository: MovieProtocol {
+
     private let service: TMDBService
 
     init(service: TMDBService = TMDBService()) {
         self.service = service
+    }
+
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [Movie] {
+        try await service.fetchPersonMovieCredits(for: personId)
     }
 
     func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {

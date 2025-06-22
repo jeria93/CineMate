@@ -138,6 +138,39 @@ struct PreviewData {
         profilePath: nil
     )
 
+    static let markHamillMovies: [Movie] = [
+        Movie(
+            id: 1977,
+            title: "Star Wars: A New Hope",
+            overview: "A young farm boy becomes a Jedi.",
+            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+            backdropPath: nil,
+            releaseDate: "1977-05-25",
+            voteAverage: 8.2,
+            genres: ["Sci-Fi", "Adventure"]
+        ),
+        Movie(
+            id: 1980,
+            title: "Star Wars: The Empire Strikes Back",
+            overview: "The Rebellion suffers major setbacks.",
+            posterPath: "/94d3yJEaSy9XrJtCzU1bjjJFqzI.jpg",
+            backdropPath: nil,
+            releaseDate: "1980-05-21",
+            voteAverage: 8.4,
+            genres: ["Sci-Fi", "Action"]
+        ),
+        Movie(
+            id: 1983,
+            title: "Star Wars: Return of the Jedi",
+            overview: "The final confrontation with the Empire.",
+            posterPath: "/aP6gk1vF5lLrBLfe3G3Oe00syVn.jpg",
+            backdropPath: nil,
+            releaseDate: "1983-05-25",
+            voteAverage: 8.0,
+            genres: ["Sci-Fi", "Fantasy"]
+        )
+    ]
+
     static let markHamillPersonDetail = PersonDetail(
         id: 1,
         name: "Mark Hamill",
@@ -146,6 +179,7 @@ struct PreviewData {
         biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker.",
         placeOfBirth: "Oakland, California, USA",
         profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg",
-        imdbId: "nm0000434"
+        imdbId: "nm0000434",
+        movieCredits: markHamillMovies
     )
 }

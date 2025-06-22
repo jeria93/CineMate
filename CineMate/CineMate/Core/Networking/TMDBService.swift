@@ -12,6 +12,11 @@ final class TMDBService {
     private let baseURL = "https://api.themoviedb.org/3"
     private let session = URLSession.shared
 
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: .personMovieCredits(personId))
+        return result.results
+    }
+
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
         return try await request(endpoint: .movieDetail(movieId))
     }

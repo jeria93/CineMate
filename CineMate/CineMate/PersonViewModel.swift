@@ -12,7 +12,8 @@ final class PersonViewModel: ObservableObject {
     @Published var personDetail: PersonDetail?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-
+    @Published var personMovies: [Movie] = []
+//Refactor with helper methods -> less code
     private let repository: MovieProtocol
 
     init(repository: MovieProtocol) {
@@ -29,6 +30,14 @@ final class PersonViewModel: ObservableObject {
         } catch {
             personDetail = nil
             errorMessage = error.localizedDescription
+        }
+    }
+
+    func loadPersonMovieCredits(for personId: Int) async {
+        do {
+            personMovies = try await repository.fetchPersonMovieCredits(for: personId)
+        } catch {
+            print("Failed to load movies for person: \(error.localizedDescription)")
         }
     }
 }
