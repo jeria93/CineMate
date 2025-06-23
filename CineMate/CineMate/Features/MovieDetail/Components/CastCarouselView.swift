@@ -37,10 +37,11 @@ struct CastCarouselView: View {
     }
 }
 
-#Preview("Cast Carousel – Star Wars") {
+
+#Preview("Standard Cast") {
     CastCarouselView.preview
 }
 
-#Preview("Cast Carousel – Long List") {
-    CastCarouselView.longListPreview
+#Preview("Long Cast List") {
+    CastCarouselView.longList
 }

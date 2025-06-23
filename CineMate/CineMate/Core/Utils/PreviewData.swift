@@ -131,13 +131,6 @@ struct PreviewData {
         productionCountries: []
     )
 
-    static let longNameMember = CastMember(
-        id: 1000,
-        name: "Maximilian Alexander von Habsburg",
-        character: "Supreme Galactic Admiral and Councilman of the Outer Ring",
-        profilePath: nil
-    )
-
     static let markHamillMovies: [Movie] = [
         Movie(
             id: 1977,
@@ -184,4 +177,18 @@ struct PreviewData {
     )
 
     static let markHamill = starWarsCredits.cast.first { $0.name == "Mark Hamill" }!
+
+    static let unknownActor = CastMember(
+        id: 2,
+        name: "Unknown Actor",
+        character: nil,
+        profilePath: nil
+    )
+
+    static let longNameActor = CastMember(
+        id: 3,
+        name: "This is a really really really long actor name",
+        character: "Extraordinary Sidekick of Episode 47 Part 3",
+        profilePath: nil
+    )
 }

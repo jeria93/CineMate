@@ -58,13 +58,13 @@ struct CastMemberView: View {
 }
 
 #Preview("Mark Hamill") {
-    CastMemberView.markHamillPreview
+    CastMemberView.markHamill
 }
 
 #Preview("Unknown Actor") {
-    CastMemberView.unknownActorPreview
+    CastMemberView.unknownActor
 }
 
 #Preview("Long Name") {
-    CastMemberView.longNamePreview
+    CastMemberView.longName
 }

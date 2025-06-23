@@ -7,21 +7,27 @@
 
 import SwiftUI
 
-import SwiftUI
-
 extension CastCarouselView {
     static var preview: some View {
         CastCarouselView(
             cast: PreviewData.starWarsCredits.cast,
-            repository: MockMovieRepository()
+            repository: PreviewFactory.repository
         )
+        .padding()
+        .background(Color(.systemBackground))
     }
 
-    static var longListPreview: some View {
-        let longCast = Array(repeating: PreviewData.starWarsCredits.cast, count: 10).joined().prefix(30)
+    static var longList: some View {
+        let longCast = Array(
+            repeating: PreviewData.starWarsCredits.cast,
+            count: 10
+        ).flatMap { $0 }.prefix(30)
+
         return CastCarouselView(
             cast: Array(longCast),
-            repository: MockMovieRepository()
+            repository: PreviewFactory.repository
         )
+        .padding()
+        .background(Color(.systemBackground))
     }
 }
