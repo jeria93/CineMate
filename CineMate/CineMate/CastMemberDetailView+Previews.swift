@@ -15,9 +15,16 @@ extension CastMemberDetailView {
 
         return NavigationStack {
             CastMemberDetailView(
-                member: PreviewData.starWarsCredits.cast.first!,
+                member: PreviewData.markHamill,
                 viewModel: viewModel
             )
         }
+    }
+
+    static var preview: some View {
+        CastMemberDetailView(
+            member: PreviewData.markHamill,
+            viewModel: .preview
+        )
     }
 }

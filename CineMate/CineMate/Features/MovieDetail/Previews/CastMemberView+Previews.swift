@@ -11,19 +11,19 @@ import SwiftUI
 extension CastMemberView {
     static var markHamillPreview: some View {
         CastMemberView(
-            member: .markHamill
+            member: .markHamill, repository: MockMovieRepository()
         )
     }
     
     static var unknownActorPreview: some View {
         CastMemberView(
-            member: .unknownActor
+            member: .unknownActor, repository: MockMovieRepository()
         )
     }
     
     static var longNamePreview: some View {
         CastMemberView(
-            member: .longName
+            member: .longName, repository: MockMovieRepository()
         )
     }
     

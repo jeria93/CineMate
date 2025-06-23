@@ -182,4 +182,6 @@ struct PreviewData {
         imdbId: "nm0000434",
         movieCredits: markHamillMovies
     )
+
+    static let markHamill = starWarsCredits.cast.first { $0.name == "Mark Hamill" }!
 }

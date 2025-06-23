@@ -11,7 +11,6 @@ struct RelatedMoviesSection: View {
     let movies: [Movie]
     let movieViewModel: MovieViewModel
     let castViewModelProvider: () -> CastViewModel
-    @Environment(\.isPreview) private var isPreview
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -37,7 +36,7 @@ struct RelatedMoviesSection: View {
                 .padding(.horizontal)
             }
 
-            if !isPreview && movies.isEmpty {
+            if movies.isEmpty {
                 Text("No recommendations available.")
                     .foregroundColor(.secondary)
                     .padding(.horizontal)

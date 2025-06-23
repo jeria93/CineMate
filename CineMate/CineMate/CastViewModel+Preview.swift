@@ -11,8 +11,11 @@ extension CastViewModel {
     static var preview: CastViewModel {
         let vm = CastViewModel(repository: MockMovieRepository())
         vm.cast = PreviewData.starWarsCredits.cast
-        vm.crew = PreviewData.starWarsCredits.crew
         return vm
+    }
+
+    static var live: CastViewModel {
+        CastViewModel(repository: MovieRepository())
     }
 }
 

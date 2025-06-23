@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CastCarouselView: View {
     let cast: [CastMember]
+    let repository: MovieProtocol
     @State private var showAll = false
 
     var body: some View {
@@ -20,7 +21,7 @@ struct CastCarouselView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(showAll ? cast : Array(cast.prefix(15))) { member in
-                        CastMemberView(member: member)
+                        CastMemberView(member: member, repository: repository)
                     }
                     if !showAll && cast.count > 15 {
                         CastMoreButtonView {
@@ -34,4 +35,12 @@ struct CastCarouselView: View {
             }
         }
     }
+}
+
+#Preview("Cast Carousel – Star Wars") {
+    CastCarouselView.preview
+}
+
+#Preview("Cast Carousel – Long List") {
+    CastCarouselView.longListPreview
 }

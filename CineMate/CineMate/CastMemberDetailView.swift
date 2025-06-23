@@ -60,5 +60,7 @@ struct CastMemberDetailView: View {
 }
 
 #Preview("Cast Detail – Mark Hamill") {
-    CastMemberDetailView.markHamillPreview
+    CastMemberDetailView.preview
 }
+
+

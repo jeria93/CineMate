@@ -9,12 +9,14 @@ import SwiftUI
 
 struct CastMemberView: View {
     let member: CastMember
+    let repository: MovieProtocol
+
 
     var body: some View {
         NavigationLink {
             CastMemberDetailView(
                 member: member,
-                viewModel: PersonViewModel(repository: MockMovieRepository())
+                viewModel: PersonViewModel(repository: repository)
                 )
         } label: {
             VStack(alignment: .center, spacing: 4) {
