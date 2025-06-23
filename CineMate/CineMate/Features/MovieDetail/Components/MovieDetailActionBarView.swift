@@ -13,7 +13,7 @@ struct MovieDetailActionBarView: View {
     @State private var shareItem: MovieShareItem?
 
     var body: some View {
-        
+
         HStack(spacing: 12) {
             Button {
                 let url = TrailerHelper.bestAvailableURL(for: movie)
@@ -48,9 +48,8 @@ struct MovieDetailActionBarView: View {
 }
 
 #Preview {
-    MovieDetailActionBarView(movie: PreviewData.starWars)
-        .padding()
-        .background(Color(.systemBackground))
+    MovieDetailActionBarView.preview
+
 }
 
 private extension Label where Title == Text, Icon == Image {

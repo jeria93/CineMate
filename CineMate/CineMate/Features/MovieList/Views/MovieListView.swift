@@ -38,8 +38,6 @@ struct MovieListView: View {
     }
 }
 
-#Preview("MovieListView") {
-    MovieListView(viewModel: PreviewFactory.movieListViewModel) {
-        PreviewFactory.castViewModel
-    }
+#Preview("MovieList Default") {
+    MovieListView.previewWithMovies
 }

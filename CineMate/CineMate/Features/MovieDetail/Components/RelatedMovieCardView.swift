@@ -29,5 +29,5 @@ struct RelatedMovieCardView: View {
 }
 
 #Preview {
-    RelatedMovieCardView(movie: PreviewData.starWars)
+    RelatedMovieCardView.preview
 }

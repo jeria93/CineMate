@@ -11,8 +11,8 @@ extension MovieDetailView {
     static var previewStarWars: some View {
         MovieDetailView(
             movie: PreviewData.starWars,
-            viewModel: PreviewFactory.movieDetailViewModelWithData,
-            castViewModel: PreviewFactory.castViewModel
+            viewModel: PreviewFactory.movieDetailViewModelWithData(),
+            castViewModel: PreviewFactory.castViewModel()
         )
     }
 }

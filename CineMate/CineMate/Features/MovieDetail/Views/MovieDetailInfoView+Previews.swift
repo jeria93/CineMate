@@ -12,7 +12,7 @@ extension MovieDetailInfoView {
     static var previewWithDetail: some View {
         MovieDetailInfoView(
             movie: PreviewData.starWars,
-            viewModel: PreviewFactory.movieDetailViewModelWithData
+            viewModel: PreviewFactory.movieDetailViewModelWithData()
         )
         .padding()
     }
@@ -21,7 +21,7 @@ extension MovieDetailInfoView {
     static var previewWithEmptyDetail: some View {
         MovieDetailInfoView(
             movie: PreviewData.starWars,
-            viewModel: PreviewFactory.movieDetailViewModelEmptyDetail
+            viewModel: PreviewFactory.movieDetailViewModelEmptyDetail()
         )
         .padding()
     }
