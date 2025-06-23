@@ -8,18 +8,10 @@
 import SwiftUI
 
 extension MovieListView {
-    static func previewInstance() -> some View {
-        let repo = MockMovieRepository()
-        let vm = MovieViewModel(repository: repo)
-        vm.movies = PreviewData.moviesList
-
-        return MovieListView(
-            viewModel: vm,
-            castViewModelProvider: { CastViewModel(repository: repo) }
+    static var preview: some View {
+        MovieListView(
+            viewModel: PreviewFactory.movieListViewModel,
+            castViewModelProvider: { PreviewFactory.castViewModel }
         )
     }
-}
-
-#Preview("MovieListView Preview") {
-    MovieListView.previewInstance()
 }

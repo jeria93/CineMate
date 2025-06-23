@@ -9,40 +9,23 @@ import SwiftUI
 
 extension MovieListContentView {
     static var previewList: some View {
-        let movieVM = MovieViewModel(repository: MockMovieRepository())
-        movieVM.movies = PreviewData.moviesList
-
-        return MovieListContentView(
-            viewModel: movieVM,
-            castViewModelProvider: {
-                let castVM = CastViewModel(repository: MockMovieRepository())
-                castVM.cast = PreviewData.starWarsCredits.cast
-                return castVM
-            }
+        MovieListContentView(
+            viewModel: PreviewFactory.movieListViewModel,
+            castViewModelProvider: { PreviewFactory.castViewModel }
         )
     }
-
+    
     static var previewLoading: some View {
-        let movieVM = MovieViewModel(repository: MockMovieRepository())
-        movieVM.isLoading = true
-
-        return MovieListContentView(
-            viewModel: movieVM,
-            castViewModelProvider: {
-                CastViewModel(repository: MockMovieRepository())
-            }
+        MovieListContentView(
+            viewModel: PreviewFactory.loadingMovieViewModel,
+            castViewModelProvider: { PreviewFactory.castViewModel }
         )
     }
 
     static var previewError: some View {
-        let movieVM = MovieViewModel(repository: MockMovieRepository())
-        movieVM.errorMessage = "Oops, something went wrong."
-
-        return MovieListContentView(
-            viewModel: movieVM,
-            castViewModelProvider: {
-                CastViewModel(repository: MockMovieRepository())
-            }
+        MovieListContentView(
+            viewModel: PreviewFactory.errorMovieViewModel,
+            castViewModelProvider: { PreviewFactory.castViewModel }
         )
     }
 }

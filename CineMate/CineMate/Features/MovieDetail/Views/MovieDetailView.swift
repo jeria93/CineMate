@@ -63,21 +63,5 @@ struct MovieDetailView: View {
 }
 
 #Preview("Star Wars Detail") {
-    MovieDetailView.previewInstance()
-}
-
-extension MovieDetailView {
-    static func previewInstance() -> some View {
-        let repo = MockMovieRepository()
-        let movieVM = MovieViewModel(repository: repo)
-        movieVM.movieCredits = PreviewData.starWarsCredits
-        movieVM.movieDetail = PreviewData.starWarsDetail
-        let castVM = CastViewModel(repository: repo)
-
-        return MovieDetailView(
-            movie: PreviewData.starWars,
-            viewModel: movieVM,
-            castViewModel: castVM
-        )
-    }
+    MovieDetailView.previewStarWars
 }

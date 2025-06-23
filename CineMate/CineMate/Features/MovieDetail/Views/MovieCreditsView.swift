@@ -28,5 +28,5 @@ struct MovieCreditsView: View {
 }
 
 #Preview {
-    MovieCreditsView(credits: PreviewData.starWarsCredits)
+    MovieCreditsView.previewStarWars
 }

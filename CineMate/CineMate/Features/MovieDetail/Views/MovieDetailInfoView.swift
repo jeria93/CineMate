@@ -95,26 +95,12 @@ struct MovieDetailInfoView: View {
     }
 }
 
-#Preview("PreviewData") {
-    let vm = MovieViewModel(repository: MockMovieRepository())
-    vm.movieDetail = PreviewData.starWarsDetail
-
-    return MovieDetailInfoView(
-        movie: PreviewData.starWars,
-        viewModel: vm
-    )
-    .padding()
+#Preview("With Detail") {
+    MovieDetailInfoView.previewWithDetail
 }
 
 #Preview("Empty Detail") {
-    let vm = MovieViewModel(repository: MockMovieRepository())
-    vm.movieDetail = PreviewData.emptyDetail
-
-    return MovieDetailInfoView(
-        movie: PreviewData.starWars,
-        viewModel: vm
-    )
-    .padding()
+    MovieDetailInfoView.previewWithEmptyDetail
 }
 
 
