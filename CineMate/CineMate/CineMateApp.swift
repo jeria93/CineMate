@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct TMDBMiniAppApp: App {
+struct CineMate: App {
     var body: some Scene {
         WindowGroup {
             let repository = MovieRepository()

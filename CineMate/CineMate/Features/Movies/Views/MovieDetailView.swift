@@ -9,8 +9,14 @@ import SwiftUI
 
 struct MovieDetailView: View {
     let movie: Movie
-    @ObservedObject var viewModel: MovieViewModel
-    @StateObject var castViewModel: CastViewModel
+    @StateObject private var viewModel: MovieViewModel
+    @StateObject private var castViewModel: CastViewModel
+
+    init(movie: Movie, viewModel: MovieViewModel, castViewModel: CastViewModel) {
+        self.movie = movie
+        _viewModel = StateObject(wrappedValue: viewModel)
+        _castViewModel = StateObject(wrappedValue: castViewModel)
+    }
 
     var body: some View {
         ScrollView {
