@@ -99,6 +99,8 @@ final class TMDBService {
         do {
             return try decoder.decode(Model.self, from: data)
         } catch {
+            print("Decoding error: \(error.localizedDescription)")
+            print("Raw JSON: \(String(data: data, encoding: .utf8) ?? "N/A")")
             throw TMDBError.decodingFailed
         }
     }

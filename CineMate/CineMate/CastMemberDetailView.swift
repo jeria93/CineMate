@@ -10,6 +10,7 @@ import SwiftUI
 struct CastMemberDetailView: View {
     let member: CastMember
     @StateObject private var viewModel: PersonViewModel
+
     init(member: CastMember, viewModel: PersonViewModel) {
         self.member = member
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -18,7 +19,6 @@ struct CastMemberDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-
                 CastMemberImageView(url: member.profileURL)
 
                 Text(member.name)
@@ -53,14 +53,17 @@ struct CastMemberDetailView: View {
         .navigationTitle(member.name)
         .navigationBarTitleDisplayMode(.inline)
         .task {
+            debugPrint("Loading personId = \(member.id)")
             await viewModel.loadPersonDetail(for: member.id)
             await viewModel.loadPersonMovieCredits(for: member.id)
+            debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
+            debugPrint("personMovies count = \(viewModel.personMovies.count)")
         }
     }
 }
 
 #Preview("Cast Detail – Mark Hamill") {
-    CastMemberDetailView.preview
+    PreviewFactory.castMemberDetailView()
 }
 
 

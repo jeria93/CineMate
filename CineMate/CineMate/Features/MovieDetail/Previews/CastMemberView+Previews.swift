@@ -13,8 +13,6 @@ extension CastMemberView {
             member: PreviewData.markHamill,
             repository: PreviewFactory.repository
         )
-        .padding()
-        .background(Color(.systemBackground))
     }
 
     static var unknownActor: some View {
@@ -22,8 +20,6 @@ extension CastMemberView {
             member: PreviewData.unknownActor,
             repository: PreviewFactory.repository
         )
-        .padding()
-        .background(Color(.systemBackground))
     }
 
     static var longName: some View {
@@ -31,7 +27,5 @@ extension CastMemberView {
             member: PreviewData.longNameActor,
             repository: PreviewFactory.repository
         )
-        .padding()
-        .background(Color(.systemBackground))
     }
 }

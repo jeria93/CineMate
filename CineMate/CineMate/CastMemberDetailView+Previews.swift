@@ -8,23 +8,12 @@
 import SwiftUI
 
 extension CastMemberDetailView {
-    static var markHamillPreview: some View {
-        let repository = MockMovieRepository()
-        let viewModel = PersonViewModel(repository: repository)
-        viewModel.personDetail = PreviewData.markHamillPersonDetail
-
-        return NavigationStack {
+    static var preview: some View {
+        NavigationStack {
             CastMemberDetailView(
                 member: PreviewData.markHamill,
-                viewModel: viewModel
+                viewModel: PreviewFactory.personViewModel()
             )
         }
-    }
-
-    static var preview: some View {
-        CastMemberDetailView(
-            member: PreviewData.markHamill,
-            viewModel: .preview
-        )
     }
 }

@@ -172,8 +172,7 @@ struct PreviewData {
         biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker.",
         placeOfBirth: "Oakland, California, USA",
         profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg",
-        imdbId: "nm0000434",
-        movieCredits: markHamillMovies
+        imdbId: "nm0000434"
     )
 
     static let markHamill = starWarsCredits.cast.first { $0.name == "Mark Hamill" }!

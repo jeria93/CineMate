@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum PreviewFactory {
     static let repository = MockMovieRepository()
@@ -87,5 +88,17 @@ enum PreviewFactory {
         let vm = CastViewModel(repository: repository)
         vm.cast = PreviewData.starWarsCredits.cast
         return vm
+    }
+
+    // MARK: - CastMemberDetailView
+
+    @MainActor
+    static func castMemberDetailView() -> some View {
+        NavigationStack {
+            CastMemberDetailView(
+                member: PreviewData.markHamill,
+                viewModel: personViewModel()
+            )
+        }
     }
 }
