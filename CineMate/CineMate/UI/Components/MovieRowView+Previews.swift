@@ -7,107 +7,84 @@
 
 import SwiftUI
 
-#Preview("Default / Working poster") {
-    MovieRowView(
-        movie: Movie(
-            id: 11,
-            title: "Star Wars: A New Hope",
-            overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
-            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-            backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
-            releaseDate: "1977-05-25",
-            voteAverage: 8.2,
-            genres: ["Action", "Adventure", "Sci-Fi"]
-        )
-    )
-}
+extension MovieRowView {
+    static var preview: some View {
+        Group {
+            previewDefault
+            previewNoPoster
+            previewNoOverview
+            previewLongOverview
+            previewMinimalData
+        }
+        .padding()
+        .previewLayout(.sizeThatFits)
+        .background(Color(.systemGroupedBackground))
+    }
 
-#Preview("No poster available") {
-    MovieRowView(
-        movie: Movie(
-            id: 99,
-            title: "No Poster Example",
-            overview: "This movie has no poster path – perfect for testing placeholder images.",
-            posterPath: nil,
-            backdropPath: nil,
-            releaseDate: "2023-01-01",
-            voteAverage: 7.0,
-            genres: ["Drama"]
-        )
-    )
-}
+    static var previewDefault: some View {
+        MovieRowView(movie: PreviewData.starWars)
+    }
 
-#Preview("Long overview text") {
-    MovieRowView(
-        movie: Movie(
-            id: 100,
-            title: "Long Overview Example",
-            overview: String(repeating: "A very long description of the movie to test line breaks and layout. ", count: 5),
-            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-            backdropPath: nil,
-            releaseDate: "2023-01-01",
-            voteAverage: 8.0,
-            genres: ["Biography", "History", "Drama"]
-        )
-    )
-}
-
-#Preview("No overview") {
-    MovieRowView(
-        movie: Movie(
-            id: 101,
-            title: "No Overview Movie",
-            overview: nil,
-            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-            backdropPath: nil,
-            releaseDate: "2022-12-12",
-            voteAverage: 6.2,
-            genres: ["Comedy"]
-        )
-    )
-}
-
-#Preview("Extreme ratings") {
-    VStack {
-        MovieRowView(
+    static var previewNoPoster: some View {
+        var movie = PreviewData.starWars
+        return MovieRowView(
             movie: Movie(
-                id: 102,
-                title: "Perfect 10",
-                overview: "This movie has a perfect score!",
-                posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-                backdropPath: nil,
-                releaseDate: "2021-11-11",
-                voteAverage: 10.0,
-                genres: ["Fantasy", "Adventure"]
-            )
-        )
-        MovieRowView(
-            movie: Movie(
-                id: 103,
-                title: "Terrible 1.0",
-                overview: "Lowest rated movie ever!",
-                posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-                backdropPath: nil,
-                releaseDate: "2020-10-10",
-                voteAverage: 1.0,
-                genres: ["Horror"]
+                id: movie.id,
+                title: movie.title,
+                overview: movie.overview,
+                posterPath: nil,
+                backdropPath: movie.backdropPath,
+                releaseDate: movie.releaseDate,
+                voteAverage: movie.voteAverage,
+                genres: movie.genres
             )
         )
     }
-}
 
-#Preview("Dark Mode") {
-    MovieRowView(
-        movie: Movie(
-            id: 11,
-            title: "Star Wars: A New Hope",
-            overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
-            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-            backdropPath: "/9pkZesKMnblFfKxEhQx45YQ2kIe.jpg",
-            releaseDate: "1977-05-25",
-            voteAverage: 8.2,
-            genres: ["Action", "Adventure", "Sci-Fi"]
+    static var previewNoOverview: some View {
+        var movie = PreviewData.starWars
+        return MovieRowView(
+            movie: Movie(
+                id: movie.id,
+                title: movie.title,
+                overview: nil,
+                posterPath: movie.posterPath,
+                backdropPath: movie.backdropPath,
+                releaseDate: movie.releaseDate,
+                voteAverage: movie.voteAverage,
+                genres: movie.genres
+            )
         )
-    )
-    .preferredColorScheme(.dark)
+    }
+
+    static var previewLongOverview: some View {
+        var movie = PreviewData.starWars
+        return MovieRowView(
+            movie: Movie(
+                id: movie.id,
+                title: movie.title,
+                overview: String(repeating: movie.overview ?? "No overview. ", count: 10),
+                posterPath: movie.posterPath,
+                backdropPath: movie.backdropPath,
+                releaseDate: movie.releaseDate,
+                voteAverage: movie.voteAverage,
+                genres: movie.genres
+            )
+        )
+    }
+
+    static var previewMinimalData: some View {
+        MovieRowView(
+            movie: Movie(
+                id: 999,
+                title: "Unknown Movie",
+                overview: nil,
+                posterPath: nil,
+                backdropPath: nil,
+                releaseDate: nil,
+                voteAverage: nil,
+                genres: nil
+            )
+        )
+    }
 }

@@ -42,30 +42,13 @@ struct PosterImageView: View {
 }
 
 #Preview("Working poster") {
-    PosterImageView(
-        url: URL(string: "https://image.tmdb.org/t/p/w200/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"),
-        title: "Star Wars - Episode V",
-        width: 80,
-        height: 120
-    )
+    PosterImageView.previewWorking
 }
 
 #Preview("No poster") {
-    PosterImageView(
-        url: nil,
-        title: "No Poster",
-        width: 80,
-        height: 120
-    )
+    PosterImageView.previewNoPoster
 }
 
 #Preview("In List") {
-    List {
-        PosterImageView(
-            url: URL(string: "https://image.tmdb.org/t/p/w200/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"),
-            title: "Star Wars - Episode V",
-            width: 80,
-            height: 120
-        )
-    }
+    PosterImageView.previewInList
 }

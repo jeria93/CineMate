@@ -49,22 +49,10 @@ struct MovieRowDetails: View {
     }
 }
 
-#Preview("Compact layout") {
-    MovieRowDetails(
-        movie: PreviewData.starWars,
-        spacing: 5,
-        titleFont: .headline,
-        overviewFont: .subheadline,
-        showFullOverview: false
-    )
+#Preview {
+    MovieRowDetails.previewCompact
 }
 
-#Preview("Detailed layout") {
-    MovieRowDetails(
-        movie: PreviewData.starWars,
-        spacing: 16,
-        titleFont: .largeTitle.bold(),
-        overviewFont: .body,
-        showFullOverview: true
-    )
+#Preview {
+    MovieRowDetails.previewDetailed
 }

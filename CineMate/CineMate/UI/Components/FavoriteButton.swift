@@ -10,7 +10,7 @@ import SwiftUI
 struct FavoriteButton: View {
     let isFavorite: Bool
     let toggleAction: () -> Void
-
+    
     var body: some View {
         Button(action: toggleAction) {
             Image(systemName: isFavorite ? "heart.fill" : "heart")
@@ -21,5 +21,5 @@ struct FavoriteButton: View {
 }
 
 #Preview {
-    FavoriteButton(isFavorite: true, toggleAction: {})
+    FavoriteButton.preview
 }

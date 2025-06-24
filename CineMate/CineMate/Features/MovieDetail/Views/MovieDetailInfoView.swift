@@ -103,8 +103,6 @@ struct MovieDetailInfoView: View {
     MovieDetailInfoView.previewWithEmptyDetail
 }
 
-
-
 extension Int {
     func formattedWithSeparator() -> String {
         let formatter = NumberFormatter()

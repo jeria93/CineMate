@@ -34,6 +34,22 @@ struct MovieRowView: View {
     }
 }
 
-#Preview {
-    MovieRowView(movie: PreviewData.starWars)
+#Preview("Default") {
+    MovieRowView.previewDefault
+}
+
+#Preview("No poster") {
+    MovieRowView.previewNoPoster
+}
+
+#Preview("No overview") {
+    MovieRowView.previewNoOverview
+}
+
+#Preview("Long overview") {
+    MovieRowView.previewLongOverview
+}
+
+#Preview("Minimal data") {
+    MovieRowView.previewMinimalData
 }
