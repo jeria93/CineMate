@@ -12,8 +12,17 @@ final class TMDBService {
     private let baseURL = "https://api.themoviedb.org/3"
     private let session = URLSession.shared
 
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: .personMovieCredits(personId))
+        return result.results
+    }
+
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
         return try await request(endpoint: .movieDetail(movieId))
+    }
+
+    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
+        return try await request(endpoint: .personDetail(personId))
     }
 
     func fetchPopularMovies() async throws -> [Movie] {
@@ -90,6 +99,8 @@ final class TMDBService {
         do {
             return try decoder.decode(Model.self, from: data)
         } catch {
+            print("Decoding error: \(error.localizedDescription)")
+            print("Raw JSON: \(String(data: data, encoding: .utf8) ?? "N/A")")
             throw TMDBError.decodingFailed
         }
     }

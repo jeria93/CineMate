@@ -13,6 +13,7 @@ struct MovieCredits: Codable {
     let crew: [CrewMember]
 }
 
+//Bryt ut denna till sin egna fil.
 struct CastMember: Codable, Identifiable {
     let id: Int
     let name: String
