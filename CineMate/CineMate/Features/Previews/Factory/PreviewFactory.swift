@@ -77,7 +77,7 @@ enum PreviewFactory {
     static func personViewModel() -> PersonViewModel {
         let vm = PersonViewModel(repository: repository)
         vm.personDetail = PreviewData.markHamillPersonDetail
-        vm.personMovies = PreviewData.markHamillMovies
+        vm.personMovies = PreviewData.markHamillMovieCredits
         return vm
     }
 

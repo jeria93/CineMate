@@ -10,9 +10,9 @@ import Foundation
 @MainActor
 final class PersonViewModel: ObservableObject {
     @Published var personDetail: PersonDetail?
+    @Published var personMovies: [PersonMovieCredit] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    @Published var personMovies: [Movie] = []
 //Refactor with helper methods -> less code
     private let repository: MovieProtocol
 

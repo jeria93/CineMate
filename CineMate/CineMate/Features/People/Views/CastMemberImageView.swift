@@ -16,7 +16,7 @@ struct CastMemberImageView: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                Image(systemName: "person.fill.circle")
+                Image(systemName: "person.circle.fill")
                     .resizable()
                     .scaledToFit()
                     .foregroundStyle(.gray)

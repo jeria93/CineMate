@@ -8,9 +8,11 @@
 import Foundation
 
 final class MockMovieRepository: MovieProtocol {
-    func fetchPersonMovieCredits(for personId: Int) async throws -> [Movie] {
-        PreviewData.markHamillMovies
+
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
+        PreviewData.markHamillMovieCredits
     }
+
     
     func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
         PreviewData.markHamillPersonDetail
