@@ -25,9 +25,7 @@ struct PersonInfoView: View {
             }
 
             if let bio = detail.biography, !bio.isEmpty {
-                Text(bio)
-                    .font(.body)
-                    .multilineTextAlignment(.leading)
+            BiographyView(text: bio)
             }
         }
     }

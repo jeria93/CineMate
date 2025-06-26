@@ -17,7 +17,8 @@ struct CastMemberDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
+//        Scrollview?
+        LazyVStack {
             VStack(spacing: 16) {
                 CastMemberImageView(url: member.profileURL)
 
@@ -37,7 +38,7 @@ struct CastMemberDetailView: View {
                 }
 
                 if !viewModel.personMovies.isEmpty {
-                    PersonMoviesView(movies: viewModel.personMovies)
+                    HorizontalMoviesScrollView(movies: viewModel.personMovies)
                 }
 
                 if viewModel.isLoading {
@@ -50,20 +51,20 @@ struct CastMemberDetailView: View {
             }
             .padding()
         }
-        .navigationTitle(member.name)
         .navigationBarTitleDisplayMode(.inline)
-        .task {
-            debugPrint("Loading personId = \(member.id)")
-            await viewModel.loadPersonDetail(for: member.id)
-            await viewModel.loadPersonMovieCredits(for: member.id)
-            debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
-            debugPrint("personMovies count = \(viewModel.personMovies.count)")
-        }
+        .task { await loadData() }
+    }
+
+    private func loadData() async {
+        debugPrint("Loading personId = \(member.id)")
+        await viewModel.loadPersonDetail(for: member.id)
+        await viewModel.loadPersonMovieCredits(for: member.id)
+        debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
+        debugPrint("personMovies count = \(viewModel.personMovies.count)")
     }
 }
 
-#Preview("Cast Detail – Mark Hamill") {
+#Preview("Default") {
     PreviewFactory.castMemberDetailView()
 }
-
 

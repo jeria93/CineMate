@@ -71,16 +71,6 @@ enum PreviewFactory {
         { CastViewModel(repository: repository) }
     }
 
-    // MARK: - PersonViewModel
-
-    @MainActor
-    static func personViewModel() -> PersonViewModel {
-        let vm = PersonViewModel(repository: repository)
-        vm.personDetail = PreviewData.markHamillPersonDetail
-        vm.personMovies = PreviewData.markHamillMovieCredits
-        return vm
-    }
-
     // MARK: - CastViewModel
 
     @MainActor
@@ -97,8 +87,9 @@ enum PreviewFactory {
         NavigationStack {
             CastMemberDetailView(
                 member: PreviewData.markHamill,
-                viewModel: personViewModel()
+                viewModel: .preview
             )
         }
     }
 }
+//refactor again later, try to use .preview on everything.

@@ -29,6 +29,10 @@ struct PersonMovieCredit: Codable, Identifiable {
     let releaseDate: String?
     let posterPath: String?
 
+    /// A unique identifier combining movie ID and character name.
+    /// Used for identifying movies in lists where the same movie may appear multiple times.
+    var uniqueKey: String { "\(id)-\(character ?? "unknown")-\(releaseDate ?? "unknown")"}
+
     /// Returns a full image URL for the movie poster (w200 size).
     var posterURL: URL? {
         guard let posterPath else { return nil }
