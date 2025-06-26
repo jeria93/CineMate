@@ -17,10 +17,10 @@ struct CastMemberDetailView: View {
     }
 
     var body: some View {
-//        Scrollview?
-        LazyVStack {
+        ScrollView {
             VStack(spacing: 16) {
                 CastMemberImageView(url: member.profileURL)
+                    .padding(.top, 16)
 
                 Text(member.name)
                     .font(.title)
@@ -38,7 +38,8 @@ struct CastMemberDetailView: View {
                 }
 
                 if !viewModel.personMovies.isEmpty {
-                    HorizontalMoviesScrollView(movies: viewModel.personMovies)
+                    HorizontalMoviesScrollView(filmography
+: viewModel.personMovies)
                 }
 
                 if viewModel.isLoading {
@@ -67,4 +68,3 @@ struct CastMemberDetailView: View {
 #Preview("Default") {
     PreviewFactory.castMemberDetailView()
 }
-

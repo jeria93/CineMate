@@ -38,14 +38,13 @@ struct BiographyView: View {
             }
 
             if shouldTruncate {
-                Button(action: {
-                    withAnimation {
-                        isExpanded.toggle()
-                    }
-                }) {
-                    Text(isExpanded ? "Show less" : "Read more")
-                        .font(.caption)
-                        .foregroundColor(.blue)
+                ExpandToggleButton(
+                    isExpanded: isExpanded,
+                    expandedLabel: "Show less",
+                    collapsedLabel: "Read more",
+                    systemImage: nil
+                ) {
+                    isExpanded.toggle()
                 }
             }
         }
@@ -55,3 +54,4 @@ struct BiographyView: View {
 #Preview {
     BiographyView(text: String(repeating: "This is a long biography text. ", count: 20))
 }
+

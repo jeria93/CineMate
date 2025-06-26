@@ -67,19 +67,19 @@ struct PreviewData {
                 id: 1,
                 name: "Mark Hamill",
                 character: "Luke Skywalker",
-                profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg"
+                profilePath: "/2ZulC2Ccq1yv3pemusks6Zlfy2s.jpg"
             ),
             CastMember(
                 id: 2,
                 name: "Harrison Ford",
                 character: "Han Solo",
-                profilePath: "/nCJJ3NVksYNxIzEHcyC1XziwPVj.jpg"
+                profilePath: "/zVnHagUvXkR2StdOtquEwsiwSVt.jpg"
             ),
             CastMember(
                 id: 3,
                 name: "Carrie Fisher",
                 character: "Princess Leia",
-                profilePath: "/lKYjvdlhFYnvvldzGfbrL2KkPA3.jpg"
+                profilePath: "/awb4UqzT6meD3JiQlraIzAqcRtH.jpg"
             ),
             CastMember(
                 id: 4,
@@ -177,14 +177,14 @@ struct PreviewData {
             title: "The Empire Strikes Back",
             character: "Luke Skywalker",
             releaseDate: "1980-05-21",
-            posterPath: "/94d3yJEaSy9XrJtCzU1bjjJFqzI.jpg"
+            posterPath: "/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg"
         ),
         PersonMovieCredit(
             id: 1983,
             title: "Return of the Jedi",
             character: "Luke Skywalker",
             releaseDate: "1983-05-25",
-            posterPath: "/aP6gk1vF5lLrBLfe3G3Oe00syVn.jpg"
+            posterPath: "/jQYlydvHm3kUix1f8prMucrplhm.jpg"
         )
     ]
     

@@ -13,7 +13,6 @@ final class PersonViewModel: ObservableObject {
     @Published var personMovies: [PersonMovieCredit] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-//Refactor with helper methods -> less code
     private let repository: MovieProtocol
 
     init(repository: MovieProtocol) {

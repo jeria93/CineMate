@@ -57,12 +57,7 @@ struct MovieDetailView: View {
             }
             .padding(.horizontal)
         }
-        .task {
-            await viewModel.loadMovieCredits(for: movie.id)
-            await viewModel.loadMovieVideos(for: movie.id)
-            await viewModel.fetchRecommendedMovies(for: movie.id)
-            await viewModel.loadMovieDetails(for: movie.id)
-        }
+        .task { await loadData() }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -70,4 +65,13 @@ struct MovieDetailView: View {
 
 #Preview("Star Wars Detail") {
     MovieDetailView.previewStarWars
+}
+
+private extension MovieDetailView {
+    private func loadData() async {
+        await viewModel.loadMovieCredits(for: movie.id)
+        await viewModel.loadMovieVideos(for: movie.id)
+        await viewModel.fetchRecommendedMovies(for: movie.id)
+        await viewModel.loadMovieDetails(for: movie.id)
+    }
 }

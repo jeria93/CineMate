@@ -22,7 +22,7 @@ struct CastMember: Codable, Identifiable {
 
     var profileURL: URL? {
         guard let profilePath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w185\(profilePath)")
+        return URL(string: "https://image.tmdb.org/t/p/w342\(profilePath)")
     }
 }
 
