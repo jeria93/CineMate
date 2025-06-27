@@ -9,12 +9,11 @@ import SwiftUI
 
 extension FavoriteButton {
     static var preview: some View {
-        Group {
-            FavoriteButton(isFavorite: true, toggleAction: {})
-            FavoriteButton(isFavorite: false, toggleAction: {})
+        VStack(spacing: 20) {
+            FavoriteButton(isFavorite: true) {}
+            FavoriteButton(isFavorite: false) {}
         }
         .padding()
         .previewLayout(.sizeThatFits)
-        .background(Color(.systemGroupedBackground))
     }
 }

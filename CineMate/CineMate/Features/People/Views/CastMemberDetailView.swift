@@ -22,9 +22,18 @@ struct CastMemberDetailView: View {
                 CastMemberImageView(url: member.profileURL)
                     .padding(.top, 16)
 
-                Text(member.name)
-                    .font(.title)
-                    .bold()
+                HStack(spacing: 12) {
+                    Text(member.name)
+                        .font(.title)
+                        .bold()
+
+                    FavoriteButton(
+                        isFavorite: viewModel.isFavoriteCast(id: member.id),
+                        toggleAction: {
+                            viewModel.toggleFavoriteCast(id: member.id)
+                        }
+                    )
+                }
 
                 if let role = member.character {
                     Text("Role: \(role)")

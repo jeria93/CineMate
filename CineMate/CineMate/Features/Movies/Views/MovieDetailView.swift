@@ -31,6 +31,7 @@ struct MovieDetailView: View {
                     isFavorite: viewModel.isFavorite(movie),
                     toggleAction: { viewModel.toggleFavorite(for: movie) }
                 )
+                .padding()
             }
 
             VStack(alignment: .leading, spacing: 16) {
