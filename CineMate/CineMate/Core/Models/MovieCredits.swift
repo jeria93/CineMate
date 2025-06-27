@@ -7,25 +7,29 @@
 
 import Foundation
 
+/// Response model for movie credits (cast & crew).
+/// Endpoint: https://developer.themoviedb.org/reference/movie-credits
 struct MovieCredits: Codable {
     let id: Int
     let cast: [CastMember]
     let crew: [CrewMember]
 }
 
-//Bryt ut denna till sin egna fil.
+/// Represents an actor or actress in a movie's cast list.
+/// Part of: `MovieCredits.cast`
 struct CastMember: Codable, Identifiable {
     let id: Int
     let name: String
     let character: String?
     let profilePath: String?
-
+    
     var profileURL: URL? {
-        guard let profilePath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w342\(profilePath)")
+        TMDBImageHelper.url(for: profilePath, size: .w185)
     }
 }
 
+/// Represents a crew member (director, writer etc.) in a movie's crew list.
+/// Part of: `MovieCredits.crew`
 struct CrewMember: Codable {
     let name: String
     let job: String?

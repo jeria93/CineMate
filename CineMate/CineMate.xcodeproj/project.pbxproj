@@ -26,6 +26,7 @@
 		031F2E302E0DD2DF001E41B8 /* PersonMovieCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F2E2F2E0DD2DF001E41B8 /* PersonMovieCardView.swift */; };
 		031F2E322E0DD34C001E41B8 /* ExpandMoreCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F2E312E0DD34C001E41B8 /* ExpandMoreCardView.swift */; };
 		031F2E342E0DD735001E41B8 /* ExpandToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F2E332E0DD735001E41B8 /* ExpandToggleButton.swift */; };
+		031F2E362E0DDFDE001E41B8 /* TMDBImageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F2E352E0DDFDE001E41B8 /* TMDBImageHelper.swift */; };
 		033DE9762E0144B4009FB949 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 033DE9752E0144B4009FB949 /* Secrets.plist */; };
 		033DE9782E01FBFC009FB949 /* CastCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033DE9772E01FBFC009FB949 /* CastCarouselView.swift */; };
 		034AAEED2E00BA6600099259 /* TMDBEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */; };
@@ -104,6 +105,7 @@
 		031F2E2F2E0DD2DF001E41B8 /* PersonMovieCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMovieCardView.swift; sourceTree = "<group>"; };
 		031F2E312E0DD34C001E41B8 /* ExpandMoreCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandMoreCardView.swift; sourceTree = "<group>"; };
 		031F2E332E0DD735001E41B8 /* ExpandToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandToggleButton.swift; sourceTree = "<group>"; };
+		031F2E352E0DDFDE001E41B8 /* TMDBImageHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBImageHelper.swift; sourceTree = "<group>"; };
 		033DE9752E0144B4009FB949 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Secrets.plist; path = CineMate/Features/Resources/Secrets.plist; sourceTree = SOURCE_ROOT; };
 		033DE9772E01FBFC009FB949 /* CastCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastCarouselView.swift; sourceTree = "<group>"; };
 		034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBEndpoint.swift; sourceTree = "<group>"; };
@@ -171,6 +173,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0303C68E2E0ED79A00C3AF33 /* Expand */ = {
+			isa = PBXGroup;
+			children = (
+				031F2E312E0DD34C001E41B8 /* ExpandMoreCardView.swift */,
+				031F2E332E0DD735001E41B8 /* ExpandToggleButton.swift */,
+			);
+			path = Expand;
+			sourceTree = "<group>";
+		};
 		030611FA2DF4BA4B0013F7AF = {
 			isa = PBXGroup;
 			children = (
@@ -194,9 +205,6 @@
 				03A620C02DF774CA00C075E8 /* Features */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
-				031F2E2F2E0DD2DF001E41B8 /* PersonMovieCardView.swift */,
-				031F2E312E0DD34C001E41B8 /* ExpandMoreCardView.swift */,
-				031F2E332E0DD735001E41B8 /* ExpandToggleButton.swift */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -223,6 +231,7 @@
 				034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */,
 				034AAEEE2E00BCD000099259 /* TMDBError.swift */,
 				030BC5492DFB6ECB00D1F96F /* TrailerHelper.swift */,
+				031F2E352E0DDFDE001E41B8 /* TMDBImageHelper.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -248,6 +257,7 @@
 		030612612DF4CD3F0013F7AF /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0303C68E2E0ED79A00C3AF33 /* Expand */,
 				030E037F2E0B4720007BB609 /* Share */,
 				030E037E2E0B4713007BB609 /* Genres */,
 				030E037D2E0B4707007BB609 /* Picker */,
@@ -276,6 +286,7 @@
 				03D8D29F2E088594006A117D /* PersonLinksView.swift */,
 				03D8D2A12E08884D006A117D /* PersonMoviesView.swift */,
 				03C4570A2E0C8B9400A48D2C /* BiographyView.swift */,
+				031F2E2F2E0DD2DF001E41B8 /* PersonMovieCardView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -632,6 +643,7 @@
 				03E5BE8B2E09FF4300D3C46B /* MovieRowDetails+Previews.swift in Sources */,
 				03D8D2B42E09F1FF006A117D /* MovieListView+Previews.swift in Sources */,
 				03E3557E2DF9C060001F1001 /* MovieCredits.swift in Sources */,
+				031F2E362E0DDFDE001E41B8 /* TMDBImageHelper.swift in Sources */,
 				03C016262DFA062E0028F421 /* MovieCreditsView.swift in Sources */,
 				03FC25D82E06161100AACB5E /* MovieListContentView+Previews.swift in Sources */,
 				03D8D2A62E09DD08006A117D /* PreviewFactory.swift in Sources */,

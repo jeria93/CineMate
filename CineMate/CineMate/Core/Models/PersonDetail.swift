@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Detailed information about a person (e.g. actor, director).
+/// Endpoint: https://developer.themoviedb.org/reference/person-details
 struct PersonDetail: Codable, Identifiable {
     let id: Int
     let name: String
@@ -18,8 +20,7 @@ struct PersonDetail: Codable, Identifiable {
     let imdbId: String?
 
     var profileURL: URL? {
-        guard let profilePath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w300\(profilePath)")
+        TMDBImageHelper.url(for: profilePath, size: .w342)
     }
 
     var imdbURL: URL? {
