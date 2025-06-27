@@ -57,6 +57,8 @@
 		03C457092E0C83F900A48D2C /* PersonMovieCredit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C457082E0C83F900A48D2C /* PersonMovieCredit.swift */; };
 		03C4570B2E0C8B9400A48D2C /* BiographyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C4570A2E0C8B9400A48D2C /* BiographyView.swift */; };
 		03C4570D2E0C8E8A00A48D2C /* HorizontalMoviesScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C4570C2E0C8E8A00A48D2C /* HorizontalMoviesScrollView.swift */; };
+		03CE4A422E0F214F00D70F70 /* PersonMetaInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */; };
+		03CE4A442E0F246500D70F70 /* DateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE4A432E0F246500D70F70 /* DateHelper.swift */; };
 		03D8D29C2E08836F006A117D /* CastMemberImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D8D29B2E08836E006A117D /* CastMemberImageView.swift */; };
 		03D8D29E2E088509006A117D /* PersonInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D8D29D2E088509006A117D /* PersonInfoView.swift */; };
 		03D8D2A02E088594006A117D /* PersonLinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D8D29F2E088594006A117D /* PersonLinksView.swift */; };
@@ -136,6 +138,8 @@
 		03C457082E0C83F900A48D2C /* PersonMovieCredit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMovieCredit.swift; sourceTree = "<group>"; };
 		03C4570A2E0C8B9400A48D2C /* BiographyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiographyView.swift; sourceTree = "<group>"; };
 		03C4570C2E0C8E8A00A48D2C /* HorizontalMoviesScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalMoviesScrollView.swift; sourceTree = "<group>"; };
+		03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMetaInfoView.swift; sourceTree = "<group>"; };
+		03CE4A432E0F246500D70F70 /* DateHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
 		03D8D29B2E08836E006A117D /* CastMemberImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastMemberImageView.swift; sourceTree = "<group>"; };
 		03D8D29D2E088509006A117D /* PersonInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonInfoView.swift; sourceTree = "<group>"; };
 		03D8D29F2E088594006A117D /* PersonLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonLinksView.swift; sourceTree = "<group>"; };
@@ -205,6 +209,8 @@
 				03A620C02DF774CA00C075E8 /* Features */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
+				03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */,
+				03CE4A432E0F246500D70F70 /* DateHelper.swift */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -609,12 +615,14 @@
 				030612492DF4C07F0013F7AF /* TMDBService.swift in Sources */,
 				03D8D2AA2E09DFA8006A117D /* MovieDetailInfoView+Previews.swift in Sources */,
 				0368AF922DF5BB3C009B1F56 /* MovieRowDetails.swift in Sources */,
+				03CE4A422E0F214F00D70F70 /* PersonMetaInfoView.swift in Sources */,
 				030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */,
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
 				0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */,
 				0306124B2DF4C3BE0013F7AF /* MovieProtocol.swift in Sources */,
 				034AAEEF2E00BCD000099259 /* TMDBError.swift in Sources */,
 				030CA7A72DF8CADA00771212 /* MovieDetailInfoView.swift in Sources */,
+				03CE4A442E0F246500D70F70 /* DateHelper.swift in Sources */,
 				03C016292DFA1ED20028F421 /* MovieShareItem.swift in Sources */,
 				03D8D2A82E09DF5B006A117D /* MovieDetailView+Previews.swift in Sources */,
 				03FC25DD2E06A24000AACB5E /* MovieViewModel+Preview.swift in Sources */,

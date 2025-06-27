@@ -35,11 +35,15 @@ struct CastMemberDetailView: View {
                 if let detail = viewModel.personDetail {
                     PersonInfoView(detail: detail)
                     PersonLinksView(imdbURL: detail.imdbURL, tmdbURL: detail.tmdbURL)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        PersonMetaInfoView(detail: detail)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 if !viewModel.personMovies.isEmpty {
-                    HorizontalMoviesScrollView(filmography
-: viewModel.personMovies)
+                    HorizontalMoviesScrollView(filmography: viewModel.personMovies)
                 }
 
                 if viewModel.isLoading {
@@ -55,6 +59,13 @@ struct CastMemberDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadData() }
     }
+}
+
+#Preview("Default") {
+    PreviewFactory.castMemberDetailView()
+}
+
+private extension CastMemberDetailView {
 
     private func loadData() async {
         debugPrint("Loading personId = \(member.id)")
@@ -63,8 +74,4 @@ struct CastMemberDetailView: View {
         debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
         debugPrint("personMovies count = \(viewModel.personMovies.count)")
     }
-}
-
-#Preview("Default") {
-    PreviewFactory.castMemberDetailView()
 }

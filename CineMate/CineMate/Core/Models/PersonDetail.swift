@@ -18,6 +18,9 @@ struct PersonDetail: Codable, Identifiable {
     let placeOfBirth: String?
     let profilePath: String?
     let imdbId: String?
+    let gender: Int?
+    let knownForDepartment: String?
+    let alsoKnownAs: [String]
 
     var profileURL: URL? {
         TMDBImageHelper.url(for: profilePath, size: .w342)
@@ -30,5 +33,17 @@ struct PersonDetail: Codable, Identifiable {
 
     var tmdbURL: URL? {
         return URL(string: "https://www.themoviedb.org/person/\(id)")
+    }
+
+    var genderText: String {
+        switch gender {
+        case 1: return "Female"
+        case 2: return "Male"
+        default: return "Unknown"
+        }
+    }
+
+    var hasAliases: Bool {
+        !alsoKnownAs.isEmpty
     }
 }

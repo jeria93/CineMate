@@ -19,7 +19,7 @@ struct PreviewData {
         voteAverage: 8.3,
         genres: ["Action", "Sci-Fi", "Thriller"]
     )
-    
+
     static let starWars = Movie(
         id: 11,
         title: "Star Wars: A New Hope",
@@ -30,7 +30,7 @@ struct PreviewData {
         voteAverage: 8.2,
         genres: ["Adventure", "Sci-Fi", "Fantasy"]
     )
-    
+
     static let matrix = Movie(
         id: 603,
         title: "The Matrix",
@@ -41,7 +41,7 @@ struct PreviewData {
         voteAverage: 8.1,
         genres: ["Action", "Sci-Fi"]
     )
-    
+
     static let pulpFiction = Movie(
         id: 680,
         title: "Pulp Fiction",
@@ -52,14 +52,14 @@ struct PreviewData {
         voteAverage: 8.5,
         genres: ["Crime", "Drama"]
     )
-    
+
     static let moviesList: [Movie] = [
         inception,
         starWars,
         matrix,
         pulpFiction
     ]
-    
+
     static let starWarsCredits = MovieCredits(
         id: 11,
         cast: [
@@ -93,7 +93,7 @@ struct PreviewData {
             CrewMember(name: "Gary Kurtz", job: "Producer")
         ]
     )
-    
+
     static let sampleVideos: [MovieVideo] = [
         MovieVideo(
             id: "12345",
@@ -103,7 +103,7 @@ struct PreviewData {
             type: "Trailer"
         )
     ]
-    
+
     static let starWarsDetail = MovieDetail(
         id: 11,
         runtime: 121,
@@ -119,7 +119,7 @@ struct PreviewData {
             ProductionCountry(name: "United States of America")
         ]
     )
-    
+
     static let emptyDetail = MovieDetail(
         id: 0,
         runtime: nil,
@@ -130,7 +130,7 @@ struct PreviewData {
         productionCompanies: [],
         productionCountries: []
     )
-    
+
     static let markHamillMovies: [Movie] = [
         Movie(
             id: 1977,
@@ -163,7 +163,7 @@ struct PreviewData {
             genres: ["Sci-Fi", "Fantasy"]
         )
     ]
-    
+
     static let markHamillMovieCredits: [PersonMovieCredit] = [
         PersonMovieCredit(
             id: 1977,
@@ -187,27 +187,34 @@ struct PreviewData {
             posterPath: "/jQYlydvHm3kUix1f8prMucrplhm.jpg"
         )
     ]
-    
+
     static let markHamillPersonDetail = PersonDetail(
         id: 1,
         name: "Mark Hamill",
         birthday: "1951-09-25",
         deathday: nil,
-        biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker.",
+        biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker in the Star Wars film series.",
         placeOfBirth: "Oakland, California, USA",
         profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg",
-        imdbId: "nm0000434"
+        imdbId: "nm0000434",
+        gender: 2,
+        knownForDepartment: "Acting",
+        alsoKnownAs: [
+            "Mark Richard Hamill",
+            "Luke",
+            "The Trickster"
+        ]
     )
-    
+
     static let markHamill = starWarsCredits.cast.first { $0.name == "Mark Hamill" }!
-    
+
     static let unknownActor = CastMember(
         id: 2,
         name: "Unknown Actor",
         character: nil,
         profilePath: nil
     )
-    
+
     static let longNameActor = CastMember(
         id: 3,
         name: "This is a really really really long actor name",

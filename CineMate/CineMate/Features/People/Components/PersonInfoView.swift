@@ -14,20 +14,40 @@ struct PersonInfoView: View {
         Group {
             if let birthday = detail.birthday {
                 Text("Born: \(birthday)")
-            }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
 
-            if let deathday = detail.deathday {
-                Text("Died: \(deathday)")
+                if let deathday = detail.deathday {
+                    Text("Died: \(deathday)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    if let livedYears = DateHelper.calculateYearsLived(
+                        birthday: birthday,
+                        deathday: deathday
+                    ) {
+                        Text("Lived \(livedYears) years")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                } else if let age = DateHelper.calculateAge(from: birthday) {
+                    Text("Age: \(age)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             if let place = detail.placeOfBirth {
                 Text("Place of birth: \(place)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
 
             if let bio = detail.biography, !bio.isEmpty {
-            BiographyView(text: bio)
+                BiographyView(text: bio)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
