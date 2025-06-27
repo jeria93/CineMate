@@ -33,16 +33,18 @@ struct CastMemberDetailView: View {
                 }
 
                 if let detail = viewModel.personDetail {
+                    SectionHeader(title: "Biography")
                     PersonInfoView(detail: detail)
+
+                    SectionHeader(title: "Links")
                     PersonLinksView(imdbURL: detail.imdbURL, tmdbURL: detail.tmdbURL)
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        PersonMetaInfoView(detail: detail)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    SectionHeader(title: "Details")
+                    PersonMetaInfoView(detail: detail)
                 }
 
                 if !viewModel.personMovies.isEmpty {
+                    SectionHeader(title: "Filmography")
                     HorizontalMoviesScrollView(filmography: viewModel.personMovies)
                 }
 
@@ -66,7 +68,6 @@ struct CastMemberDetailView: View {
 }
 
 private extension CastMemberDetailView {
-
     private func loadData() async {
         debugPrint("Loading personId = \(member.id)")
         await viewModel.loadPersonDetail(for: member.id)
