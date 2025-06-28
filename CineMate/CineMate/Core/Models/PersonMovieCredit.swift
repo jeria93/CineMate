@@ -15,6 +15,7 @@ struct PersonMovieCredit: Codable, Identifiable {
     let character: String?
     let releaseDate: String?
     let posterPath: String?
+    let popularity: Double?
 
     /// A unique identifier combining movie ID and character name.
     /// Used for identifying movies in lists where the same movie may appear multiple times.

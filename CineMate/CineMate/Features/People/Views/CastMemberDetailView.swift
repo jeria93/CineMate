@@ -1,10 +1,3 @@
-//
-//  CastMemberDetailView.swift
-//  CineMate
-//
-//  Created by Nicholas Samuelsson Jeria on 2025-06-21.
-//
-
 import SwiftUI
 
 struct CastMemberDetailView: View {
@@ -52,6 +45,11 @@ struct CastMemberDetailView: View {
                     PersonMetaInfoView(detail: detail)
                 }
 
+                // "Most Iconic Roles" (Known For)
+                if !viewModel.knownForMovies.isEmpty {
+                    KnownForScrollView(movies: viewModel.knownForMovies)
+                }
+
                 if !viewModel.personMovies.isEmpty {
                     SectionHeader(title: "Filmography")
                     HorizontalMoviesScrollView(filmography: viewModel.personMovies)
@@ -62,7 +60,8 @@ struct CastMemberDetailView: View {
                 }
 
                 if let error = viewModel.errorMessage {
-                    Text("Error: \(error)").foregroundStyle(.red)
+                    Text("Error: \(error)")
+                        .foregroundStyle(.red)
                 }
             }
             .padding()

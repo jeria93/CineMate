@@ -60,3 +60,16 @@ final class PersonViewModel: ObservableObject {
         }
     }
 }
+
+// MARK: - Computed Properties
+
+extension PersonViewModel {
+    /// Returns the top 5 most popular movies for the "Known For" section
+    var knownForMovies: [PersonMovieCredit] {
+        personMovies
+            .filter { $0.popularity != nil }
+            .sorted(by: { ($0.popularity ?? 0) > ($1.popularity ?? 0) })
+            .prefix(5)
+            .map { $0 }
+    }
+}

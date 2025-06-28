@@ -92,4 +92,3 @@ enum PreviewFactory {
         }
     }
 }
-//refactor again later, try to use .preview on everything.

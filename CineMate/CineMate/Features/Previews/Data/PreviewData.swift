@@ -170,21 +170,24 @@ struct PreviewData {
             title: "Star Wars: A New Hope",
             character: "Luke Skywalker",
             releaseDate: "1977-05-25",
-            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"
+            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+            popularity: 95.0
         ),
         PersonMovieCredit(
             id: 1980,
             title: "The Empire Strikes Back",
             character: "Luke Skywalker",
             releaseDate: "1980-05-21",
-            posterPath: "/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg"
+            posterPath: "/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg",
+            popularity: 90.5
         ),
         PersonMovieCredit(
             id: 1983,
             title: "Return of the Jedi",
             character: "Luke Skywalker",
             releaseDate: "1983-05-25",
-            posterPath: "/jQYlydvHm3kUix1f8prMucrplhm.jpg"
+            posterPath: "/jQYlydvHm3kUix1f8prMucrplhm.jpg",
+            popularity: 88.2
         )
     ]
 
