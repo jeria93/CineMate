@@ -30,20 +30,7 @@ struct DirectorView: View {
                     )
                 } label: {
                     HStack(spacing: 12) {
-                        AsyncImage(url: director.profileURL) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            } else {
-                                Image(systemName: "person.crop.rectangle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundStyle(.gray)
-                            }
-                        }
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
+                        DirectorImageView(url: director.profileURL)
 
                         Text(director.name)
                             .font(.subheadline)
@@ -54,10 +41,7 @@ struct DirectorView: View {
                     .padding(.horizontal)
                 }
             } else {
-                Text("No director information available.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal)
+                DirectorUnavailableView()
             }
         }
     }

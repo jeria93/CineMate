@@ -231,4 +231,18 @@ struct PreviewData {
         job: "Director",
         profilePath: "/xuAIuYSmsUzKlUMBFGVZaWsY3DZ.jpg"
     )
+
+    static let emptyPersonDetail = PersonDetail(
+        id: 0,
+        name: "Unknown",
+        birthday: nil,
+        deathday: nil,
+        biography: nil,
+        placeOfBirth: nil,
+        profilePath: nil,
+        imdbId: nil,
+        gender: nil,
+        knownForDepartment: nil,
+        alsoKnownAs: []
+    )
 }

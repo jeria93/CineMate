@@ -35,11 +35,12 @@ struct PersonDetail: Codable, Identifiable {
         return URL(string: "https://www.themoviedb.org/person/\(id)")
     }
 
-    var genderText: String {
+    var safeGenderText: String? {
         switch gender {
         case 1: return "Female"
         case 2: return "Male"
-        default: return "Unknown"
+        case 0: return "Not specified"
+        default: return nil
         }
     }
 

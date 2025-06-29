@@ -11,7 +11,8 @@ struct PersonInfoView: View {
     let detail: PersonDetail
 
     var body: some View {
-        Group {
+        
+        VStack(alignment: .leading, spacing: 8) {
             if let birthday = detail.birthday {
                 Text("Born: \(birthday)")
                     .font(.subheadline)
@@ -35,16 +36,28 @@ struct PersonInfoView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
+            } else {
+                Text("Birthday: Unknown")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
             }
 
             if let place = detail.placeOfBirth {
                 Text("Place of birth: \(place)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+            } else {
+                Text("Place of birth: Unknown")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
             }
 
             if let bio = detail.biography, !bio.isEmpty {
                 BiographyView(text: bio)
+            } else {
+                Text("Biography not available.")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -52,5 +65,13 @@ struct PersonInfoView: View {
 }
 
 #Preview("Info – Mark Hamill") {
-    PersonInfoView(detail: PreviewData.markHamillPersonDetail)
+    PersonInfoView.previewMarkHamill
+}
+
+#Preview("Info – Empty") {
+    PersonInfoView.previewEmpty
+}
+
+#Preview("Info – Partial") {
+    PersonInfoView.previewPartial
 }

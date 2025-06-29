@@ -12,9 +12,11 @@ struct PersonMetaInfoView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Gender: \(detail.genderText)")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if let gender = detail.safeGenderText {
+                Text("Gender: \(gender)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
             if let department = detail.knownForDepartment {
                 Text("Department: \(department)")
