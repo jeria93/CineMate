@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Detailed information about a specific movie.
+/// Endpoint: https://developer.themoviedb.org/reference/movie-details
 struct MovieDetail: Codable {
     let id: Int
     let runtime: Int?
@@ -18,10 +20,14 @@ struct MovieDetail: Codable {
     let productionCountries: [ProductionCountry]
 }
 
+/// A company involved in the production of a movie.
+/// Part of: `MovieDetail.productionCompanies`
 struct ProductionCompany: Codable {
     let name: String
 }
 
+/// A country where the movie was produced.
+/// Part of: `MovieDetail.productionCountries`
 struct ProductionCountry: Codable {
     let name: String
 }

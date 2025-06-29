@@ -13,7 +13,7 @@ final class MovieViewModel: ObservableObject {
     @Published var movies: [Movie] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    @Published var movieCredits: MovieCredits? //    Remove?
+    @Published var movieCredits: MovieCredits?
     @Published var movieVideos: [MovieVideo]?
     @Published var recommendedMovies: [Movie]?
     @Published var movieDetail: MovieDetail?

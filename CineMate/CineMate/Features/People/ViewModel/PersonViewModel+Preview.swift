@@ -11,11 +11,23 @@ extension PersonViewModel {
     static var preview: PersonViewModel {
         let vm = PersonViewModel(repository: PreviewFactory.repository)
         vm.personDetail = PreviewData.markHamillPersonDetail
-        vm.personMovies = PreviewData.markHamillMovies
+        vm.personMovies = PreviewData.markHamillMovieCredits
         return vm
     }
 
-    static var live: PersonViewModel {
-        PersonViewModel(repository: MovieRepository())
+    static var loading: PersonViewModel {
+        let vm = PersonViewModel(repository: PreviewFactory.repository)
+        vm.isLoading = true
+        return vm
+    }
+
+    static var error: PersonViewModel {
+        let vm = PersonViewModel(repository: PreviewFactory.repository)
+        vm.errorMessage = "Unable to load person details."
+        return vm
+    }
+
+    static var empty: PersonViewModel {
+        PersonViewModel(repository: PreviewFactory.repository)
     }
 }

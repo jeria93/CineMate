@@ -67,19 +67,19 @@ struct PreviewData {
                 id: 1,
                 name: "Mark Hamill",
                 character: "Luke Skywalker",
-                profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg"
+                profilePath: "/2ZulC2Ccq1yv3pemusks6Zlfy2s.jpg"
             ),
             CastMember(
                 id: 2,
                 name: "Harrison Ford",
                 character: "Han Solo",
-                profilePath: "/nCJJ3NVksYNxIzEHcyC1XziwPVj.jpg"
+                profilePath: "/zVnHagUvXkR2StdOtquEwsiwSVt.jpg"
             ),
             CastMember(
                 id: 3,
                 name: "Carrie Fisher",
                 character: "Princess Leia",
-                profilePath: "/lKYjvdlhFYnvvldzGfbrL2KkPA3.jpg"
+                profilePath: "/awb4UqzT6meD3JiQlraIzAqcRtH.jpg"
             ),
             CastMember(
                 id: 4,
@@ -89,8 +89,8 @@ struct PreviewData {
             )
         ],
         crew: [
-            CrewMember(name: "George Lucas", job: "Director"),
-            CrewMember(name: "Gary Kurtz", job: "Producer")
+            CrewMember(id: 100, name: "George Lucas", job: "Director", profilePath: "/mDLDvsx8PaZoEThkBdyaG1JxPdf.jpg"),
+            CrewMember(id: 101, name: "Gary Kurtz", job: "Producer", profilePath: "/q6tgPiNqzEOIYmHxMrpWoUirmmu.jpg")
         ]
     )
 
@@ -164,15 +164,49 @@ struct PreviewData {
         )
     ]
 
+    static let markHamillMovieCredits: [PersonMovieCredit] = [
+        PersonMovieCredit(
+            id: 1977,
+            title: "Star Wars: A New Hope",
+            character: "Luke Skywalker",
+            releaseDate: "1977-05-25",
+            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+            popularity: 95.0
+        ),
+        PersonMovieCredit(
+            id: 1980,
+            title: "The Empire Strikes Back",
+            character: "Luke Skywalker",
+            releaseDate: "1980-05-21",
+            posterPath: "/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg",
+            popularity: 90.5
+        ),
+        PersonMovieCredit(
+            id: 1983,
+            title: "Return of the Jedi",
+            character: "Luke Skywalker",
+            releaseDate: "1983-05-25",
+            posterPath: "/jQYlydvHm3kUix1f8prMucrplhm.jpg",
+            popularity: 88.2
+        )
+    ]
+
     static let markHamillPersonDetail = PersonDetail(
         id: 1,
         name: "Mark Hamill",
         birthday: "1951-09-25",
         deathday: nil,
-        biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker.",
+        biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker in the Star Wars film series.",
         placeOfBirth: "Oakland, California, USA",
         profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg",
-        imdbId: "nm0000434"
+        imdbId: "nm0000434",
+        gender: 2,
+        knownForDepartment: "Acting",
+        alsoKnownAs: [
+            "Mark Richard Hamill",
+            "Luke",
+            "The Trickster"
+        ]
     )
 
     static let markHamill = starWarsCredits.cast.first { $0.name == "Mark Hamill" }!
@@ -189,5 +223,26 @@ struct PreviewData {
         name: "This is a really really really long actor name",
         character: "Extraordinary Sidekick of Episode 47 Part 3",
         profilePath: nil
+    )
+
+    static let directorNolan = CrewMember(
+        id: 525,
+        name: "Christopher Nolan",
+        job: "Director",
+        profilePath: "/xuAIuYSmsUzKlUMBFGVZaWsY3DZ.jpg"
+    )
+
+    static let emptyPersonDetail = PersonDetail(
+        id: 0,
+        name: "Unknown",
+        birthday: nil,
+        deathday: nil,
+        biography: nil,
+        placeOfBirth: nil,
+        profilePath: nil,
+        imdbId: nil,
+        gender: nil,
+        knownForDepartment: nil,
+        alsoKnownAs: []
     )
 }

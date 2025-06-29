@@ -7,6 +7,11 @@
 
 import Foundation
 
+/// Represents a movie returned by various movie list endpoints.
+/// Example endpoints:
+/// - Popular: https://developer.themoviedb.org/reference/movie-popular-list
+/// - Top Rated: https://developer.themoviedb.org/reference/movie-top-rated-list
+/// - Trending: https://developer.themoviedb.org/reference/trending-movies
 struct Movie: Identifiable, Codable, Equatable {
     let id: Int
     let title: String
@@ -18,18 +23,11 @@ struct Movie: Identifiable, Codable, Equatable {
     let genres: [String]?
 
     var posterSmallURL: URL? {
-        guard let path = posterPath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w200\(path)")
+        TMDBImageHelper.url(for: posterPath, size: .w185)
     }
 
     var posterLargeURL: URL? {
-        guard let path = posterPath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
-    }
-
-    var backdropURL: URL? {
-        guard let path = backdropPath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w780\(path)")
+        TMDBImageHelper.url(for: posterPath, size: .w500)
     }
 }
 
@@ -42,4 +40,3 @@ extension Movie {
         URL(string: "https://www.themoviedb.org/movie/\(id)")!
     }
 }
-// Dela upp i extension ifall det blir för grötigt, fler filer men mer struktur.

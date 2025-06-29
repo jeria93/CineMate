@@ -14,9 +14,12 @@ struct FavoriteButton: View {
     var body: some View {
         Button(action: toggleAction) {
             Image(systemName: isFavorite ? "heart.fill" : "heart")
-                .foregroundColor(.red)
+                .foregroundStyle(isFavorite ? .red : .gray)
+                .font(.title2)
+                .padding(8)
+                .background(.ultraThinMaterial, in: Circle())
         }
-        .padding()
+        .buttonStyle(.plain)
     }
 }
 

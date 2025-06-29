@@ -31,13 +31,17 @@ struct MovieDetailView: View {
                     isFavorite: viewModel.isFavorite(movie),
                     toggleAction: { viewModel.toggleFavorite(for: movie) }
                 )
+                .padding()
             }
-
+            
             VStack(alignment: .leading, spacing: 16) {
                 MovieDetailInfoView(movie: movie, viewModel: viewModel)
 
                 if let credits = viewModel.movieCredits {
                     MovieCreditsView(credits: credits)
+                    if let director = credits.crew.first(where: { $0.job == "Director" }) {
+                        DirectorView(director: director, repository: viewModel.repository)
+                    }
                     CastCarouselView(cast: credits.cast, repository: viewModel.repository)
                 }
 
@@ -47,9 +51,7 @@ struct MovieDetailView: View {
                     RelatedMoviesSection(
                         movies: recommended,
                         movieViewModel: viewModel,
-                        castViewModelProvider: {
-                            CastViewModel(repository: viewModel.repository)
-                        }
+                        castViewModel: castViewModel
                     )
                     .transition(.opacity)
                     .animation(.easeInOut(duration: 0.3), value: recommended)
@@ -57,12 +59,7 @@ struct MovieDetailView: View {
             }
             .padding(.horizontal)
         }
-        .task {
-            await viewModel.loadMovieCredits(for: movie.id)
-            await viewModel.loadMovieVideos(for: movie.id)
-            await viewModel.fetchRecommendedMovies(for: movie.id)
-            await viewModel.loadMovieDetails(for: movie.id)
-        }
+        .task { await loadData() }
         .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -70,4 +67,13 @@ struct MovieDetailView: View {
 
 #Preview("Star Wars Detail") {
     MovieDetailView.previewStarWars
+}
+
+private extension MovieDetailView {
+    private func loadData() async {
+        await viewModel.loadMovieCredits(for: movie.id)
+        await viewModel.loadMovieVideos(for: movie.id)
+        await viewModel.fetchRecommendedMovies(for: movie.id)
+        await viewModel.loadMovieDetails(for: movie.id)
+    }
 }

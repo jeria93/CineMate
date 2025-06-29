@@ -12,9 +12,13 @@ final class TMDBService {
     private let baseURL = "https://api.themoviedb.org/3"
     private let session = URLSession.shared
 
-    func fetchPersonMovieCredits(for personId: Int) async throws -> [Movie] {
-        let result: MovieResult = try await request(endpoint: .personMovieCredits(personId))
-        return result.results
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
+        let response: PersonMovieCreditsResponse = try await request(endpoint: .personMovieCredits(personId))
+        return response.cast
+    }
+
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
+        return try await request(endpoint: .personExternalIDs(personId))
     }
 
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
@@ -106,5 +110,3 @@ final class TMDBService {
     }
 
 }
-
-// ide: skapa en extension om denna fil blir för lång, varje extension kan ha respektive endpoints, tex söka, hämta etc

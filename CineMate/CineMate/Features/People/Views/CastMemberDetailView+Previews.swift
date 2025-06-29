@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-extension CastMemberDetailView {
-    static var preview: some View {
-        NavigationStack {
-            CastMemberDetailView(
-                member: PreviewData.markHamill,
-                viewModel: PreviewFactory.personViewModel()
-            )
-        }
-    }
-}
+//extension CastMemberDetailView {
+//    static var preview: some View {
+//        NavigationStack {
+//            CastMemberDetailView(
+//                member: PreviewData.markHamill,
+//                viewModel: PreviewFactory.personViewModel()
+//            )
+//        }
+//    }
+//}

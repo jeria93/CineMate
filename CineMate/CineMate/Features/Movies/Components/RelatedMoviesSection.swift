@@ -10,7 +10,7 @@ import SwiftUI
 struct RelatedMoviesSection: View {
     let movies: [Movie]
     let movieViewModel: MovieViewModel
-    let castViewModelProvider: () -> CastViewModel
+    @ObservedObject var castViewModel: CastViewModel
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -26,7 +26,7 @@ struct RelatedMoviesSection: View {
                             MovieDetailView(
                                 movie: movie,
                                 viewModel: movieViewModel,
-                                castViewModel: castViewModelProvider()
+                                castViewModel: castViewModel
                             )
                         } label: {
                             RelatedMovieCardView(movie: movie)

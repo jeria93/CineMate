@@ -26,7 +26,7 @@ extension MovieRowView {
     }
 
     static var previewNoPoster: some View {
-        var movie = PreviewData.starWars
+        let movie = PreviewData.starWars
         return MovieRowView(
             movie: Movie(
                 id: movie.id,
@@ -42,7 +42,7 @@ extension MovieRowView {
     }
 
     static var previewNoOverview: some View {
-        var movie = PreviewData.starWars
+        let movie = PreviewData.starWars
         return MovieRowView(
             movie: Movie(
                 id: movie.id,
@@ -58,7 +58,7 @@ extension MovieRowView {
     }
 
     static var previewLongOverview: some View {
-        var movie = PreviewData.starWars
+        let movie = PreviewData.starWars
         return MovieRowView(
             movie: Movie(
                 id: movie.id,

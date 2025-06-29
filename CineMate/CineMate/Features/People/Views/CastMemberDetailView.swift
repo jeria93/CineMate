@@ -1,10 +1,3 @@
-//
-//  CastMemberDetailView.swift
-//  CineMate
-//
-//  Created by Nicholas Samuelsson Jeria on 2025-06-21.
-//
-
 import SwiftUI
 
 struct CastMemberDetailView: View {
@@ -20,10 +13,20 @@ struct CastMemberDetailView: View {
         ScrollView {
             VStack(spacing: 16) {
                 CastMemberImageView(url: member.profileURL)
+                    .padding(.top, 16)
 
-                Text(member.name)
-                    .font(.title)
-                    .bold()
+                HStack(spacing: 12) {
+                    Text(member.name)
+                        .font(.title)
+                        .bold()
+
+                    FavoriteButton(
+                        isFavorite: viewModel.isFavoriteCast(id: member.id),
+                        toggleAction: {
+                            viewModel.toggleFavoriteCast(id: member.id)
+                        }
+                    )
+                }
 
                 if let role = member.character {
                     Text("Role: \(role)")
@@ -32,12 +35,29 @@ struct CastMemberDetailView: View {
                 }
 
                 if let detail = viewModel.personDetail {
+                    SectionHeader(title: "Biography")
                     PersonInfoView(detail: detail)
-                    PersonLinksView(imdbURL: detail.imdbURL, tmdbURL: detail.tmdbURL)
+
+                    SectionHeader(title: "Links")
+                    PersonLinksView(
+                        imdbURL: detail.imdbURL,
+                        tmdbURL: detail.tmdbURL,
+                        instagramURL: viewModel.personExternalIDs?.instagramURL,
+                        twitterURL: viewModel.personExternalIDs?.twitterURL,
+                        facebookURL: viewModel.personExternalIDs?.facebookURL
+                    )
+                    SectionHeader(title: "Details")
+                    PersonMetaInfoView(detail: detail)
+                }
+
+                // "Most Iconic Roles" (Known For)
+                if !viewModel.knownForMovies.isEmpty {
+                    KnownForScrollView(movies: viewModel.knownForMovies)
                 }
 
                 if !viewModel.personMovies.isEmpty {
-                    PersonMoviesView(movies: viewModel.personMovies)
+                    SectionHeader(title: "Filmography")
+                    HorizontalMoviesScrollView(filmography: viewModel.personMovies)
                 }
 
                 if viewModel.isLoading {
@@ -45,25 +65,27 @@ struct CastMemberDetailView: View {
                 }
 
                 if let error = viewModel.errorMessage {
-                    Text("Error: \(error)").foregroundStyle(.red)
+                    Text("Error: \(error)")
+                        .foregroundStyle(.red)
                 }
             }
             .padding()
         }
-        .navigationTitle(member.name)
         .navigationBarTitleDisplayMode(.inline)
-        .task {
-            debugPrint("Loading personId = \(member.id)")
-            await viewModel.loadPersonDetail(for: member.id)
-            await viewModel.loadPersonMovieCredits(for: member.id)
-            debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
-            debugPrint("personMovies count = \(viewModel.personMovies.count)")
-        }
+        .task { await loadData() }
     }
 }
 
-#Preview("Cast Detail – Mark Hamill") {
+#Preview("Default") {
     PreviewFactory.castMemberDetailView()
 }
 
-
+private extension CastMemberDetailView {
+    private func loadData() async {
+        debugPrint("Loading personId = \(member.id)")
+        await viewModel.loadPersonDetail(for: member.id)
+        await viewModel.loadPersonMovieCredits(for: member.id)
+        debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
+        debugPrint("personMovies count = \(viewModel.personMovies.count)")
+    }
+}

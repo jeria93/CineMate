@@ -15,7 +15,11 @@ final class MovieRepository: MovieProtocol {
         self.service = service
     }
 
-    func fetchPersonMovieCredits(for personId: Int) async throws -> [Movie] {
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
+        try await service.fetchPersonExternalIDs(for: personId)
+    }
+
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
         try await service.fetchPersonMovieCredits(for: personId)
     }
 
@@ -56,4 +60,3 @@ final class MovieRepository: MovieProtocol {
         try await service.fetchUpcomingMovies()
     }
 }
-// ide: skapa en extension om denna fil blir för lång, varje extension kan ha respektive endpoints, tex söka, hämta etc
