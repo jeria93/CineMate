@@ -22,7 +22,7 @@ struct CastMember: Codable, Identifiable {
     let name: String
     let character: String?
     let profilePath: String?
-    
+
     var profileURL: URL? {
         TMDBImageHelper.url(for: profilePath, size: .h632)
     }
@@ -30,7 +30,13 @@ struct CastMember: Codable, Identifiable {
 
 /// Represents a crew member (director, writer etc.) in a movie's crew list.
 /// Part of: `MovieCredits.crew`
-struct CrewMember: Codable {
+struct CrewMember: Codable, Identifiable {
+    let id: Int
     let name: String
     let job: String?
+    let profilePath: String?
+
+    var profileURL: URL? {
+        TMDBImageHelper.url(for: profilePath, size: .h632)
+    }
 }

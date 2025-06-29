@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
-    let castViewModelProvider: () -> CastViewModel
+    @ObservedObject var castViewModel: CastViewModel
 
     var body: some View {
         Group {
@@ -20,7 +20,8 @@ struct MovieListContentView: View {
                     Text("Error: \(error)")
                     Button("Retry") {
                         Task {
-                            await viewModel.loadMovies() }
+                            await viewModel.loadMovies()
+                        }
                     }
                 }
             } else {
@@ -29,7 +30,7 @@ struct MovieListContentView: View {
                         MovieDetailView(
                             movie: movie,
                             viewModel: viewModel,
-                            castViewModel: castViewModelProvider()
+                            castViewModel: castViewModel
                         )
                     } label: {
                         MovieRowView(movie: movie)

@@ -33,12 +33,15 @@ struct MovieDetailView: View {
                 )
                 .padding()
             }
-
+            
             VStack(alignment: .leading, spacing: 16) {
                 MovieDetailInfoView(movie: movie, viewModel: viewModel)
 
                 if let credits = viewModel.movieCredits {
                     MovieCreditsView(credits: credits)
+                    if let director = credits.crew.first(where: { $0.job == "Director" }) {
+                        DirectorView(director: director, repository: viewModel.repository)
+                    }
                     CastCarouselView(cast: credits.cast, repository: viewModel.repository)
                 }
 
@@ -48,9 +51,7 @@ struct MovieDetailView: View {
                     RelatedMoviesSection(
                         movies: recommended,
                         movieViewModel: viewModel,
-                        castViewModelProvider: {
-                            CastViewModel(repository: viewModel.repository)
-                        }
+                        castViewModel: castViewModel
                     )
                     .transition(.opacity)
                     .animation(.easeInOut(duration: 0.3), value: recommended)

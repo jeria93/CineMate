@@ -13,12 +13,11 @@ struct CineMate: App {
         WindowGroup {
             let repository = MovieRepository()
             let viewModel = MovieViewModel(repository: repository)
+            let castViewModel = CastViewModel(repository: repository)
 
             MovieListView(
                 viewModel: viewModel,
-                castViewModelProvider: {
-                    CastViewModel(repository: repository)
-                }
+                castViewModel: castViewModel
             )
         }
     }

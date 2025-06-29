@@ -12,7 +12,7 @@ enum PreviewFactory {
     static let repository = MockMovieRepository()
     static let recommendedMovies = PreviewData.moviesList
 
-    // MARK: - MovieViewModel States
+    // MARK: - MovieViewModels
 
     @MainActor
     static func movieListViewModel() -> MovieViewModel {
@@ -64,14 +64,7 @@ enum PreviewFactory {
         return vm
     }
 
-    // MARK: - CastViewModel Provider
-
-    @MainActor
-    static func castViewModelProvider() -> () -> CastViewModel {
-        { CastViewModel(repository: repository) }
-    }
-
-    // MARK: - CastViewModel
+    // MARK: - CastViewModels
 
     @MainActor
     static func castViewModel() -> CastViewModel {

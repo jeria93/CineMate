@@ -12,7 +12,7 @@ extension RelatedMoviesSection {
         RelatedMoviesSection(
             movies: PreviewFactory.recommendedMovies,
             movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
-            castViewModelProvider: PreviewFactory.castViewModelProvider()
+            castViewModel: PreviewFactory.castViewModel()
         )
         .padding()
         .background(Color(.systemBackground))
@@ -22,7 +22,7 @@ extension RelatedMoviesSection {
         RelatedMoviesSection(
             movies: [],
             movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
-            castViewModelProvider: PreviewFactory.castViewModelProvider()
+            castViewModel: PreviewFactory.castViewModel()
         )
         .padding()
         .background(Color(.systemBackground))

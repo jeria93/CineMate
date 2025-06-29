@@ -7,17 +7,13 @@
 
 import SwiftUI
 
-
 struct MovieListView: View {
     @StateObject private var viewModel: MovieViewModel
-    private let castViewModelProvider: () -> CastViewModel
+    @StateObject private var castViewModel: CastViewModel
 
-    init(
-        viewModel: MovieViewModel,
-        castViewModelProvider: @escaping () -> CastViewModel
-    ) {
+    init(viewModel: MovieViewModel, castViewModel: CastViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
-        self.castViewModelProvider = castViewModelProvider
+        _castViewModel = StateObject(wrappedValue: castViewModel)
     }
 
     var body: some View {
@@ -27,7 +23,7 @@ struct MovieListView: View {
 
                 MovieListContentView(
                     viewModel: viewModel,
-                    castViewModelProvider: castViewModelProvider
+                    castViewModel: castViewModel
                 )
             }
             .navigationTitle(viewModel.selectedCategory.displayName)

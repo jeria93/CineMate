@@ -11,21 +11,21 @@ extension MovieListContentView {
     static var previewList: some View {
         MovieListContentView(
             viewModel: PreviewFactory.movieListViewModel(),
-            castViewModelProvider: { PreviewFactory.castViewModel() }
+            castViewModel: PreviewFactory.castViewModel()
         )
     }
-    
+
     static var previewLoading: some View {
         MovieListContentView(
             viewModel: PreviewFactory.loadingMovieViewModel(),
-            castViewModelProvider: { PreviewFactory.castViewModel() }
+            castViewModel: PreviewFactory.castViewModel()
         )
     }
 
     static var previewError: some View {
         MovieListContentView(
             viewModel: PreviewFactory.errorMovieViewModel(),
-            castViewModelProvider: { PreviewFactory.castViewModel() }
+            castViewModel: PreviewFactory.castViewModel()
         )
     }
 }

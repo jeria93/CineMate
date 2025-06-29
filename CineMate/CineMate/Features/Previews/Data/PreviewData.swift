@@ -89,8 +89,8 @@ struct PreviewData {
             )
         ],
         crew: [
-            CrewMember(name: "George Lucas", job: "Director"),
-            CrewMember(name: "Gary Kurtz", job: "Producer")
+            CrewMember(id: 100, name: "George Lucas", job: "Director", profilePath: "/mDLDvsx8PaZoEThkBdyaG1JxPdf.jpg"),
+            CrewMember(id: 101, name: "Gary Kurtz", job: "Producer", profilePath: "/q6tgPiNqzEOIYmHxMrpWoUirmmu.jpg")
         ]
     )
 
@@ -223,5 +223,12 @@ struct PreviewData {
         name: "This is a really really really long actor name",
         character: "Extraordinary Sidekick of Episode 47 Part 3",
         profilePath: nil
+    )
+
+    static let directorNolan = CrewMember(
+        id: 525,
+        name: "Christopher Nolan",
+        job: "Director",
+        profilePath: "/xuAIuYSmsUzKlUMBFGVZaWsY3DZ.jpg"
     )
 }
