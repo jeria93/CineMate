@@ -15,47 +15,16 @@ struct PersonLinksView: View {
     let facebookURL: URL?
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 16) {
-                if let imdbURL {
-                    Link(destination: imdbURL) {
-                        Label("IMDb", systemImage: "film.fill")
-                    }
-                }
-
-                if let tmdbURL {
-                    Link(destination: tmdbURL) {
-                        Label("TMDB", systemImage: "sparkles.tv")
-                    }
-
-                    ShareLink(item: tmdbURL) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                }
-            }
-
-            HStack(spacing: 16) {
-                if let instagramURL {
-                    Link(destination: instagramURL) {
-                        Label("Instagram", systemImage: "camera")
-                    }
-                }
-
-                if let twitterURL {
-                    Link(destination: twitterURL) {
-                        Label("Twitter", systemImage: "bird")
-                    }
-                }
-
-                if let facebookURL {
-                    Link(destination: facebookURL) {
-                        Label("Facebook", systemImage: "person.2.fill")
-                    }
-                }
-            }
+        HStack(spacing: 20) {
+            SocialLinkButtonView(url: imdbURL, assetName: "imdb")
+            SocialLinkButtonView(url: tmdbURL, assetName: "themoviedatabase")
+            SocialLinkButtonView(url: instagramURL, assetName: "instagram")
+            SocialLinkButtonView(url: twitterURL, assetName: "x")
+            SocialLinkButtonView(url: facebookURL, assetName: "facebook")
+            ShareLinkButtonView(url: tmdbURL)
+            Spacer()
         }
-        .labelStyle(.iconOnly)
-        .font(.headline)
+        .padding(.vertical)
     }
 }
 

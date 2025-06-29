@@ -15,6 +15,7 @@ enum TMDBImageSize: String {
     case w185
     case w342
     case w500
+    case h632
 }
 
 

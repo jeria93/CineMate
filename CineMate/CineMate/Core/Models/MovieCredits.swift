@@ -24,7 +24,7 @@ struct CastMember: Codable, Identifiable {
     let profilePath: String?
     
     var profileURL: URL? {
-        TMDBImageHelper.url(for: profilePath, size: .w185)
+        TMDBImageHelper.url(for: profilePath, size: .h632)
     }
 }
 
