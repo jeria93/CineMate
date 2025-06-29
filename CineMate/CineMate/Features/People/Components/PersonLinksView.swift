@@ -10,52 +10,55 @@ import SwiftUI
 struct PersonLinksView: View {
     let imdbURL: URL?
     let tmdbURL: URL?
+    let instagramURL: URL?
+    let twitterURL: URL?
+    let facebookURL: URL?
 
     var body: some View {
-        HStack(spacing: 16) {
-            if let imdbURL {
-                Link(destination: imdbURL) {
-                    Label("IMDb", systemImage: "film.fill")
-                        .font(.subheadline)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(Color.yellow.opacity(0.15))
-                        .foregroundStyle(Color.yellow)
-                        .cornerRadius(12)
-                        .shadow(color: .yellow.opacity(0.2), radius: 4, x: 0, y: 2)
+        VStack(spacing: 12) {
+            HStack(spacing: 16) {
+                if let imdbURL {
+                    Link(destination: imdbURL) {
+                        Label("IMDb", systemImage: "film.fill")
+                    }
+                }
+
+                if let tmdbURL {
+                    Link(destination: tmdbURL) {
+                        Label("TMDB", systemImage: "sparkles.tv")
+                    }
+
+                    ShareLink(item: tmdbURL) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
                 }
             }
 
-            if let tmdbURL {
-                Link(destination: tmdbURL) {
-                    Label("TMDB", systemImage: "sparkles.tv")
-                        .font(.subheadline)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(Color.blue.opacity(0.15))
-                        .foregroundStyle(Color.blue)
-                        .cornerRadius(12)
-                        .shadow(color: .blue.opacity(0.2), radius: 4, x: 0, y: 2)
+            HStack(spacing: 16) {
+                if let instagramURL {
+                    Link(destination: instagramURL) {
+                        Label("Instagram", systemImage: "camera")
+                    }
                 }
 
-                ShareLink(item: tmdbURL) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                        .font(.subheadline)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(Color.gray.opacity(0.15))
-                        .foregroundStyle(Color.primary)
-                        .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 1)
+                if let twitterURL {
+                    Link(destination: twitterURL) {
+                        Label("Twitter", systemImage: "bird")
+                    }
+                }
+
+                if let facebookURL {
+                    Link(destination: facebookURL) {
+                        Label("Facebook", systemImage: "person.2.fill")
+                    }
                 }
             }
         }
-        .padding(.top)
+        .labelStyle(.iconOnly)
+        .font(.headline)
     }
 }
-#Preview("Links – Mark Hamill") {
-    PersonLinksView(
-        imdbURL: PreviewData.markHamillPersonDetail.imdbURL,
-        tmdbURL: PreviewData.markHamillPersonDetail.tmdbURL
-    )
+
+#Preview("Social Media Links") {
+    PersonLinksView.preview
 }

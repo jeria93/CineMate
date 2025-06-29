@@ -17,6 +17,10 @@ final class TMDBService {
         return response.cast
     }
 
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
+        return try await request(endpoint: .personExternalIDs(personId))
+    }
+
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
         return try await request(endpoint: .movieDetail(movieId))
     }
@@ -106,5 +110,3 @@ final class TMDBService {
     }
 
 }
-
-// ide: skapa en extension om denna fil blir för lång, varje extension kan ha respektive endpoints, tex söka, hämta etc

@@ -18,4 +18,5 @@ protocol MovieProtocol {
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail
     func fetchPersonDetail(for personId: Int) async throws -> PersonDetail
     func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit]
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs
 }

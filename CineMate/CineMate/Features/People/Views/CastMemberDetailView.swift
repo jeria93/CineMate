@@ -39,8 +39,13 @@ struct CastMemberDetailView: View {
                     PersonInfoView(detail: detail)
 
                     SectionHeader(title: "Links")
-                    PersonLinksView(imdbURL: detail.imdbURL, tmdbURL: detail.tmdbURL)
-
+                    PersonLinksView(
+                        imdbURL: detail.imdbURL,
+                        tmdbURL: detail.tmdbURL,
+                        instagramURL: viewModel.personExternalIDs?.instagramURL,
+                        twitterURL: viewModel.personExternalIDs?.twitterURL,
+                        facebookURL: viewModel.personExternalIDs?.facebookURL
+                    )
                     SectionHeader(title: "Details")
                     PersonMetaInfoView(detail: detail)
                 }

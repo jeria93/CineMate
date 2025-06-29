@@ -16,6 +16,7 @@ final class PersonViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var favoriteCastIds: Set<Int> = []
+    @Published var personExternalIDs: PersonExternalIDs?
 
     // MARK: - Dependencies
     private let repository: MovieProtocol
@@ -44,10 +45,15 @@ final class PersonViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            personDetail = try await repository.fetchPersonDetail(for: personId)
+            async let detail = repository.fetchPersonDetail(for: personId)
+            async let external = repository.fetchPersonExternalIDs(for: personId)
+
+            personDetail = try await detail
+            personExternalIDs = try await external
             errorMessage = nil
         } catch {
             personDetail = nil
+            personExternalIDs = nil
             errorMessage = error.localizedDescription
         }
     }
