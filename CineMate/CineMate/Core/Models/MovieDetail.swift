@@ -18,6 +18,7 @@ struct MovieDetail: Codable {
     let status: String?
     let productionCompanies: [ProductionCompany]
     let productionCountries: [ProductionCountry]
+    let genres: [Genre]
 }
 
 /// A company involved in the production of a movie.
@@ -30,4 +31,10 @@ struct ProductionCompany: Codable {
 /// Part of: `MovieDetail.productionCountries`
 struct ProductionCountry: Codable {
     let name: String
+}
+
+extension MovieDetail {
+    var genreNames: [String] {
+        genres.map { $0.name }
+    }
 }

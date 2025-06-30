@@ -117,7 +117,8 @@ struct PreviewData {
         ],
         productionCountries: [
             ProductionCountry(name: "United States of America")
-        ]
+        ],
+        genres: Genre.all
     )
 
     static let emptyDetail = MovieDetail(
@@ -128,7 +129,8 @@ struct PreviewData {
         homepage: nil,
         status: nil,
         productionCompanies: [],
-        productionCountries: []
+        productionCountries: [],
+        genres: []
     )
 
     static let markHamillMovies: [Movie] = [
