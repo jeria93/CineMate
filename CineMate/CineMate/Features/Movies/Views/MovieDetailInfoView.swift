@@ -36,8 +36,8 @@ struct MovieDetailInfoView: View {
                 }
             }
 
-            if let genres = movie.genres, !genres.isEmpty {
-                MovieGenresView(genres: genres)
+            if let detail = viewModel.movieDetail, !detail.genreNames.isEmpty {
+                MovieGenresView(genres: detail.genreNames)
             }
 
             if let overview = movie.overview {
