@@ -1,8 +1,8 @@
 # CineMate
 
 **CineMate** is a SwiftUI-based iOS app that lets users browse, filter, and save movies using The Movie Database (**TMDB**) API.  
-**Planned support for Google Sign-In via Firebase Authentication.**  
-It uses **MVVM** architecture and follows clean development practices.
+It uses **MVVM architecture**, clean SwiftUI views, and a modular structure with previews, mocking, and secure API access.  
+**Planned support for Google Sign-In via Firebase Authentication.**
 
 > **Recommended setup:** Xcode **15.3** + iOS **17.4** (simulator or real device)
 
@@ -49,10 +49,10 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 <?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
 <dict>
-    <key>TMDB_API_KEY</key>
-    <string>PUT-YOUR-API-KEY-HERE</string>
-    <key>TMDB_BEARER_TOKEN</key>
-    <string>PUT-YOUR-BEARER-TOKEN-HERE</string>
+<key>TMDB_API_KEY</key>
+<string>PUT-YOUR-API-KEY-HERE</string>
+<key>TMDB_BEARER_TOKEN</key>
+<string>PUT-YOUR-BEARER-TOKEN-HERE</string>
 </dict>
 </plist>
 ```
@@ -69,11 +69,18 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 ## Architecture & Concepts
 
 - MVVM (Model–View–ViewModel)
-- Google Sign-In with Firebase *(planned)*
-- `Secrets.plist` used for secure API access
-- Dependency Injection (used for ViewModels and Repositories)
+- **Simple Dependency Injection** (init-based, no factories)
+- Repository Pattern for data abstraction
 - Generic service layer for TMDB endpoints
-- `.gitignore` and `.github/CODEOWNERS` used for professional repo hygiene
+- Preview-friendly setup using `MockMovieRepository` and `PreviewData`
+- Secure API key management with `Secrets.plist` (ignored in Git)
+- `.gitignore` and `.github/CODEOWNERS` for professional repo hygiene
+- SwiftUI-only app using async/await and modern view composition
+- Feature-first folder structure (Movies, People, Lists)
+- SRP (Single Responsibility Principle) and SoC (Separation of Concerns)
+- Icons sourced from [Simple Icons](https://simpleicons.org/)
+- Planned support for Firebase Authentication (Google Sign-In)
+
 
 ---
 
@@ -84,27 +91,46 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 
 ---
 
-## Feature Preview
+## Feature Demos
 
-Here are two short demos of CineMate in action:
+### Popular Movie List
 
-### Movie Detail View
-This demo shows how users can explore a specific movie, watch the trailer, view cast members, and use the Share feature.
+Displays a scrollable list of popular movies from TMDB.
 
-<img src="Assets/cinemate_detail.gif" width="350" alt="Movie Detail Demo" />
+<img src="Assets/popular_list.gif" width="350" alt="Popular List Demo" />
 
 ---
 
-### Movie List View
-This demo shows the main screen where users can browse trending movies and access quick details.
+### Genre Filtering
 
-<img src="Assets/cinemate_list.gif" width="350" alt="Movie List Demo" />
+Users can toggle between Popular, Top Rated, Trending, and Upcoming.
+
+<img src="Assets/genre_filtering.gif" width="350" alt="Genre Filtering Demo" />
+
+---
+
+### Movie Detail + Share
+
+Tap any movie to view trailer, details, and share it.
+
+<img src="Assets/movie_detail_share.gif" width="350" alt="Movie Detail & Share Demo" />
+
+---
+
+### List Scroll Animation
+
+Smooth scrolling UI powered by SwiftUI and async/await.
+
+<img src="Assets/movie_list_scroll.gif" width="350" alt="Movie Scroll Demo" />
+
+---
 
 
 ## External Resources
 
 - [TMDB – The Movie Database](https://www.themoviedb.org/)
 - [Firebase](https://firebase.google.com/)
+- [Simple Icons](https://simpleicons.org)
 
 ---
 
@@ -121,7 +147,7 @@ This app is part of my iOS development portfolio. It demonstrates:
 
 > This project is still evolving — new features and improvements are added continuously.
 
-> Want to learn more or collaborate?  
+> Want to follow my journey?
 **Connect on LinkedIn:** [nicholas-samuelsson-jeria](https://www.linkedin.com/in/nicholas-samuelsson-jeria-69778391)
 
 ---
@@ -132,20 +158,26 @@ The CineMate project follows a modular architecture with feature-based separatio
 
 ```
 CineMate/
-├── App/                  # Entry point for the SwiftUI app
-├── Core/                 # Contains models, networking, secrets, repository interfaces
+├── CineMateApp.swift
+├── Core/
+│   ├── Config/
 │   ├── Models/
 │   ├── Networking/
 │   ├── Repository/
-│   ├── Secrets/
-│   └── Utils/
-├── Features/             # Feature-specific Views, ViewModels, and Components
+│   └── Utilities/
+├── Features/
+│   ├── Movies/
 │   ├── MovieList/
-│   └── MovieDetail/
-├── UI/                   # Shared UI components (buttons, rows, etc.)
+│   └── People/
+├── UI/
 │   └── Components/
-├── Mocks/                # Mock data for previews and testing
-├── Resources/            # Assets and secrets used by the app
+├── Previews/
+│   ├── Mocks/
+│   ├── Factory/
+│   └── Data/
+├── Resources/
+│   ├── Assets.xcassets/
+│   └── Secrets/
 └── Info.plist
 ```
 
@@ -158,11 +190,11 @@ CineMate/
 
 ```swift
 let credential = GoogleAuthProvider.credential(
-    withIDToken: idToken,
-    accessToken: accessToken
+withIDToken: idToken,
+accessToken: accessToken
 )
 Auth.auth().signIn(with: credential) { result, error in
-    // Signed in to Firebase
+// Signed in to Firebase
 }
 ```
 
