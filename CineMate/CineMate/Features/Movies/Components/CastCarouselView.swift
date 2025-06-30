@@ -31,7 +31,6 @@ struct CastCarouselView: View {
                         }
                     }
                 }
-                .padding(.horizontal)
             }
         }
     }

@@ -15,7 +15,6 @@ struct DirectorView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Director")
                 .font(.headline)
-                .padding(.horizontal)
 
             if let director {
                 NavigationLink {
@@ -38,7 +37,6 @@ struct DirectorView: View {
 
                         Spacer()
                     }
-                    .padding(.horizontal)
                 }
             } else {
                 DirectorUnavailableView()
