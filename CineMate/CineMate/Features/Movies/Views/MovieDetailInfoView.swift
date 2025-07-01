@@ -46,8 +46,8 @@ struct MovieDetailInfoView: View {
                     .foregroundColor(.secondary)
             }
 
-            if let providers = viewModel.watchProviders {
-                WatchProvidersView(providers: providers)
+            if let region = viewModel.watchProviderRegion {
+                WatchProvidersView(region: region)
             }
 
             if let detail = viewModel.movieDetail {

@@ -88,7 +88,7 @@ enum PreviewFactory {
     @MainActor
     static func movieDetailViewModelWithWatchProviders() -> MovieViewModel {
         let vm = MovieViewModel(repository: repository)
-        vm.watchProviders = PreviewData.mockWatchProviders
+        vm.watchProviderRegion = PreviewData.mockWatchProviderRegion
         return vm
     }
 }

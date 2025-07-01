@@ -8,6 +8,11 @@
 import Foundation
 
 final class MovieRepository: MovieProtocol {
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
+        let response = try await service.fetchWatchProviders(for: movieId)
+        return response.results["SE"] ?? .empty
+    }
+    
     
     private let service: TMDBService
     
@@ -60,7 +65,5 @@ final class MovieRepository: MovieProtocol {
         try await service.fetchUpcomingMovies()
     }
     
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion? {
-        try await service.fetchWatchProviders(for: movieId)
-    }
+
 }

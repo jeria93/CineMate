@@ -8,22 +8,44 @@
 import SwiftUI
 
 struct WatchProvidersView: View {
-    let providers: [WatchProvider]
+    let region: WatchProviderRegion
+    @State private var selection: WatchProviderCategory = .flatrate
 
+    enum WatchProviderCategory: String, CaseIterable, Identifiable {
+        case flatrate = "Stream"
+        case rent = "Rent"
+        case buy = "Buy"
+
+        var id: String { self.rawValue }
+    }
+
+    var selectedProviders: [WatchProvider] {
+        switch selection {
+        case .flatrate:
+            return region.flatrate ?? []
+        case .rent:
+            return region.rent ?? []
+        case .buy:
+            return region.buy ?? []
+        }
+    }
     var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Picker("Select Option", selection: $selection) {
+                ForEach(WatchProviderCategory.allCases) { category in
+                    Text(category.rawValue).tag(category)
+                }
+            }
+            .pickerStyle(.segmented)
 
-        if providers.isEmpty {
-            Text("Not available for streaming in your region.")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        } else {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Available on:")
-                    .font(.headline)
-
+            if selectedProviders.isEmpty {
+                Text("Not available for \(selection.rawValue.lowercased()) in your region.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(providers) { provider in
+                        ForEach(selectedProviders) { provider in
                             VStack(spacing: 4) {
                                 if let logoURL = provider.logoURL {
                                     AsyncImage(url: logoURL) { image in
@@ -50,6 +72,7 @@ struct WatchProvidersView: View {
         }
     }
 }
+
 
 #Preview("With Mock Providers") {
     WatchProvidersView.preview

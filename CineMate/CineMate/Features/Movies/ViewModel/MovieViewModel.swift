@@ -22,9 +22,9 @@ final class MovieViewModel: ObservableObject {
             Task { await loadMovies() }
         }
     }
-    @Published var watchProviders: [WatchProvider]?
+    @Published var watchProviderRegion: WatchProviderRegion?
     @Published var favoriteMovies: Set<Int> = []
-    
+
     var repository: MovieProtocol
     
     init(repository: MovieProtocol) {
@@ -75,8 +75,8 @@ final class MovieViewModel: ObservableObject {
 
     func loadWatchProviders(for movieId: Int) async {
         await load({
-            try await repository.fetchWatchProviders(for: movieId)?.flatrate ?? []
-        }, assignTo: \.watchProviders)
+            try await repository.fetchWatchProviders(for: movieId)
+        }, assignTo: \.watchProviderRegion)
     }
 
     // MARK: - Movie List (filter-based)

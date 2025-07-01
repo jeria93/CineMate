@@ -9,10 +9,10 @@ import Foundation
 
 final class MockMovieRepository: MovieProtocol {
 
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion? {
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
         PreviewData.mockWatchProviderRegion
     }
-
+    
     func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
         return .preview
     }
