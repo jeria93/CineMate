@@ -63,6 +63,11 @@ final class TMDBService {
         return result.results
     }
 
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion? {
+        let response: WatchProvidersResponse = try await request(endpoint: .watchProviders(movieId))
+        return response.results["SE"]
+    }
+
     /// Generic method that sends a GET request to TMDB and decodes the response into any Decodable model.
     ///
     /// - Parameters:
