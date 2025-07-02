@@ -38,7 +38,7 @@ struct WatchProviderRegion: Decodable {
 /// - Endpoint:
 ///   - [Get Watch Providers for a Movie](https://developer.themoviedb.org/reference/movie-watch-providers)
 ///   - [Get All Watch Providers](https://developer.themoviedb.org/reference/watch-providers-movie-list)
-struct WatchProvider: Decodable, Identifiable {
+struct WatchProvider: Decodable, Identifiable, Equatable {
 
     let providerId: Int
     let providerName: String

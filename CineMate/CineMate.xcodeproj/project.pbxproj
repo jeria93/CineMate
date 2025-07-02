@@ -30,6 +30,14 @@
 		031F2E322E0DD34C001E41B8 /* ExpandMoreCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F2E312E0DD34C001E41B8 /* ExpandMoreCardView.swift */; };
 		031F2E342E0DD735001E41B8 /* ExpandToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F2E332E0DD735001E41B8 /* ExpandToggleButton.swift */; };
 		031F2E362E0DDFDE001E41B8 /* TMDBImageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F2E352E0DDFDE001E41B8 /* TMDBImageHelper.swift */; };
+		033277E92E15BCC700E5A226 /* WatchProviderCategoryPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277E82E15BCC700E5A226 /* WatchProviderCategoryPicker.swift */; };
+		033277EB2E15BD1A00E5A226 /* WatchProviderListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277EA2E15BD1A00E5A226 /* WatchProviderListView.swift */; };
+		033277ED2E15BD3500E5A226 /* WatchProviderItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277EC2E15BD3500E5A226 /* WatchProviderItemView.swift */; };
+		033277EF2E15BF5700E5A226 /* WatchProviderListView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277EE2E15BF5700E5A226 /* WatchProviderListView+Previews.swift */; };
+		033277F12E15BFBD00E5A226 /* WatchProviderItemView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277F02E15BFBD00E5A226 /* WatchProviderItemView+Previews.swift */; };
+		033277F52E15C15800E5A226 /* WatchProviderCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277F42E15C15800E5A226 /* WatchProviderCategory.swift */; };
+		033277F72E15C42900E5A226 /* WatchProviderCategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277F62E15C42900E5A226 /* WatchProviderCategoryButton.swift */; };
+		033277F92E15C4EC00E5A226 /* WatchProviderCategoryButton+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033277F82E15C4EC00E5A226 /* WatchProviderCategoryButton+Previews.swift */; };
 		033DE9762E0144B4009FB949 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 033DE9752E0144B4009FB949 /* Secrets.plist */; };
 		033DE9782E01FBFC009FB949 /* CastCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033DE9772E01FBFC009FB949 /* CastCarouselView.swift */; };
 		034AAEED2E00BA6600099259 /* TMDBEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */; };
@@ -128,6 +136,14 @@
 		031F2E312E0DD34C001E41B8 /* ExpandMoreCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandMoreCardView.swift; sourceTree = "<group>"; };
 		031F2E332E0DD735001E41B8 /* ExpandToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandToggleButton.swift; sourceTree = "<group>"; };
 		031F2E352E0DDFDE001E41B8 /* TMDBImageHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBImageHelper.swift; sourceTree = "<group>"; };
+		033277E82E15BCC700E5A226 /* WatchProviderCategoryPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProviderCategoryPicker.swift; sourceTree = "<group>"; };
+		033277EA2E15BD1A00E5A226 /* WatchProviderListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProviderListView.swift; sourceTree = "<group>"; };
+		033277EC2E15BD3500E5A226 /* WatchProviderItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProviderItemView.swift; sourceTree = "<group>"; };
+		033277EE2E15BF5700E5A226 /* WatchProviderListView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WatchProviderListView+Previews.swift"; sourceTree = "<group>"; };
+		033277F02E15BFBD00E5A226 /* WatchProviderItemView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WatchProviderItemView+Previews.swift"; sourceTree = "<group>"; };
+		033277F42E15C15800E5A226 /* WatchProviderCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProviderCategory.swift; sourceTree = "<group>"; };
+		033277F62E15C42900E5A226 /* WatchProviderCategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProviderCategoryButton.swift; sourceTree = "<group>"; };
+		033277F82E15C4EC00E5A226 /* WatchProviderCategoryButton+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WatchProviderCategoryButton+Previews.swift"; sourceTree = "<group>"; };
 		033DE9752E0144B4009FB949 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Secrets.plist; path = CineMate/Features/Resources/Secrets.plist; sourceTree = SOURCE_ROOT; };
 		033DE9772E01FBFC009FB949 /* CastCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastCarouselView.swift; sourceTree = "<group>"; };
 		034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBEndpoint.swift; sourceTree = "<group>"; };
@@ -243,9 +259,6 @@
 				03A620C02DF774CA00C075E8 /* Features */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
-				03BCF91D2E14688300ADD1BF /* WatchProvidersView.swift */,
-				03BCF91F2E14697100ADD1BF /* WatchProvidersView+Previews.swift */,
-				03BCF9212E1480B800ADD1BF /* WatchProviderRegion+Extensions.swift */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -467,6 +480,64 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		033277FA2E15DBB000E5A226 /* WatchProviders */ = {
+			isa = PBXGroup;
+			children = (
+				033277FF2E15DC4B00E5A226 /* Components */,
+				033277FE2E15DBDC00E5A226 /* Previews */,
+				033277FC2E15DBC000E5A226 /* Model */,
+				033277FB2E15DBB900E5A226 /* Views */,
+				033277FD2E15DBCB00E5A226 /* Extensions */,
+			);
+			path = WatchProviders;
+			sourceTree = "<group>";
+		};
+		033277FB2E15DBB900E5A226 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				03BCF91D2E14688300ADD1BF /* WatchProvidersView.swift */,
+				033277E82E15BCC700E5A226 /* WatchProviderCategoryPicker.swift */,
+				033277EA2E15BD1A00E5A226 /* WatchProviderListView.swift */,
+				033277EC2E15BD3500E5A226 /* WatchProviderItemView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		033277FC2E15DBC000E5A226 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				033277F42E15C15800E5A226 /* WatchProviderCategory.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		033277FD2E15DBCB00E5A226 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				03BCF9212E1480B800ADD1BF /* WatchProviderRegion+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		033277FE2E15DBDC00E5A226 /* Previews */ = {
+			isa = PBXGroup;
+			children = (
+				03BCF91F2E14697100ADD1BF /* WatchProvidersView+Previews.swift */,
+				033277EE2E15BF5700E5A226 /* WatchProviderListView+Previews.swift */,
+				033277F02E15BFBD00E5A226 /* WatchProviderItemView+Previews.swift */,
+			);
+			path = Previews;
+			sourceTree = "<group>";
+		};
+		033277FF2E15DC4B00E5A226 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				033277F62E15C42900E5A226 /* WatchProviderCategoryButton.swift */,
+				033277F82E15C4EC00E5A226 /* WatchProviderCategoryButton+Previews.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		0368AFCD2DF6362F009B1F56 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -519,6 +590,7 @@
 		03A620C02DF774CA00C075E8 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				033277FA2E15DBB000E5A226 /* WatchProviders */,
 				030E03782E0B44E6007BB609 /* Movies */,
 				03D8D2A32E088DF5006A117D /* People */,
 				0368AFCD2DF6362F009B1F56 /* UI */,
@@ -680,6 +752,7 @@
 				038C86E22E14190200247D61 /* WatchProviders.swift in Sources */,
 				03BCF9202E14697100ADD1BF /* WatchProvidersView+Previews.swift in Sources */,
 				03CE4A462E0F283800D70F70 /* SectionHeader.swift in Sources */,
+				033277F72E15C42900E5A226 /* WatchProviderCategoryButton.swift in Sources */,
 				03FC25DF2E06A4D400AACB5E /* CastViewModel+Preview.swift in Sources */,
 				030612492DF4C07F0013F7AF /* TMDBService.swift in Sources */,
 				03D8D2AA2E09DFA8006A117D /* MovieDetailInfoView+Previews.swift in Sources */,
@@ -688,6 +761,7 @@
 				03CE4A422E0F214F00D70F70 /* PersonMetaInfoView.swift in Sources */,
 				030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */,
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
+				033277F52E15C15800E5A226 /* WatchProviderCategory.swift in Sources */,
 				0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */,
 				0355ABCE2E107E11002E6F77 /* KnownForScrollView.swift in Sources */,
 				0306124B2DF4C3BE0013F7AF /* MovieProtocol.swift in Sources */,
@@ -705,6 +779,8 @@
 				03E5BE8D2E09FFC700D3C46B /* FavoriteButton+Previews.swift in Sources */,
 				0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */,
 				03F3AD912E11C8D300B63AA2 /* DirectorView+Preview.swift in Sources */,
+				033277EB2E15BD1A00E5A226 /* WatchProviderListView.swift in Sources */,
+				033277E92E15BCC700E5A226 /* WatchProviderCategoryPicker.swift in Sources */,
 				03A620C62DF7782C00C075E8 /* MovieDetailView.swift in Sources */,
 				0359A97A2E02F17400818BD2 /* PreviewStyle.swift in Sources */,
 				03F3AD8F2E11C7B300B63AA2 /* DirectorView.swift in Sources */,
@@ -716,6 +792,7 @@
 				0359A96E2E02E74B00818BD2 /* CastCarouselView+Previews.swift in Sources */,
 				03FC25E12E06E9CB00AACB5E /* CastMemberDetailView.swift in Sources */,
 				03668ABF2DFBB19000132847 /* FavoriteButton.swift in Sources */,
+				033277EF2E15BF5700E5A226 /* WatchProviderListView+Previews.swift in Sources */,
 				03F3AD8D2E11C1FA00B63AA2 /* ShareLinkButtonView.swift in Sources */,
 				03D8D2B02E09ED3A006A117D /* MovieDetailActionBarView+Previews.swift in Sources */,
 				030BC5452DFB604A00D1F96F /* MovieVideo.swift in Sources */,
@@ -724,6 +801,7 @@
 				0368AF902DF58064009B1F56 /* PosterImageView.swift in Sources */,
 				03D8D2AC2E09E072006A117D /* MovieCreditsView+Previews.swift in Sources */,
 				034AAEED2E00BA6600099259 /* TMDBEndpoint.swift in Sources */,
+				033277F92E15C4EC00E5A226 /* WatchProviderCategoryButton+Previews.swift in Sources */,
 				03668ABD2DFBB0FE00132847 /* RelatedMoviesSection.swift in Sources */,
 				03C4570B2E0C8B9400A48D2C /* BiographyView.swift in Sources */,
 				03046E4A2E1315A40024AD46 /* Genre+Preview.swift in Sources */,
@@ -735,6 +813,7 @@
 				03E3557E2DF9C060001F1001 /* MovieCredits.swift in Sources */,
 				031F2E362E0DDFDE001E41B8 /* TMDBImageHelper.swift in Sources */,
 				03C016262DFA062E0028F421 /* MovieCreditsView.swift in Sources */,
+				033277ED2E15BD3500E5A226 /* WatchProviderItemView.swift in Sources */,
 				03FC25D82E06161100AACB5E /* MovieListContentView+Previews.swift in Sources */,
 				03D8D2A62E09DD08006A117D /* PreviewFactory.swift in Sources */,
 				031F2E342E0DD735001E41B8 /* ExpandToggleButton.swift in Sources */,
@@ -748,6 +827,7 @@
 				0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */,
 				0368AFC12DF61333009B1F56 /* MovieCategory.swift in Sources */,
 				030612472DF4C05C0013F7AF /* SecretManager.swift in Sources */,
+				033277F12E15BFBD00E5A226 /* WatchProviderItemView+Previews.swift in Sources */,
 				03F3AD952E11DF9A00B63AA2 /* DirectorUnavailableView.swift in Sources */,
 				03C0162B2DFA1EF80028F421 /* ShareHelper.swift in Sources */,
 				03D8D2A02E088594006A117D /* PersonLinksView.swift in Sources */,
