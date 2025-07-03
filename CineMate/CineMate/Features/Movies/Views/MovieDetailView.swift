@@ -75,5 +75,6 @@ private extension MovieDetailView {
         await viewModel.loadMovieVideos(for: movie.id)
         await viewModel.fetchRecommendedMovies(for: movie.id)
         await viewModel.loadMovieDetails(for: movie.id)
+        await viewModel.loadWatchProviders(for: movie.id)
     }
 }

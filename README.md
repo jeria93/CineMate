@@ -93,6 +93,9 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 
 ## Feature Demos
 
+> **Watch CineMate in Action**  
+> [Click here to view full demo on Vimeo »](https://vimeo.com/user50225275)
+
 ### Popular Movie List
 
 Displays a scrollable list of popular movies from TMDB.
@@ -124,6 +127,64 @@ Smooth scrolling UI powered by SwiftUI and async/await.
 <img src="Assets/movie_list_scroll.gif" width="350" alt="Movie Scroll Demo" />
 
 ---
+## Region-Based Streaming Support
+
+CineMate automatically detects the user's **current country** and adjusts:
+
+- **Movie content** (Popular, Top Rated, Trending, Upcoming) based on region (🇸🇪 Sweden, 🇮🇳 India, 🇨🇱 Chile, etc.)
+- **Streaming services** (Netflix, HBO Max, Apple TV, etc.) available **specifically for that country**
+
+This is handled automatically via:
+
+```swift
+Locale.current.region?.identifier ?? "US"
+```
+
+No user setup is needed — content is localized based on the device’s current region.
+
+> If you're in Chile, you’ll see what’s trending there.  
+> If you're in Sweden, you’ll get Swedish watch providers.
+
+---
+
+### Simulator & Debug Notes
+
+> **Important:** The iOS Simulator may not reflect your real geographic location.
+
+- `Locale.current.region` in Simulator follows **macOS settings**, not simulator device settings.
+- You may not see expected content or watch providers when running on a Mac.
+- For accurate testing, run CineMate on a **real device**.
+
+Optional debugging tip:
+
+```swift
+#if DEBUG
+print("Using region: \(region)")
+#endif
+```
+
+You can even force a region in testing:
+
+```swift
+let region = "CL" // For testing Chile region
+```
+
+---
+
+### Streaming App Limitations
+
+While CineMate lists platforms where movies are available (e.g., Netflix, Apple TV, HBO Max):
+
+- **Opening apps directly is not guaranteed**
+- Most providers only expose **web URLs** (like `https://www.netflix.com/watch/XYZ`)
+- Some platforms support **universal links** that redirect to the app *if installed* on a real device
+- This behavior **does not work in Simulator**
+
+> TMDB does **not** provide custom deep links like `netflix://` or `hbomax://`, so opening apps directly is limited.
+
+Still — CineMate gives users **clear visibility** into which platforms host each movie, filtered by region.
+
+---
 
 
 ## External Resources
@@ -149,6 +210,9 @@ This app is part of my iOS development portfolio. It demonstrates:
 
 > Want to follow my journey?
 **Connect on LinkedIn:** [nicholas-samuelsson-jeria](https://www.linkedin.com/in/nicholas-samuelsson-jeria-69778391)
+
+> **Watch CineMate in Action**  
+> [Click here to view full demo on Vimeo »](https://vimeo.com/user50225275)
 
 ---
 

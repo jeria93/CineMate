@@ -12,12 +12,12 @@ import Foundation
 /// Adjust sizes based on your layout or display requirements.
 /// For more, see: https://developer.themoviedb.org/docs/image-basics
 enum TMDBImageSize: String {
+    case w92
     case w185
     case w342
     case w500
     case h632
 }
-
 
 /// A helper for building TMDB image URLs based on image path and size.
 struct TMDBImageHelper {

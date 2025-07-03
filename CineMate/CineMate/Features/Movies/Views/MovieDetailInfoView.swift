@@ -46,6 +46,10 @@ struct MovieDetailInfoView: View {
                     .foregroundColor(.secondary)
             }
 
+            if let region = viewModel.watchProviderRegion {
+                WatchProvidersView(region: region)
+            }
+
             if let detail = viewModel.movieDetail {
                 Divider()
 
@@ -101,6 +105,10 @@ struct MovieDetailInfoView: View {
 
 #Preview("Empty Detail") {
     MovieDetailInfoView.previewWithEmptyDetail
+}
+
+#Preview("With Providers") {
+    MovieDetailInfoView.previewWithProviders
 }
 
 extension Int {

@@ -247,4 +247,17 @@ struct PreviewData {
         knownForDepartment: nil,
         alsoKnownAs: []
     )
+
+    static let mockWatchProviders: [WatchProvider] = [
+        WatchProvider(providerId: 8, providerName: "Netflix", logoPath: "/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg"),
+        WatchProvider(providerId: 9, providerName: "Amazon Prime Video", logoPath: "/emthp39XA2YScoYL1p0sdbAH2WA.jpg"),
+        WatchProvider(providerId: 337, providerName: "Disney+", logoPath: "/7rwgEs15tFwyR9NPQ5vpzxTj19Q.jpg")
+    ]
+
+    static let mockWatchProviderRegion = WatchProviderRegion(
+        link: "https://www.themoviedb.org/movie/11/watch",
+        flatrate: mockWatchProviders,
+        rent: nil,
+        buy: nil
+    )
 }
