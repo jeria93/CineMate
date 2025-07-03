@@ -94,7 +94,7 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 ## Feature Demos
 
 > **Watch CineMate in Action**  
-> [Click here to view full demo on Vimeo »](https://vimeo.com/user50225275)
+> [Click here to view full demo on Vimeo »](https://vimeo.com/1098629918)
 
 ### Popular Movie List
 
@@ -212,7 +212,7 @@ This app is part of my iOS development portfolio. It demonstrates:
 **Connect on LinkedIn:** [nicholas-samuelsson-jeria](https://www.linkedin.com/in/nicholas-samuelsson-jeria-69778391)
 
 > **Watch CineMate in Action**  
-> [Click here to view full demo on Vimeo »](https://vimeo.com/user50225275)
+> [Click here to view full demo on Vimeo »](https://vimeo.com/1098629918)
 
 ---
 
