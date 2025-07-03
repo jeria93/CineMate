@@ -12,6 +12,10 @@ final class TMDBService {
     private let baseURL = "https://api.themoviedb.org/3"
     private let session = URLSession.shared
 
+    private var userRegion: String {
+        Locale.current.region?.identifier ?? "US"
+    }
+
     func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
         let response: PersonMovieCreditsResponse = try await request(endpoint: .personMovieCredits(personId))
         return response.cast
@@ -29,23 +33,23 @@ final class TMDBService {
         return try await request(endpoint: .personDetail(personId))
     }
 
-    func fetchPopularMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(endpoint: .popular)
+    func fetchPopularMovies(region: String? = nil) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: .popular, queryItems: regionQueryItems(region))
         return result.results
     }
 
-    func fetchTopRatedMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(endpoint: .topRated)
+    func fetchTopRatedMovies(region: String? = nil) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: .topRated, queryItems: regionQueryItems(region))
         return result.results
     }
 
-    func fetchTrendingMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(endpoint: .trending)
+    func fetchTrendingMovies(region: String? = nil) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: .trending, queryItems: regionQueryItems(region))
         return result.results
     }
 
-    func fetchUpcomingMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(endpoint: .upcoming)
+    func fetchUpcomingMovies(region: String? = nil) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: .upcoming, queryItems: regionQueryItems(region))
         return result.results
     }
 
@@ -65,6 +69,20 @@ final class TMDBService {
 
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProvidersResponse {
         try await request(endpoint: .watchProviders(movieId))
+    }
+
+    func fetchWatchProviderRegion(for movieId: Int) async throws -> WatchProviderRegion {
+        let response: WatchProvidersResponse = try await request(endpoint: .watchProviders(movieId))
+        let regionCode = Locale.current.region?.identifier ?? "US"
+        return response.results[regionCode] ?? .empty
+    }
+
+    private func regionQueryItems(_ region: String?) -> [URLQueryItem] {
+        let resolvedRegion = region ?? userRegion
+        #if DEBUG
+        print("Using region: \(resolvedRegion)")
+        #endif
+        return [URLQueryItem(name: "region", value: resolvedRegion)]
     }
 
     /// Generic method that sends a GET request to TMDB and decodes the response into any Decodable model.

@@ -23,6 +23,22 @@ struct WatchProvidersView: View {
         VStack(alignment: .leading, spacing: 12) {
             WatchProviderCategoryPicker(selection: $selection)
             WatchProviderListView(providers: selectedProviders, selection: selection)
+
+            if let link = region.link, let url = URL(string: link) {
+                Divider()
+                Link(destination: url) {
+                    HStack {
+                        Text("See all streaming options")
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(.accentColor)
+                    .padding()
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            }
         }
         .padding(.vertical, 8)
     }
@@ -35,5 +51,3 @@ struct WatchProvidersView: View {
 #Preview("No Providers") {
     WatchProvidersView.previewEmpty
 }
-// Create preview data for rent?
-// Can you actually open an app?

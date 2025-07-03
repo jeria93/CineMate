@@ -496,9 +496,9 @@
 			isa = PBXGroup;
 			children = (
 				03BCF91D2E14688300ADD1BF /* WatchProvidersView.swift */,
+				033277EC2E15BD3500E5A226 /* WatchProviderItemView.swift */,
 				033277E82E15BCC700E5A226 /* WatchProviderCategoryPicker.swift */,
 				033277EA2E15BD1A00E5A226 /* WatchProviderListView.swift */,
-				033277EC2E15BD3500E5A226 /* WatchProviderItemView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
