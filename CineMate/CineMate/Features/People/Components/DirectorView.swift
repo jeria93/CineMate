@@ -35,7 +35,7 @@ struct DirectorView: View {
                             .font(.subheadline)
                             .bold()
 
-                        Spacer()
+//                        Spacer()
                     }
                 }
             } else {

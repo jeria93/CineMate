@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MovieGenresView: View {
     let genres: [String]
-    
+
     var body: some View {
         if genres.isEmpty {
             Label("Genres not available", systemImage: "questionmark.app.dashed")
@@ -35,11 +35,25 @@ struct MovieGenresView: View {
 }
 
 #Preview("With Genres") {
-    MovieGenresView(genres: Genre.all.map { $0.name })
-        .padding()
+    MovieGenresView.previewGenres
 }
 
 #Preview("Empty Genres") {
-    MovieGenresView(genres: [])
-        .padding()
+    MovieGenresView.previewEmpty
+}
+
+extension MovieGenresView {
+    /// Shows a list of genre chips with links
+    static var previewGenres: some View {
+        MovieGenresView(genres: Genre.all.map { $0.name })
+            .padding()
+            .background(Color(.systemBackground))
+    }
+
+    /// Shows fallback UI when no genres are available
+    static var previewEmpty: some View {
+        MovieGenresView(genres: [])
+            .padding()
+            .background(Color(.systemBackground))
+    }
 }

@@ -44,6 +44,11 @@
 		034AAEEF2E00BCD000099259 /* TMDBError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEE2E00BCD000099259 /* TMDBError.swift */; };
 		0355ABCE2E107E11002E6F77 /* KnownForScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0355ABCD2E107E11002E6F77 /* KnownForScrollView.swift */; };
 		0355ABD02E1082D3002E6F77 /* PersonExternalIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0355ABCF2E1082D3002E6F77 /* PersonExternalIDs.swift */; };
+		0356785A2E17E123005BEE57 /* CastMemberImageView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035678592E17E123005BEE57 /* CastMemberImageView+Previews.swift */; };
+		0356785C2E17E259005BEE57 /* PersonMovieCardView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356785B2E17E259005BEE57 /* PersonMovieCardView+Previews.swift */; };
+		0356785E2E17E3F2005BEE57 /* PersonMetaInfoView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356785D2E17E3F2005BEE57 /* PersonMetaInfoView+Previews.swift */; };
+		035678602E17E522005BEE57 /* KnownForScrollView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356785F2E17E522005BEE57 /* KnownForScrollView+Previews.swift */; };
+		035678622E17E66A005BEE57 /* DirectorImageView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035678612E17E66A005BEE57 /* DirectorImageView+Previews.swift */; };
 		0359A96E2E02E74B00818BD2 /* CastCarouselView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359A96D2E02E74B00818BD2 /* CastCarouselView+Previews.swift */; };
 		0359A9702E02E9EB00818BD2 /* CastMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359A96F2E02E9EB00818BD2 /* CastMemberView.swift */; };
 		0359A9742E02EB1D00818BD2 /* CastMemberView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359A9732E02EB1D00818BD2 /* CastMemberView+Previews.swift */; };
@@ -150,6 +155,11 @@
 		034AAEEE2E00BCD000099259 /* TMDBError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBError.swift; sourceTree = "<group>"; };
 		0355ABCD2E107E11002E6F77 /* KnownForScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownForScrollView.swift; sourceTree = "<group>"; };
 		0355ABCF2E1082D3002E6F77 /* PersonExternalIDs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonExternalIDs.swift; sourceTree = "<group>"; };
+		035678592E17E123005BEE57 /* CastMemberImageView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CastMemberImageView+Previews.swift"; sourceTree = "<group>"; };
+		0356785B2E17E259005BEE57 /* PersonMovieCardView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonMovieCardView+Previews.swift"; sourceTree = "<group>"; };
+		0356785D2E17E3F2005BEE57 /* PersonMetaInfoView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonMetaInfoView+Previews.swift"; sourceTree = "<group>"; };
+		0356785F2E17E522005BEE57 /* KnownForScrollView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KnownForScrollView+Previews.swift"; sourceTree = "<group>"; };
+		035678612E17E66A005BEE57 /* DirectorImageView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DirectorImageView+Previews.swift"; sourceTree = "<group>"; };
 		0359A96D2E02E74B00818BD2 /* CastCarouselView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CastCarouselView+Previews.swift"; sourceTree = "<group>"; };
 		0359A96F2E02E9EB00818BD2 /* CastMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastMemberView.swift; sourceTree = "<group>"; };
 		0359A9732E02EB1D00818BD2 /* CastMemberView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CastMemberView+Previews.swift"; sourceTree = "<group>"; };
@@ -346,11 +356,15 @@
 				0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */,
 				03C4570A2E0C8B9400A48D2C /* BiographyView.swift */,
 				031F2E2F2E0DD2DF001E41B8 /* PersonMovieCardView.swift */,
+				0356785B2E17E259005BEE57 /* PersonMovieCardView+Previews.swift */,
 				03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */,
+				0356785D2E17E3F2005BEE57 /* PersonMetaInfoView+Previews.swift */,
 				0355ABCD2E107E11002E6F77 /* KnownForScrollView.swift */,
+				0356785F2E17E522005BEE57 /* KnownForScrollView+Previews.swift */,
 				03F3AD8E2E11C7B300B63AA2 /* DirectorView.swift */,
 				03F3AD902E11C8D300B63AA2 /* DirectorView+Preview.swift */,
 				03F3AD922E11DE9000B63AA2 /* DirectorImageView.swift */,
+				035678612E17E66A005BEE57 /* DirectorImageView+Previews.swift */,
 				03F3AD942E11DF9A00B63AA2 /* DirectorUnavailableView.swift */,
 			);
 			path = Components;
@@ -658,6 +672,7 @@
 			isa = PBXGroup;
 			children = (
 				03D8D29B2E08836E006A117D /* CastMemberImageView.swift */,
+				035678592E17E123005BEE57 /* CastMemberImageView+Previews.swift */,
 				03FC25E02E06E9CB00AACB5E /* CastMemberDetailView.swift */,
 				03FC25E22E06EAC300AACB5E /* CastMemberDetailView+Previews.swift */,
 			);
@@ -744,6 +759,7 @@
 				030612652DF4CDAD0013F7AF /* PreviewData.swift in Sources */,
 				03D8D29C2E08836F006A117D /* CastMemberImageView.swift in Sources */,
 				0359A9702E02E9EB00818BD2 /* CastMemberView.swift in Sources */,
+				035678602E17E522005BEE57 /* KnownForScrollView+Previews.swift in Sources */,
 				03FE32362E07414400C9B356 /* PersonViewModel+Preview.swift in Sources */,
 				03652CE52DFC56830031DCAD /* MovieDetail.swift in Sources */,
 				030612672DF4E5800013F7AF /* MovieListView.swift in Sources */,
@@ -751,6 +767,7 @@
 				0359A9742E02EB1D00818BD2 /* CastMemberView+Previews.swift in Sources */,
 				038C86E22E14190200247D61 /* WatchProviders.swift in Sources */,
 				03BCF9202E14697100ADD1BF /* WatchProvidersView+Previews.swift in Sources */,
+				0356785C2E17E259005BEE57 /* PersonMovieCardView+Previews.swift in Sources */,
 				03CE4A462E0F283800D70F70 /* SectionHeader.swift in Sources */,
 				033277F72E15C42900E5A226 /* WatchProviderCategoryButton.swift in Sources */,
 				03FC25DF2E06A4D400AACB5E /* CastViewModel+Preview.swift in Sources */,
@@ -762,6 +779,7 @@
 				030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */,
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
 				033277F52E15C15800E5A226 /* WatchProviderCategory.swift in Sources */,
+				0356785A2E17E123005BEE57 /* CastMemberImageView+Previews.swift in Sources */,
 				0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */,
 				0355ABCE2E107E11002E6F77 /* KnownForScrollView.swift in Sources */,
 				0306124B2DF4C3BE0013F7AF /* MovieProtocol.swift in Sources */,
@@ -775,6 +793,7 @@
 				03F3AD972E11E16500B63AA2 /* PersonInfoView+Previews.swift in Sources */,
 				0306124F2DF4C7960013F7AF /* MovieViewModel.swift in Sources */,
 				0384BD6F2E1177ED00790AA5 /* SocialLinkButtonView.swift in Sources */,
+				0356785E2E17E3F2005BEE57 /* PersonMetaInfoView+Previews.swift in Sources */,
 				03046E4C2E13202D0024AD46 /* GenreDetailView.swift in Sources */,
 				03E5BE8D2E09FFC700D3C46B /* FavoriteButton+Previews.swift in Sources */,
 				0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */,
@@ -836,6 +855,7 @@
 				031F2E322E0DD34C001E41B8 /* ExpandMoreCardView.swift in Sources */,
 				033DE9782E01FBFC009FB949 /* CastCarouselView.swift in Sources */,
 				03D8D29E2E088509006A117D /* PersonInfoView.swift in Sources */,
+				035678622E17E66A005BEE57 /* DirectorImageView+Previews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

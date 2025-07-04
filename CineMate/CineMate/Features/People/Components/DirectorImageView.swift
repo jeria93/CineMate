@@ -20,7 +20,9 @@ struct DirectorImageView: View {
                 Image(systemName: "person.circle.fill")
                     .resizable()
                     .scaledToFit()
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
+                    .padding(6)
+                    .background(Color.gray.opacity(0.1))
             }
         }
         .frame(width: 60, height: 60)
@@ -29,13 +31,9 @@ struct DirectorImageView: View {
 }
 
 #Preview("With URL") {
-    DirectorImageView(url: URL(string: "https://example.com/image.jpg"))
-        .padding()
-        .background(Color(.systemBackground))
+    DirectorImageView.previewWithImage
 }
 
 #Preview("No URL / Fallback") {
-    DirectorImageView(url: nil)
-        .padding()
-        .background(Color(.systemBackground))
+    DirectorImageView.previewFallback
 }

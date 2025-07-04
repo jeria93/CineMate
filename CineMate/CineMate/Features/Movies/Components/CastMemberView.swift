@@ -17,7 +17,7 @@ struct CastMemberView: View {
             CastMemberDetailView(
                 member: member,
                 viewModel: PersonViewModel(repository: repository)
-                )
+            )
         } label: {
             VStack(alignment: .center, spacing: 4) {
                 AsyncImage(url: member.profileURL) { phase in
@@ -29,7 +29,9 @@ struct CastMemberView: View {
                         Image(systemName: "person.circle.fill")
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(.gray)
+                            .foregroundStyle(.gray)
+                            .padding(8)
+                            .background(Color.gray.opacity(0.1))
                     }
                 }
                 .frame(width: 80, height: 80)

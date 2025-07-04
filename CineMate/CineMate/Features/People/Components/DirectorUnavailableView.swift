@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct DirectorUnavailableView: View {
-
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "person.circle.fill")
@@ -23,6 +22,7 @@ struct DirectorUnavailableView: View {
 
             Spacer()
         }
+        .frame(maxWidth: .infinity)
         .padding(.horizontal)
         .padding(.vertical, 8)
         .background(.ultraThinMaterial)
@@ -31,6 +31,14 @@ struct DirectorUnavailableView: View {
 }
 
 #Preview("Unavailable") {
-    DirectorUnavailableView()
-        .padding()
+    DirectorUnavailableView.previewUnavailable
+}
+
+extension DirectorUnavailableView {
+    /// Shows the default unavailable state with placeholder image and message
+    static var previewUnavailable: some View {
+        DirectorUnavailableView()
+            .padding()
+            .background(Color(.systemBackground))
+    }
 }

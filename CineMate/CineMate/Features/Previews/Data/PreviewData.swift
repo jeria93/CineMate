@@ -260,4 +260,15 @@ struct PreviewData {
         rent: nil,
         buy: nil
     )
+
+    static let minimalMovie = Movie(
+        id: 999,
+        title: "Unknown Title",
+        overview: nil,
+        posterPath: nil,
+        backdropPath: nil,
+        releaseDate: nil,
+        voteAverage: nil,
+        genres: nil
+    )
 }

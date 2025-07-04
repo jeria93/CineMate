@@ -24,6 +24,7 @@ final class MovieViewModel: ObservableObject {
     }
     @Published var watchProviderRegion: WatchProviderRegion?
     @Published var favoriteMovies: Set<Int> = []
+    @Published var isLoadingDetail: Bool = false
 
     var repository: MovieProtocol
     
@@ -49,11 +50,14 @@ final class MovieViewModel: ObservableObject {
     
     
     func loadMovieDetails(for movieId: Int) async {
+        isLoadingDetail = true
+        defer { isLoadingDetail = false }
+
         await load({
             try await repository.fetchMovieDetails(for: movieId)
         }, assignTo: \.movieDetail)
     }
-    
+
     func loadMovieCredits(for movieId: Int) async {
         await load({
             try await repository.fetchMovieCredits(for: movieId)

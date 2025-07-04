@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension MovieDetailInfoView {
-
     /// Preview with full detail data
     @MainActor
     static var previewWithDetail: some View {
@@ -18,7 +17,7 @@ extension MovieDetailInfoView {
         )
         .padding()
     }
-
+    
     /// Preview with empty detail data
     @MainActor
     static var previewWithEmptyDetail: some View {
@@ -28,13 +27,32 @@ extension MovieDetailInfoView {
         )
         .padding()
     }
-
+    
     /// Preview showing streaming providers (e.g. Netflix)
     @MainActor
     static var previewWithProviders: some View {
         MovieDetailInfoView(
             movie: PreviewData.starWars,
             viewModel: PreviewFactory.movieDetailViewModelWithWatchProviders()
+        )
+        .padding()
+    }
+    
+    /// Preview when loading details
+    @MainActor
+    static var previewLoading: some View {
+        MovieDetailInfoView(
+            movie: PreviewData.starWars,
+            viewModel: PreviewFactory.movieDetailViewModelLoading()
+        )
+        .padding()
+    }
+    
+    @MainActor
+    static var previewNoDetail: some View {
+        MovieDetailInfoView(
+            movie: PreviewData.starWars,
+            viewModel: PreviewFactory.emptyMovieViewModel()
         )
         .padding()
     }
