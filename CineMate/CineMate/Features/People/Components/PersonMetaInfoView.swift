@@ -12,16 +12,24 @@ struct PersonMetaInfoView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let gender = detail.safeGenderText {
+            if let gender = detail.safeGenderText, !gender.isEmpty {
                 Text("Gender: \(gender)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+            } else {
+                Text("Gender: Unknown")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
             }
 
-            if let department = detail.knownForDepartment {
+            if let department = detail.knownForDepartment, !department.isEmpty {
                 Text("Department: \(department)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+            } else {
+                Text("Department: Unknown")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
             }
 
             if detail.hasAliases {
@@ -36,12 +44,25 @@ struct PersonMetaInfoView: View {
                     }
                 }
                 .padding(.top, 4)
+            } else {
+                Text("No known aliases")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
+                    .padding(.top, 4)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-#Preview {
-    PersonMetaInfoView(detail: PreviewData.markHamillPersonDetail)
+#Preview("Full Meta Info") {
+    PersonMetaInfoView.previewFull
+}
+
+#Preview("Empty Meta Info") {
+    PersonMetaInfoView.previewEmpty
+}
+
+#Preview("Partial Meta Info") {
+    PersonMetaInfoView.previewPartial
 }

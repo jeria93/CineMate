@@ -8,12 +8,13 @@
 import SwiftUI
 
 extension FavoriteButton {
+    /// Shows the button in both favorite and non-favorite states
     static var preview: some View {
         VStack(spacing: 20) {
             FavoriteButton(isFavorite: true) {}
             FavoriteButton(isFavorite: false) {}
         }
         .padding()
-        .previewLayout(.sizeThatFits)
+        .background(Color(.systemBackground))
     }
 }

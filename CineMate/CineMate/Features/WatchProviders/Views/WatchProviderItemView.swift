@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WatchProviderItemView: View {
     let provider: WatchProvider
-    
+
     var body: some View {
         VStack(spacing: 4) {
             if let logoURL = provider.logoURL {
@@ -23,8 +23,16 @@ struct WatchProviderItemView: View {
                 }
                 .frame(width: 50, height: 50)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                Image(systemName: "tv")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.gray)
+                    .frame(width: 50, height: 50)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            
+
             Text(provider.providerName)
                 .font(.caption2)
                 .lineLimit(1)

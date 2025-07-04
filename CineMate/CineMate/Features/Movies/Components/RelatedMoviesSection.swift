@@ -19,27 +19,32 @@ struct RelatedMoviesSection: View {
                 .bold()
                 .padding(.horizontal)
 
-            ScrollView(.horizontal, showsIndicators: false) {
+            if movies.isEmpty {
                 HStack {
-                    ForEach(movies) { movie in
-                        NavigationLink {
-                            MovieDetailView(
-                                movie: movie,
-                                viewModel: movieViewModel,
-                                castViewModel: castViewModel
-                            )
-                        } label: {
-                            RelatedMovieCardView(movie: movie)
+                    Image(systemName: "film")
+                        .foregroundColor(.secondary)
+                    Text("No recommendations available.")
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(movies) { movie in
+                            NavigationLink {
+                                MovieDetailView(
+                                    movie: movie,
+                                    viewModel: movieViewModel,
+                                    castViewModel: castViewModel
+                                )
+                            } label: {
+                                RelatedMovieCardView(movie: movie)
+                            }
                         }
                     }
-                }
-                .padding(.horizontal)
-            }
-
-            if movies.isEmpty {
-                Text("No recommendations available.")
-                    .foregroundColor(.secondary)
                     .padding(.horizontal)
+                }
             }
         }
     }
@@ -51,4 +56,12 @@ struct RelatedMoviesSection: View {
 
 #Preview("Empty State") {
     RelatedMoviesSection.previewEmpty
+}
+
+#Preview("Single Movie") {
+    RelatedMoviesSection.previewSingleMovie
+}
+
+#Preview("Many Movies") {
+    RelatedMoviesSection.previewManyMovies
 }

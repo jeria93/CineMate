@@ -11,7 +11,6 @@ struct PersonInfoView: View {
     let detail: PersonDetail
 
     var body: some View {
-        
         VStack(alignment: .leading, spacing: 8) {
             if let birthday = detail.birthday {
                 Text("Born: \(birthday)")
@@ -58,6 +57,7 @@ struct PersonInfoView: View {
                 Text("Biography not available.")
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
+                    .italic()
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

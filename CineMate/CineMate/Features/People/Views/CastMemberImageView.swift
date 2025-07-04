@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CastMemberImageView: View {
     let url: URL?
+    
     var body: some View {
         AsyncImage(url: url) { phase in
             if let image = phase.image {
@@ -20,14 +21,22 @@ struct CastMemberImageView: View {
                     .resizable()
                     .scaledToFit()
                     .foregroundStyle(.gray)
+                    .padding(12)
+                    .background(Color.gray.opacity(0.1))
             }
-
         }
         .frame(width: 180, height: 180)
         .clipShape(Circle())
+        .overlay(
+            Circle().stroke(Color.gray.opacity(0.3), lineWidth: 1)
+        )
     }
 }
 
-#Preview("Image – Mark Hamill") {
-    CastMemberImageView(url: PreviewData.starWarsCredits.cast.first?.profileURL)
+#Preview("With Image – Mark Hamill") {
+    CastMemberImageView.previewWithImage
+}
+
+#Preview("Fallback – Missing Image") {
+    CastMemberImageView.previewFallback
 }

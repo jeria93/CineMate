@@ -16,17 +16,38 @@ struct MovieCreditsView: View {
                 Text("Directed by: \(director)")
                     .font(.caption)
                     .foregroundColor(.secondary)
+            } else {
+                Text("No director info.")
+                    .font(.caption)
+                    .foregroundColor(.gray)
             }
 
             if !credits.cast.isEmpty {
-                Text("Starring: \(credits.cast.prefix(3).map(\.name).joined(separator: ", "))")
+                let castNames = credits.cast.prefix(3).map(\.name).joined(separator: ", ")
+                Text("Starring: \(castNames)")
                     .font(.caption)
                     .foregroundColor(.secondary)
+            } else {
+                Text("No cast info.")
+                    .font(.caption)
+                    .foregroundColor(.gray)
             }
         }
     }
 }
 
-#Preview {
+#Preview("Star Wars Credits") {
     MovieCreditsView.previewStarWars
+}
+
+#Preview("Empty Credits (Fallback)") {
+    MovieCreditsView.previewEmptyCredits
+}
+
+#Preview("Only Director") {
+    MovieCreditsView.previewOnlyDirector
+}
+
+#Preview("Only Cast") {
+    MovieCreditsView.previewOnlyCast
 }

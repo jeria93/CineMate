@@ -55,10 +55,14 @@ struct KnownForScrollView: View {
     }
 }
 
-#Preview {
-    KnownForScrollView(movies: PreviewData.markHamillMovieCredits)
+#Preview("Known For – Full") {
+    KnownForScrollView.previewFull
 }
 
-#Preview("Fallback – Empty") {
-    KnownForScrollView(movies: [])
+#Preview("Known For – Empty") {
+    KnownForScrollView.previewEmpty
+}
+
+#Preview("Known For – Partial") {
+    KnownForScrollView.previewPartial
 }
