@@ -12,7 +12,8 @@ extension MainTabView {
     static var previewDefault: some View {
         MainTabView(
             movieViewModel: PreviewFactory.movieListViewModel(),
-            castViewModel: PreviewFactory.castViewModel()
+            castViewModel: PreviewFactory.castViewModel(),
+            favoriteMoviesViewModel: PreviewFactory.favoriteMoviesViewModel()
         )
     }
 }

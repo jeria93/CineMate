@@ -10,6 +10,7 @@ import SwiftUI
 struct MainTabView: View {
     let movieViewModel: MovieViewModel
     let castViewModel: CastViewModel
+    let favoriteMoviesViewModel: FavoriteMoviesViewModel
 
     var body: some View {
         TabView {
@@ -18,7 +19,7 @@ struct MainTabView: View {
                     Label("Movies", systemImage: "film")
                 }
 
-            FavoriteMoviesView()
+            FavoriteMoviesView(viewModel: favoriteMoviesViewModel)
                 .tabItem {
                     Label("Favorites", systemImage: "heart.fill")
                 }
