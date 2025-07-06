@@ -12,12 +12,18 @@ struct CineMate: App {
     var body: some Scene {
         WindowGroup {
             let repository = MovieRepository()
-            let viewModel = MovieViewModel(repository: repository)
+            let movieViewModel = MovieViewModel(repository: repository)
             let castViewModel = CastViewModel(repository: repository)
+            let favoriteMoviesViewModel = FavoriteMoviesViewModel()
+            let searchViewModel = SearchViewModel()
+            let accountViewModel = AccountViewModel()
 
-            MovieListView(
-                viewModel: viewModel,
-                castViewModel: castViewModel
+            MainTabView(
+                movieViewModel: movieViewModel,
+                castViewModel: castViewModel,
+                favoriteMoviesViewModel: favoriteMoviesViewModel,
+                searchViewModel: searchViewModel,
+                accountViewModel: accountViewModel
             )
         }
     }
