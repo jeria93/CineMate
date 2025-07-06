@@ -9,5 +9,12 @@ import Foundation
 
 @MainActor
 final class SearchViewModel: ObservableObject {
-    // Add search logic later
+    @Published var query: String = ""
+    @Published var results: [Movie] = []
+
+    func performSearch() {
+        results = PreviewData.moviesList.filter {
+            $0.title.lowercased().contains(query.lowercased())
+        }
+    }
 }

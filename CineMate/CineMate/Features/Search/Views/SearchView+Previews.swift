@@ -9,6 +9,11 @@ import SwiftUI
 
 extension SearchView {
     static var previewDefault: some View {
-        SearchView(viewModel: SearchViewModel())
+        SearchView(viewModel: {
+            let vm = SearchViewModel()
+            vm.query = "Star"
+            vm.results = PreviewData.moviesList
+            return vm
+        }())
     }
 }
