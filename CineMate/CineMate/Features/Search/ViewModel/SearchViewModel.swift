@@ -23,18 +23,17 @@ final class SearchViewModel: ObservableObject {
 
     func search() async {
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            results = []
             return
         }
 
         isLoading = true
         errorMessage = nil
-
         do {
             results = try await repository.searchMovies(query: query)
         } catch {
             errorMessage = "Could not load search results. Try again."
         }
-
         isLoading = false
     }
 }

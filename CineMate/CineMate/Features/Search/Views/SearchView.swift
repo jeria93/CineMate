@@ -17,28 +17,18 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TextField("Search movies...", text: $viewModel.query)
-                    .textFieldStyle(.roundedBorder)
-                    .padding()
-                    .onSubmit {
-                        Task { await viewModel.search() }
-                    }
+                SearchBarView(text: $viewModel.query) {
+                    Task { await viewModel.search() }
+                }
 
                 if viewModel.isLoading {
-                    ProgressView("Searching...")
-                        .padding()
+                    LoadingView(text: "Searching movies...")
                 } else if let error = viewModel.errorMessage {
-                    Text(error)
-                        .foregroundStyle(.red)
-                        .padding()
+                    ErrorMessageView(message: error)
                 } else if viewModel.results.isEmpty && !viewModel.query.isEmpty {
-                    Text("No results found")
-                        .foregroundStyle(.secondary)
-                        .padding()
+                    EmptyResultsView()
                 } else {
-                    List(viewModel.results) { movie in
-                        Text(movie.title)
-                    }
+                    SearchResultsList(movies: viewModel.results)
                 }
             }
             .navigationTitle("Search")
