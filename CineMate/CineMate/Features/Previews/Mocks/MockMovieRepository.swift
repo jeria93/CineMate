@@ -9,6 +9,12 @@ import Foundation
 
 final class MockMovieRepository: MovieProtocol {
 
+    func searchMovies(query: String) async throws -> [Movie] {
+        return PreviewData.moviesList.filter {
+            $0.title.lowercased().contains(query.lowercased())
+        }
+    }
+
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
         PreviewData.mockWatchProviderRegion
     }

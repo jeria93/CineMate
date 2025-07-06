@@ -7,13 +7,22 @@
 
 import SwiftUI
 
+
 extension SearchView {
+
     static var previewDefault: some View {
-        SearchView(viewModel: {
-            let vm = SearchViewModel()
-            vm.query = "Star"
-            vm.results = PreviewData.moviesList
-            return vm
-        }())
+        SearchView(viewModel: PreviewFactory.searchViewModel())
+    }
+
+    static var previewEmpty: some View {
+        SearchView(viewModel: PreviewFactory.emptySearchViewModel())
+    }
+
+    static var previewLoading: some View {
+        SearchView(viewModel: PreviewFactory.loadingSearchViewModel())
+    }
+
+    static var previewError: some View {
+        SearchView(viewModel: PreviewFactory.errorSearchViewModel())
     }
 }

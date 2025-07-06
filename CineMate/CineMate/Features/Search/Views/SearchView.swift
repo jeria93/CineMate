@@ -21,11 +21,24 @@ struct SearchView: View {
                     .textFieldStyle(.roundedBorder)
                     .padding()
                     .onSubmit {
-                        viewModel.performSearch()
+                        Task { await viewModel.search() }
                     }
 
-                List(viewModel.results) { movie in
-                    Text(movie.title)
+                if viewModel.isLoading {
+                    ProgressView("Searching...")
+                        .padding()
+                } else if let error = viewModel.errorMessage {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .padding()
+                } else if viewModel.results.isEmpty && !viewModel.query.isEmpty {
+                    Text("No results found")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                } else {
+                    List(viewModel.results) { movie in
+                        Text(movie.title)
+                    }
                 }
             }
             .navigationTitle("Search")
@@ -33,6 +46,18 @@ struct SearchView: View {
     }
 }
 
-#Preview {
+#Preview("Default") {
     SearchView.previewDefault
+}
+
+#Preview("Loading") {
+    SearchView.previewLoading
+}
+
+#Preview("Error") {
+    SearchView.previewError
+}
+
+#Preview("Empty") {
+    SearchView.previewEmpty
 }

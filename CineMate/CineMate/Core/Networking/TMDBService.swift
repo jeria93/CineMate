@@ -79,10 +79,16 @@ final class TMDBService {
 
     private func regionQueryItems(_ region: String?) -> [URLQueryItem] {
         let resolvedRegion = region ?? userRegion
-        #if DEBUG
+#if DEBUG
         print("Using region: \(resolvedRegion)")
-        #endif
+#endif
         return [URLQueryItem(name: "region", value: resolvedRegion)]
+    }
+
+    func searchMovies(query: String) async throws -> [Movie] {
+        let queryItems = [URLQueryItem(name: "query", value: query)]
+        let result: MovieResult = try await request(endpoint: .search(query), queryItems: queryItems)
+        return result.results
     }
 
     /// Generic method that sends a GET request to TMDB and decodes the response into any Decodable model.
@@ -111,7 +117,7 @@ final class TMDBService {
             "accept": "application/json",
             "Authorization": "Bearer \(SecretManager.bearerToken)"
         ]
-
+        
         let (data, response) = try await session.data(for: req)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw TMDBError.invalidResponse

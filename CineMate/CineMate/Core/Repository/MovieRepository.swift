@@ -63,4 +63,8 @@ final class MovieRepository: MovieProtocol {
         try await service.fetchWatchProviderRegion(for: movieId)
     }
 
+    func searchMovies(query: String) async throws -> [Movie] {
+        try await service.searchMovies(query: query)
+    }
+
 }
