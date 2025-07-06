@@ -11,6 +11,8 @@ struct MainTabView: View {
     let movieViewModel: MovieViewModel
     let castViewModel: CastViewModel
     let favoriteMoviesViewModel: FavoriteMoviesViewModel
+    let searchViewModel: SearchViewModel
+    let accountViewModel: AccountViewModel
 
     var body: some View {
         TabView {
@@ -24,12 +26,12 @@ struct MainTabView: View {
                     Label("Favorites", systemImage: "heart.fill")
                 }
 
-            SearchView()
+            SearchView(viewModel: searchViewModel)
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
 
-            AccountView()
+            AccountView(viewModel: accountViewModel)
                 .tabItem {
                     Label("Account", systemImage: "person.crop.circle")
                 }

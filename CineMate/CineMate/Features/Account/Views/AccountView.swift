@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct AccountView: View {
+    @StateObject private var viewModel: AccountViewModel
+
+    init(viewModel: AccountViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+
     var body: some View {
         Text("AccountView")
     }
 }
 
 #Preview {
-    AccountView()
+    AccountView.previewDefault
 }

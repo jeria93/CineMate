@@ -13,7 +13,9 @@ extension MainTabView {
         MainTabView(
             movieViewModel: PreviewFactory.movieListViewModel(),
             castViewModel: PreviewFactory.castViewModel(),
-            favoriteMoviesViewModel: PreviewFactory.favoriteMoviesViewModel()
+            favoriteMoviesViewModel: PreviewFactory.favoriteMoviesViewModel(),
+            searchViewModel: PreviewFactory.searchViewModel(),
+            accountViewModel: PreviewFactory.accountViewModel()
         )
     }
 }

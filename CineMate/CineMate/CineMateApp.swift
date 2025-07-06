@@ -15,11 +15,15 @@ struct CineMate: App {
             let movieViewModel = MovieViewModel(repository: repository)
             let castViewModel = CastViewModel(repository: repository)
             let favoriteMoviesViewModel = FavoriteMoviesViewModel()
-            
+            let searchViewModel = SearchViewModel()
+            let accountViewModel = AccountViewModel()
+
             MainTabView(
                 movieViewModel: movieViewModel,
                 castViewModel: castViewModel,
-                favoriteMoviesViewModel: favoriteMoviesViewModel
+                favoriteMoviesViewModel: favoriteMoviesViewModel,
+                searchViewModel: searchViewModel,
+                accountViewModel: accountViewModel
             )
         }
     }
