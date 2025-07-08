@@ -22,7 +22,7 @@ extension PreviewFactory {
     @MainActor
     static func emptySearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "Nothing"
+        vm.query = "Unknown"
         vm.results = []
         return vm
     }
@@ -31,7 +31,7 @@ extension PreviewFactory {
     @MainActor
     static func loadingSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "Batman"
+        vm.query = "Loading"
         vm.isLoading = true
         return vm
     }
@@ -40,8 +40,17 @@ extension PreviewFactory {
     @MainActor
     static func errorSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "Matrix"
-        vm.errorMessage = "Unable to fetch results"
+        vm.query = "Error"
+        vm.error = .custom("Something went wrong")
+        return vm
+    }
+
+    /// A validation error state for search
+    @MainActor
+    static func invalidSearchViewModel() -> SearchViewModel {
+        let vm = SearchViewModel(repository: MockMovieRepository())
+        vm.query = "?"
+        vm.validationMessage = "Only letters and numbers are allowed."
         return vm
     }
 }

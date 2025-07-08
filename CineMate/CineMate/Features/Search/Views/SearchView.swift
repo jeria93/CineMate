@@ -17,16 +17,18 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                SearchBarView(text: $viewModel.query) {
-                    Task { await viewModel.search() }
+                SearchBarView(text: $viewModel.query)
+
+                if let message = viewModel.validationMessage {
+                    ValidationMessageView(message: message)
                 }
 
                 if viewModel.isLoading {
                     LoadingView(text: "Searching movies...")
-                } else if let error = viewModel.errorMessage {
-                    ErrorMessageView(message: error)
-                } else if viewModel.results.isEmpty && !viewModel.query.isEmpty {
-                    EmptyResultsView()
+                } else if let error = viewModel.error {
+                    ErrorMessageView(message: error.localizedDescription)
+                } else if viewModel.results.isEmpty && !viewModel.trimmedQuery.isEmpty {
+                    EmptyResultsView(query: viewModel.trimmedQuery)
                 } else {
                     SearchResultsList(movies: viewModel.results)
                 }
@@ -36,18 +38,22 @@ struct SearchView: View {
     }
 }
 
-#Preview("Default") {
-    SearchView.previewDefault
+#Preview("With Results") {
+    SearchView(viewModel: PreviewFactory.searchViewModel())
+}
+
+#Preview("Empty State") {
+    SearchView(viewModel: PreviewFactory.emptySearchViewModel())
 }
 
 #Preview("Loading") {
-    SearchView.previewLoading
+    SearchView(viewModel: PreviewFactory.loadingSearchViewModel())
 }
 
 #Preview("Error") {
-    SearchView.previewError
+    SearchView(viewModel: PreviewFactory.errorSearchViewModel())
 }
 
-#Preview("Empty") {
-    SearchView.previewEmpty
+#Preview("Validation Error") {
+    SearchView(viewModel: PreviewFactory.invalidSearchViewModel())
 }

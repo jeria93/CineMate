@@ -12,8 +12,9 @@ struct SearchResultsList: View {
 
     var body: some View {
         List(movies) { movie in
-            Text(movie.title)
+            MovieRowView(movie: movie)
         }
+        .listStyle(.plain)
     }
 }
 
