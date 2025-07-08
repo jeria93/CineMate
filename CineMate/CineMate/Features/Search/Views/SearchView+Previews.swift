@@ -25,4 +25,12 @@ extension SearchView {
     static var previewError: some View {
         SearchView(viewModel: PreviewFactory.errorSearchViewModel())
     }
+
+    static var previewPrompt: some View {
+        SearchView(viewModel: PreviewFactory.promptSearchViewModel())
+    }
+
+    static var previewValidation: some View {
+        SearchView(viewModel: PreviewFactory.invalidSearchViewModel())
+    }
 }

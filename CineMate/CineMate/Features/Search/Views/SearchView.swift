@@ -9,21 +9,23 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var viewModel: SearchViewModel
-
+    
     init(viewModel: SearchViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         NavigationStack {
             VStack {
                 SearchBarView(text: $viewModel.query)
-
+                
                 if let message = viewModel.validationMessage {
                     ValidationMessageView(message: message)
                 }
-
-                if viewModel.isLoading {
+                
+                if viewModel.query.isEmpty {
+                    SearchPromptView()
+                } else if viewModel.isLoading {
                     LoadingView(text: "Searching movies...")
                 } else if let error = viewModel.error {
                     ErrorMessageView(message: error.localizedDescription)
@@ -38,22 +40,26 @@ struct SearchView: View {
     }
 }
 
+#Preview("Prompt") {
+    SearchView.previewPrompt
+}
+
 #Preview("With Results") {
-    SearchView(viewModel: PreviewFactory.searchViewModel())
+    SearchView.previewDefault
 }
 
 #Preview("Empty State") {
-    SearchView(viewModel: PreviewFactory.emptySearchViewModel())
+    SearchView.previewEmpty
 }
 
 #Preview("Loading") {
-    SearchView(viewModel: PreviewFactory.loadingSearchViewModel())
+    SearchView.previewLoading
 }
 
 #Preview("Error") {
-    SearchView(viewModel: PreviewFactory.errorSearchViewModel())
+    SearchView.previewError
 }
 
 #Preview("Validation Error") {
-    SearchView(viewModel: PreviewFactory.invalidSearchViewModel())
+    SearchView.previewValidation
 }

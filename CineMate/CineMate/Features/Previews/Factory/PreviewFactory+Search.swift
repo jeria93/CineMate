@@ -24,6 +24,7 @@ extension PreviewFactory {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Unknown"
         vm.results = []
+        vm.trimmedQuery = "Unknown"
         return vm
     }
 
@@ -51,6 +52,13 @@ extension PreviewFactory {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "?"
         vm.validationMessage = "Only letters and numbers are allowed."
+        return vm
+    }
+
+    @MainActor
+    static func promptSearchViewModel() -> SearchViewModel {
+        let vm = SearchViewModel(repository: MockMovieRepository())
+        vm.query = ""
         return vm
     }
 }
