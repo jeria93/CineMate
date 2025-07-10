@@ -13,6 +13,7 @@ struct MainTabView: View {
     let favoriteMoviesViewModel: FavoriteMoviesViewModel
     let searchViewModel: SearchViewModel
     let accountViewModel: AccountViewModel
+    let discoverViewModel: DiscoverViewModel
 
     var body: some View {
         TabView {
@@ -24,6 +25,11 @@ struct MainTabView: View {
             FavoriteMoviesView(viewModel: favoriteMoviesViewModel)
                 .tabItem {
                     Label("Favorites", systemImage: "heart.fill")
+                }
+
+            DiscoverView(viewModel: discoverViewModel)
+                .tabItem {
+                    Label("Discover", systemImage: "safari")
                 }
 
             SearchView(viewModel: searchViewModel)
