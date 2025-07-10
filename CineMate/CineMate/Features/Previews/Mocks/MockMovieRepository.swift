@@ -9,6 +9,10 @@ import Foundation
 
 final class MockMovieRepository: MovieProtocol {
 
+    func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
+        PreviewData.moviesList
+    }
+
     func searchMovies(query: String) async throws -> [Movie] {
         return PreviewData.moviesList.filter {
             $0.title.lowercased().contains(query.lowercased())

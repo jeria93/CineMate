@@ -21,4 +21,5 @@ protocol MovieProtocol {
     func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion
     func searchMovies(query: String) async throws -> [Movie]
+    func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie]
 }

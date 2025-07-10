@@ -67,4 +67,8 @@ final class MovieRepository: MovieProtocol {
         try await service.searchMovies(query: query)
     }
 
+    func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
+        try await service.discoverMovies(filters: filters)
+    }
+
 }

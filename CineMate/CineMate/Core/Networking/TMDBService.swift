@@ -91,6 +91,11 @@ final class TMDBService {
         return result.results
     }
 
+    func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: .discover, queryItems: filters)
+        return result.results
+    }
+
     /// Generic method that sends a GET request to TMDB and decodes the response into any Decodable model.
     ///
     /// - Parameters:
@@ -117,7 +122,7 @@ final class TMDBService {
             "accept": "application/json",
             "Authorization": "Bearer \(SecretManager.bearerToken)"
         ]
-        
+
         let (data, response) = try await session.data(for: req)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw TMDBError.invalidResponse
