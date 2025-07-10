@@ -15,10 +15,51 @@ struct SearchView: View {
     }
     
     var body: some View {
-        Text("SearchView")
+        NavigationStack {
+            VStack {
+                SearchBarView(text: $viewModel.query)
+                
+                if let message = viewModel.validationMessage {
+                    ValidationMessageView(message: message)
+                }
+                
+                if viewModel.query.isEmpty {
+                    SearchPromptView()
+                } else if viewModel.isLoading {
+                    LoadingView(text: "Searching movies...")
+                } else if let error = viewModel.error {
+                    ErrorMessageView(message: error.localizedDescription)
+                } else if viewModel.results.isEmpty && !viewModel.trimmedQuery.isEmpty {
+                    EmptyResultsView(query: viewModel.trimmedQuery)
+                } else {
+                    SearchResultsList(movies: viewModel.results)
+                }
+            }
+            .navigationTitle("Search")
+        }
     }
 }
 
-#Preview {
+#Preview("Prompt") {
+    SearchView.previewPrompt
+}
+
+#Preview("With Results") {
     SearchView.previewDefault
+}
+
+#Preview("Empty State") {
+    SearchView.previewEmpty
+}
+
+#Preview("Loading") {
+    SearchView.previewLoading
+}
+
+#Preview("Error") {
+    SearchView.previewError
+}
+
+#Preview("Validation Error") {
+    SearchView.previewValidation
 }
