@@ -9,11 +9,11 @@ import SwiftUI
 
 struct DiscoverView: View {
     @StateObject private var viewModel: DiscoverViewModel
-
+    
     init(viewModel: DiscoverViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -43,8 +43,6 @@ struct DiscoverView: View {
                 } else {
                     ScrollView {
                         VStack(spacing: 24) {
-//                            DiscoverSortMenu(selectedSort: $viewModel.filters.sortOption)
-
                             DiscoverSectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
                             DiscoverSectionView(title: "Popular", movies: viewModel.popularMovies)
                             DiscoverSectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
