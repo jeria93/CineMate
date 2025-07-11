@@ -22,6 +22,7 @@ enum TMDBEndpoint {
     case watchProviders(Int)
     case search(String)
     case discover
+    case nowPlaying
 
     
     var path: String {
@@ -40,6 +41,7 @@ enum TMDBEndpoint {
         case .watchProviders(let id): return "/movie/\(id)/watch/providers"
         case .search: return "/search/movie"
         case .discover: return "/discover/movie"
+        case .nowPlaying: return "/movie/now_playing"
         }
     }
 }

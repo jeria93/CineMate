@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoadingView: View {
-    var text: String = "Loading..."
+    let title: String
 
     var body: some View {
         VStack(spacing: 12) {
@@ -16,7 +16,7 @@ struct LoadingView: View {
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.5)
 
-            Text(text)
+            Text(title)
                 .font(.headline)
                 .foregroundStyle(.secondary)
         }
@@ -27,6 +27,10 @@ struct LoadingView: View {
     }
 }
 
-#Preview("LoadingView") {
-    LoadingView(text: "Searching movies...")
+#Preview("Default") {
+    LoadingView(title: "Loading...")
+}
+
+#Preview("Searching") {
+    LoadingView(title: "Searching movies...")
 }

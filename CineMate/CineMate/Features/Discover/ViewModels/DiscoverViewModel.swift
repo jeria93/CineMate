@@ -14,6 +14,18 @@ final class DiscoverViewModel: ObservableObject {
     @Published var error: SearchError?
     @Published var filters = DiscoverFilter()
 
+    @Published var topRatedMovies: [Movie] = []
+    @Published var popularMovies: [Movie] = []
+    @Published var nowPlayingMovies: [Movie] = []
+    @Published var trendingMovies: [Movie] = []
+
+    var allSectionsAreEmpty: Bool {
+        topRatedMovies.isEmpty &&
+        popularMovies.isEmpty &&
+        nowPlayingMovies.isEmpty &&
+        trendingMovies.isEmpty
+    }
+
     private let repository: MovieProtocol
 
     init(repository: MovieProtocol = MovieRepository()) {
@@ -22,7 +34,7 @@ final class DiscoverViewModel: ObservableObject {
 
     func fetchDiscoverMovies() async {
         guard !ProcessInfo.processInfo.isPreview else {
-            print("Skipping network call in preview mode.")
+            print("Skipping discoverMovies fetch in preview mode.")
             return
         }
 
@@ -35,5 +47,26 @@ final class DiscoverViewModel: ObservableObject {
             results = []
         }
         isLoading = false
+    }
+
+    func fetchAllSections() async {
+        guard !ProcessInfo.processInfo.isPreview else {
+            print("Skipping section fetches in preview mode.")
+            return
+        }
+
+        async let topRated = repository.fetchTopRatedMovies()
+        async let popular = repository.fetchPopularMovies()
+        async let nowPlaying = repository.fetchNowPlayingMovies()
+        async let trending = repository.fetchTrendingMovies()
+
+        do {
+            topRatedMovies = try await topRated
+            popularMovies = try await popular
+            nowPlayingMovies = try await nowPlaying
+            trendingMovies = try await trending
+        } catch {
+            print("Failed to load one or more sections: \(error)")
+        }
     }
 }

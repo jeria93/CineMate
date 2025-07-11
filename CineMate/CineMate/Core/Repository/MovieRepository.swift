@@ -14,7 +14,11 @@ final class MovieRepository: MovieProtocol {
     init(service: TMDBService = TMDBService()) {
         self.service = service
     }
-    
+
+    func fetchNowPlayingMovies() async throws -> [Movie] {
+        try await service.fetchNowPlayingMovies()
+    }
+
     func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
         try await service.fetchPersonExternalIDs(for: personId)
     }

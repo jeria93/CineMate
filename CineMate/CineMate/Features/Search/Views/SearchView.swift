@@ -26,9 +26,9 @@ struct SearchView: View {
                 if viewModel.query.isEmpty {
                     SearchPromptView()
                 } else if viewModel.isLoading {
-                    LoadingView(text: "Searching movies...")
+                    LoadingView(title: "Searching movies...")
                 } else if let error = viewModel.error {
-                    ErrorMessageView(message: error.localizedDescription)
+                    ErrorMessageView(title: "Error", message: error.localizedDescription)
                 } else if viewModel.results.isEmpty && !viewModel.trimmedQuery.isEmpty {
                     EmptyResultsView(query: viewModel.trimmedQuery)
                 } else {

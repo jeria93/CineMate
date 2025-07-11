@@ -11,47 +11,53 @@ import SwiftUI
 /// Useful for previewing different UI states without triggering real network calls.
 extension PreviewFactory {
 
-    /// A default DiscoverViewModel with mock movie results.
-    /// Used to preview the normal loaded state.
+    /// A complete DiscoverViewModel with mock movie results in all sections.
     @MainActor
     static func discoverViewModel() -> DiscoverViewModel {
-        let vm = DiscoverViewModel(repository: MockMovieRepository())
-        vm.results = PreviewData.moviesList
-        vm.isLoading = false
-        vm.error = nil
-        return vm
+        configuredViewModel {
+            $0.results = DiscoverPreviewData.movies
+            $0.topRatedMovies = DiscoverPreviewData.movies
+            $0.popularMovies = DiscoverPreviewData.movies.shuffled()
+            $0.nowPlayingMovies = DiscoverPreviewData.movies.reversed()
+            $0.trendingMovies = DiscoverPreviewData.movies.shuffled()
+        }
     }
 
-    /// A DiscoverViewModel in a loading state.
-    /// Used to preview loading indicators.
+    /// A DiscoverViewModel in loading state.
     @MainActor
     static func loadingDiscoverViewModel() -> DiscoverViewModel {
-        let vm = DiscoverViewModel(repository: MockMovieRepository())
-        vm.isLoading = true
-        vm.results = []
-        vm.error = nil
-        return vm
+        configuredViewModel {
+            $0.isLoading = true
+        }
     }
 
-    /// A DiscoverViewModel with no results.
-    /// Used to preview the empty state UI.
+    /// A DiscoverViewModel with empty results and sections.
     @MainActor
     static func emptyDiscoverViewModel() -> DiscoverViewModel {
-        let vm = DiscoverViewModel(repository: MockMovieRepository())
-        vm.results = []
-        vm.isLoading = false
-        vm.error = nil
-        return vm
+        configuredViewModel()
     }
 
-    /// A DiscoverViewModel simulating an error.
-    /// Used to preview error message UI.
+    /// A DiscoverViewModel simulating an error state.
     @MainActor
     static func errorDiscoverViewModel() -> DiscoverViewModel {
-        let vm = DiscoverViewModel(repository: MockMovieRepository())
-        vm.results = []
-        vm.isLoading = false
-        vm.error = .custom("Something went wrong")
-        return vm
+        configuredViewModel {
+            $0.error = .custom("Something went wrong")
+        }
+    }
+
+    /// A DiscoverViewModel with only one section populated.
+    @MainActor
+    static func oneSectionOnlyDiscoverViewModel() -> DiscoverViewModel {
+        configuredViewModel {
+            $0.topRatedMovies = DiscoverPreviewData.movies
+        }
+    }
+
+    /// Base setup for any DiscoverViewModel with optional customization.
+    @MainActor
+    private static func configuredViewModel(_ configure: ((DiscoverViewModel) -> Void)? = nil) -> DiscoverViewModel {
+        let viewModel = DiscoverViewModel(repository: MockMovieRepository())
+        configure?(viewModel)
+        return viewModel
     }
 }
