@@ -16,7 +16,7 @@ struct DiscoverContentView: View {
                 if !viewModel.topRatedMovies.isEmpty {
                     DiscoverSectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
                 }
-
+                
                 if !viewModel.popularMovies.isEmpty {
                     DiscoverSectionView(title: "Popular", movies: viewModel.popularMovies)
                 }
@@ -38,6 +38,10 @@ struct DiscoverContentView: View {
                 }
             }
             .padding(.vertical)
+        }
+        .refreshable {
+            guard !ProcessInfo.processInfo.isPreview else { return }
+            await viewModel.fetchAllSections()
         }
     }
 }

@@ -13,14 +13,14 @@ final class DiscoverViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: SearchError?
     @Published var filters = DiscoverFilter()
-    
+
     @Published var topRatedMovies: [Movie] = []
     @Published var popularMovies: [Movie] = []
     @Published var nowPlayingMovies: [Movie] = []
     @Published var trendingMovies: [Movie] = []
     @Published var upcomingMovies: [Movie] = []
     @Published var horrorMovies: [Movie] = []
-    
+
     var allSectionsAreEmpty: Bool {
         topRatedMovies.isEmpty &&
         popularMovies.isEmpty &&
@@ -29,30 +29,30 @@ final class DiscoverViewModel: ObservableObject {
         upcomingMovies.isEmpty &&
         horrorMovies.isEmpty
     }
-    
+
     private let repository: MovieProtocol
-    
+
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
     }
-    
+
     func fetchAllSections() async {
         guard !ProcessInfo.processInfo.isPreview else {
             print("Skipping section fetch in preview.")
             return
         }
-        
+
         guard !SecretManager.bearerToken.isEmpty else {
             print("Bearer token is missing.")
             error = .custom("Missing API token.")
             return
         }
-        
+
         isLoading = true
         error = nil
-        
+
         defer { isLoading = false }
-        
+
         do {
             async let topRated = repository.fetchTopRatedMovies()
             async let popular = repository.fetchPopularMovies()
