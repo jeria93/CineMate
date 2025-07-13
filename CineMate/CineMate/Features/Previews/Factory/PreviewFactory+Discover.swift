@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-/// Provides preconfigured `DiscoverViewModel` instances for SwiftUI previews.
-/// Useful for previewing different UI states without triggering real network calls.
+/// Provides preconfigured DiscoverViewModel instances for SwiftUI previews.
+/// Used to simulate different UI states without triggering real API calls.
 extension PreviewFactory {
 
-    /// A complete DiscoverViewModel with mock movie results in all sections.
+    /// ViewModel with all sections populated for default layout previews.
     @MainActor
     static func discoverViewModel() -> DiscoverViewModel {
         configuredViewModel {
@@ -20,10 +20,12 @@ extension PreviewFactory {
             $0.popularMovies = DiscoverPreviewData.movies.shuffled()
             $0.nowPlayingMovies = DiscoverPreviewData.movies.reversed()
             $0.trendingMovies = DiscoverPreviewData.movies.shuffled()
+            $0.upcomingMovies = DiscoverPreviewData.movies
+            $0.horrorMovies = DiscoverHorrorPreviewData.horrorMovies
         }
     }
 
-    /// A DiscoverViewModel in loading state.
+    /// ViewModel simulating loading state for shimmer/spinner previews.
     @MainActor
     static func loadingDiscoverViewModel() -> DiscoverViewModel {
         configuredViewModel {
@@ -31,13 +33,13 @@ extension PreviewFactory {
         }
     }
 
-    /// A DiscoverViewModel with empty results and sections.
+    /// ViewModel with no data loaded (empty screen preview).
     @MainActor
     static func emptyDiscoverViewModel() -> DiscoverViewModel {
         configuredViewModel()
     }
 
-    /// A DiscoverViewModel simulating an error state.
+    /// ViewModel with a simulated error message.
     @MainActor
     static func errorDiscoverViewModel() -> DiscoverViewModel {
         configuredViewModel {
@@ -45,7 +47,7 @@ extension PreviewFactory {
         }
     }
 
-    /// A DiscoverViewModel with only one section populated.
+    /// ViewModel with a single populated section for minimal previews.
     @MainActor
     static func oneSectionOnlyDiscoverViewModel() -> DiscoverViewModel {
         configuredViewModel {
@@ -53,7 +55,15 @@ extension PreviewFactory {
         }
     }
 
-    /// Base setup for any DiscoverViewModel with optional customization.
+    /// ViewModel showing only horror movies.
+    @MainActor
+    static func horrorOnlyDiscoverViewModel() -> DiscoverViewModel {
+        configuredViewModel {
+            $0.horrorMovies = DiscoverHorrorPreviewData.horrorMovies
+        }
+    }
+
+    /// Shared builder for consistent setup with mock repository.
     @MainActor
     private static func configuredViewModel(_ configure: ((DiscoverViewModel) -> Void)? = nil) -> DiscoverViewModel {
         let viewModel = DiscoverViewModel(repository: MockMovieRepository())

@@ -9,52 +9,35 @@ import SwiftUI
 
 struct DiscoverView: View {
     @StateObject private var viewModel: DiscoverViewModel
-    
+
     init(viewModel: DiscoverViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
         NavigationStack {
             Group {
                 if viewModel.isLoading {
-                    VStack {
-                        Spacer()
-                        ProgressView("Loading...")
-                        Spacer()
-                    }
+                    LoadingView(title: "Loading...")
                 } else if let error = viewModel.error {
-                    VStack(spacing: 12) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.orange)
-                        Text("Something went wrong")
-                            .font(.headline)
-                        Text(error.localizedDescription)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .multilineTextAlignment(.center)
-                    .padding()
+                    ErrorMessageView(
+                        title: "Something went wrong",
+                        message: error.localizedDescription
+                    )
                 } else if viewModel.allSectionsAreEmpty {
-                    Text("No movies to show.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    EmptyStateView(
+                        systemImage: "film",
+                        title: "No movies to show.",
+                        message: "There’s no content here at the moment."
+                    )
                 } else {
-                    ScrollView {
-                        VStack(spacing: 24) {
-                            DiscoverSectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
-                            DiscoverSectionView(title: "Popular", movies: viewModel.popularMovies)
-                            DiscoverSectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
-                            DiscoverSectionView(title: "Trending", movies: viewModel.trendingMovies)
-                        }
-                        .padding(.vertical)
-                    }
+                    DiscoverContentView(viewModel: viewModel)
                 }
             }
             .navigationTitle("Discover")
             .task {
                 guard !ProcessInfo.processInfo.isPreview else { return }
+                try? await Task.sleep(nanoseconds: 300_000_000) // Delay i sim
                 await viewModel.fetchAllSections()
             }
         }

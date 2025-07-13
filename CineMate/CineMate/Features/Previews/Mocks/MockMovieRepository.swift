@@ -68,6 +68,9 @@ final class MockMovieRepository: MovieProtocol {
     }
 
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
-        PreviewData.moviesList
+        if filters.contains(where: { $0.name == "with_genres" && $0.value == "27" }) {
+            return DiscoverHorrorPreviewData.horrorMovies
+        }
+        return PreviewData.moviesList
     }
 }
