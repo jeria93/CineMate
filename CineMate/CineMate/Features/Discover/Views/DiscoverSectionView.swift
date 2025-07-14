@@ -13,10 +13,12 @@ struct DiscoverSectionView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.title2)
-                .bold()
-                .padding(.horizontal)
+            NavigationLink(destination: SectionMoviesView(title: title, movies: movies)) {
+                Text(title)
+                    .font(.title2)
+                    .bold()
+                    .padding(.horizontal)
+            }
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {

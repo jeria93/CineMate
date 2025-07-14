@@ -29,7 +29,6 @@ struct DiscoverMovieRow: View {
                         .animation(.easeOut(duration: 0.3), value: isImageLoaded)
                         .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isTapped)
                         .onTapGesture {
-//                            Navigate in the future WIP
                             isTapped = true
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                 isTapped = false
