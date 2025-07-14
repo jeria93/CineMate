@@ -7,6 +7,14 @@
 
 import Foundation
 
+/// Mock movie data used in `SectionMoviesView` previews.
+///
+/// Includes 3 well-known movie examples:
+/// - Interstellar
+/// - Dune
+/// - Oppenheimer
+///
+/// Useful for displaying horizontal scrollable movie sections in SwiftUI.
 struct SectionMoviesPreviewData {
     static let interstellar = Movie(
         id: 1,

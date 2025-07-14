@@ -7,9 +7,15 @@
 
 import Foundation
 
+/// Provides reusable `Movie` mock data for previews.
+///
+/// Use these static properties to simulate movies with or without posters
+/// when testing `MoviePosterView`, `MovieGridView`, or similar components.
 struct MoviePosterPreviewData {
+
+    /// A fully populated Dune movie with valid poster path.
     static let dune = Movie(
-        id: 438631,
+        id: 438637,
         title: "Dune",
         overview: "Paul Atreides leads nomadic tribes in a battle to control Arrakis.",
         posterPath: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
@@ -19,6 +25,7 @@ struct MoviePosterPreviewData {
         genres: ["Action", "Adventure", "Sci-Fi"]
     )
 
+    /// Same Dune movie but without a poster path (simulates fallback scenarios).
     static let duneNoPoster = Movie(
         id: 438631,
         title: "Dune",

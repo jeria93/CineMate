@@ -10,18 +10,18 @@ import SwiftUI
 struct DiscoverSectionView: View {
     let title: String
     let movies: [Movie]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            NavigationLink(destination: SectionMoviesView(title: title, movies: movies)) {
+            NavigationLink(destination: makeSeeAllDestination()) {
                 Text(title)
                     .font(.title2)
                     .bold()
                     .padding(.horizontal)
             }
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
+                LazyHStack(spacing: 16) {
                     ForEach(movies) { movie in
                         DiscoverMovieRow(movie: movie)
                     }
@@ -30,6 +30,15 @@ struct DiscoverSectionView: View {
             }
         }
         .padding(.top)
+    }
+
+    private func makeSeeAllDestination() -> some View {
+        let filter = DiscoverFilterProvider.filter(for: title)
+        let viewModel = SeeAllMoviesViewModel(
+            repository: MovieRepository(),
+            filter: filter
+        )
+        return SeeAllMoviesView(title: title, viewModel: viewModel)
     }
 }
 

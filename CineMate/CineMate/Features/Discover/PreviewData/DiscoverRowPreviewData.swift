@@ -11,7 +11,7 @@ enum DiscoverRowPreviewData {
     /// Static mock data for previewing `DiscoverMovieRow`.
     /// Designed to represent different states like valid poster or missing image.
     static let dune = Movie(
-        id: 438631,
+        id: 438633,
         title: "Dune",
         overview: nil,
         posterPath: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
