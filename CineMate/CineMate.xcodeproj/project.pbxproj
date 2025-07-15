@@ -387,11 +387,6 @@
 				03A620C02DF774CA00C075E8 /* Features */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
-				03E090D42E25A17800ECBF5F /* GenreChipView.swift */,
-				03E090D62E25A19B00ECBF5F /* GenreSelectorView.swift */,
-				03E090D82E25A23500ECBF5F /* GenrePreviewData.swift */,
-				03E090DA2E25A2AE00ECBF5F /* GenreChipView+Previews.swift */,
-				03E090DC2E25A2F600ECBF5F /* GenreSelectorView+Previews.swift */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -453,7 +448,6 @@
 				03CE4A482E0F2E7C00D70F70 /* Shared */,
 				0303C68E2E0ED79A00C3AF33 /* Expand */,
 				030E037F2E0B4720007BB609 /* Share */,
-				030E037E2E0B4713007BB609 /* Genres */,
 				030E037D2E0B4707007BB609 /* Picker */,
 				030E037C2E0B46F2007BB609 /* Favorite */,
 				030E037B2E0B46D7007BB609 /* PosterImage */,
@@ -551,14 +545,6 @@
 				0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */,
 			);
 			path = Picker;
-			sourceTree = "<group>";
-		};
-		030E037E2E0B4713007BB609 /* Genres */ = {
-			isa = PBXGroup;
-			children = (
-				0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */,
-			);
-			path = Genres;
 			sourceTree = "<group>";
 		};
 		030E037F2E0B4720007BB609 /* Share */ = {
@@ -843,6 +829,51 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		0382BDEE2E26EAAE00B5B74D /* Genre */ = {
+			isa = PBXGroup;
+			children = (
+				0382BDF22E26EAD100B5B74D /* PreviewData */,
+				0382BDF12E26EAC500B5B74D /* Components */,
+				0382BDF02E26EABA00B5B74D /* ViewModels */,
+				0382BDEF2E26EAB400B5B74D /* Views */,
+			);
+			path = Genre;
+			sourceTree = "<group>";
+		};
+		0382BDEF2E26EAB400B5B74D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */,
+				03E090D42E25A17800ECBF5F /* GenreChipView.swift */,
+				03E090D62E25A19B00ECBF5F /* GenreSelectorView.swift */,
+				03E090DA2E25A2AE00ECBF5F /* GenreChipView+Previews.swift */,
+				03E090DC2E25A2F600ECBF5F /* GenreSelectorView+Previews.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		0382BDF02E26EABA00B5B74D /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		0382BDF12E26EAC500B5B74D /* Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		0382BDF22E26EAD100B5B74D /* PreviewData */ = {
+			isa = PBXGroup;
+			children = (
+				03E090D82E25A23500ECBF5F /* GenrePreviewData.swift */,
+			);
+			path = PreviewData;
+			sourceTree = "<group>";
+		};
 		039AF9A62E258C1200B90527 /* Discover */ = {
 			isa = PBXGroup;
 			children = (
@@ -899,6 +930,7 @@
 		03A620C02DF774CA00C075E8 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				0382BDEE2E26EAAE00B5B74D /* Genre */,
 				039AF9AB2E25997600B90527 /* SeeAllMovies */,
 				03C50CCF2E1EAA7C00106CCF /* Discover */,
 				031E9A9A2E19B7B20027BC31 /* Account */,

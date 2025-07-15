@@ -14,7 +14,7 @@ struct GenreSelectorView: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: 10) {
                 ForEach(genres) { genre in
                     GenreChipView(
                         genre: genre,
@@ -26,7 +26,8 @@ struct GenreSelectorView: View {
             }
             .padding(.horizontal)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
+        .background(Color(.systemBackground))
     }
 }
 
