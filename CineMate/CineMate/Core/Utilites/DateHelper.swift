@@ -34,4 +34,10 @@ enum DateHelper {
         let components = Calendar.current.dateComponents([.year], from: birthDate, to: deathDate)
         return components.year
     }
+
+    /// Returns the current year as a string, e.g., "2025".
+    static func currentYearString() -> String {
+        let year = Calendar.current.component(.year, from: Date())
+        return "\(year)"
+    }
 }

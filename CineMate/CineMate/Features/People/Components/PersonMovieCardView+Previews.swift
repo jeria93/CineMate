@@ -18,7 +18,7 @@ extension PersonMovieCardView {
     static var previewMissingPoster: some View {
         PersonMovieCardView(
             movie: PersonMovieCredit(
-                id: 999,
+                id: 1997,
                 title: "Mystery Movie",
                 character: nil,
                 releaseDate: "2025-01-01",

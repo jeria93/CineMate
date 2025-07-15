@@ -10,7 +10,7 @@ import Foundation
 /// Provides static mock data for SwiftUI previews.
 struct PreviewData {
     static let inception = Movie(
-        id: 1,
+        id: 1001,
         title: "Inception",
         overview: "A thief with the rare ability to enter people's dreams and steal their secrets from their subconscious.",
         posterPath: "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
@@ -21,7 +21,7 @@ struct PreviewData {
     )
 
     static let starWars = Movie(
-        id: 11,
+        id: 1002,
         title: "Star Wars: A New Hope",
         overview: "Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire.",
         posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
@@ -32,7 +32,7 @@ struct PreviewData {
     )
 
     static let matrix = Movie(
-        id: 603,
+        id: 1003,
         title: "The Matrix",
         overview: "A computer hacker learns about the true nature of reality and his role in the war against its controllers.",
         posterPath: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
@@ -43,7 +43,7 @@ struct PreviewData {
     )
 
     static let pulpFiction = Movie(
-        id: 680,
+        id: 1004,
         title: "Pulp Fiction",
         overview: "The lives of two mob hitmen, a boxer, a gangster's wife, and a pair of diner bandits intertwine in four tales.",
         posterPath: "/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg",
@@ -262,7 +262,7 @@ struct PreviewData {
     )
 
     static let minimalMovie = Movie(
-        id: 999,
+        id: 1999,
         title: "Unknown Title",
         overview: nil,
         posterPath: nil,

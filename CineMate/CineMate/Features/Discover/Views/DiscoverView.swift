@@ -16,16 +16,29 @@ struct DiscoverView: View {
 
     var body: some View {
         NavigationStack {
-            VStack {
-                DiscoverSortMenu(selectedSort: $viewModel.filters.sortOption)
-                DiscoverContentView(viewModel: viewModel)
+            Group {
+                if viewModel.isLoading {
+                    LoadingView(title: "Loading...")
+                } else if let error = viewModel.error {
+                    ErrorMessageView(
+                        title: "Something went wrong",
+                        message: error.localizedDescription
+                    )
+                } else if viewModel.allSectionsAreEmpty {
+                    EmptyStateView(
+                        systemImage: "film",
+                        title: "No movies to show.",
+                        message: "There’s no content here at the moment."
+                    )
+                } else {
+                    DiscoverContentView(viewModel: viewModel)
+                }
             }
             .navigationTitle("Discover")
-            .onChange(of: viewModel.filters) {
-                Task { await viewModel.fetchDiscoverMovies() }
-            }
             .task {
-                await viewModel.fetchDiscoverMovies()
+                guard !ProcessInfo.processInfo.isPreview else { return }
+                try? await Task.sleep(nanoseconds: 300_000_000) // Delay i sim
+                await viewModel.fetchAllSections()
             }
         }
     }
@@ -45,4 +58,8 @@ struct DiscoverView: View {
 
 #Preview("Error") {
     DiscoverView.previewError
+}
+
+#Preview("One Section") {
+    DiscoverView.previewOneSection
 }

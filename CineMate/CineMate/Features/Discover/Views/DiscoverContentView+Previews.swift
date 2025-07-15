@@ -2,32 +2,22 @@
 //  DiscoverContentView+Previews.swift
 //  CineMate
 //
-//  Created by Nicholas Samuelsson Jeria on 2025-07-09.
+//  Created by Nicholas Samuelsson Jeria on 2025-07-12.
 //
 
 import SwiftUI
 
-/// Preview states for `DiscoverContentView` to simulate different UI conditions in Xcode canvas.
-/// Each static var returns a `DiscoverContentView` with a specific mocked ViewModel state.
+/// Provides inline SwiftUI preview configurations for DiscoverContentView.
+/// These previews use mock data from PreviewFactory for different visual states.
 extension DiscoverContentView {
 
-    /// Shows DiscoverContentView with a list of movies
+    /// Preview showing all content sections populated.
     static var previewDefault: some View {
         DiscoverContentView(viewModel: PreviewFactory.discoverViewModel())
     }
 
-    /// Shows DiscoverContentView in a loading state
-    static var previewLoading: some View {
-        DiscoverContentView(viewModel: PreviewFactory.loadingDiscoverViewModel())
-    }
-
-    /// Shows DiscoverContentView with an empty result set
-    static var previewEmpty: some View {
-        DiscoverContentView(viewModel: PreviewFactory.emptyDiscoverViewModel())
-    }
-
-    /// Shows DiscoverContentView in an error state
-    static var previewError: some View {
-        DiscoverContentView(viewModel: PreviewFactory.errorDiscoverViewModel())
+    /// Preview showing only the "Horror" section.
+    static var previewHorrorOnly: some View {
+        DiscoverContentView(viewModel: PreviewFactory.horrorOnlyDiscoverViewModel())
     }
 }

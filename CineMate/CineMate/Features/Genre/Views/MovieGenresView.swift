@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MovieGenresView: View {
     let genres: [String]
-
+    
     var body: some View {
         if genres.isEmpty {
             Label("Genres not available", systemImage: "questionmark.app.dashed")
@@ -49,7 +49,7 @@ extension MovieGenresView {
             .padding()
             .background(Color(.systemBackground))
     }
-
+    
     /// Shows fallback UI when no genres are available
     static var previewEmpty: some View {
         MovieGenresView(genres: [])

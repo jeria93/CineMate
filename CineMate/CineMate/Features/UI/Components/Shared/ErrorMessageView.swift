@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ErrorMessageView: View {
+    let title: String
     let message: String
     var onRetry: (() -> Void)? = nil
 
@@ -15,9 +16,9 @@ struct ErrorMessageView: View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 32))
-                .foregroundStyle(.red)
+                .foregroundStyle(.orange)
 
-            Text("Oops! Something went wrong.")
+            Text(title)
                 .font(.headline)
 
             Text(message)
@@ -38,9 +39,18 @@ struct ErrorMessageView: View {
     }
 }
 
-#Preview("ErrorMessageView") {
+#Preview("Default Error") {
     ErrorMessageView(
-        message: "Unable to connect to the server. Please try again.",
+        title: "Oops! Something went wrong.",
+        message: "Unable to connect to the server."
+    )
+}
+
+#Preview("Error with Retry") {
+    ErrorMessageView(
+        title: "Failed to Load",
+        message: "Please check your internet connection.",
         onRetry: { print("Retry tapped!") }
     )
 }
+

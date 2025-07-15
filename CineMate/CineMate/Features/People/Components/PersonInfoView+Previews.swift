@@ -26,7 +26,7 @@ extension PersonInfoView {
     /// Preview with partial data (e.g. birthday but no bio)
     static var previewPartial: some View {
         let partialDetail = PersonDetail(
-            id: 999,
+            id: 1996,
             name: "Mystery Person",
             birthday: "1980-01-01",
             deathday: nil,
