@@ -1,7 +1,7 @@
 # CineMate
 
 **CineMate** is a SwiftUI-based iOS app that lets users browse, filter, and save movies using The Movie Database (**TMDB**) API.  
-It uses **MVVM architecture**, clean SwiftUI views, and a modular structure with previews, mocking, and secure API access.  
+Built with **MVVM architecture**, clean SwiftUI views, and a modular structure with previews, mock data, and secure API handling.  
 **Planned support for Google Sign-In via Firebase Authentication.**
 
 > **Recommended setup:** Xcode **15.3** + iOS **17.4** (simulator or real device)
@@ -68,26 +68,26 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 
 ## Architecture & Concepts
 
-- MVVM (Model–View–ViewModel)
-- **Simple Dependency Injection** (init-based, no factories)
-- Repository Pattern for data abstraction
-- Generic service layer for TMDB endpoints
-- Preview-friendly setup using `MockMovieRepository` and `PreviewData`
-- Secure API key management with `Secrets.plist` (ignored in Git)
-- `.gitignore` and `.github/CODEOWNERS` for professional repo hygiene
-- SwiftUI-only app using async/await and modern view composition
-- Feature-first folder structure (Movies, People, Lists)
-- SRP (Single Responsibility Principle) and SoC (Separation of Concerns)
-- Icons sourced from [Simple Icons](https://simpleicons.org/)
-- Planned support for Firebase Authentication (Google Sign-In)
+- **MVVM** (Model–View–ViewModel)  
+- Simple **dependency injection** (init-based)  
+- **Repository pattern** for data abstraction  
+- Unified TMDB service layer  
+- Previews and mocks for fast UI iteration  
+- Secure API key handling with `Secrets.plist`  
+- **Feature-first** folder structure  
+- Principles: **SRP** and **SoC**  
+- SwiftUI-only, async/await  
+- Icons from [Simple Icons](https://simpleicons.org/)  
+- Planned: **Firebase Auth** (Google Sign-In)
 
 
 ---
 
 ## Running the App
 
-1. Select a simulator running iOS 17.4 (e.g. iPhone 15)
-2. Press **Cmd + R** or click ▶️ to build & run
+1. Open project in **Xcode 15.3**  
+2. Select **iOS 17.4** simulator or real device  
+3. Press **Cmd+R**
 
 ---
 
@@ -223,6 +223,7 @@ The CineMate project follows a modular architecture with feature-based separatio
 ```
 CineMate/
 ├── CineMateApp.swift
+├── Info.plist
 ├── Core/
 │   ├── Config/
 │   ├── Models/
@@ -230,9 +231,12 @@ CineMate/
 │   ├── Repository/
 │   └── Utilities/
 ├── Features/
-│   ├── Movies/
-│   ├── MovieList/
-│   └── People/
+│   ├── Discover/
+│   ├── SeeAllMovies/
+│   ├── Search/
+│   ├── Favorites/
+│   ├── Account/
+│   └── Genre/
 ├── UI/
 │   └── Components/
 ├── Previews/
@@ -242,9 +246,8 @@ CineMate/
 ├── Resources/
 │   ├── Assets.xcassets/
 │   └── Secrets/
-└── Info.plist
+└── README.md
 ```
-
 ---
 
 ## 🔐 Google Sign-In Overview *(planned)*
