@@ -15,6 +15,10 @@ final class MovieRepository: MovieProtocol {
         self.service = service
     }
 
+    func fetchGenres() async throws -> [Genre] {
+        try await service.fetchGenres()
+    }
+
     func fetchNowPlayingMovies() async throws -> [Movie] {
         try await service.fetchNowPlayingMovies()
     }

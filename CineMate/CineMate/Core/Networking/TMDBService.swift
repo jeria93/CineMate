@@ -101,6 +101,11 @@ final class TMDBService {
         return response.results
     }
 
+    func fetchGenres() async throws -> [Genre] {
+        let response: GenreResponse = try await request(endpoint: .movieGenres)
+        return response.genres
+    }
+
     /// Generic method that sends a GET request to TMDB and decodes the response into any Decodable model.
     ///
     /// - Parameters:

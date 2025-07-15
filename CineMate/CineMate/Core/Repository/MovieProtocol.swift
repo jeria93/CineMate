@@ -23,4 +23,5 @@ protocol MovieProtocol {
     func searchMovies(query: String) async throws -> [Movie]
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie]
     func fetchNowPlayingMovies() async throws -> [Movie]
+    func fetchGenres() async throws -> [Genre]
 }

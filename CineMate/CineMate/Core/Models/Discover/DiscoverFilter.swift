@@ -44,7 +44,7 @@ struct DiscoverFilter: Equatable {
             items.append(.init(name: DiscoverQueryKey.includeAdult, value: "true"))
         }
 
-        items.append(.init(name: "page", value: "\(page)"))
+        items.append(.init(name: DiscoverQueryKey.page, value: "\(page)"))
 
         return items
     }
@@ -59,6 +59,7 @@ private enum DiscoverQueryKey {
     static let minVoteAverage = "vote_average.gte"
     static let language = "language"
     static let includeAdult = "include_adult"
+    static let page = "page"
 }
 
 /*

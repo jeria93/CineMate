@@ -8,6 +8,10 @@
 import Foundation
 
 final class MockMovieRepository: MovieProtocol {
+    func fetchGenres() async throws -> [Genre] {
+        GenrePreviewData.genres
+    }
+    
 
     func fetchPopularMovies() async throws -> [Movie] {
         PreviewData.moviesList.shuffled()

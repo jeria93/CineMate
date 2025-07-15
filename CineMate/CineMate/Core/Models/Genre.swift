@@ -14,7 +14,7 @@ import Foundation
 ///
 /// This struct is typically used to decode responses from TMDB's `/genre/movie/list`
 /// or `/genre/tv/list` endpoints.
-struct Genre: Codable {
+struct Genre: Codable, Identifiable, Equatable {
     let id: Int
     let name: String
 }

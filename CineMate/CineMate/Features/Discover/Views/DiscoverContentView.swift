@@ -13,20 +13,27 @@ struct DiscoverContentView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
+                GenreSelectorView(
+                    genres: viewModel.genres,
+                    selectedGenreId: viewModel.selectedGenreId
+                ) { selected in
+                    viewModel.selectedGenreId = selected.id
+                }
+
                 if !viewModel.topRatedMovies.isEmpty {
                     DiscoverSectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
                 }
-                
+
                 if !viewModel.popularMovies.isEmpty {
                     DiscoverSectionView(title: "Popular", movies: viewModel.popularMovies)
                 }
 
-                if !viewModel.nowPlayingMovies.isEmpty {
-                    DiscoverSectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
-                }
-
                 if !viewModel.trendingMovies.isEmpty {
                     DiscoverSectionView(title: "Trending", movies: viewModel.trendingMovies)
+                }
+
+                if !viewModel.nowPlayingMovies.isEmpty {
+                    DiscoverSectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
                 }
 
                 if !viewModel.upcomingMovies.isEmpty {
