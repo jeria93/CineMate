@@ -12,7 +12,8 @@ extension RelatedMoviesSection {
     /// Preview showing a typical list of recommended movies (4 st).
     @MainActor
     static var previewWithMovies: some View {
-        RelatedMoviesSection(
+        PreviewID.reset()
+        return RelatedMoviesSection(
             movies: PreviewFactory.recommendedMovies,
             movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
             castViewModel: PreviewFactory.castViewModel()
@@ -20,7 +21,7 @@ extension RelatedMoviesSection {
         .padding()
         .background(Color(.systemBackground))
     }
-    
+
     /// Preview showing empty state fallback when no movies are available.
     @MainActor
     static var previewEmpty: some View {
@@ -37,7 +38,7 @@ extension RelatedMoviesSection {
     @MainActor
     static var previewSingleMovie: some View {
         RelatedMoviesSection(
-            movies: [PreviewData.starWars],
+            movies: [SharedPreviewMovies.starWars],
             movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
             castViewModel: PreviewFactory.castViewModel()
         )
@@ -49,7 +50,7 @@ extension RelatedMoviesSection {
     @MainActor
     static var previewManyMovies: some View {
         RelatedMoviesSection(
-            movies: Array(repeating: PreviewData.starWars, count: 10),
+            movies: Array(repeating: SharedPreviewMovies.starWars, count: 10),
             movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
             castViewModel: PreviewFactory.castViewModel()
         )

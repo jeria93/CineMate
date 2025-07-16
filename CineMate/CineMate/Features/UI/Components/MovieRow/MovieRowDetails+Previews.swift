@@ -11,7 +11,7 @@ extension MovieRowDetails {
     /// Shows a compact layout with short overview and small fonts
     static var previewCompact: some View {
         MovieRowDetails(
-            movie: PreviewData.starWars,
+            movie: SharedPreviewMovies.starWars,
             spacing: 5,
             titleFont: .headline,
             overviewFont: .subheadline,
@@ -24,7 +24,7 @@ extension MovieRowDetails {
     /// Shows a detailed layout with full overview and larger fonts
     static var previewDetailed: some View {
         MovieRowDetails(
-            movie: PreviewData.starWars,
+            movie: SharedPreviewMovies.starWars,
             spacing: 16,
             titleFont: .largeTitle.bold(),
             overviewFont: .body,
@@ -37,7 +37,7 @@ extension MovieRowDetails {
     /// Shows a fallback state with missing optional data
     static var previewMinimal: some View {
         MovieRowDetails(
-            movie: PreviewData.minimalMovie,
+            movie: SharedPreviewMovies.minimalMovie,
             spacing: 8,
             titleFont: .title2,
             overviewFont: .body,
@@ -49,7 +49,8 @@ extension MovieRowDetails {
 
     /// Shows all previews in one group for quick visual inspection
     static var preview: some View {
-        Group {
+        PreviewID.reset()
+        return Group {
             previewCompact
             previewDetailed
             previewMinimal

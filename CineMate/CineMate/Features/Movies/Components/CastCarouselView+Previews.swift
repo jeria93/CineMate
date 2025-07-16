@@ -48,3 +48,5 @@ extension CastCarouselView {
         .background(Color(.systemBackground))
     }
 }
+
+// Bättre att bryta ut PreviewData.starWarsCredits.cast till egen CastCarouselViewPreviewData?

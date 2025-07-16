@@ -12,9 +12,10 @@ extension PreviewFactory {
     /// A default search view model with results
     @MainActor
     static func searchViewModel() -> SearchViewModel {
+        PreviewID.reset()
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Star"
-        vm.results = PreviewData.moviesList
+        vm.results = SharedPreviewMovies.moviesList
         return vm
     }
 

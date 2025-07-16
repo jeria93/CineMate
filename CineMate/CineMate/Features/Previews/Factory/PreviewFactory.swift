@@ -10,14 +10,14 @@ import SwiftUI
 
 enum PreviewFactory {
     static let repository = MockMovieRepository()
-    static let recommendedMovies = PreviewData.moviesList
+    static let recommendedMovies = SharedPreviewMovies.moviesList
 
     // MARK: - MovieViewModels
 
     @MainActor
     static func movieListViewModel() -> MovieViewModel {
         let vm = MovieViewModel(repository: repository)
-        vm.movies = PreviewData.moviesList
+        vm.movies = SharedPreviewMovies.moviesList
         return vm
     }
 

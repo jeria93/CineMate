@@ -11,26 +11,25 @@ final class MockMovieRepository: MovieProtocol {
     func fetchGenres() async throws -> [Genre] {
         GenrePreviewData.genres
     }
-    
 
     func fetchPopularMovies() async throws -> [Movie] {
-        PreviewData.moviesList.shuffled()
+        SharedPreviewMovies.moviesList.shuffled()
     }
 
     func fetchTrendingMovies() async throws -> [Movie] {
-        [PreviewData.inception, PreviewData.starWars]
+        [SharedPreviewMovies.inception, SharedPreviewMovies.starWars]
     }
 
     func fetchTopRatedMovies() async throws -> [Movie] {
-        PreviewData.moviesList
+        SharedPreviewMovies.moviesList
     }
 
     func fetchUpcomingMovies() async throws -> [Movie] {
-        PreviewData.moviesList
+        SharedPreviewMovies.moviesList
     }
 
     func fetchNowPlayingMovies() async throws -> [Movie] {
-        PreviewData.moviesList.reversed()
+        SharedPreviewMovies.moviesList.reversed()
     }
 
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
@@ -42,7 +41,7 @@ final class MockMovieRepository: MovieProtocol {
     }
 
     func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
-        PreviewData.moviesList
+        SharedPreviewMovies.moviesList
     }
 
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
@@ -66,7 +65,7 @@ final class MockMovieRepository: MovieProtocol {
     }
 
     func searchMovies(query: String) async throws -> [Movie] {
-        PreviewData.moviesList.filter {
+        SharedPreviewMovies.moviesList.filter {
             $0.title.lowercased().contains(query.lowercased())
         }
     }
@@ -75,6 +74,6 @@ final class MockMovieRepository: MovieProtocol {
         if filters.contains(where: { $0.name == "with_genres" && $0.value == "27" }) {
             return DiscoverHorrorPreviewData.horrorMovies
         }
-        return PreviewData.moviesList
+        return SharedPreviewMovies.moviesList
     }
 }

@@ -12,11 +12,12 @@ extension PreviewFactory {
     /// A default favorite movies view model with 3 mock movies
     @MainActor
     static func favoriteMoviesViewModel() -> FavoriteMoviesViewModel {
+        PreviewID.reset()
         let vm = FavoriteMoviesViewModel()
         vm.favoriteMovies = [
-            PreviewData.starWars,
-            PreviewData.inception,
-            PreviewData.matrix
+            SharedPreviewMovies.starWars,
+            SharedPreviewMovies.inception,
+            SharedPreviewMovies.matrix
         ]
         return vm
     }

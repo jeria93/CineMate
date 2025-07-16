@@ -19,8 +19,12 @@ extension SeeAllMoviesViewModel {
 
     /// A mock view model with populated movie list for previewing normal state.
     static var preview: SeeAllMoviesViewModel {
-        let viewModel = SeeAllMoviesViewModel(repository: MockMovieRepository(), filter: DiscoverFilter())
-        viewModel.movies = PreviewData.moviesList
+        PreviewID.reset()
+        let viewModel = SeeAllMoviesViewModel(
+            repository: MockMovieRepository(),
+            filter: DiscoverFilter()
+        )
+        viewModel.movies = SharedPreviewMovies.moviesList
         return viewModel
     }
 

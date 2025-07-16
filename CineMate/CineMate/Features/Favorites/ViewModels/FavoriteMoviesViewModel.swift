@@ -17,10 +17,11 @@ final class FavoriteMoviesViewModel: ObservableObject {
     }
 
     private func loadFavoriteMovies() {
+        PreviewID.reset()
         favoriteMovies = [
-            PreviewData.starWars,
-            PreviewData.inception,
-            PreviewData.matrix,
+            SharedPreviewMovies.starWars,
+            SharedPreviewMovies.inception,
+            SharedPreviewMovies.matrix,
         ]
     }
 }

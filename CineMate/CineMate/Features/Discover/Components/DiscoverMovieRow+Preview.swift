@@ -12,12 +12,13 @@ extension DiscoverMovieRow {
     /// Allows Xcode Previews to simulate different UI states, such as
     /// when a movie has a poster or when no poster is available.
     static var previewPoster: some View {
-        DiscoverMovieRow(movie: DiscoverRowPreviewData.dune)
+        PreviewID.reset()
+        return DiscoverMovieRow(movie: DiscoverRowPreviewData.dune)
             .padding()
     }
-    
+
     static var previewNoPoster: some View {
-        DiscoverMovieRow(movie: DiscoverRowPreviewData.noPosterMovie)
+        DiscoverMovieRow(movie: DiscoverRowPreviewData.posterlessMovie)
             .padding()
     }
 }

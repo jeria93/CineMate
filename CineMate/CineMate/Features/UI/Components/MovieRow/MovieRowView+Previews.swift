@@ -7,29 +7,24 @@
 
 import SwiftUI
 
+/// Preview variants for `MovieRowView`.
+///
+/// Covers common edge cases like missing data, long text or missing posters.
 extension MovieRowView {
-    static var preview: some View {
-        Group {
-            previewDefault
-            previewNoPoster
-            previewNoOverview
-            previewLongOverview
-            previewMinimalData
-        }
-        .padding()
-        .previewLayout(.sizeThatFits)
-        .background(Color(.systemGroupedBackground))
-    }
 
     static var previewDefault: some View {
-        MovieRowView(movie: PreviewData.starWars)
+        PreviewID.reset()
+        return MovieRowView(movie: SharedPreviewMovies.starWars)
+            .padding()
+            .background(Color(.systemGroupedBackground))
     }
 
     static var previewNoPoster: some View {
-        let movie = PreviewData.starWars
+        PreviewID.reset()
+        let movie = SharedPreviewMovies.starWars
         return MovieRowView(
             movie: Movie(
-                id: movie.id,
+                id: PreviewID.next(),
                 title: movie.title,
                 overview: movie.overview,
                 posterPath: nil,
@@ -39,13 +34,16 @@ extension MovieRowView {
                 genres: movie.genres
             )
         )
+        .padding()
+        .background(Color(.systemGroupedBackground))
     }
 
     static var previewNoOverview: some View {
-        let movie = PreviewData.starWars
+        PreviewID.reset()
+        let movie = SharedPreviewMovies.starWars
         return MovieRowView(
             movie: Movie(
-                id: movie.id,
+                id: PreviewID.next(),
                 title: movie.title,
                 overview: nil,
                 posterPath: movie.posterPath,
@@ -55,13 +53,16 @@ extension MovieRowView {
                 genres: movie.genres
             )
         )
+        .padding()
+        .background(Color(.systemGroupedBackground))
     }
 
     static var previewLongOverview: some View {
-        let movie = PreviewData.starWars
+        PreviewID.reset()
+        let movie = SharedPreviewMovies.starWars
         return MovieRowView(
             movie: Movie(
-                id: movie.id,
+                id: PreviewID.next(),
                 title: movie.title,
                 overview: String(repeating: movie.overview ?? "No overview. ", count: 10),
                 posterPath: movie.posterPath,
@@ -71,20 +72,14 @@ extension MovieRowView {
                 genres: movie.genres
             )
         )
+        .padding()
+        .background(Color(.systemGroupedBackground))
     }
 
     static var previewMinimalData: some View {
-        MovieRowView(
-            movie: Movie(
-                id: 999,
-                title: "Unknown Movie",
-                overview: nil,
-                posterPath: nil,
-                backdropPath: nil,
-                releaseDate: nil,
-                voteAverage: nil,
-                genres: nil
-            )
-        )
+        PreviewID.reset()
+        return MovieRowView(movie: SharedPreviewMovies.minimalMovie)
+            .padding()
+            .background(Color(.systemGroupedBackground))
     }
 }

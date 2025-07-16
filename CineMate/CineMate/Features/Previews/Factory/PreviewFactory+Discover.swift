@@ -15,12 +15,12 @@ extension PreviewFactory {
     @MainActor
     static func discoverViewModel() -> DiscoverViewModel {
         configuredViewModel {
-            $0.results = DiscoverPreviewData.movies
-            $0.topRatedMovies = DiscoverPreviewData.movies
-            $0.popularMovies = DiscoverPreviewData.movies.shuffled()
-            $0.nowPlayingMovies = DiscoverPreviewData.movies.reversed()
-            $0.trendingMovies = DiscoverPreviewData.movies.shuffled()
-            $0.upcomingMovies = DiscoverPreviewData.movies
+            $0.results = SharedPreviewMovies.moviesList
+            $0.topRatedMovies = SharedPreviewMovies.moviesList
+            $0.popularMovies = SharedPreviewMovies.moviesList.shuffled()
+            $0.nowPlayingMovies = SharedPreviewMovies.moviesList.reversed()
+            $0.trendingMovies = SharedPreviewMovies.moviesList.shuffled()
+            $0.upcomingMovies = SharedPreviewMovies.moviesList
             $0.horrorMovies = DiscoverHorrorPreviewData.horrorMovies
         }
     }
