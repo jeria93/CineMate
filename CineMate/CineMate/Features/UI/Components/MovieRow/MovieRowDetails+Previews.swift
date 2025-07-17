@@ -7,8 +7,17 @@
 
 import SwiftUI
 
+/// Preview variants for `MovieRowDetails`.
+///
+/// These previews simulate different UI configurations to verify:
+/// - Compact layout with minimal spacing
+/// - Detailed layout with full text and large fonts
+/// - Minimal fallback layout when data is missing
 extension MovieRowDetails {
-    /// Shows a compact layout with short overview and small fonts
+
+    /// Preview with a compact UI layout.
+    ///
+    /// Uses smaller fonts, short overview, and tight spacing.
     static var previewCompact: some View {
         MovieRowDetails(
             movie: SharedPreviewMovies.starWars,
@@ -21,7 +30,9 @@ extension MovieRowDetails {
         .background(Color(.systemGroupedBackground))
     }
 
-    /// Shows a detailed layout with full overview and larger fonts
+    /// Preview with a detailed UI layout.
+    ///
+    /// Displays full overview text with generous spacing and larger fonts.
     static var previewDetailed: some View {
         MovieRowDetails(
             movie: SharedPreviewMovies.starWars,
@@ -34,7 +45,9 @@ extension MovieRowDetails {
         .background(Color(.systemGroupedBackground))
     }
 
-    /// Shows a fallback state with missing optional data
+    /// Preview with minimal movie data.
+    ///
+    /// Tests fallback rendering when key movie data is missing.
     static var previewMinimal: some View {
         MovieRowDetails(
             movie: SharedPreviewMovies.minimalMovie,
@@ -47,7 +60,9 @@ extension MovieRowDetails {
         .background(Color(.systemGroupedBackground))
     }
 
-    /// Shows all previews in one group for quick visual inspection
+    /// Grouped preview displaying all layout types.
+    ///
+    /// `PreviewID.reset()` is called once to avoid duplicate IDs if any are created dynamically.
     static var preview: some View {
         PreviewID.reset()
         return Group {

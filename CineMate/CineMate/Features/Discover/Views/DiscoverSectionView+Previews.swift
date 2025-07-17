@@ -8,6 +8,7 @@
 import SwiftUI
 
 /// Preview variants for `DiscoverSectionView`.
+///
 /// Simulates common and edge UI states for horizontal movie sections:
 /// - `previewDefault`: Full list of mock movies
 /// - `previewEmpty`: No movies available
@@ -16,35 +17,43 @@ import SwiftUI
 /// - `previewLongTitles`: Movies with overly long titles
 extension DiscoverSectionView {
 
-    /// Preview with standard list of movies
+    /// Preview with standard list of movies.
+    ///
+    /// Uses `SharedPreviewMovies.moviesList` which contains a fixed set of
+    /// mock movies created with `PreviewID.next()`.
+    /// No need to call `PreviewID.reset()` here.
     static var previewDefault: some View {
-        PreviewID.reset()
-        return DiscoverSectionView(
+        DiscoverSectionView(
             title: "Top Rated",
             movies: SharedPreviewMovies.moviesList
         )
     }
 
-    /// Preview with no movies (empty section)
+    /// Preview with an empty section (no movies).
+    ///
+    /// Useful to verify layout behavior when no content is available.
     static var previewEmpty: some View {
-        PreviewID.reset()
-        return DiscoverSectionView(
+        DiscoverSectionView(
             title: "Empty Section",
             movies: []
         )
     }
 
-    /// Preview with only one movie
+    /// Preview showing only one movie in the section.
+    ///
+    /// Uses a single item from `SharedPreviewMovies`.
     static var previewOneMovie: some View {
-        PreviewID.reset()
-        return DiscoverSectionView(
+        DiscoverSectionView(
             title: "Just One",
             movies: [SharedPreviewMovies.dune]
         )
         .padding()
     }
 
-    /// Preview where all movies are missing poster images
+    /// Preview where all movies are missing posters.
+    ///
+    /// Creates new movie instances with `.posterPath = nil`.
+    /// `PreviewID.reset()` is required here to avoid ID conflicts.
     static var previewNoPosters: some View {
         PreviewID.reset()
         return DiscoverSectionView(
@@ -65,7 +74,9 @@ extension DiscoverSectionView {
         .padding()
     }
 
-    /// Preview with artificially long titles to test layout wrapping
+    /// Preview with artificially long titles to test line wrapping and overflow handling.
+    ///
+    /// `PreviewID.reset()` is needed because new `Movie` instances are created with fresh IDs.
     static var previewLongTitles: some View {
         PreviewID.reset()
         return DiscoverSectionView(

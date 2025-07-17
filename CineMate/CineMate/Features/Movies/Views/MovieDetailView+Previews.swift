@@ -1,5 +1,5 @@
 //
-//  MovieDetailActionBarView+Previews.swift
+//  MovieDetailView+Previews.swift
 //  CineMate
 //
 //  Created by Nicholas Samuelsson Jeria on 2025-06-23.
@@ -7,15 +7,16 @@
 
 import SwiftUI
 
-/// Preview variant for `MovieDetailActionBarView`.
-///
-/// Used to test layout and appearance with a sample movie.
-extension MovieDetailActionBarView {
-
+/// Previews for `MovieDetailView`, including mock data from PreviewFactory and SharedPreviewMovies.
+/// - Includes `PreviewID.reset()` to ensure consistent preview IDs across runs.
+extension MovieDetailView {
     static var previewDefault: some View {
         PreviewID.reset()
-        return MovieDetailActionBarView(movie: SharedPreviewMovies.starWars)
-            .padding()
-            .background(Color(.systemBackground))
+
+        return MovieDetailView(
+            movie: SharedPreviewMovies.starWars,
+            viewModel: PreviewFactory.movieDetailViewModelWithData(),
+            castViewModel: PreviewFactory.castViewModel()
+        )
     }
 }

@@ -18,7 +18,7 @@ extension CastMemberView {
     /// Preview for a known actor: Mark Hamill.
     static var markHamill: some View {
         CastMemberView(
-            member: PreviewData.markHamill,
+            member: CastMemberPreviewData.markHamill,
             repository: PreviewFactory.repository
         )
     }
@@ -26,7 +26,7 @@ extension CastMemberView {
     /// Preview for an unknown actor (e.g., missing data).
     static var unknownActor: some View {
         CastMemberView(
-            member: PreviewData.unknownActor,
+            member: CastMemberPreviewData.unknownActor,
             repository: PreviewFactory.repository
         )
     }
@@ -34,7 +34,7 @@ extension CastMemberView {
     /// Preview for an actor with an exceptionally long name.
     static var longName: some View {
         CastMemberView(
-            member: PreviewData.longNameActor,
+            member: CastMemberPreviewData.longNameActor,
             repository: PreviewFactory.repository
         )
     }

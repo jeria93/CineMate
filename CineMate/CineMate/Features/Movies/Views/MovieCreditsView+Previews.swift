@@ -9,7 +9,7 @@ import SwiftUI
 
 extension MovieCreditsView {
     static var previewStarWars: some View {
-        MovieCreditsView(credits: PreviewData.starWarsCredits)
+        MovieCreditsView(credits: PreviewData.starWarsCredits())
             .padding()
     }
 

@@ -7,9 +7,20 @@
 
 import SwiftUI
 
+/// Preview factory helpers for `SearchViewModel`.
+///
+/// Simulates various UI states for the search feature:
+/// - Default (successful search)
+/// - Empty (no results)
+/// - Loading (spinner)
+/// - Error (API failure)
+/// - Invalid (query validation)
+/// - Prompt (initial idle state)
 extension PreviewFactory {
 
-    /// A default search view model with results
+    /// Default state with mock search results for "Star".
+    ///
+    /// Useful for previews with populated search lists.
     @MainActor
     static func searchViewModel() -> SearchViewModel {
         PreviewID.reset()
@@ -19,7 +30,9 @@ extension PreviewFactory {
         return vm
     }
 
-    /// An empty state search view model
+    /// Simulates a state where no results are found.
+    ///
+    /// Good for testing "No results" empty views.
     @MainActor
     static func emptySearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
@@ -29,7 +42,9 @@ extension PreviewFactory {
         return vm
     }
 
-    /// A loading state for search with example query
+    /// Simulates loading state (e.g. when fetching results).
+    ///
+    /// Can be used to preview spinners or shimmer effects.
     @MainActor
     static func loadingSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
@@ -38,7 +53,9 @@ extension PreviewFactory {
         return vm
     }
 
-    /// An error state for search with example query
+    /// Simulates a failed search request (e.g. API/network error).
+    ///
+    /// Use this to test error banners or fallback messages.
     @MainActor
     static func errorSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
@@ -47,7 +64,9 @@ extension PreviewFactory {
         return vm
     }
 
-    /// A validation error state for search
+    /// Simulates validation error (e.g. unsupported characters).
+    ///
+    /// Example: entering symbols that aren’t allowed.
     @MainActor
     static func invalidSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
@@ -56,6 +75,9 @@ extension PreviewFactory {
         return vm
     }
 
+    /// Represents the initial search prompt (empty state).
+    ///
+    /// Used when no query has been entered yet.
     @MainActor
     static func promptSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())

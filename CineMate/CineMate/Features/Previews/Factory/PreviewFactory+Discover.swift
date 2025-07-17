@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-/// Provides preconfigured DiscoverViewModel instances for SwiftUI previews.
-/// Used to simulate different UI states without triggering real API calls.
+/// Preview factory for `DiscoverViewModel` simulating common UI states.
 extension PreviewFactory {
 
-    /// ViewModel with all sections populated for default layout previews.
+    /// Fully populated DiscoverViewModel for default layout previews.
     @MainActor
     static func discoverViewModel() -> DiscoverViewModel {
-        configuredViewModel {
+        resetAllPreviewData()
+        return configuredViewModel {
             $0.results = SharedPreviewMovies.moviesList
             $0.topRatedMovies = SharedPreviewMovies.moviesList
             $0.popularMovies = SharedPreviewMovies.moviesList.shuffled()
@@ -25,40 +25,45 @@ extension PreviewFactory {
         }
     }
 
-    /// ViewModel simulating loading state for shimmer/spinner previews.
+    /// Shows DiscoverViewModel in a loading state.
     @MainActor
     static func loadingDiscoverViewModel() -> DiscoverViewModel {
-        configuredViewModel {
+        resetAllPreviewData()
+        return configuredViewModel {
             $0.isLoading = true
         }
     }
 
-    /// ViewModel with no data loaded (empty screen preview).
+    /// Empty state with no data loaded.
     @MainActor
     static func emptyDiscoverViewModel() -> DiscoverViewModel {
-        configuredViewModel()
+        resetAllPreviewData()
+        return configuredViewModel()
     }
 
-    /// ViewModel with a simulated error message.
+    /// Error state with a custom message.
     @MainActor
     static func errorDiscoverViewModel() -> DiscoverViewModel {
-        configuredViewModel {
+        resetAllPreviewData()
+        return configuredViewModel {
             $0.error = .custom("Something went wrong")
         }
     }
 
-    /// ViewModel with a single populated section for minimal previews.
+    /// Only top-rated movies populated, useful for layout testing.
     @MainActor
     static func oneSectionOnlyDiscoverViewModel() -> DiscoverViewModel {
-        configuredViewModel {
+        resetAllPreviewData()
+        return configuredViewModel {
             $0.topRatedMovies = DiscoverPreviewData.movies
         }
     }
 
-    /// ViewModel showing only horror movies.
+    /// Discover screen showing only horror movies.
     @MainActor
     static func horrorOnlyDiscoverViewModel() -> DiscoverViewModel {
-        configuredViewModel {
+        resetAllPreviewData()
+        return configuredViewModel {
             $0.horrorMovies = DiscoverHorrorPreviewData.horrorMovies
         }
     }

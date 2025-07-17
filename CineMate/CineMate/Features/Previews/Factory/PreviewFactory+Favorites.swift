@@ -7,9 +7,15 @@
 
 import SwiftUI
 
+/// Preview factory helpers for `FavoriteMoviesViewModel`.
+///
+/// Simulates various preview states (default, empty, loading, error) for UI testing.
+/// These are injected into `FavoriteMoviesView` previews to avoid live Firestore or Auth.
 extension PreviewFactory {
 
-    /// A default favorite movies view model with 3 mock movies
+    /// A default state view model containing 3 mock favorite movies.
+    ///
+    /// `PreviewID.reset()` ensures ID uniqueness across previews.
     @MainActor
     static func favoriteMoviesViewModel() -> FavoriteMoviesViewModel {
         PreviewID.reset()
@@ -22,7 +28,9 @@ extension PreviewFactory {
         return vm
     }
 
-    /// An empty favorite movies view model for testing empty states
+    /// An empty favorites list to simulate the no-data state.
+    ///
+    /// Useful for testing empty views, onboarding, or fallback UI.
     @MainActor
     static func emptyFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
         let vm = FavoriteMoviesViewModel()
@@ -30,7 +38,9 @@ extension PreviewFactory {
         return vm
     }
 
-    /// A loading state mock if you add isLoading in the future
+    /// A simulated loading state.
+    ///
+    /// Can be customized later if `isLoading` is added to the view model.
     @MainActor
     static func loadingFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
         let vm = FavoriteMoviesViewModel()
@@ -38,7 +48,9 @@ extension PreviewFactory {
         return vm
     }
 
-    /// An error state mock if you add errorMessage in the future
+    /// A simulated error state.
+    ///
+    /// Can be customized later if `errorMessage` or similar is added.
     @MainActor
     static func errorFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
         let vm = FavoriteMoviesViewModel()

@@ -20,7 +20,7 @@ extension SeeAllMoviesView {
 
     /// Shows a populated list of movies (mock data)
     static var previewDefault: some View {
-        PreviewID.reset()
+        PreviewFactory.resetAllPreviewData()
         return SeeAllMoviesView(
             title: "Popular Movies",
             viewModel: .preview

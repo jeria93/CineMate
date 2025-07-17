@@ -10,7 +10,7 @@ import Foundation
 extension CastViewModel {
     static var preview: CastViewModel {
         let vm = CastViewModel(repository: PreviewFactory.repository)
-        vm.cast = PreviewData.starWarsCredits.cast
+        vm.cast = PreviewData.starWarsCredits().cast
         return vm
     }
 

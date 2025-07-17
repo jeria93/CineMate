@@ -12,7 +12,6 @@ extension RelatedMoviesSection {
     /// Preview showing a typical list of recommended movies (4 st).
     @MainActor
     static var previewWithMovies: some View {
-        PreviewID.reset()
         return RelatedMoviesSection(
             movies: PreviewFactory.recommendedMovies,
             movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),

@@ -10,39 +10,53 @@ import Foundation
 /// Provides static mock data for SwiftUI previews.
 struct PreviewData {
 
-    static let starWarsCredits = MovieCredits(
-        id: 11,
-        cast: [
-            CastMember(
-                id: 1,
-                name: "Mark Hamill",
-                character: "Luke Skywalker",
-                profilePath: "/2ZulC2Ccq1yv3pemusks6Zlfy2s.jpg"
-            ),
-            CastMember(
-                id: 2,
-                name: "Harrison Ford",
-                character: "Han Solo",
-                profilePath: "/zVnHagUvXkR2StdOtquEwsiwSVt.jpg"
-            ),
-            CastMember(
-                id: 3,
-                name: "Carrie Fisher",
-                character: "Princess Leia",
-                profilePath: "/awb4UqzT6meD3JiQlraIzAqcRtH.jpg"
-            ),
-            CastMember(
-                id: 4,
-                name: "Chewbacca",
-                character: nil,
-                profilePath: nil
-            )
-        ],
-        crew: [
-            CrewMember(id: 100, name: "George Lucas", job: "Director", profilePath: "/mDLDvsx8PaZoEThkBdyaG1JxPdf.jpg"),
-            CrewMember(id: 101, name: "Gary Kurtz", job: "Producer", profilePath: "/q6tgPiNqzEOIYmHxMrpWoUirmmu.jpg")
-        ]
-    )
+    /// Returns a version of `starWarsCredits` with unique IDs for preview use.
+    static func starWarsCredits() -> MovieCredits {
+        PreviewID.reset()
+        return MovieCredits(
+            id: PreviewID.next(),
+            cast: [
+                CastMember(
+                    id: PreviewID.next(),
+                    name: "Mark Hamill",
+                    character: "Luke Skywalker",
+                    profilePath: "/2ZulC2Ccq1yv3pemusks6Zlfy2s.jpg"
+                ),
+                CastMember(
+                    id: PreviewID.next(),
+                    name: "Harrison Ford",
+                    character: "Han Solo",
+                    profilePath: "/zVnHagUvXkR2StdOtquEwsiwSVt.jpg"
+                ),
+                CastMember(
+                    id: PreviewID.next(),
+                    name: "Carrie Fisher",
+                    character: "Princess Leia",
+                    profilePath: "/awb4UqzT6meD3JiQlraIzAqcRtH.jpg"
+                ),
+                CastMember(
+                    id: PreviewID.next(),
+                    name: "Chewbacca",
+                    character: nil,
+                    profilePath: nil
+                )
+            ],
+            crew: [
+                CrewMember(
+                    id: PreviewID.next(),
+                    name: "George Lucas",
+                    job: "Director",
+                    profilePath: "/mDLDvsx8PaZoEThkBdyaG1JxPdf.jpg"
+                ),
+                CrewMember(
+                    id: PreviewID.next(),
+                    name: "Gary Kurtz",
+                    job: "Producer",
+                    profilePath: "/q6tgPiNqzEOIYmHxMrpWoUirmmu.jpg"
+                )
+            ]
+        )
+    }
 
     static let sampleVideos: [MovieVideo] = [
         MovieVideo(
@@ -126,22 +140,6 @@ struct PreviewData {
             "Luke",
             "The Trickster"
         ]
-    )
-
-    static let markHamill = starWarsCredits.cast.first { $0.name == "Mark Hamill" }!
-
-    static let unknownActor = CastMember(
-        id: 2,
-        name: "Unknown Actor",
-        character: nil,
-        profilePath: nil
-    )
-
-    static let longNameActor = CastMember(
-        id: 3,
-        name: "This is a really really really long actor name",
-        character: "Extraordinary Sidekick of Episode 47 Part 3",
-        profilePath: nil
     )
 
     static let directorNolan = CrewMember(

@@ -98,3 +98,11 @@ enum SharedPreviewMovies {
     )
 
 }
+
+/// Preview reset helper for SharedPreviewMovies
+extension SharedPreviewMovies {
+    /// Resets preview ID state for use in previews involving SharedPreviewMovies
+    static func resetIDs() {
+        PreviewID.reset()
+    }
+}

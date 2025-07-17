@@ -11,8 +11,7 @@ extension MovieDetailInfoView {
     /// Preview with full detail data
     @MainActor
     static var previewWithDetail: some View {
-        PreviewID.reset()
-        return MovieDetailInfoView(
+        MovieDetailInfoView(
             movie: SharedPreviewMovies.starWars,
             viewModel: PreviewFactory.movieDetailViewModelWithData()
         )

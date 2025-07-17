@@ -7,9 +7,12 @@
 
 import SwiftUI
 
+/// Preview variant for `MovieDetailActionBarView`.
+///
+/// Used to test layout and appearance with a sample movie.
 extension MovieDetailActionBarView {
 
-    static var preview: some View {
+    static var previewDefault: some View {
         PreviewID.reset()
         return MovieDetailActionBarView(movie: SharedPreviewMovies.starWars)
             .padding()
