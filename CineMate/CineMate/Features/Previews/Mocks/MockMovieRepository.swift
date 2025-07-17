@@ -57,7 +57,7 @@ final class MockMovieRepository: MovieProtocol {
     }
 
     func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
-        .preview
+        PersonLinksPreviewData.markHamill
     }
 
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {

@@ -16,12 +16,10 @@ import SwiftUI
 /// - Error (API failure)
 /// - Invalid (query validation)
 /// - Prompt (initial idle state)
+@MainActor
 extension PreviewFactory {
 
     /// Default state with mock search results for "Star".
-    ///
-    /// Useful for previews with populated search lists.
-    @MainActor
     static func searchViewModel() -> SearchViewModel {
         PreviewID.reset()
         let vm = SearchViewModel(repository: MockMovieRepository())
@@ -31,9 +29,6 @@ extension PreviewFactory {
     }
 
     /// Simulates a state where no results are found.
-    ///
-    /// Good for testing "No results" empty views.
-    @MainActor
     static func emptySearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Unknown"
@@ -43,9 +38,6 @@ extension PreviewFactory {
     }
 
     /// Simulates loading state (e.g. when fetching results).
-    ///
-    /// Can be used to preview spinners or shimmer effects.
-    @MainActor
     static func loadingSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Loading"
@@ -54,9 +46,6 @@ extension PreviewFactory {
     }
 
     /// Simulates a failed search request (e.g. API/network error).
-    ///
-    /// Use this to test error banners or fallback messages.
-    @MainActor
     static func errorSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Error"
@@ -65,9 +54,6 @@ extension PreviewFactory {
     }
 
     /// Simulates validation error (e.g. unsupported characters).
-    ///
-    /// Example: entering symbols that aren’t allowed.
-    @MainActor
     static func invalidSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "?"
@@ -76,9 +62,6 @@ extension PreviewFactory {
     }
 
     /// Represents the initial search prompt (empty state).
-    ///
-    /// Used when no query has been entered yet.
-    @MainActor
     static func promptSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = ""

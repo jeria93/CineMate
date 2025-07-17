@@ -15,6 +15,7 @@ import Foundation
 /// - `.loading`: Simulates a loading state
 /// - `.error`: Simulates an error state
 /// - `.empty`: Represents an empty result state
+@MainActor
 extension SeeAllMoviesViewModel {
 
     /// A mock view model with populated movie list for previewing normal state.

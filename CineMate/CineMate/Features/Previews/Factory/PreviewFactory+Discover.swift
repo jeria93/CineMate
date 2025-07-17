@@ -8,10 +8,10 @@
 import SwiftUI
 
 /// Preview factory for `DiscoverViewModel` simulating common UI states.
+@MainActor
 extension PreviewFactory {
 
     /// Fully populated DiscoverViewModel for default layout previews.
-    @MainActor
     static func discoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
@@ -26,7 +26,6 @@ extension PreviewFactory {
     }
 
     /// Shows DiscoverViewModel in a loading state.
-    @MainActor
     static func loadingDiscoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
@@ -35,14 +34,12 @@ extension PreviewFactory {
     }
 
     /// Empty state with no data loaded.
-    @MainActor
     static func emptyDiscoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel()
     }
 
     /// Error state with a custom message.
-    @MainActor
     static func errorDiscoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
@@ -51,7 +48,6 @@ extension PreviewFactory {
     }
 
     /// Only top-rated movies populated, useful for layout testing.
-    @MainActor
     static func oneSectionOnlyDiscoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
@@ -60,7 +56,6 @@ extension PreviewFactory {
     }
 
     /// Discover screen showing only horror movies.
-    @MainActor
     static func horrorOnlyDiscoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
@@ -69,7 +64,6 @@ extension PreviewFactory {
     }
 
     /// Shared builder for consistent setup with mock repository.
-    @MainActor
     private static func configuredViewModel(_ configure: ((DiscoverViewModel) -> Void)? = nil) -> DiscoverViewModel {
         let viewModel = DiscoverViewModel(repository: MockMovieRepository())
         configure?(viewModel)
