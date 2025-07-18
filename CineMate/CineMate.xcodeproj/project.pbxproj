@@ -167,6 +167,8 @@
 		03E8EF2D2E1C5DFD008EED19 /* SearchValidationResult+Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8EF2C2E1C5DFD008EED19 /* SearchValidationResult+Message.swift */; };
 		03EA54B62E2929A00037BE9B /* MovieDetailView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EA54B52E2929A00037BE9B /* MovieDetailView+Previews.swift */; };
 		03EA54B82E29353C0037BE9B /* PreviewFactory+Reset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EA54B72E29353C0037BE9B /* PreviewFactory+Reset.swift */; };
+		03EE7E612E2AC68700674B84 /* PreviewFactory+CastViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EE7E602E2AC68700674B84 /* PreviewFactory+CastViewModel.swift */; };
+		03EE7E652E2ACD9100674B84 /* PreviewFactory+MovieViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EE7E642E2ACD9100674B84 /* PreviewFactory+MovieViewModel.swift */; };
 		03F3AD8D2E11C1FA00B63AA2 /* ShareLinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3AD8C2E11C1FA00B63AA2 /* ShareLinkButtonView.swift */; };
 		03F3AD8F2E11C7B300B63AA2 /* DirectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3AD8E2E11C7B300B63AA2 /* DirectorView.swift */; };
 		03F3AD912E11C8D300B63AA2 /* DirectorView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3AD902E11C8D300B63AA2 /* DirectorView+Preview.swift */; };
@@ -352,6 +354,8 @@
 		03E8EF2C2E1C5DFD008EED19 /* SearchValidationResult+Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchValidationResult+Message.swift"; sourceTree = "<group>"; };
 		03EA54B52E2929A00037BE9B /* MovieDetailView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieDetailView+Previews.swift"; sourceTree = "<group>"; };
 		03EA54B72E29353C0037BE9B /* PreviewFactory+Reset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+Reset.swift"; sourceTree = "<group>"; };
+		03EE7E602E2AC68700674B84 /* PreviewFactory+CastViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+CastViewModel.swift"; sourceTree = "<group>"; };
+		03EE7E642E2ACD9100674B84 /* PreviewFactory+MovieViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+MovieViewModel.swift"; sourceTree = "<group>"; };
 		03F3AD8C2E11C1FA00B63AA2 /* ShareLinkButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkButtonView.swift; sourceTree = "<group>"; };
 		03F3AD8E2E11C7B300B63AA2 /* DirectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorView.swift; sourceTree = "<group>"; };
 		03F3AD902E11C8D300B63AA2 /* DirectorView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DirectorView+Preview.swift"; sourceTree = "<group>"; };
@@ -601,6 +605,8 @@
 				03920A6A2E24F70300804B06 /* PreviewFactory+SeeAllMovies.swift */,
 				03EA54B72E29353C0037BE9B /* PreviewFactory+Reset.swift */,
 				03BAD69A2E2983A00035F1F5 /* PreviewFactory+Person.swift */,
+				03EE7E602E2AC68700674B84 /* PreviewFactory+CastViewModel.swift */,
+				03EE7E642E2ACD9100674B84 /* PreviewFactory+MovieViewModel.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -1290,6 +1296,7 @@
 				039AF9A32E2588C700B90527 /* Movie+Helpers.swift in Sources */,
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
 				033277F52E15C15800E5A226 /* WatchProviderCategory.swift in Sources */,
+				03EE7E612E2AC68700674B84 /* PreviewFactory+CastViewModel.swift in Sources */,
 				0356785A2E17E123005BEE57 /* CastMemberImageView+Previews.swift in Sources */,
 				03BAD69B2E2983A00035F1F5 /* PreviewFactory+Person.swift in Sources */,
 				0306122B2DF4BEB40013F7AF /* CineMateApp.swift in Sources */,
@@ -1390,6 +1397,7 @@
 				039AF9A82E258C4B00B90527 /* DiscoverFilterProvider.swift in Sources */,
 				03E5BE892E09FDCC00D3C46B /* PosterImageView+Previews.swift in Sources */,
 				036623782E2065CD008FDE2E /* DiscoverPreviewData.swift in Sources */,
+				03EE7E652E2ACD9100674B84 /* PreviewFactory+MovieViewModel.swift in Sources */,
 				0313920F2E1B12CB0047ED6B /* SearchResultsList.swift in Sources */,
 				0366237E2E206665008FDE2E /* DiscoverMovieRow.swift in Sources */,
 				039AF9A52E2589F600B90527 /* MovieLoaderHelper.swift in Sources */,
