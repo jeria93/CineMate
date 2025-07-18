@@ -427,9 +427,6 @@
 				03A620C02DF774CA00C075E8 /* Features */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
-				039BECD02E26F5BD00C76EA6 /* PreviewID.swift */,
-				039BECD42E26F91900C76EA6 /* SharedPreviewMovies.swift */,
-				03EE7E6A2E2AD7EF00674B84 /* PersonPreviewData.swift */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -861,6 +858,8 @@
 				0359A9792E02F17400818BD2 /* PreviewStyle.swift */,
 				03046E492E1315A40024AD46 /* Genre+Preview.swift */,
 				03B24AB02E1FFC380063D42C /* PreviewSupport.swift */,
+				039BECD02E26F5BD00C76EA6 /* PreviewID.swift */,
+				039BECD42E26F91900C76EA6 /* SharedPreviewMovies.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1163,6 +1162,7 @@
 		03D8D2A32E088DF5006A117D /* People */ = {
 			isa = PBXGroup;
 			children = (
+				03EE7E6C2E2ADC1100674B84 /* PreviewData */,
 				030E03762E0B424D007BB609 /* ViewModel */,
 				03D8D2A42E088E13006A117D /* Views */,
 				030E03772E0B44B5007BB609 /* Components */,
@@ -1178,6 +1178,14 @@
 				03FC25E02E06E9CB00AACB5E /* CastMemberDetailView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		03EE7E6C2E2ADC1100674B84 /* PreviewData */ = {
+			isa = PBXGroup;
+			children = (
+				03EE7E6A2E2AD7EF00674B84 /* PersonPreviewData.swift */,
+			);
+			path = PreviewData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
