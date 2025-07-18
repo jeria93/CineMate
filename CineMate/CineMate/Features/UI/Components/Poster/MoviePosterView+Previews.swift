@@ -13,11 +13,15 @@ import SwiftUI
 /// - `previewMissingPoster`: Simulates a case where poster is missing (uses fallback UI)
 extension MoviePosterView {
 
+    /// Preview for poster with valid image
     static var previewDefault: some View {
-        MoviePosterView(movie: MoviePosterPreviewData.dune)
+        PreviewID.reset()
+        return MoviePosterView(movie: MoviePosterViewPreviewData.dune)
     }
 
+    /// Preview for poster with missing image
     static var previewMissingPoster: some View {
-        MoviePosterView(movie: MoviePosterPreviewData.duneNoPoster)
+        PreviewID.reset()
+        return MoviePosterView(movie: MoviePosterViewPreviewData.duneNoPoster)
     }
 }

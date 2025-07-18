@@ -10,11 +10,11 @@ import SwiftUI
 extension KnownForScrollView {
     /// Shows full scroll view with iconic roles
     static var previewFull: some View {
-        KnownForScrollView(movies: PreviewData.markHamillMovieCredits)
+        KnownForScrollView(movies: PersonPreviewData.movieCredits)
             .padding()
             .background(Color(.systemBackground))
     }
-    
+
     /// Shows fallback UI for empty data
     static var previewEmpty: some View {
         KnownForScrollView(movies: [])
@@ -26,7 +26,7 @@ extension KnownForScrollView {
     static var previewPartial: some View {
         KnownForScrollView(movies: [
             PersonMovieCredit(
-                id: 175,
+                id: PreviewID.next(),
                 title: "Mysterious Adventure",
                 character: nil,
                 releaseDate: "2025-01-01",

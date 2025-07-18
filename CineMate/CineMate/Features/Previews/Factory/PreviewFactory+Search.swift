@@ -7,19 +7,28 @@
 
 import SwiftUI
 
+/// Preview factory helpers for `SearchViewModel`.
+///
+/// Simulates various UI states for the search feature:
+/// - Default (successful search)
+/// - Empty (no results)
+/// - Loading (spinner)
+/// - Error (API failure)
+/// - Invalid (query validation)
+/// - Prompt (initial idle state)
+@MainActor
 extension PreviewFactory {
 
-    /// A default search view model with results
-    @MainActor
+    /// Default state with mock search results for "Star".
     static func searchViewModel() -> SearchViewModel {
+        PreviewID.reset()
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Star"
-        vm.results = PreviewData.moviesList
+        vm.results = SharedPreviewMovies.moviesList
         return vm
     }
 
-    /// An empty state search view model
-    @MainActor
+    /// Simulates a state where no results are found.
     static func emptySearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Unknown"
@@ -28,8 +37,7 @@ extension PreviewFactory {
         return vm
     }
 
-    /// A loading state for search with example query
-    @MainActor
+    /// Simulates loading state (e.g. when fetching results).
     static func loadingSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Loading"
@@ -37,8 +45,7 @@ extension PreviewFactory {
         return vm
     }
 
-    /// An error state for search with example query
-    @MainActor
+    /// Simulates a failed search request (e.g. API/network error).
     static func errorSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "Error"
@@ -46,8 +53,7 @@ extension PreviewFactory {
         return vm
     }
 
-    /// A validation error state for search
-    @MainActor
+    /// Simulates validation error (e.g. unsupported characters).
     static func invalidSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = "?"
@@ -55,7 +61,7 @@ extension PreviewFactory {
         return vm
     }
 
-    @MainActor
+    /// Represents the initial search prompt (empty state).
     static func promptSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
         vm.query = ""

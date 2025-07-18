@@ -7,84 +7,92 @@
 
 import SwiftUI
 
+/// Preview variants for `MovieRowView`.
+///
+/// Simulates different movie data states to test UI layout and robustness:
+/// - Full movie data
+/// - Missing poster
+/// - Missing overview
+/// - Extremely long overview
+/// - Minimal data (e.g. only title)
 extension MovieRowView {
-    static var preview: some View {
-        Group {
-            previewDefault
-            previewNoPoster
-            previewNoOverview
-            previewLongOverview
-            previewMinimalData
-        }
+
+    /// Preview with full movie data.
+    ///
+    /// Uses `SharedPreviewMovies.starWars` with poster and overview.
+    static var previewDefault: some View {
+        PreviewID.reset()
+        return MovieRowView(movie: SharedPreviewMovies.starWars)
+            .padding()
+            .background(Color(.systemGroupedBackground))
+    }
+
+    /// Preview with missing poster image.
+    ///
+    /// All other data is included.
+    static var previewNoPoster: some View {
+        MovieRowView(
+            movie: Movie(
+                id: PreviewID.next(),
+                title: SharedPreviewMovies.starWars.title,
+                overview: SharedPreviewMovies.starWars.overview,
+                posterPath: nil,
+                backdropPath: SharedPreviewMovies.starWars.backdropPath,
+                releaseDate: SharedPreviewMovies.starWars.releaseDate,
+                voteAverage: SharedPreviewMovies.starWars.voteAverage,
+                genres: SharedPreviewMovies.starWars.genres
+            )
+        )
         .padding()
-        .previewLayout(.sizeThatFits)
         .background(Color(.systemGroupedBackground))
     }
 
-    static var previewDefault: some View {
-        MovieRowView(movie: PreviewData.starWars)
-    }
-
-    static var previewNoPoster: some View {
-        let movie = PreviewData.starWars
-        return MovieRowView(
-            movie: Movie(
-                id: movie.id,
-                title: movie.title,
-                overview: movie.overview,
-                posterPath: nil,
-                backdropPath: movie.backdropPath,
-                releaseDate: movie.releaseDate,
-                voteAverage: movie.voteAverage,
-                genres: movie.genres
-            )
-        )
-    }
-
+    /// Preview with missing overview text.
+    ///
+    /// Useful to test layout when overview is `nil`.
     static var previewNoOverview: some View {
-        let movie = PreviewData.starWars
-        return MovieRowView(
-            movie: Movie(
-                id: movie.id,
-                title: movie.title,
-                overview: nil,
-                posterPath: movie.posterPath,
-                backdropPath: movie.backdropPath,
-                releaseDate: movie.releaseDate,
-                voteAverage: movie.voteAverage,
-                genres: movie.genres
-            )
-        )
-    }
-
-    static var previewLongOverview: some View {
-        let movie = PreviewData.starWars
-        return MovieRowView(
-            movie: Movie(
-                id: movie.id,
-                title: movie.title,
-                overview: String(repeating: movie.overview ?? "No overview. ", count: 10),
-                posterPath: movie.posterPath,
-                backdropPath: movie.backdropPath,
-                releaseDate: movie.releaseDate,
-                voteAverage: movie.voteAverage,
-                genres: movie.genres
-            )
-        )
-    }
-
-    static var previewMinimalData: some View {
         MovieRowView(
             movie: Movie(
-                id: 999,
-                title: "Unknown Movie",
+                id: PreviewID.next(),
+                title: SharedPreviewMovies.starWars.title,
                 overview: nil,
-                posterPath: nil,
-                backdropPath: nil,
-                releaseDate: nil,
-                voteAverage: nil,
-                genres: nil
+                posterPath: SharedPreviewMovies.starWars.posterPath,
+                backdropPath: SharedPreviewMovies.starWars.backdropPath,
+                releaseDate: SharedPreviewMovies.starWars.releaseDate,
+                voteAverage: SharedPreviewMovies.starWars.voteAverage,
+                genres: SharedPreviewMovies.starWars.genres
             )
         )
+        .padding()
+        .background(Color(.systemGroupedBackground))
+    }
+
+    /// Preview with extremely long overview text.
+    ///
+    /// Repeats the existing overview 10 times to simulate layout stress.
+    static var previewLongOverview: some View {
+        MovieRowView(
+            movie: Movie(
+                id: PreviewID.next(),
+                title: SharedPreviewMovies.starWars.title,
+                overview: String(repeating: SharedPreviewMovies.starWars.overview ?? "", count: 10),
+                posterPath: SharedPreviewMovies.starWars.posterPath,
+                backdropPath: SharedPreviewMovies.starWars.backdropPath,
+                releaseDate: SharedPreviewMovies.starWars.releaseDate,
+                voteAverage: SharedPreviewMovies.starWars.voteAverage,
+                genres: SharedPreviewMovies.starWars.genres
+            )
+        )
+        .padding()
+        .background(Color(.systemGroupedBackground))
+    }
+
+    /// Preview with minimal movie data.
+    ///
+    /// Only title is guaranteed; all other fields may be `nil`.
+    static var previewMinimalData: some View {
+        MovieRowView(movie: SharedPreviewMovies.minimalMovie)
+            .padding()
+            .background(Color(.systemGroupedBackground))
     }
 }

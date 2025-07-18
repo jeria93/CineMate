@@ -28,3 +28,15 @@ struct MovieGridView: View {
         .padding()
     }
 }
+
+#Preview("Default Grid") {
+    MovieGridView.previewDefault
+}
+
+#Preview("Long Grid") {
+    MovieGridView.previewLongList
+}
+
+#Preview("Empty Grid") {
+    MovieGridView.previewEmpty
+}

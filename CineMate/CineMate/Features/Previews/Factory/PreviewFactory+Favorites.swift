@@ -7,38 +7,48 @@
 
 import SwiftUI
 
+/// Preview factory helpers for `FavoriteMoviesViewModel`.
+///
+/// Simulates various preview states (default, empty, loading, error) for UI testing.
+/// These are injected into `FavoriteMoviesView` previews to avoid live Firestore or Auth.
+@MainActor
 extension PreviewFactory {
 
-    /// A default favorite movies view model with 3 mock movies
-    @MainActor
+    /// A default state view model containing 3 mock favorite movies.
+    ///
+    /// `PreviewID.reset()` ensures ID uniqueness across previews.
     static func favoriteMoviesViewModel() -> FavoriteMoviesViewModel {
+        PreviewID.reset()
         let vm = FavoriteMoviesViewModel()
         vm.favoriteMovies = [
-            PreviewData.starWars,
-            PreviewData.inception,
-            PreviewData.matrix
+            SharedPreviewMovies.starWars,
+            SharedPreviewMovies.inception,
+            SharedPreviewMovies.matrix
         ]
         return vm
     }
 
-    /// An empty favorite movies view model for testing empty states
-    @MainActor
+    /// An empty favorites list to simulate the no-data state.
+    ///
+    /// Useful for testing empty views, onboarding, or fallback UI.
     static func emptyFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
         let vm = FavoriteMoviesViewModel()
         vm.favoriteMovies = []
         return vm
     }
 
-    /// A loading state mock if you add isLoading in the future
-    @MainActor
+    /// A simulated loading state.
+    ///
+    /// Can be customized later if `isLoading` is added to the view model.
     static func loadingFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
         let vm = FavoriteMoviesViewModel()
         // Simulate loading state here in the future if needed
         return vm
     }
 
-    /// An error state mock if you add errorMessage in the future
-    @MainActor
+    /// A simulated error state.
+    ///
+    /// Can be customized later if `errorMessage` or similar is added.
     static func errorFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
         let vm = FavoriteMoviesViewModel()
         // Simulate error state here in the future if needed

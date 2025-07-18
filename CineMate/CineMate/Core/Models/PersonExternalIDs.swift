@@ -30,12 +30,3 @@ struct PersonExternalIDs: Codable {
         return URL(string: "https://www.facebook.com/\(facebookId)")
     }
 }
-
-extension PersonExternalIDs {
-    static let preview = PersonExternalIDs(
-        instagramId: "hamillhimself",
-        twitterId: "HamillHimself",
-        facebookId: "MarkHamill",
-        imdbId: "nm0000434"
-    )
-}

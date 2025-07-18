@@ -11,7 +11,7 @@ struct HorizontalMoviesScrollView: View {
     let filmography: [PersonMovieCredit]
     let maxVisible: Int = 10
     @State private var isExpanded = false
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -19,7 +19,7 @@ struct HorizontalMoviesScrollView: View {
                     ForEach(displayedMovies, id: \.uniqueKey) { movie in
                         PersonMovieCardView(movie: movie)
                     }
-
+                    
                     if !isExpanded && filmography.count > maxVisible {
                         ExpandMoreCardView(remaining: filmography.count - maxVisible) {
                             isExpanded = true
@@ -28,7 +28,7 @@ struct HorizontalMoviesScrollView: View {
                 }
                 .padding(.horizontal)
             }
-
+            
             if isExpanded && filmography.count > maxVisible {
                 ExpandToggleButton(
                     isExpanded: isExpanded,
@@ -44,14 +44,17 @@ struct HorizontalMoviesScrollView: View {
 }
 
 #Preview {
-    HorizontalMoviesScrollView(filmography: PreviewData.markHamillMovieCredits)
+    HorizontalMoviesScrollView(filmography: PersonPreviewData.movieCredits)
         .padding()
 }
 
 private extension HorizontalMoviesScrollView {
     private var displayedMovies: [PersonMovieCredit] {
         isExpanded ? filmography
-        : Array(filmography
-            .prefix(maxVisible))
+        : Array(filmography.prefix(maxVisible))
     }
 }
+/// Returns the list of movies to be displayed in the scroll view.
+///
+/// - If `isExpanded` is `true`, all movies in `filmography` are shown.
+/// - Otherwise, only the first `maxVisible` movies are shown to limit the layout.

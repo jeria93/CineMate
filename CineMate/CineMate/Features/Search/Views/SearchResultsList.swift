@@ -18,6 +18,10 @@ struct SearchResultsList: View {
     }
 }
 
-#Preview("SearchResultsList") {
-    SearchResultsList(movies: PreviewData.moviesList)
+#Preview("Default") {
+    SearchResultsList.previewDefault
+}
+
+#Preview("Empty") {
+    SearchResultsList.previewEmpty
 }

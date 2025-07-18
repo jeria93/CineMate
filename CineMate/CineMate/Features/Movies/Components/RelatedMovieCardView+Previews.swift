@@ -7,9 +7,14 @@
 
 import SwiftUI
 
+/// Preview variant for `RelatedMovieCardView`.
+///
+/// Displays a single movie card to test layout, spacing and background behavior.
 extension RelatedMovieCardView {
+
     static var preview: some View {
-        RelatedMovieCardView(movie: PreviewData.starWars)
+        PreviewID.reset()
+        return RelatedMovieCardView(movie: SharedPreviewMovies.starWars)
             .padding()
             .background(Color(.systemBackground))
     }

@@ -48,7 +48,7 @@ struct MovieDetailActionBarView: View {
 }
 
 #Preview {
-    MovieDetailActionBarView.preview
+    MovieDetailActionBarView.previewDefault
 
 }
 

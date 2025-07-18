@@ -7,22 +7,17 @@
 
 import Foundation
 
+/// Static preview data for `DiscoverMovieRow`.
+///
+/// Provides mock movies with and without posters to test layout behavior.
 enum DiscoverRowPreviewData {
-    /// Static mock data for previewing `DiscoverMovieRow`.
-    /// Designed to represent different states like valid poster or missing image.
-    static let dune = Movie(
-        id: 438633,
-        title: "Dune",
-        overview: nil,
-        posterPath: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
-        backdropPath: nil,
-        releaseDate: nil,
-        voteAverage: nil,
-        genres: nil
-    )
-    
-    static let noPosterMovie = Movie(
-        id: 777777,
+
+    /// A movie with a valid poster, used for standard layout preview.
+    static let dune = SharedPreviewMovies.dune
+
+    /// A movie without a poster image, used to preview fallback UI state.
+    static let posterlessMovie = Movie(
+        id: PreviewID.next(),
         title: "Posterless Movie",
         overview: nil,
         posterPath: nil,

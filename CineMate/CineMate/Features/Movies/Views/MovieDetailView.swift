@@ -66,7 +66,7 @@ struct MovieDetailView: View {
 }
 
 #Preview("Star Wars Detail") {
-    MovieDetailView.previewStarWars
+    MovieDetailView.previewDefault
 }
 
 private extension MovieDetailView {

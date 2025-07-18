@@ -34,8 +34,6 @@ struct DirectorView: View {
                         Text(director.name)
                             .font(.subheadline)
                             .bold()
-
-//                        Spacer()
                     }
                 }
             } else {
@@ -51,4 +49,8 @@ struct DirectorView: View {
 
 #Preview("Director – No Director") {
     DirectorView.previewNoDirector
+}
+
+#Preview("Director – Partial") {
+    DirectorView.previewPartialDirector
 }
