@@ -44,7 +44,7 @@ struct HorizontalMoviesScrollView: View {
 }
 
 #Preview {
-    HorizontalMoviesScrollView(filmography: PreviewData.markHamillMovieCredits)
+    HorizontalMoviesScrollView(filmography: PersonPreviewData.movieCredits)
         .padding()
 }
 

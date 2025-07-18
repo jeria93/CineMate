@@ -7,10 +7,16 @@
 
 import Foundation
 
+/// Preview data for `PersonInfoView` in various completion states.
 enum PersonInfoPreviewData {
-    static let markHamill = PreviewData.markHamillPersonDetail
-    static let empty = PreviewData.emptyPersonDetail
 
+    /// Full detail for Mark Hamill with biography and birth date.
+    static let markHamill = PersonPreviewData.markHamill
+
+    /// Completely empty person, used to simulate missing API data.
+    static let empty = PersonPreviewData.emptyDetail
+
+    /// Partially filled detail with only name and birthday.
     static let partial = PersonDetail(
         id: PreviewID.next(),
         name: "Mystery Person",

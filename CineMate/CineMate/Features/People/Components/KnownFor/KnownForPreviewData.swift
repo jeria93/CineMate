@@ -11,8 +11,7 @@ import Foundation
 enum KnownForPreviewData {
 
     /// Full movie credits (e.g. Star Wars movies).
-    static let full = PreviewData.markHamillMovieCredits
-
+    static let full = PersonPreviewData.movieCredits
     /// Empty list to simulate no results.
     static let empty: [PersonMovieCredit] = []
 

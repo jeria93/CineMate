@@ -15,7 +15,7 @@ extension PreviewFactory {
     static func castViewModel() -> CastViewModel {
         resetAllPreviewData()
         let vm = CastViewModel(repository: repository)
-        vm.cast = PreviewData.starWarsCredits().cast
+        vm.cast = MovieCreditsPreviewData.starWarsCredits().cast
         return vm
     }
 

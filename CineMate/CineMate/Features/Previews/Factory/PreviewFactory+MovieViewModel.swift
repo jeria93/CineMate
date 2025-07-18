@@ -23,8 +23,8 @@ extension PreviewFactory {
     static func movieDetailViewModelWithData() -> MovieViewModel {
         resetAllPreviewData()
         let vm = MovieViewModel(repository: repository)
-        vm.movieDetail = PreviewData.starWarsDetail
-        vm.movieCredits = PreviewData.starWarsCredits()
+        vm.movieDetail = MovieDetailPreviewData.starWarsDetail
+        vm.movieCredits = MovieCreditsPreviewData.starWarsCredits()
         return vm
     }
 
@@ -32,7 +32,7 @@ extension PreviewFactory {
     static func movieDetailViewModelEmptyDetail() -> MovieViewModel {
         resetAllPreviewData()
         let vm = MovieViewModel(repository: repository)
-        vm.movieDetail = PreviewData.emptyDetail
+        vm.movieDetail = MovieDetailPreviewData.emptyDetail
         return vm
     }
 

@@ -15,7 +15,7 @@ enum CastCarouselViewPreviewData {
 
     /// A small, realistic list of cast members from the Star Wars universe.
     /// Used to simulate a normal cast carousel.
-    static let cast: [CastMember] = PreviewData.starWarsCredits().cast
+    static let cast: [CastMember] = MovieCreditsPreviewData.starWarsCredits().cast
     /// A long cast list with up to 30 entries, created by repeating `cast`.
     /// Useful for testing scroll behavior and layout overflow.
     static let longCast: [CastMember] = Array(

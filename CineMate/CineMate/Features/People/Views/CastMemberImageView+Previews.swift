@@ -8,11 +8,12 @@
 import SwiftUI
 
 extension CastMemberImageView {
-    
+
     /// Preview showing real cast image (e.g. Mark Hamill)
     static var previewWithImage: some View {
         CastMemberImageView(
-            url: PreviewData.starWarsCredits().cast.first?.profileURL        )
+            url: MovieCreditsPreviewData.starWarsCredits().cast.first?.profileURL
+        )
         .padding()
         .background(Color(.systemBackground))
     }

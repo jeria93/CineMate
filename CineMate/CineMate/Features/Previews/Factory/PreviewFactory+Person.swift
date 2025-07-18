@@ -16,8 +16,8 @@ extension PreviewFactory {
     static var personViewModelPreview: PersonViewModel {
         resetAllPreviewData()
         let vm = PersonViewModel(repository: repository)
-        vm.personDetail = PreviewData.markHamillPersonDetail
-        vm.personMovies = PreviewData.markHamillMovieCredits
+        vm.personDetail = PersonPreviewData.markHamill
+        vm.personMovies = PersonPreviewData.movieCredits
         return vm
     }
 

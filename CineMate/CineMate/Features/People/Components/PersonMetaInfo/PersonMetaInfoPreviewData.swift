@@ -7,16 +7,16 @@
 
 import Foundation
 
-/// Mock person detail variations for `PersonMetaInfoView` previews.
+/// Preview data for `PersonMetaInfoView` showing different completeness levels.
 enum PersonMetaInfoPreviewData {
 
-    /// Full person detail (e.g. Mark Hamill).
-    static let full = PreviewData.markHamillPersonDetail
+    /// Full person detail (e.g. Mark Hamill) with all fields populated.
+    static let full = PersonPreviewData.markHamill
 
-    /// Empty/unknown person with no gender, department, or aliases.
-    static let empty = PreviewData.emptyPersonDetail
+    /// Completely empty person detail, used to test fallback UI.
+    static let empty = PersonPreviewData.emptyDetail
 
-    /// Only gender populated; other fields empty.
+    /// Partially filled detail with only gender set, rest is missing.
     static let partial = PersonDetail(
         id: PreviewID.next(),
         name: "Mystery Person",

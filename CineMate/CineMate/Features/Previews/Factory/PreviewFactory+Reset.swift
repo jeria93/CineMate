@@ -12,7 +12,7 @@ extension PreviewFactory {
     static func resetAllPreviewData() {
         PreviewID.reset()
         _ = SharedPreviewMovies.moviesList
-        _ = PreviewData.starWarsCredits()
+        _ = MovieCreditsPreviewData.starWarsCredits()
         _ = DiscoverPreviewData.movies
         _ = DiscoverHorrorPreviewData.horrorMovies
     }

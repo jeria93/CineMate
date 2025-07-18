@@ -8,37 +8,49 @@
 import SwiftUI
 
 extension MovieCreditsView {
+
+    /// Preview with full Star Wars credits (cast + crew).
     static var previewStarWars: some View {
-        MovieCreditsView(credits: PreviewData.starWarsCredits())
-            .padding()
+        PreviewFactory.movieCreditsView_StarWars()
     }
 
+    /// Preview with empty credits (no cast or crew).
     static var previewEmptyCredits: some View {
-        let empty = MovieCredits(id: 0, cast: [], crew: [])
-        return MovieCreditsView(credits: empty)
-            .padding()
+        PreviewFactory.movieCreditsView_Empty()
     }
 
+    /// Preview showing only the director in the crew list.
     static var previewOnlyDirector: some View {
-        let credits = MovieCredits(
-            id: 1,
-            cast: [],
-            crew: [CrewMember(id: 1, name: "Christopher Nolan", job: "Director", profilePath: nil)]
-        )
-        return MovieCreditsView(credits: credits)
+        PreviewFactory.movieCreditsView_OnlyDirector()
+    }
+
+    /// Preview showing only a small list of cast members.
+    static var previewOnlyCast: some View {
+        PreviewFactory.movieCreditsView_OnlyCast()
+    }
+}
+
+/// PreviewFactory for MovieCredits-related previews.
+@MainActor
+extension PreviewFactory {
+
+    static func movieCreditsView_StarWars() -> some View {
+        MovieCreditsView(credits: MovieCreditsPreviewData.starWarsCredits())
             .padding()
     }
 
-    static var previewOnlyCast: some View {
-        let credits = MovieCredits(
-            id: 2,
-            cast: [
-                CastMember(id: 1, name: "Actor A", character: nil, profilePath: nil),
-                CastMember(id: 2, name: "Actor B", character: nil, profilePath: nil)
-            ],
-            crew: []
-        )
-        return MovieCreditsView(credits: credits)
+    static func movieCreditsView_Empty() -> some View {
+        MovieCreditsView(credits: MovieCreditsPreviewData.emptyCredits)
+            .padding()
+    }
+
+    static func movieCreditsView_OnlyDirector() -> some View {
+        MovieCreditsView(credits: MovieCreditsPreviewData.onlyDirector)
+            .padding()
+    }
+
+    static func movieCreditsView_OnlyCast() -> some View {
+        MovieCreditsView(credits: MovieCreditsPreviewData.onlyCast)
             .padding()
     }
 }

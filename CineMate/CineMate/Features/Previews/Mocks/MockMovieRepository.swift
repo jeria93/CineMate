@@ -33,7 +33,7 @@ final class MockMovieRepository: MovieProtocol {
     }
 
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        PreviewData.starWarsCredits()
+        MovieCreditsPreviewData.starWarsCredits()
     }
 
     func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
@@ -45,15 +45,15 @@ final class MockMovieRepository: MovieProtocol {
     }
 
     func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
-        PreviewData.starWarsDetail
+        MovieDetailPreviewData.starWarsDetail
     }
 
     func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
-        PreviewData.markHamillPersonDetail
+        PersonPreviewData.markHamill
     }
 
     func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
-        PreviewData.markHamillMovieCredits
+        PersonPreviewData.movieCredits
     }
 
     func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
