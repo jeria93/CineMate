@@ -17,18 +17,25 @@ struct MovieGenresView: View {
                 .foregroundColor(.secondary)
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+                HStack(spacing: 10) {
                     ForEach(genres, id: \.self) { genre in
-                        NavigationLink(destination: GenreDetailView(genreName: genre)) {
-                            Text(genre)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.accentColor.opacity(0.2))
-                                .clipShape(Capsule())
-                        }
+                        // todo: hook up enum-based navigation
+                        Text(genre)
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(Color.accentColor.opacity(0.12))
+                            )
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+                            )
+                            .contentShape(Capsule())
                     }
                 }
+                .padding(.horizontal, 4)
             }
         }
     }
@@ -62,7 +69,7 @@ extension MovieGenresView {
  MovieGenresView
  ---------------
  Horizontal list of “genre chips”.
-
+ 
  > **NOTE (tech debt)**
  > The view still uses `NavigationLink`.
  > When we migrate *all* navigation to **AppNavigator + AppRoute**,

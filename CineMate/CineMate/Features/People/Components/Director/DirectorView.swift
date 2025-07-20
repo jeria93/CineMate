@@ -17,24 +17,12 @@ struct DirectorView: View {
                 .font(.headline)
 
             if let director {
-                NavigationLink {
-                    CastMemberDetailView(
-                        member: CastMember(
-                            id: director.id,
-                            name: director.name,
-                            character: "Director",
-                            profilePath: director.profilePath
-                        ),
-                        viewModel: PersonViewModel(repository: repository)
-                    )
-                } label: {
-                    HStack(spacing: 12) {
-                        DirectorImageView(url: director.profileURL)
+                // todo: enum-navigation to person detail
+                HStack(spacing: 12) {
+                    DirectorImageView(url: director.profileURL)
 
-                        Text(director.name)
-                            .font(.subheadline)
-                            .bold()
-                    }
+                    Text(director.name)
+                        .font(.subheadline.bold())
                 }
             } else {
                 DirectorUnavailableView()

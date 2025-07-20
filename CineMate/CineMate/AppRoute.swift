@@ -18,3 +18,15 @@ enum AppRoute: Hashable {
     // case personDetails(Person)
     // case seeAll(title: String, movies: [Movie])
 }
+/*
+
+ Navigation views:
+ MovieGenresView
+ DiscoverSectionView
+ RelatedMoviesSection
+ CastMemberView
+ MovieListContentView
+ DirectorView
+
+
+ */

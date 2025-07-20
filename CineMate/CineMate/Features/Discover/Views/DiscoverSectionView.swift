@@ -13,12 +13,10 @@ struct DiscoverSectionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            NavigationLink(destination: makeSeeAllDestination()) {
-                Text(title)
-                    .font(.title2)
-                    .bold()
-                    .padding(.horizontal)
-            }
+            // todo: replace tap with enum-navigation to “see all”
+            Text(title)
+                .font(.title2.bold())
+                .padding(.horizontal)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
@@ -30,15 +28,6 @@ struct DiscoverSectionView: View {
             }
         }
         .padding(.top)
-    }
-
-    private func makeSeeAllDestination() -> some View {
-        let filter = DiscoverFilterProvider.filter(for: title)
-        let viewModel = SeeAllMoviesViewModel(
-            repository: MovieRepository(),
-            filter: filter
-        )
-        return SeeAllMoviesView(title: title, viewModel: viewModel)
     }
 }
 
