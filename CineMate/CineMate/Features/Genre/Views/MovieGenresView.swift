@@ -57,3 +57,24 @@ extension MovieGenresView {
             .background(Color(.systemBackground))
     }
 }
+
+/**
+ MovieGenresView
+ ---------------
+ Horizontal list of “genre chips”.
+
+ > **NOTE (tech debt)**
+ > The view still uses `NavigationLink`.
+ > When we migrate *all* navigation to **AppNavigator + AppRoute**,
+ > replace the link with:
+ >
+ > ```swift
+ > @EnvironmentObject private var navigator: AppNavigator
+ >
+ > Text(genre)
+ >     .onTapGesture { navigator.goToGenre(genre) }
+ > ```
+ >
+ > …and add `case genreDetails(String)` in `AppRoute`
+ > plus a switch-branch in `RootView`.
+ */

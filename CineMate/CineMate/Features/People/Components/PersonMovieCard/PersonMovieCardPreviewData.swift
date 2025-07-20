@@ -16,7 +16,7 @@ enum PersonMovieCardPreviewData {
         title: "Return of the Jedi",
         character: "Luke Skywalker",
         releaseDate: "1983-05-25",
-        posterPath: "/yN1boL8mA0EUSqGqZQ9GylEAGx4.jpg",
+        posterPath: "/jQYlydvHm3kUix1f8prMucrplhm.jpg",
         popularity: 82.4
     )
 

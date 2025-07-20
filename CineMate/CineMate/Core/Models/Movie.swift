@@ -12,7 +12,7 @@ import Foundation
 /// - Popular: https://developer.themoviedb.org/reference/movie-popular-list
 /// - Top Rated: https://developer.themoviedb.org/reference/movie-top-rated-list
 /// - Trending: https://developer.themoviedb.org/reference/trending-movies
-struct Movie: Identifiable, Codable, Equatable {
+struct Movie: Identifiable, Codable, Equatable, Hashable {
     let id: Int
     let title: String
     let overview: String?

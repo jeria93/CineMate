@@ -10,6 +10,7 @@ import SwiftUI
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
     @ObservedObject var castViewModel: CastViewModel
+    let onSelect: (Movie) -> Void
 
     var body: some View {
         Group {

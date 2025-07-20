@@ -9,24 +9,27 @@ import SwiftUI
 
 @main
 struct CineMate: App {
+    @StateObject private var navigator = AppNavigator()
+
     var body: some Scene {
         WindowGroup {
-            let repository = MovieRepository()
-            let movieViewModel = MovieViewModel(repository: repository)
-            let castViewModel = CastViewModel(repository: repository)
-            let favoriteMoviesViewModel = FavoriteMoviesViewModel()
-            let searchViewModel = SearchViewModel()
-            let accountViewModel = AccountViewModel()
-            let discoverViewModel = DiscoverViewModel(repository: repository)
+            let repo        = MovieRepository()
+            let movieVM     = MovieViewModel(repository: repo)
+            let castVM      = CastViewModel(repository: repo)
+            let favVM       = FavoriteMoviesViewModel()
+            let searchVM    = SearchViewModel()
+            let accountVM   = AccountViewModel()
+            let discoverVM  = DiscoverViewModel(repository: repo)
 
-            MainTabView(
-                movieViewModel: movieViewModel,
-                castViewModel: castViewModel,
-                favoriteMoviesViewModel: favoriteMoviesViewModel,
-                searchViewModel: searchViewModel,
-                accountViewModel: accountViewModel,
-                discoverViewModel: discoverViewModel
+            RootView(
+                movieViewModel: movieVM,
+                castViewModel: castVM,
+                favoriteMoviesViewModel: favVM,
+                searchViewModel: searchVM,
+                accountViewModel: accountVM,
+                discoverViewModel: discoverVM
             )
+            .environmentObject(navigator)
         }
     }
 }

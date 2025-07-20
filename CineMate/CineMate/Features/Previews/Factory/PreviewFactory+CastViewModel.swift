@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-/// Previews for cast-related views and view models
+/// Previews for cast-related view models and views.
 @MainActor
 extension PreviewFactory {
 
-    /// Cast list with mock data
+    /// Cast list with mock data.
     static func castViewModel() -> CastViewModel {
         resetAllPreviewData()
         let vm = CastViewModel(repository: repository)
@@ -19,14 +19,16 @@ extension PreviewFactory {
         return vm
     }
 
-    /// Cast member detail with mock data
+    /// Cast member detail with mock data wrapped in a NavigationStack.
     static func castMemberDetailView() -> some View {
         resetAllPreviewData()
+        let nav = AppNavigator()
         return NavigationStack {
             CastMemberDetailView(
                 member: CastMemberPreviewData.markHamill,
                 viewModel: .preview
             )
         }
+        .environmentObject(nav)
     }
 }
