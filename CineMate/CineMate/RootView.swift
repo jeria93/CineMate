@@ -14,6 +14,7 @@ struct RootView: View {
     let searchViewModel: SearchViewModel
     let accountViewModel: AccountViewModel
     let discoverViewModel: DiscoverViewModel
+    let personViewModel: PersonViewModel
 
     @EnvironmentObject private var navigator: AppNavigator
 
@@ -42,7 +43,13 @@ struct RootView: View {
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .movieDetails(let movie):
-                    MovieDetailView(movie: movie, viewModel: movieViewModel, castViewModel: castViewModel)
+                    MovieDetailView(movie: movie,
+                                    viewModel: movieViewModel,
+                                    castViewModel: castViewModel)
+
+                case .personDetails(let member):
+                    CastMemberDetailView(member: member,
+                                         viewModel: personViewModel)
                 }
             }
         }

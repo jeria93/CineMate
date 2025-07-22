@@ -13,10 +13,7 @@ import Foundation
 enum AppRoute: Hashable {
     /// Opens `MovieDetailView` for the given movie.
     case movieDetails(Movie)
-
-    // Future examples:
-    // case personDetails(Person)
-    // case seeAll(title: String, movies: [Movie])
+    case personDetails(CastMember)
 }
 /*
 

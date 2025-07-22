@@ -7,21 +7,20 @@
 
 import SwiftUI
 /// Centralised navigation controller using enum routes.
+@MainActor
 final class AppNavigator: ObservableObject {
-    /// Stack of routes rendered by `NavigationStack`.
     @Published var path: [AppRoute] = []
 
-    /// Pushes **MovieDetail** for the given movie.
-    func goToMovie(movie: Movie) {
+    func goToMovie(_ movie: Movie) {
         path.append(.movieDetails(movie))
     }
+    func goToPerson(_ member: CastMember) {
+        path.append(.personDetails(member))
+    }
 
-    /// Pops the last route (one step back).
     func goBack() {
         _ = path.popLast()
     }
-
-    /// Clears the whole stack (back to root).
     func reset() {
         path.removeAll()
     }

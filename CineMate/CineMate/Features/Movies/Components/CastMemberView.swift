@@ -10,7 +10,8 @@ import SwiftUI
 struct CastMemberView: View {
     let member: CastMember
     let repository: MovieProtocol
-
+    @EnvironmentObject private var nav: AppNavigator
+    
     var body: some View {
         VStack(alignment: .center, spacing: 4) {
             AsyncImage(url: member.profileURL) { phase in
@@ -29,14 +30,14 @@ struct CastMemberView: View {
             }
             .frame(width: 80, height: 80)
             .clipShape(Circle())
-
+            
             Text(member.name)
                 .font(.caption)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .truncationMode(.tail)
                 .frame(height: 34)
-
+            
             Text(member.character?.isEmpty == false ? member.character! : "Unknown")
                 .font(.caption2)
                 .foregroundColor(.secondary)
@@ -46,7 +47,8 @@ struct CastMemberView: View {
                 .frame(height: 28)
         }
         .frame(width: 80)
-        // todo: add onTap
+        .contentShape(Rectangle())
+        .onTapGesture { nav.goToPerson(member) }
     }
 }
 

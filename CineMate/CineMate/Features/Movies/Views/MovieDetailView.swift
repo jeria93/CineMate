@@ -9,14 +9,8 @@ import SwiftUI
 
 struct MovieDetailView: View {
     let movie: Movie
-    @StateObject private var viewModel: MovieViewModel
-    @StateObject private var castViewModel: CastViewModel
-
-    init(movie: Movie, viewModel: MovieViewModel, castViewModel: CastViewModel) {
-        self.movie = movie
-        _viewModel = StateObject(wrappedValue: viewModel)
-        _castViewModel = StateObject(wrappedValue: castViewModel)
-    }
+    @ObservedObject var viewModel: MovieViewModel
+    @ObservedObject var castViewModel: CastViewModel
 
     var body: some View {
         ScrollView {
@@ -33,7 +27,7 @@ struct MovieDetailView: View {
                 )
                 .padding()
             }
-            
+
             VStack(alignment: .leading, spacing: 16) {
                 MovieDetailInfoView(movie: movie, viewModel: viewModel)
 

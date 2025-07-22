@@ -8,20 +8,15 @@
 import SwiftUI
 
 struct SeeAllMoviesView: View {
-    @StateObject private var viewModel: SeeAllMoviesViewModel
+    @ObservedObject var viewModel: SeeAllMoviesViewModel
     let title: String
-
-    init(title: String, viewModel: SeeAllMoviesViewModel) {
-        self.title = title
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
-
+    
     var body: some View {
         ScrollView {
             MovieGridView(movies: viewModel.movies) {
                 Task { await viewModel.fetchMoreMovies() }
             }
-
+            
             if viewModel.isLoading {
                 LoadingView(title: "Loading movies...")
             }
@@ -30,7 +25,9 @@ struct SeeAllMoviesView: View {
         .navigationTitle(title)
         .task {
             if !ProcessInfo.processInfo.isPreview {
-                await viewModel.loadInitialMovies()
+                if viewModel.movies.isEmpty {
+                    await viewModel.loadInitialMovies()
+                }
             }
         }
         .overlay {
