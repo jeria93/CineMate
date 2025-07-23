@@ -18,6 +18,10 @@ final class AppNavigator: ObservableObject {
         path.append(.personDetails(member))
     }
 
+    func goToCrew(_ crew: CrewMember) {
+        path.append(.crewDetails(crew))
+    }
+
     func goBack() {
         _ = path.popLast()
     }

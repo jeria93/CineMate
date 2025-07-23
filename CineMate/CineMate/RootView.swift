@@ -43,13 +43,13 @@ struct RootView: View {
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .movieDetails(let movie):
-                    MovieDetailView(movie: movie,
-                                    viewModel: movieViewModel,
-                                    castViewModel: castViewModel)
+                    MovieDetailView(movie: movie,viewModel: movieViewModel, castViewModel: castViewModel)
 
                 case .personDetails(let member):
-                    CastMemberDetailView(member: member,
-                                         viewModel: personViewModel)
+                    CastMemberDetailView(member: member, viewModel: personViewModel)
+
+                case .crewDetails(let crew):
+                    CastMemberDetailView(member: CastMember(from: crew), viewModel: personViewModel)
                 }
             }
         }
@@ -65,3 +65,29 @@ struct RootView: View {
 /// • `navigationDestination` translates those routes into real views.
 ///
 /// Result: central, type-safe navigation without scattered `NavigationLink`s.
+
+// MARK: - Convenience Initializer
+//
+// Transforms a `CrewMember` (e.g., a director) into a lightweight
+// `CastMember`, allowing all people to be handled by the same views.
+//
+// Copies `id`, `name`, and `profilePath`
+// Sets `character` to `nil` (not applicable for crew)
+// Used, for example, in `DirectorView` -> `nav.goToCrew(...)`
+extension CastMember {
+    /// Creates a **pseudo-cast** instance from a `CrewMember`.
+    ///
+    /// ```swift
+    /// let cast = CastMember(from: directorCrew)
+    /// ```
+    ///
+    /// - Parameter crew: The crew member to convert.
+    init(from crew: CrewMember) {
+        self.init(
+            id:          crew.id,
+            name:        crew.name,
+            character:   nil,             // crew has no "character" role
+            profilePath: crew.profilePath
+        )
+    }
+}

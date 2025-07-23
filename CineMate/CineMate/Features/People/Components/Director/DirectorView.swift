@@ -10,6 +10,7 @@ import SwiftUI
 struct DirectorView: View {
     let director: CrewMember?
     let repository: MovieProtocol
+    @EnvironmentObject private var nav: AppNavigator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -17,13 +18,13 @@ struct DirectorView: View {
                 .font(.headline)
 
             if let director {
-                // todo: enum-navigation to person detail
                 HStack(spacing: 12) {
                     DirectorImageView(url: director.profileURL)
-
                     Text(director.name)
                         .font(.subheadline.bold())
                 }
+                .contentShape(Rectangle())
+                .onTapGesture { nav.goToCrew(director) }
             } else {
                 DirectorUnavailableView()
             }
@@ -32,13 +33,17 @@ struct DirectorView: View {
 }
 
 #Preview("Director – Nolan") {
-    DirectorView.previewWithDirector
+    DirectorView.previewWithDirector.withPreviewNavigation()
 }
 
 #Preview("Director – No Director") {
-    DirectorView.previewNoDirector
+    DirectorView.previewNoDirector.withPreviewNavigation()
 }
 
 #Preview("Director – Partial") {
-    DirectorView.previewPartialDirector
+    DirectorView.previewPartialDirector.withPreviewNavigation()
 }
+
+/*
+Tänk såhär, testa köra navigationlink först så kanske du direkt förstår hur du ska göra med enums
+ */
