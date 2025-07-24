@@ -9,6 +9,7 @@ import SwiftUI
 
 struct KnownForScrollView: View {
     let movies: [PersonMovieCredit]
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -46,6 +47,11 @@ struct KnownForScrollView: View {
                                     .frame(width: 100)
                                     .lineLimit(1)
                             }
+                            .onTapGesture {
+                                if let convertedMovie = movie.asMovie {
+                                    navigator.goToMovie(convertedMovie)
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal)
@@ -56,13 +62,41 @@ struct KnownForScrollView: View {
 }
 
 #Preview("Known For – Full") {
-    KnownForScrollView.previewFull
+    KnownForScrollView.previewFull.withPreviewNavigation()
 }
 
 #Preview("Known For – Empty") {
-    KnownForScrollView.previewEmpty
+    KnownForScrollView.previewEmpty.withPreviewNavigation()
 }
 
 #Preview("Known For – Partial") {
-    KnownForScrollView.previewPartial
+    KnownForScrollView.previewPartial.withPreviewNavigation()
+}
+
+#Preview("Known For – Overflow") {
+    KnownForScrollView.previewOverflow.withPreviewNavigation()
+}
+
+extension PersonMovieCredit {
+    /// Converts a `PersonMovieCredit` into a simplified `Movie` model.
+    ///
+    /// This is useful when you want to navigate to `MovieDetailView`,
+    /// which requires a `Movie`, but you only have a limited `PersonMovieCredit`.
+    ///
+    /// Used by `KnownForScrollView` when a user taps an iconic role.
+    /// Missing fields like `overview` or `genres` are set to `nil`.
+    var asMovie: Movie? {
+        guard let title = title else { return nil }
+
+        return Movie(
+            id: id,
+            title: title,
+            overview: nil,
+            posterPath: posterPath,
+            backdropPath: nil,
+            releaseDate: releaseDate,
+            voteAverage: nil,
+            genres: nil
+        )
+    }
 }

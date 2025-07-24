@@ -37,4 +37,22 @@ extension KnownForScrollView {
         .padding()
         .background(Color(.systemBackground))
     }
+
+    /// Shows many iconic roles to test scroll performance and layout
+    static var previewOverflow: some View {
+        let manyMovies = (1...25).map { i in
+            PersonMovieCredit(
+                id: PreviewID.next(),
+                title: "Movie \(i)",
+                character: nil,
+                releaseDate: "20\(10 + i)-01-01",
+                posterPath: nil,
+                popularity: Double.random(in: 10...100)
+            )
+        }
+
+        return KnownForScrollView(movies: manyMovies)
+            .padding()
+            .background(Color(.systemBackground))
+    }
 }

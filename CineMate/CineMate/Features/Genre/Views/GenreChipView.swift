@@ -47,4 +47,4 @@ struct GenreChipView: View {
 #Preview("Selected") {
     GenreChipView.previewSelected
 }
-// Piffa upp UI + implementera fallbacks?
+// Piffa upp UI + implementera fallbacks?, återanvänd denna som standard senare?
