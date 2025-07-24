@@ -24,4 +24,10 @@ enum AppRoute: Hashable {
     /// (e.g. director, writer) after it has been mapped to a `CastMember`
     /// via `CastMember(init from:)`.
     case crewDetails(CrewMember)
-}
+
+    /// Opens **`GenreDetailView`** for a specific genre name.
+    /// Used when the user taps a genre (e.g. "Action") and
+    /// wants to browse all movies within that genre.
+    ///
+    /// The `String` value represents the genre's display name.
+    case genreDetails(String)}

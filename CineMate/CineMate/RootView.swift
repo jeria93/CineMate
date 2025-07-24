@@ -50,6 +50,9 @@ struct RootView: View {
 
                 case .crewDetails(let crew):
                     CastMemberDetailView(member: CastMember(from: crew), viewModel: personViewModel)
+
+                case .genreDetails(let prompt):
+                    GenreDetailView(genreName: prompt)
                 }
             }
         }

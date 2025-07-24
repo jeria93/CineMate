@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct MovieGenresView: View {
-    let genres: [String]
-    
+    let genres: [Genre]
+    @EnvironmentObject private var navigator: AppNavigator
+
     var body: some View {
         if genres.isEmpty {
             Label("Genres not available", systemImage: "questionmark.app.dashed")
@@ -18,9 +19,8 @@ struct MovieGenresView: View {
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    ForEach(genres, id: \.self) { genre in
-                        // todo: hook up enum-based navigation
-                        Text(genre)
+                    ForEach(genres) { genre in
+                        Text(genre.name)
                             .font(.caption.weight(.semibold))
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
@@ -33,6 +33,9 @@ struct MovieGenresView: View {
                                     .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
                             )
                             .contentShape(Capsule())
+                            .onTapGesture {
+                                navigator.goToGenre(genre.name)
+                            }
                     }
                 }
                 .padding(.horizontal, 4)
@@ -42,21 +45,21 @@ struct MovieGenresView: View {
 }
 
 #Preview("With Genres") {
-    MovieGenresView.previewGenres
+    MovieGenresView.previewGenres.withPreviewNavigation()
 }
 
 #Preview("Empty Genres") {
-    MovieGenresView.previewEmpty
+    MovieGenresView.previewEmpty.withPreviewNavigation()
 }
 
 extension MovieGenresView {
     /// Shows a list of genre chips with links
     static var previewGenres: some View {
-        MovieGenresView(genres: Genre.all.map { $0.name })
+        MovieGenresView(genres: GenrePreviewData.genres)
             .padding()
             .background(Color(.systemBackground))
     }
-    
+
     /// Shows fallback UI when no genres are available
     static var previewEmpty: some View {
         MovieGenresView(genres: [])
@@ -64,24 +67,3 @@ extension MovieGenresView {
             .background(Color(.systemBackground))
     }
 }
-
-/**
- MovieGenresView
- ---------------
- Horizontal list of “genre chips”.
- 
- > **NOTE (tech debt)**
- > The view still uses `NavigationLink`.
- > When we migrate *all* navigation to **AppNavigator + AppRoute**,
- > replace the link with:
- >
- > ```swift
- > @EnvironmentObject private var navigator: AppNavigator
- >
- > Text(genre)
- >     .onTapGesture { navigator.goToGenre(genre) }
- > ```
- >
- > …and add `case genreDetails(String)` in `AppRoute`
- > plus a switch-branch in `RootView`.
- */

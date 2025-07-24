@@ -11,9 +11,11 @@ struct GenreDetailView: View {
     let genreName: String
 
     var body: some View {
+        
         VStack(spacing: 16) {
             Text("Under progress")
                 .font(.title2.bold())
+
             Text("Genre: \(genreName)")
                 .font(.caption)
                 .foregroundColor(.secondary)

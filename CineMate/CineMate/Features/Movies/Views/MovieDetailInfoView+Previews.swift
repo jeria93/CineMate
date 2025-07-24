@@ -7,53 +7,49 @@
 
 import SwiftUI
 
+@MainActor
 extension MovieDetailInfoView {
     /// Preview with full detail data
-    @MainActor
     static var previewWithDetail: some View {
         MovieDetailInfoView(
             movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieDetailViewModelWithData()
+            viewModel: PreviewFactory.movieViewModelWithDetail
         )
         .padding()
     }
 
     /// Preview with empty detail data
-    @MainActor
     static var previewWithEmptyDetail: some View {
         MovieDetailInfoView(
             movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieDetailViewModelEmptyDetail()
+            viewModel: PreviewFactory.movieViewModelWithEmptyDetail
         )
         .padding()
     }
 
     /// Preview showing streaming providers (e.g. Netflix)
-    @MainActor
-    static var previewWithProviders: some View {
-        MovieDetailInfoView(
-            movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieDetailViewModelWithWatchProviders()
-        )
-        .padding()
-    }
+//    static var previewWithProviders: some View {
+//        MovieDetailInfoView(
+//            movie: SharedPreviewMovies.starWars,
+//            viewModel: PreviewFactory.movieViewModelWithProviders
+//        )
+//        .padding()
+//    }
 
     /// Preview when loading details
-    @MainActor
     static var previewLoading: some View {
         MovieDetailInfoView(
             movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieDetailViewModelLoading()
+            viewModel: PreviewFactory.movieViewModelLoading
         )
         .padding()
     }
 
     /// Preview with no detail data available
-    @MainActor
     static var previewNoDetail: some View {
         MovieDetailInfoView(
             movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.emptyMovieViewModel()
+            viewModel: PreviewFactory.movieViewModelWithoutDetail
         )
         .padding()
     }

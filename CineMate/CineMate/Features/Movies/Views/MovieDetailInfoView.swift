@@ -10,6 +10,7 @@ import SwiftUI
 struct MovieDetailInfoView: View {
     let movie: Movie
     @ObservedObject var viewModel: MovieViewModel
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -41,8 +42,9 @@ struct MovieDetailInfoView: View {
                     }
                 }
 
-                if let detail = viewModel.movieDetail, !detail.genreNames.isEmpty {
-                    MovieGenresView(genres: detail.genreNames)
+                if let detail = viewModel.movieDetail, !detail.previewGenres.isEmpty {
+                    MovieGenresView(genres: detail.previewGenres)
+                        .environmentObject(navigator)
                 }
 
                 if let overview = movie.overview {
@@ -106,26 +108,22 @@ struct MovieDetailInfoView: View {
 }
 
 #Preview("With Detail") {
-    MovieDetailInfoView.previewWithDetail
+    MovieDetailInfoView.previewWithDetail.withPreviewNavigation()
 }
 
 #Preview("Empty Detail") {
-    MovieDetailInfoView.previewWithEmptyDetail
-}
-
-#Preview("With Providers") {
-    MovieDetailInfoView.previewWithProviders
+    MovieDetailInfoView.previewWithEmptyDetail.withPreviewNavigation()
 }
 
 #Preview("Loading State") {
-    MovieDetailInfoView.previewLoading
+    MovieDetailInfoView.previewLoading.withPreviewNavigation()
 }
 
 #Preview("No Detail (Fallback)") {
-    MovieDetailInfoView.previewNoDetail
+    MovieDetailInfoView.previewNoDetail.withPreviewNavigation()
 }
-
-extension Int {
+/// Returns the number as a string with thousands separators (e.g. "1,000,000").
+private extension Int {
     func formattedWithSeparator() -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal

@@ -34,7 +34,14 @@ struct ProductionCountry: Codable {
 }
 
 extension MovieDetail {
+    /// Returns only the genre names as strings.
     var genreNames: [String] {
         genres.map { $0.name }
+    }
+
+    /// Creates preview genres based on genre names.
+    /// Used for previews when real genres are missing.
+    var previewGenres: [Genre] {
+        genreNames.map { Genre(id: PreviewID.next(), name: $0) }
     }
 }
