@@ -9,57 +9,106 @@ import SwiftUI
 
 /// AppNavigator
 /// -------------
-/// A single, observable “GPS” for the entire app.
-/// * `path` is the live history that backs the shared `NavigationStack`.
-/// * The `goTo…` helpers append enum routes, centralising navigation logic.
-/// * `goBack`/`reset` manipulate the stack without exposing `NavigationPath` directly.
+/// Central navigation controller for the entire app.
+/// Replaces the need for scattered `NavigationLink`s by offering:
 ///
-/// Inject **one** instance with `.environmentObject(navigator)` at the root,
-/// then call the helpers from any view without scattering `NavigationLink`s.
+/// • `smartReplace(...)` to avoid duplicate views on stack
+/// • `pushIfNeeded(...)` to avoid stacking the same route
+/// • `replaceLast(...)` for manual control
+///
+/// Inject once with `.environmentObject(AppNavigator())`
+/// and call `goTo...()` methods from anywhere.
 @MainActor
 final class AppNavigator: ObservableObject {
 
-    /// Current navigation stack, reflected by `NavigationStack(path:)` in **RootView**.
+    /// The current stack of routes managed by NavigationStack
     @Published var path: [AppRoute] = []
 
-    // MARK: - Route helpers
+    // MARK: - Route Helpers
     // ---------------------
 
-    /// Pushes a **`MovieDetailView`** for the supplied `Movie`.
+    /// Navigate to a movie detail screen.
+    /// Smartly replaces top view if already movie/person.
     func goToMovie(_ movie: Movie) {
-        path.append(.movieDetails(movie))
+        smartReplace(.movieDetails(movie))
     }
 
-    /// Pushes a **`CastMemberDetailView`** for the tapped cast member (actor/actress).
+    /// Navigate to a person (cast member) detail screen.
+    /// Replaces top view if already showing a person.
     func goToPerson(_ member: CastMember) {
-        path.append(.personDetails(member))
+        smartReplace(.personDetails(member))
     }
 
-    /// Pushes a **`CastMemberDetailView`** for a crew member (e.g. director).
-    /// The actual mapping `CrewMember → CastMember` happens where the helper is called.
+    /// Navigate to a crew member by converting to a CastMember.
     func goToCrew(_ crew: CrewMember) {
-        path.append(.crewDetails(crew))
+        let castMember = CastMember(from: crew)
+        smartReplace(.personDetails(castMember))
     }
 
-    /// Pushes a **`GenreDetailView`** for the selected genre name.
-    /// Used when a user taps on a genre (e.g. "Action") to see
-    /// movies belonging to that genre.
-    ///
-    /// The `genre` parameter is the display name of the genre.
+    /// Navigate to a genre detail screen.
+    /// Only pushes if genre isn’t already top of stack.
     func goToGenre(_ genre: String) {
-        path.append(.genreDetails(genre))
+        pushIfNeeded(.genreDetails(genre))
     }
 
-    // MARK: - Stack control
+    // MARK: - Stack Control
     // ---------------------
 
-    /// Pops the last destination (1-step “Back”).
+    /// Go back one view
     func goBack() {
         _ = path.popLast()
     }
 
-    /// Clears the entire stack (back to root tab).
+    /// Clear entire stack (return to root)
     func reset() {
         path.removeAll()
+    }
+
+    /// Replaces the top route with a new one (unconditionally)
+    func replaceLast(with route: AppRoute) {
+        if path.last != nil {
+            path.removeLast()
+        }
+        path.append(route)
+    }
+}
+
+// MARK: - Smart Routing Helpers
+// -----------------------------
+
+extension AppNavigator {
+
+    /// Appends a route if it’s not already the topmost view
+    func pushIfNeeded(_ route: AppRoute) {
+        if path.last != route {
+            path.append(route)
+        }
+    }
+
+    /// Replaces the top route with new route *only* if they are of same type or person/movie mix
+    func smartReplace(_ route: AppRoute) {
+        guard let last = path.last else {
+            path.append(route)
+            return
+        }
+
+        if shouldReplace(last: last, with: route) {
+            replaceLast(with: route)
+        } else if last != route {
+            path.append(route)
+        }
+    }
+
+    /// Determines when we should replace top instead of pushing
+    private func shouldReplace(last: AppRoute, with new: AppRoute) -> Bool {
+        switch (last, new) {
+        case (.movieDetails, .movieDetails),
+             (.personDetails, .personDetails),
+             (.personDetails, .movieDetails),
+             (.movieDetails, .personDetails):
+            return true
+        default:
+            return false
+        }
     }
 }

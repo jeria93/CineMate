@@ -31,7 +31,6 @@ struct RelatedMoviesSection: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(movies) { movie in
-                            // todo: enum-navigation to movie detail
                             RelatedMovieCardView(movie: movie)
                         }
                     }
@@ -43,17 +42,17 @@ struct RelatedMoviesSection: View {
 }
 
 #Preview("With Mock Movies") {
-    RelatedMoviesSection.previewWithMovies
+    RelatedMoviesSection.previewWithMovies.withPreviewNavigation()
 }
 
 #Preview("Empty State") {
-    RelatedMoviesSection.previewEmpty
+    RelatedMoviesSection.previewEmpty.withPreviewNavigation()
 }
 
 #Preview("Single Movie") {
-    RelatedMoviesSection.previewSingleMovie
+    RelatedMoviesSection.previewSingleMovie.withPreviewNavigation()
 }
 
 #Preview("Many Movies") {
-    RelatedMoviesSection.previewManyMovies
+    RelatedMoviesSection.previewManyMovies.withPreviewNavigation()
 }

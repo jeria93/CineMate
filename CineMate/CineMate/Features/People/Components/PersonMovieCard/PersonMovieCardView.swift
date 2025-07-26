@@ -9,7 +9,8 @@ import SwiftUI
 
 struct PersonMovieCardView: View {
     let movie: PersonMovieCredit
-    
+    @EnvironmentObject private var navigator: AppNavigator
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             AsyncImage(url: movie.posterURL) { phase in
@@ -31,24 +32,29 @@ struct PersonMovieCardView: View {
             }
             .frame(width: 100, height: 150)
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            
+
             Text(movie.title ?? "Untitled")
                 .font(.caption)
                 .lineLimit(1)
                 .foregroundStyle(.primary)
+        }
+        .onTapGesture {
+            if let converted = movie.asMovie {
+                navigator.goToMovie(converted)
+            }
         }
         .frame(width: 100)
     }
 }
 
 #Preview("Default") {
-    PersonMovieCardView.preview
+    PersonMovieCardView.preview.withPreviewNavigation()
 }
 
 #Preview("Missing Poster") {
-    PersonMovieCardView.previewMissingPoster
+    PersonMovieCardView.previewMissingPoster.withPreviewNavigation()
 }
 
 #Preview("Missing Title") {
-    PersonMovieCardView.previewMissingTitle
+    PersonMovieCardView.previewMissingTitle.withPreviewNavigation()
 }

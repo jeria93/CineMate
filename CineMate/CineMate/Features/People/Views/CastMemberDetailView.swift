@@ -54,7 +54,7 @@ struct CastMemberDetailView: View {
                 if !viewModel.knownForMovies.isEmpty {
                     KnownForScrollView(movies: viewModel.knownForMovies)
                 }
-
+                //  Filmography
                 if !viewModel.personMovies.isEmpty {
                     SectionHeader(title: "Filmography")
                     HorizontalMoviesScrollView(filmography: viewModel.personMovies)
@@ -82,10 +82,10 @@ struct CastMemberDetailView: View {
 
 private extension CastMemberDetailView {
     private func loadData() async {
-        debugPrint("Loading personId = \(member.id)")
+        //        debugPrint("Loading personId = \(member.id)")
         await viewModel.loadPersonDetail(for: member.id)
         await viewModel.loadPersonMovieCredits(for: member.id)
-        debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
-        debugPrint("personMovies count = \(viewModel.personMovies.count)")
+        //        debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
+        //        debugPrint("personMovies count = \(viewModel.personMovies.count)")
     }
 }

@@ -13,45 +13,59 @@ struct MovieDetailView: View {
     @ObservedObject var castViewModel: CastViewModel
 
     var body: some View {
-        ScrollView {
-            PosterImageView(
-                url: movie.posterLargeURL,
-                title: movie.title,
-                width: 300,
-                height: 450
-            )
-            .overlay(alignment: .topTrailing) {
-                FavoriteButton(
-                    isFavorite: viewModel.isFavorite(movie),
-                    toggleAction: { viewModel.toggleFavorite(for: movie) }
-                )
-                .padding()
-            }
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
 
-            VStack(alignment: .leading, spacing: 16) {
-                MovieDetailInfoView(movie: movie, viewModel: viewModel)
+                    Color.clear.frame(height: 1).id("TOP")
 
-                if let credits = viewModel.movieCredits {
-                    MovieCreditsView(credits: credits)
-                    if let director = credits.crew.first(where: { $0.job == "Director" }) {
-                        DirectorView(director: director, repository: viewModel.repository)
-                    }
-                    CastCarouselView(cast: credits.cast, repository: viewModel.repository)
-                }
-
-                MovieDetailActionBarView(movie: movie)
-
-                if let recommended = viewModel.recommendedMovies {
-                    RelatedMoviesSection(
-                        movies: recommended,
-                        movieViewModel: viewModel,
-                        castViewModel: castViewModel
+                    PosterImageView(
+                        url: movie.posterLargeURL,
+                        title: movie.title,
+                        width: 300,
+                        height: 450
                     )
-                    .transition(.opacity)
-                    .animation(.easeInOut(duration: 0.3), value: recommended)
+                    .overlay(alignment: .topTrailing) {
+                        FavoriteButton(
+                            isFavorite: viewModel.isFavorite(movie),
+                            toggleAction: { viewModel.toggleFavorite(for: movie) }
+                        )
+                        .padding()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+
+                    MovieDetailInfoView(movie: movie, viewModel: viewModel)
+
+                    if let credits = viewModel.movieCredits {
+                        MovieCreditsView(credits: credits)
+
+                        if let director = credits.crew.first(where: { $0.job == "Director" }) {
+                            DirectorView(director: director, repository: viewModel.repository)
+                        }
+
+                        CastCarouselView(cast: credits.cast, repository: viewModel.repository)
+                    }
+
+                    MovieDetailActionBarView(movie: movie)
+
+                    if let recommended = viewModel.recommendedMovies {
+                        RelatedMoviesSection(
+                            movies: recommended,
+                            movieViewModel: viewModel,
+                            castViewModel: castViewModel
+                        )
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.3), value: recommended)
+                    }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
+            .onAppear {
+                proxy.scrollTo("TOP", anchor: .top)
+            }
+            .onChange(of: movie.id) {
+                proxy.scrollTo("TOP", anchor: .top)
+            }
         }
         .task { await loadData() }
         .navigationTitle(movie.title)
@@ -60,11 +74,11 @@ struct MovieDetailView: View {
 }
 
 #Preview("Star Wars Detail") {
-    MovieDetailView.previewDefault
+    MovieDetailView.previewDefault.withPreviewNavigation()
 }
 
 private extension MovieDetailView {
-    private func loadData() async {
+    func loadData() async {
         await viewModel.loadMovieCredits(for: movie.id)
         await viewModel.loadMovieVideos(for: movie.id)
         await viewModel.fetchRecommendedMovies(for: movie.id)
