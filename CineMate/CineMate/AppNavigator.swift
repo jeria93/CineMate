@@ -48,7 +48,7 @@ final class AppNavigator: ObservableObject {
     /// Navigate to a genre detail screen.
     /// Only pushes if genre isn’t already top of stack.
     func goToGenre(_ genre: String) {
-        pushIfNeeded(.genreDetails(genre))
+        smartReplace(.genreDetails(genre))
     }
 
     // MARK: - Stack Control
@@ -105,7 +105,8 @@ extension AppNavigator {
         case (.movieDetails, .movieDetails),
              (.personDetails, .personDetails),
              (.personDetails, .movieDetails),
-             (.movieDetails, .personDetails):
+             (.movieDetails, .personDetails),
+             (.genreDetails, .genreDetails):
             return true
         default:
             return false

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct RootView: View {
+    @EnvironmentObject private var navigator: AppNavigator
+
     let movieViewModel: MovieViewModel
     let castViewModel: CastViewModel
     let favoriteMoviesViewModel: FavoriteMoviesViewModel
@@ -16,45 +18,71 @@ struct RootView: View {
     let discoverViewModel: DiscoverViewModel
     let personViewModel: PersonViewModel
 
-    @EnvironmentObject private var navigator: AppNavigator
-
     var body: some View {
-
-        NavigationStack(path: $navigator.path) {
-            TabView {
+        TabView {
+            NavigationStack(path: $navigator.path) {
                 MovieListView(viewModel: movieViewModel,
                               castViewModel: castViewModel)
-                .tabItem { Label("Movies", systemImage: "film") }
-
-                FavoriteMoviesView(viewModel: favoriteMoviesViewModel)
-                    .tabItem { Label("Favorites", systemImage: "heart.fill") }
-
-                DiscoverView(viewModel: discoverViewModel)
-                    .tabItem { Label("Discover", systemImage: "safari") }
-
-                SearchView(viewModel: searchViewModel)
-                    .tabItem { Label("Search", systemImage: "magnifyingglass") }
-
-                AccountView(viewModel: accountViewModel)
-                    .tabItem {
-                        Label("Account", systemImage: "person.crop.circle")
-                    }
-            }
-            .navigationDestination(for: AppRoute.self) { route in
-                switch route {
-                case .movieDetails(let movie):
-                    MovieDetailView(movie: movie,viewModel: movieViewModel, castViewModel: castViewModel)
-
-                case .personDetails(let member):
-                    CastMemberDetailView(member: member, viewModel: personViewModel)
-
-                case .crewDetails(let crew):
-                    CastMemberDetailView(member: CastMember(from: crew), viewModel: personViewModel)
-
-                case .genreDetails(let prompt):
-                    GenreDetailView(genreName: prompt)
+                .navigationTitle(movieViewModel.selectedCategory.displayName)
+                .navigationDestination(for: AppRoute.self) { route in
+                    destination(for: route)
                 }
             }
+            .tabItem { Label("Movies", systemImage: "film") }
+
+            NavigationStack(path: $navigator.path) {
+                FavoriteMoviesView(viewModel: favoriteMoviesViewModel)
+                    .navigationTitle("Favorites")
+                    .navigationDestination(for: AppRoute.self) { route in
+                        destination(for: route)
+                    }
+            }
+            .tabItem { Label("Favorites", systemImage: "heart.fill") }
+
+            NavigationStack(path: $navigator.path) {
+                DiscoverView(viewModel: discoverViewModel)
+                    .navigationTitle("Discover")
+                    .navigationDestination(for: AppRoute.self) { route in
+                        destination(for: route)
+                    }
+            }
+            .tabItem { Label("Discover", systemImage: "safari") }
+
+            NavigationStack(path: $navigator.path) {
+                SearchView(viewModel: searchViewModel)
+                    .navigationTitle("Search")
+                    .navigationDestination(for: AppRoute.self) { route in
+                        destination(for: route)
+                    }
+            }
+            .tabItem { Label("Search", systemImage: "magnifyingglass") }
+
+            NavigationStack(path: $navigator.path) {
+                AccountView(viewModel: accountViewModel)
+                    .navigationTitle("Account")
+                    .navigationDestination(for: AppRoute.self) { route in
+                        destination(for: route)
+                    }
+            }
+            .tabItem { Label("Account", systemImage: "person.crop.circle") }
+        }
+    }
+
+    @ViewBuilder
+    private func destination(for route: AppRoute) -> some View {
+        switch route {
+        case .movieDetails(let movie):
+            MovieDetailView(movie: movie,
+                            viewModel: movieViewModel,
+                            castViewModel: castViewModel)
+        case .personDetails(let member):
+            CastMemberDetailView(member: member,
+                                 viewModel: personViewModel)
+        case .crewDetails(let crew):
+            CastMemberDetailView(member: CastMember(from: crew),
+                                 viewModel: personViewModel)
+        case .genreDetails(let genreName):
+            GenreDetailView(genreName: genreName)
         }
     }
 }
