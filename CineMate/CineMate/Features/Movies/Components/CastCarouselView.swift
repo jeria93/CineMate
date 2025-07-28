@@ -9,21 +9,17 @@ import SwiftUI
 
 struct CastCarouselView: View {
     let cast: [CastMember]
-    let repository: MovieProtocol
     @State private var showAll = false
 
     var body: some View {
         VStack(alignment: .leading) {
-
             Text("Cast")
                 .font(.headline)
 
             if cast.isEmpty {
                 HStack {
-                    Image(systemName: "person.2.fill")
-                        .foregroundColor(.secondary)
-                    Text("No cast information available.")
-                        .foregroundColor(.secondary)
+                    Image(systemName: "person.2.fill").foregroundColor(.secondary)
+                    Text("No cast information available.").foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -31,13 +27,11 @@ struct CastCarouselView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(showAll ? cast : Array(cast.prefix(15))) { member in
-                            CastMemberView(member: member, repository: repository)
+                            CastMemberView(member: member)
                         }
                         if !showAll && cast.count > 15 {
                             CastMoreButtonView {
-                                withAnimation {
-                                    showAll = true
-                                }
+                                withAnimation { showAll = true }
                             }
                         }
                     }

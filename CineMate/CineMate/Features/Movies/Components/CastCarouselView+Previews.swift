@@ -13,9 +13,7 @@ extension CastCarouselView {
     @MainActor
     static var preview: some View {
         CastCarouselView(
-            cast: CastCarouselViewPreviewData.cast,
-            repository: PreviewFactory.repository
-        )
+            cast: CastCarouselViewPreviewData.cast        )
         .padding()
         .background(Color(.systemBackground))
     }
@@ -25,9 +23,7 @@ extension CastCarouselView {
     @MainActor
     static var longList: some View {
         CastCarouselView(
-            cast: CastCarouselViewPreviewData.longCast,
-            repository: PreviewFactory.repository
-        )
+            cast: CastCarouselViewPreviewData.longCast        )
         .padding()
         .background(Color(.systemBackground))
     }
@@ -36,8 +32,7 @@ extension CastCarouselView {
     @MainActor
     static var emptyCast: some View {
         CastCarouselView(
-            cast: [],
-            repository: PreviewFactory.repository
+            cast: []
         )
         .padding()
         .background(Color(.systemBackground))

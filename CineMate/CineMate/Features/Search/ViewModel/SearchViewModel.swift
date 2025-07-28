@@ -25,7 +25,7 @@ final class SearchViewModel: ObservableObject {
     @Published var trimmedQuery: String = ""
 
     // MARK: - Dependencies
-    private let repository: MovieProtocol
+    internal let repository: MovieProtocol
     private var debounceTask: Task<Void, Never>?
 
     // MARK: - Init

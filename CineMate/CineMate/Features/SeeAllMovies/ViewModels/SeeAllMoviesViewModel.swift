@@ -14,7 +14,7 @@ final class SeeAllMoviesViewModel: ObservableObject {
     @Published var hasError = false
     @Published var errorMessage: String?
 
-    private let repository: MovieProtocol
+    internal let repository: MovieProtocol
     private var filter: DiscoverFilter
     private var currentPage = 1
     private var isFetching = false

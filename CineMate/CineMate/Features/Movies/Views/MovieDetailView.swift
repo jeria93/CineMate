@@ -43,7 +43,7 @@ struct MovieDetailView: View {
                             DirectorView(director: director)
                         }
 
-                        CastCarouselView(cast: credits.cast, repository: viewModel.repository)
+                        CastCarouselView(cast: credits.cast)
                     }
 
                     MovieDetailActionBarView(movie: movie)
