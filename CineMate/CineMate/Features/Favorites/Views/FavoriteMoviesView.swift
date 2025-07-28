@@ -15,13 +15,12 @@ struct FavoriteMoviesView: View {
     }
     
     var body: some View {
-        NavigationStack {
             List(viewModel.favoriteMovies) { movies in
                 MovieRowView(movie: movies)
                 
             }
             .navigationTitle("Favorites")
-        }
+
     }
 }
 

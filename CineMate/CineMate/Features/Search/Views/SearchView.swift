@@ -15,7 +15,6 @@ struct SearchView: View {
     }
     
     var body: some View {
-        NavigationStack {
             VStack {
                 SearchBarView(text: $viewModel.query)
                 
@@ -36,7 +35,7 @@ struct SearchView: View {
                 }
             }
             .navigationTitle("Search")
-        }
+
     }
 }
 

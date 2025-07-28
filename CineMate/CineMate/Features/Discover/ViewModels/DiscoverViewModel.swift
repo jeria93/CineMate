@@ -6,14 +6,22 @@
 //
 
 import Foundation
+import SwiftUI
 
+
+/// ViewModel responsible for driving the Discover screen.
+///
+/// - Maintains published properties for each movie section,
+///   loading state, errors, and genre selection.
+/// - Fetches data from a `MovieProtocol` repository, with in-memory caching
+///   and “in-flight” guarding to prevent duplicate network calls.
+/// - Supports filtering by genre and preserves results across app sessions.
 @MainActor
 final class DiscoverViewModel: ObservableObject {
     @Published var results: [Movie] = []
     @Published var isLoading = false
     @Published var error: SearchError?
     @Published var filters = DiscoverFilter()
-
     @Published var topRatedMovies: [Movie] = []
     @Published var popularMovies: [Movie] = []
     @Published var nowPlayingMovies: [Movie] = []
@@ -29,6 +37,7 @@ final class DiscoverViewModel: ObservableObject {
         }
     }
 
+    /// Returns `true` if all sections are empty.
     var allSectionsAreEmpty: Bool {
         topRatedMovies.isEmpty &&
         popularMovies.isEmpty &&
@@ -38,6 +47,13 @@ final class DiscoverViewModel: ObservableObject {
         horrorMovies.isEmpty
     }
 
+    // MARK: - Private state for caching & guarding
+
+    /// Task handle to prevent duplicate “fetchAllSections” calls.
+    private var fetchAllTask: Task<Void, Never>?
+    /// Simple in-memory cache keyed by optional genre ID.
+    private var sectionCache: [Int?: MovieSections] = [:]
+
     private let repository: MovieProtocol
 
     init(repository: MovieProtocol = MovieRepository()) {
@@ -45,122 +61,153 @@ final class DiscoverViewModel: ObservableObject {
         Task { await fetchGenres() }
     }
 
-    /// Fetches all main movie sections (Top Rated, Popular, Now Playing, Trending, Upcoming, Horror).
+    // MARK: - Public API
+
+    /// Fetches all Discover sections (Top Rated, Popular, Now Playing, Trending,
+    /// Upcoming, Horror) exactly once per app session.
     ///
-    /// This method is typically used when no genre filter is selected and the app should display
-    /// standard, unfiltered content.
-    ///
-    /// The method runs six async requests in parallel to speed up the data loading.
-    /// If the app is running in preview mode or if the bearer token is missing,
-    /// the function exits early.
-    ///
-    /// The `isLoading` flag is used to indicate loading state, and any error is stored in `error`.
+    /// Uses the in-memory cache if available, and guards against concurrent calls.
+    /// Sets `isLoading`, clears `error`, and applies results when done.
     func fetchAllSections() async {
-        guard !ProcessInfo.processInfo.isPreview else {
-            print("Skipping section fetch in preview.")
+        // Return cached if present
+        if let cached = sectionCache[nil] {
+            apply(cached)
             return
         }
-
-        guard !SecretManager.bearerToken.isEmpty else {
-            print("Bearer token is missing.")
-            error = .custom("Missing API token.")
+        // 2) If already in-flight, await it
+        if let task = fetchAllTask {
+            await task.value
             return
         }
+        // 3) Kick off new fetch task
+        fetchAllTask = Task {
+            defer { fetchAllTask = nil }
 
-        isLoading = true
-        error = nil
+            guard !ProcessInfo.processInfo.isPreview else { return }
+            guard !SecretManager.bearerToken.isEmpty else {
+                self.error = .custom("Missing API token.")
+                return
+            }
 
-        defer { isLoading = false }
+            isLoading = true
+            error = nil
 
-        do {
-            async let topRated = repository.fetchTopRatedMovies()
-            async let popular = repository.fetchPopularMovies()
-            async let nowPlaying = repository.fetchNowPlayingMovies()
-            async let trending = repository.fetchTrendingMovies()
-            async let upcoming = repository.fetchUpcomingMovies()
-            async let horror = repository.discoverMovies(filters: DiscoverFilter(withGenres: [27]).queryItems)
+            do {
+                async let topRated   = repository.fetchTopRatedMovies()
+                async let popular    = repository.fetchPopularMovies()
+                async let nowPlaying = repository.fetchNowPlayingMovies()
+                async let trending   = repository.fetchTrendingMovies()
+                async let upcoming   = repository.fetchUpcomingMovies()
+                async let horror     = repository.discoverMovies(
+                    filters: DiscoverFilter(withGenres: [27]).queryItems
+                )
 
-            topRatedMovies = try await topRated
-            popularMovies = try await popular
-            nowPlayingMovies = try await nowPlaying
-            trendingMovies = try await trending
-            upcomingMovies = try await upcoming
-            horrorMovies = try await horror
-        } catch {
-            print("Failed to load one or more sections: \(error.localizedDescription)")
-            self.error = .custom(error.localizedDescription)
+                let sections = MovieSections(
+                    topRated:   try await topRated,
+                    popular:    try await popular,
+                    nowPlaying: try await nowPlaying,
+                    trending:   try await trending,
+                    upcoming:   try await upcoming,
+                    horror:     try await horror
+                )
+
+                // Cache & apply
+                sectionCache[nil] = sections
+                apply(sections)
+            } catch {
+                self.error = .custom(error.localizedDescription)
+            }
+
+            isLoading = false
         }
+
+        // Await completion
+        await fetchAllTask?.value
     }
 
-    /// Fetches available movie genres from the TMDB API.
+    /// Filters the Discover sections by the selected genre.
     ///
-    /// This method is called once during ViewModel initialization and
-    /// populates the `genres` array used for filtering content.
-    ///
-    /// If the request fails, it prints the error but does not update the `error` property.
-    func fetchGenres() async {
-        do {
-            genres = try await repository.fetchGenres()
-        } catch {
-            print("Failed to load genres: \(error.localizedDescription)")
-        }
-    }
-
-    /// Filters movie sections based on the currently selected genre.
-    ///
-    /// If no genre is selected, the method falls back to `fetchAllSections()`.
-    /// This function performs three parallel API requests using the selected genre ID:
-    /// - Top Rated movies (sorted by vote average)
-    /// - Popular movies (sorted by popularity)
-    /// - Trending movies (filtered by genre and time window)
-    ///
-    /// Any previously loaded sections unrelated to the genre (e.g. Now Playing, Upcoming, Horror) are cleared.
-    /// The `isLoading` flag manages loading state, and errors are captured in the `error` property.
-    ///
-    /// - Note: Must be called from a Swift concurrency context (`async`).
+    /// Falls back to `fetchAllSections()` if no genre is selected.
+    /// Uses the same cache + in-flight guard logic.
     func filterSections() async {
+        let key = selectedGenreId
 
-        // If no genre is selected, load all default sections (no filters)
-        guard let genreId = selectedGenreId else {
+        // 1) Return cached if present
+        if let cached = sectionCache[key] {
+            apply(cached)
+            return
+        }
+        // 2) No genre chosen → reload all
+        guard let genreId = key else {
             await fetchAllSections()
             return
         }
 
-        // Show loading indicator while fetching, and always turn it off when done
         isLoading = true
         error = nil
         defer { isLoading = false }
 
-
         do {
-            // Start fetching 3 filtered sections in parallel, based on selected genre
-            async let topRated = repository.discoverMovies(filters: DiscoverFilter(
-                sortOption: .voteAverageDesc,
-                withGenres: [genreId]
-            ).queryItems)
+            async let topRated = repository.discoverMovies(
+                filters: DiscoverFilter(sortOption: .voteAverageDesc,
+                                        withGenres: [genreId]).queryItems
+            )
+            async let popular = repository.discoverMovies(
+                filters: DiscoverFilter(sortOption: .popularityDesc,
+                                        withGenres: [genreId]).queryItems
+            )
+            async let trending = repository.discoverMovies(
+                filters: DiscoverFilter(sortOption: .popularityDesc,
+                                        withGenres: [genreId]).queryItems
+                + [ URLQueryItem(name: "time_window", value: "week") ]
+            )
 
-            async let popular = repository.discoverMovies(filters: DiscoverFilter(
-                sortOption: .popularityDesc,
-                withGenres: [genreId]
-            ).queryItems)
+            let sections = MovieSections(
+                topRated: try await topRated,
+                popular:  try await popular,
+                nowPlaying: [],
+                trending: try await trending,
+                upcoming: [],
+                horror:   []
+            )
 
-            async let trending = repository.discoverMovies(filters: DiscoverFilter(
-                sortOption: .popularityDesc,
-                withGenres: [genreId]
-            ).queryItems + [URLQueryItem(name: "time_window", value: "week")])
-
-            // Wait for all three to finish and assign results
-            topRatedMovies = try await topRated
-            popularMovies = try await popular
-            trendingMovies = try await trending
-
-            // Clear unused sections to avoid showing old data
-            nowPlayingMovies = []
-            upcomingMovies = []
-            horrorMovies = []
+            // Cache & apply
+            sectionCache[key] = sections
+            apply(sections)
         } catch {
-            // Handle any errors by updating the error state
             self.error = .custom(error.localizedDescription)
         }
     }
+
+    // MARK: - Private Helpers
+
+    /// Loads the list of genres (called once on init).
+    private func fetchGenres() async {
+        do {
+            genres = try await repository.fetchGenres()
+        } catch {
+            print("DiscoverViewModel: Failed to load genres:", error)
+        }
+    }
+
+    /// Applies a `MovieSections` container to the individual published arrays.
+    private func apply(_ s: MovieSections) {
+        topRatedMovies   = s.topRated
+        popularMovies    = s.popular
+        nowPlayingMovies = s.nowPlaying
+        trendingMovies   = s.trending
+        upcomingMovies   = s.upcoming
+        horrorMovies     = s.horror
+    }
 }
+
+/// Simple struct bundling all sections together.
+private struct MovieSections {
+    let topRated:   [Movie]
+    let popular:    [Movie]
+    let nowPlaying: [Movie]
+    let trending:   [Movie]
+    let upcoming:   [Movie]
+    let horror:     [Movie]
+}
+

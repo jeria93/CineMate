@@ -49,13 +49,13 @@ struct CineMate: App {
     var body: some Scene {
         WindowGroup {
             RootView(
-                movieViewModel:          movieVM,
-                castViewModel:           castVM,
-                favoriteMoviesViewModel: favVM,
-                searchViewModel:         searchVM,
-                accountViewModel:        accountVM,
-                discoverViewModel:       discoverVM,
-                personViewModel:         personVM
+                movieVM:          movieVM,
+                castVM:           castVM,
+                favVM:              favVM,
+                searchVM:         searchVM,
+                accountVM:        accountVM,
+                discoverVM:       discoverVM,
+                personVM:         personVM
             )
             // Make enum-navigation available to every child view.
             .environmentObject(navigator)

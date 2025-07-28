@@ -7,106 +7,93 @@
 
 import SwiftUI
 
-/// AppNavigator
-/// -------------
-/// Central navigation controller for the entire app.
-/// Replaces the need for scattered `NavigationLink`s by offering:
-///
-/// • `smartReplace(...)` to avoid duplicate views on stack
-/// • `pushIfNeeded(...)` to avoid stacking the same route
-/// • `replaceLast(...)` for manual control
-///
-/// Inject once with `.environmentObject(AppNavigator())`
-/// and call `goTo...()` methods from anywhere.
 @MainActor
 final class AppNavigator: ObservableObject {
-
-    /// The current stack of routes managed by NavigationStack
     @Published var path: [AppRoute] = []
 
     // MARK: - Route Helpers
-    // ---------------------
 
-    /// Navigate to a movie detail screen.
-    /// Smartly replaces top view if already movie/person.
     func goToMovie(_ movie: Movie) {
+        print("[Nav] goToMovie(\(movie.title))")
         smartReplace(.movieDetails(movie))
     }
 
-    /// Navigate to a person (cast member) detail screen.
-    /// Replaces top view if already showing a person.
     func goToPerson(_ member: CastMember) {
+        print("[Nav] goToPerson(\(member.name))")
         smartReplace(.personDetails(member))
     }
 
-    /// Navigate to a crew member by converting to a CastMember.
     func goToCrew(_ crew: CrewMember) {
+        print("[Nav] goToCrew(\(crew.name))")
         let castMember = CastMember(from: crew)
         smartReplace(.personDetails(castMember))
     }
 
-    /// Navigate to a genre detail screen.
-    /// Only pushes if genre isn’t already top of stack.
     func goToGenre(_ genre: String) {
+        print("[Nav] goToGenre(\(genre))")
         smartReplace(.genreDetails(genre))
     }
 
     // MARK: - Stack Control
-    // ---------------------
 
-    /// Go back one view
     func goBack() {
+        print("[Nav] goBack()")
         _ = path.popLast()
+        print("[Nav] new stack: \(path)")
     }
 
-    /// Clear entire stack (return to root)
     func reset() {
+        print("[Nav] reset()")
         path.removeAll()
     }
 
-    /// Replaces the top route with a new one (unconditionally)
     func replaceLast(with route: AppRoute) {
+        print("[Nav] replaceLast(with: \(route))")
         if path.last != nil {
             path.removeLast()
         }
         path.append(route)
+        print("[Nav] new stack: \(path)")
     }
 }
 
-// MARK: - Smart Routing Helpers
-// -----------------------------
-
 extension AppNavigator {
-
-    /// Appends a route if it’s not already the topmost view
     func pushIfNeeded(_ route: AppRoute) {
+        print("[Nav] pushIfNeeded(\(route)) — current stack: \(path)")
         if path.last != route {
             path.append(route)
+            print("[Nav] -> pushed, new stack: \(path)")
+        } else {
+            print("[Nav] -> already top, skipping push")
         }
     }
 
-    /// Replaces the top route with new route *only* if they are of same type or person/movie mix
     func smartReplace(_ route: AppRoute) {
+        print("[Nav] smartReplace(\(route)) — current top: \(String(describing: path.last))")
         guard let last = path.last else {
             path.append(route)
+            print("[Nav] -> stack was empty, appended: \(path)")
             return
         }
-
         if shouldReplace(last: last, with: route) {
             replaceLast(with: route)
         } else if last != route {
             path.append(route)
+            print("[Nav] -> not same, appended: \(path)")
+        } else {
+            print("[Nav] -> same as top, skipping")
         }
     }
 
-    /// Determines when we should replace top instead of pushing
     private func shouldReplace(last: AppRoute, with new: AppRoute) -> Bool {
         switch (last, new) {
-        case (.movieDetails, .movieDetails),
-             (.personDetails, .personDetails),
-             (.personDetails, .movieDetails),
-             (.movieDetails, .personDetails),
-             (.genreDetails, .genreDetails):
+        case
+            (.movieDetails, .movieDetails),
+            (.personDetails, .personDetails),
+            (.personDetails, .movieDetails),
+            (.movieDetails, .personDetails),
+            (.crewDetails, .crewDetails),
+            (.genreDetails, .genreDetails):
             return true
         default:
             return false

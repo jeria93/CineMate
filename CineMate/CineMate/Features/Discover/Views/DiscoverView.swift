@@ -8,21 +8,17 @@
 import SwiftUI
 
 struct DiscoverView: View {
-    @StateObject private var viewModel: DiscoverViewModel
-
-    init(viewModel: DiscoverViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
+    @ObservedObject var viewModel: DiscoverViewModel
 
     var body: some View {
         NavigationStack {
             Group {
                 if viewModel.isLoading {
-                    LoadingView(title: "Loading...")
-                } else if let error = viewModel.error {
+                    LoadingView(title: "Loading…")
+                } else if let err = viewModel.error {
                     ErrorMessageView(
                         title: "Something went wrong",
-                        message: error.localizedDescription
+                        message: err.localizedDescription
                     )
                 } else if viewModel.allSectionsAreEmpty {
                     EmptyStateView(
@@ -36,8 +32,9 @@ struct DiscoverView: View {
             }
             .navigationTitle("Discover")
             .task {
-                guard !ProcessInfo.processInfo.isPreview else { return }
-                try? await Task.sleep(nanoseconds: 300_000_000) // Delay i sim
+                await viewModel.fetchAllSections()
+            }
+            .refreshable {
                 await viewModel.fetchAllSections()
             }
         }
