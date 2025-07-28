@@ -36,7 +36,6 @@ struct RootView: View {
                 AccountView(viewModel: accountVM)
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
             }
-            // Här har du navigationDestination direkt på samma NavigationStack som använder $navigator.path
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .movieDetails(let m):

@@ -9,7 +9,6 @@ import SwiftUI
 
 struct DirectorView: View {
     let director: CrewMember?
-    let repository: MovieProtocol
     @EnvironmentObject private var nav: AppNavigator
 
     var body: some View {

@@ -15,8 +15,7 @@ extension DirectorView {
     /// Preview with a known director (e.g. Nolan).
     static var previewWithDirector: some View {
         DirectorView(
-            director: DirectorPreviewData.nolan,
-            repository: MockMovieRepository()
+            director: DirectorPreviewData.nolan
         )
         .padding()
         .background(Color(.systemBackground))
@@ -25,8 +24,7 @@ extension DirectorView {
     /// Preview with no director data (empty state).
     static var previewNoDirector: some View {
         DirectorView(
-            director: nil,
-            repository: MockMovieRepository()
+            director: nil
         )
         .padding()
         .background(Color(.systemBackground))
@@ -35,8 +33,7 @@ extension DirectorView {
     /// Preview with placeholder director (e.g. no profile image).
     static var previewPartialDirector: some View {
         DirectorView(
-            director: DirectorPreviewData.partial,
-            repository: MockMovieRepository()
+            director: DirectorPreviewData.partial
         )
         .padding()
         .background(Color(.systemBackground))

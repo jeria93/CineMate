@@ -33,14 +33,14 @@ struct MovieDetailView: View {
                         .padding()
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
-
+                    
                     MovieDetailInfoView(movie: movie, viewModel: viewModel)
 
                     if let credits = viewModel.movieCredits {
                         MovieCreditsView(credits: credits)
 
                         if let director = credits.crew.first(where: { $0.job == "Director" }) {
-                            DirectorView(director: director, repository: viewModel.repository)
+                            DirectorView(director: director)
                         }
 
                         CastCarouselView(cast: credits.cast, repository: viewModel.repository)
@@ -79,10 +79,6 @@ struct MovieDetailView: View {
 
 private extension MovieDetailView {
     func loadData() async {
-        await viewModel.loadMovieCredits(for: movie.id)
-        await viewModel.loadMovieVideos(for: movie.id)
-        await viewModel.fetchRecommendedMovies(for: movie.id)
         await viewModel.loadMovieDetails(for: movie.id)
-        await viewModel.loadWatchProviders(for: movie.id)
     }
 }

@@ -14,7 +14,7 @@ final class CastViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
 
-    private let repository: MovieProtocol
+    internal let repository: MovieProtocol
 
     init(repository: MovieProtocol) {
         self.repository = repository
