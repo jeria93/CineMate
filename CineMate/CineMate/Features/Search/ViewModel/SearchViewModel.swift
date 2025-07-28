@@ -7,13 +7,21 @@
 
 import Foundation
 
-/// ViewModel responsible for managing search logic and state.
-/// Validates user input, performs debounced searches via a repository,
-/// and updates UI-related properties for display in the view.
+
+/// ViewModel that drives the Search screen.
+///
+/// Responsibilities:
+/// - Validates and debounces the user’s query to avoid spamming the API.
+/// - Caches results in-memory per trimmed query to save network calls.
+/// - Uses an “in-flight” guard to prevent duplicate requests for the same query while one is running.
+/// - Publishes UI state (loading, errors, validation messages) for SwiftUI views.
+///
+/// Threading:
+/// - Annotated with `@MainActor` to keep all published state mutations on the main thread.
 @MainActor
 final class SearchViewModel: ObservableObject {
 
-    // MARK: - Published Properties
+    // MARK: - Published
     @Published var query: String = "" {
         didSet { debounceSearch() }
     }
@@ -28,18 +36,19 @@ final class SearchViewModel: ObservableObject {
     internal let repository: MovieProtocol
     private var debounceTask: Task<Void, Never>?
 
-    // MARK: - Init
+    // MARK: - Cache & In-flight
+    private var cache: [String: [Movie]] = [:]
+    private var inFlight: Set<String> = []
 
-    /// Creates a new `SearchViewModel` with an optional repository.
-    /// - Parameter repository: A movie repository, defaults to the live implementation.
+    // MARK: - Init
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
     }
 
-    // MARK: - Search Trigger
+    // MARK: - Debounce
 
-    /// Debounces search input to avoid frequent requests.
-    /// Waits 0.4 seconds after the user stops typing before validating and searching.
+    /// Cancels any ongoing debounce task and starts a new one.
+    /// Waits 0.4s before validating and possibly executing the search.
     private func debounceSearch() {
         debounceTask?.cancel()
         debounceTask = Task { [weak self] in
@@ -48,8 +57,26 @@ final class SearchViewModel: ObservableObject {
         }
     }
 
-    /// Manually triggers a search with the given query (e.g., on return key).
-    /// - Parameter query: The query to search for.
+    // MARK: - Validation & Dispatch
+
+    /// Validates the current `query`, updates validation UI, and triggers the search if valid.
+    private func handleQuery() async {
+        let result = SearchValidator.validate(query)
+
+        trimmedQuery = result.trimmed ?? ""
+        validationMessage = result.message
+
+        guard let trimmed = result.trimmed, result.isValid else {
+            resetSearchState()
+            return
+        }
+
+        lastValidQuery = trimmed
+        await executeSearch(for: trimmed)
+    }
+
+    /// Public entry point if you want to bypass debounce and run a search immediately.
+    /// - Parameter query: Raw user input.
     func search(_ query: String) async {
         let result = SearchValidator.validate(query)
         guard result.isValid, let trimmed = result.trimmed else { return }
@@ -58,51 +85,40 @@ final class SearchViewModel: ObservableObject {
         await executeSearch(for: trimmed)
     }
 
-    // MARK: - Logic Helpers
-
-    /// Validates the current query and initiates a search if valid.
-    private func handleQuery() async {
-        let result = SearchValidator.validate(query)
-
-        trimmedQuery = result.trimmed ?? ""
-        validationMessage = result.message
-
-        if let trimmed = result.trimmed, result.isValid {
-            await executeSearch(for: trimmed)
-        } else {
-            resetSearchState()
-        }
-    }
-
-    /// Performs the actual search using the repository and updates state accordingly.
-    /// - Parameter trimmed: A validated and trimmed query string.
+    // MARK: - Search
     private func executeSearch(for trimmed: String) async {
+        if let cached = cache[trimmed] {
+            results = cached
+            error = cached.isEmpty ? .noResults : nil
+            return
+        }
+
+        guard !inFlight.contains(trimmed) else { return }
+        inFlight.insert(trimmed)
         setLoading(true)
 
         do {
             let fetchedResults = try await repository.searchMovies(query: trimmed)
+            cache[trimmed] = fetchedResults
             results = fetchedResults
-            if fetchedResults.isEmpty {
-                error = .noResults
-            }
+            error = fetchedResults.isEmpty ? .noResults : nil
         } catch {
-            self.error = .networkFailure
             results = []
+            self.error = .networkFailure
         }
 
+        inFlight.remove(trimmed)
         setLoading(false)
     }
 
-    /// Sets loading state and clears previous error if applicable.
-    /// - Parameter loading: Whether the search is loading or not.
+    /// Toggles loading state and clears old errors when starting a new request.
     private func setLoading(_ loading: Bool) {
         isLoading = loading
         if loading {
             error = nil
         }
     }
-
-    /// Resets the state of the search (e.g., when validation fails).
+    /// Clears visible results & states when the query is invalid.
     private func resetSearchState() {
         results = []
         error = nil
