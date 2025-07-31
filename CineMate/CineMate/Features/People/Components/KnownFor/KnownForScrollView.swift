@@ -10,6 +10,7 @@ import SwiftUI
 struct KnownForScrollView: View {
     let movies: [PersonMovieCredit]
     @EnvironmentObject private var navigator: AppNavigator
+    let movieViewModel: MovieViewModel?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -27,9 +28,9 @@ struct KnownForScrollView: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(movies) { movie in
+                        ForEach(movies) { credit in
                             VStack(alignment: .leading) {
-                                AsyncImage(url: movie.posterURL) { image in
+                                AsyncImage(url: credit.posterURL) { image in
                                     image
                                         .resizable()
                                         .scaledToFit()
@@ -42,15 +43,16 @@ struct KnownForScrollView: View {
                                         .frame(width: 100, height: 150)
                                 }
 
-                                Text(movie.title ?? "Unknown")
+                                Text(credit.title ?? "Unknown")
                                     .font(.caption)
                                     .frame(width: 100)
                                     .lineLimit(1)
                             }
                             .onTapGesture {
-                                if let convertedMovie = movie.asMovie {
-                                    navigator.goToMovie(convertedMovie)
+                                if let stub = credit.asMovie {
+                                    movieViewModel?.cacheStub(stub)
                                 }
+                                navigator.goToMovie(id: credit.id)
                             }
                         }
                     }
@@ -79,15 +81,9 @@ struct KnownForScrollView: View {
 
 extension PersonMovieCredit {
     /// Converts a `PersonMovieCredit` into a simplified `Movie` model.
-    ///
-    /// This is useful when you want to navigate to `MovieDetailView`,
-    /// which requires a `Movie`, but you only have a limited `PersonMovieCredit`.
-    ///
-    /// Used by `KnownForScrollView` when a user taps an iconic role.
-    /// Missing fields like `overview` or `genres` are set to `nil`.
+    /// Used to provide an immediate stub before full detail loads.
     var asMovie: Movie? {
         guard let title = title else { return nil }
-
         return Movie(
             id: id,
             title: title,

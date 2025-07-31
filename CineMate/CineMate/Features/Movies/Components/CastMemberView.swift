@@ -34,7 +34,7 @@ struct CastMemberView: View {
                 .lineLimit(2)
                 .frame(height: 34)
 
-            Text(member.character?.isEmpty == false ? member.character! : "Unknown")
+            Text(member.displayCharacter)
                 .font(.caption2)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -43,7 +43,18 @@ struct CastMemberView: View {
         }
         .frame(width: 80)
         .contentShape(Rectangle())
-        .onTapGesture { nav.goToPerson(member) }
+        .onTapGesture { nav.goToPerson(id: member.id) }
+    }
+}
+
+private extension CastMember {
+    /// Fallback-safe representation of the character string.
+    var displayCharacter: String {
+        if let character, !character.isEmpty {
+            return character
+        } else {
+            return "Unknown"
+        }
     }
 }
 

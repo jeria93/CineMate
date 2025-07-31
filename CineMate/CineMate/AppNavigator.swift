@@ -54,4 +54,16 @@ final class AppNavigator: ObservableObject {
             path.append(route)
         }
     }
+//    navigate through id
+    func goToMovie(id: Int) {
+        pushOrReplace(.movie(id: id))
+    }
+
+    func goToPerson(id: Int) {
+        pushOrReplace(.person(id: id))
+    }
+
+    func goToCrew(id: Int) {
+        pushOrReplace(.person(id: id))
+    }
 }

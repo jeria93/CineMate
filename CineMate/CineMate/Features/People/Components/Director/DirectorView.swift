@@ -23,7 +23,7 @@ struct DirectorView: View {
                         .font(.subheadline.bold())
                 }
                 .contentShape(Rectangle())
-                .onTapGesture { nav.goToCrew(director) }
+                .onTapGesture { nav.goToCrew(id: director.id) }
             } else {
                 DirectorUnavailableView()
             }
@@ -42,7 +42,3 @@ struct DirectorView: View {
 #Preview("Director – Partial") {
     DirectorView.previewPartialDirector.withPreviewNavigation()
 }
-
-/*
-Tänk såhär, testa köra navigationlink först så kanske du direkt förstår hur du ska göra med enums
- */

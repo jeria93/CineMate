@@ -27,7 +27,7 @@ struct RelatedMovieCardView: View {
         }
         .frame(width: 100)
         .onTapGesture {
-            navigator.goToMovie(movie)
+            navigator.goToMovie(id: movie.id)
         }
     }
 }

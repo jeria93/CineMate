@@ -54,7 +54,7 @@ struct CastMemberDetailView: View {
                 }
 
                 if !viewModel.knownForMovies.isEmpty {
-                    KnownForScrollView(movies: viewModel.knownForMovies)
+                    KnownForScrollView(movies: viewModel.knownForMovies, movieViewModel: nil)
                 }
 
                 if !viewModel.personMovies.isEmpty {

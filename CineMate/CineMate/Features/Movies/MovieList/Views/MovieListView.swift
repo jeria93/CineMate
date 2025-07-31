@@ -21,7 +21,7 @@ struct MovieListView: View {
                 castViewModel: castViewModel,
                 onSelect: { movie in
                     viewModel.cacheStub(movie)
-                    navigator.goToMovie(movie)
+                    navigator.goToMovie(id: movie.id)
                 }
             )
         }

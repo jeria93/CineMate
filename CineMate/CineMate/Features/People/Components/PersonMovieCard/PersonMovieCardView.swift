@@ -10,6 +10,7 @@ import SwiftUI
 struct PersonMovieCardView: View {
     let movie: PersonMovieCredit
     @EnvironmentObject private var navigator: AppNavigator
+    let movieViewModel: MovieViewModel?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -39,9 +40,10 @@ struct PersonMovieCardView: View {
                 .foregroundStyle(.primary)
         }
         .onTapGesture {
-            if let converted = movie.asMovie {
-                navigator.goToMovie(converted)
+            if let stub = movie.asMovie {
+                movieViewModel?.cacheStub(stub)
             }
+            navigator.goToMovie(id: movie.id)
         }
         .frame(width: 100)
     }

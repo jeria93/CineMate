@@ -13,7 +13,6 @@ struct DiscoverSectionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // todo: replace tap with enum-navigation to “see all”
             Text(title)
                 .font(.title2.bold())
                 .padding(.horizontal)

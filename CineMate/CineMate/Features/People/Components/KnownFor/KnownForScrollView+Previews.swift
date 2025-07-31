@@ -7,24 +7,43 @@
 
 import SwiftUI
 
+private extension MovieViewModel {
+    /// Preview instance seeded with stubs from person’s known-for credits.
+    static var previewWithStubs: MovieViewModel {
+        let vm = MovieViewModel()
+        for credit in PersonPreviewData.movieCredits {
+            if let stub = credit.asMovie {
+                vm.cacheStub(stub)
+            }
+        }
+        return vm
+    }
+}
+
 extension KnownForScrollView {
-    /// Shows full scroll view with iconic roles
     static var previewFull: some View {
-        KnownForScrollView(movies: PersonPreviewData.movieCredits)
-            .padding()
-            .background(Color(.systemBackground))
+        let movieVM = MovieViewModel.previewWithStubs
+        return KnownForScrollView(
+            movies: PersonPreviewData.movieCredits,
+            movieViewModel: movieVM
+        )
+        .padding()
+        .background(Color(.systemBackground))
+        .withPreviewNavigation()
     }
 
-    /// Shows fallback UI for empty data
     static var previewEmpty: some View {
-        KnownForScrollView(movies: [])
-            .padding()
-            .background(Color(.systemBackground))
+        KnownForScrollView(
+            movies: [],
+            movieViewModel: nil
+        )
+        .padding()
+        .background(Color(.systemBackground))
+        .withPreviewNavigation()
     }
-    
-    /// Shows partially filled preview with minimal data
+
     static var previewPartial: some View {
-        KnownForScrollView(movies: [
+        let partial = [
             PersonMovieCredit(
                 id: PreviewID.next(),
                 title: "Mysterious Adventure",
@@ -33,12 +52,17 @@ extension KnownForScrollView {
                 posterPath: nil,
                 popularity: nil
             )
-        ])
+        ]
+        let movieVM = MovieViewModel.previewWithStubs
+        return KnownForScrollView(
+            movies: partial,
+            movieViewModel: movieVM
+        )
         .padding()
         .background(Color(.systemBackground))
+        .withPreviewNavigation()
     }
 
-    /// Shows many iconic roles to test scroll performance and layout
     static var previewOverflow: some View {
         let manyMovies = (1...25).map { i in
             PersonMovieCredit(
@@ -50,9 +74,13 @@ extension KnownForScrollView {
                 popularity: Double.random(in: 10...100)
             )
         }
-
-        return KnownForScrollView(movies: manyMovies)
-            .padding()
-            .background(Color(.systemBackground))
+        let movieVM = MovieViewModel.previewWithStubs
+        return KnownForScrollView(
+            movies: manyMovies,
+            movieViewModel: movieVM
+        )
+        .padding()
+        .background(Color(.systemBackground))
+        .withPreviewNavigation()
     }
 }
