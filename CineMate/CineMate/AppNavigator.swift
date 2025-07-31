@@ -9,94 +9,49 @@ import SwiftUI
 
 @MainActor
 final class AppNavigator: ObservableObject {
+    // Binds to NavigationStack in RootView
     @Published var path: [AppRoute] = []
 
-    // MARK: - Route Helpers
-
     func goToMovie(_ movie: Movie) {
-        print("[Nav] goToMovie(\(movie.title))")
-        smartReplace(.movieDetails(movie))
+        pushOrReplace(.movie(id: movie.id))
     }
-
-    func goToPerson(_ member: CastMember) {
-        print("[Nav] goToPerson(\(member.name))")
-        smartReplace(.personDetails(member))
+    func goToPerson(_ castMember: CastMember) {
+        pushOrReplace(.person(id: castMember.id))
     }
-
     func goToCrew(_ crew: CrewMember) {
-        print("[Nav] goToCrew(\(crew.name))")
-        let castMember = CastMember(from: crew)
-        smartReplace(.personDetails(castMember))
+        pushOrReplace(.person(id: crew.id))
+    }
+    func goToGenre(_ name: String) {
+        pushOrReplace(.genre(name: name))
     }
 
-    func goToGenre(_ genre: String) {
-        print("[Nav] goToGenre(\(genre))")
-        smartReplace(.genreDetails(genre))
+
+    private func pushOrReplace(_ route: AppRoute) {
+        replaceLast(ofKind: route.caseName, with: route)
     }
 
-    // MARK: - Stack Control
-
+    /// Pops **one** level off the stack. Handy if you need a custom back-button
+    /// outside of SwiftUI’s default navigation bar.
     func goBack() {
-        print("[Nav] goBack()")
         _ = path.popLast()
-        print("[Nav] new stack: \(path)")
     }
 
+    /// Clears the entire navigation stack – typically called whenever the user
+    /// switches tab so each tab gets a *fresh* root view.
     func reset() {
-        print("[Nav] reset()")
         path.removeAll()
     }
 
-    func replaceLast(with route: AppRoute) {
-        print("[Nav] replaceLast(with: \(route))")
-        if path.last != nil {
-            path.removeLast()
-        }
-        path.append(route)
-        print("[Nav] new stack: \(path)")
-    }
-}
-
-extension AppNavigator {
-    func pushIfNeeded(_ route: AppRoute) {
-        print("[Nav] pushIfNeeded(\(route)) — current stack: \(path)")
-        if path.last != route {
-            path.append(route)
-            print("[Nav] -> pushed, new stack: \(path)")
+    /// Replaces the last route of a given kind with a new one, or appends if none exists.
+    /// - Parameters:
+    ///   - kind: The route case name (e.g., "movie", "person") used to identify matching entries.
+    ///   - route: The new route to apply.
+    func replaceLast(ofKind kind: String, with route: AppRoute) {
+        if let i = path.lastIndex(where: { $0.caseName == kind }) {
+            path[i] = route
+            path.removeSubrange(i+1 ..< path.count)
         } else {
-            print("[Nav] -> already top, skipping push")
-        }
-    }
-
-    func smartReplace(_ route: AppRoute) {
-        print("[Nav] smartReplace(\(route)) — current top: \(String(describing: path.last))")
-        guard let last = path.last else {
             path.append(route)
-            print("[Nav] -> stack was empty, appended: \(path)")
-            return
-        }
-        if shouldReplace(last: last, with: route) {
-            replaceLast(with: route)
-        } else if last != route {
-            path.append(route)
-            print("[Nav] -> not same, appended: \(path)")
-        } else {
-            print("[Nav] -> same as top, skipping")
-        }
-    }
-
-    private func shouldReplace(last: AppRoute, with new: AppRoute) -> Bool {
-        switch (last, new) {
-        case
-            (.movieDetails, .movieDetails),
-            (.personDetails, .personDetails),
-            (.personDetails, .movieDetails),
-            (.movieDetails, .personDetails),
-            (.crewDetails, .crewDetails),
-            (.genreDetails, .genreDetails):
-            return true
-        default:
-            return false
         }
     }
 }

@@ -17,9 +17,12 @@ struct MovieListView: View {
             MovieCategoryPicker(selectedCategory: $viewModel.selectedCategory)
 
             MovieListContentView(
-                viewModel:     viewModel,
+                viewModel: viewModel,
                 castViewModel: castViewModel,
-                onSelect:      { navigator.goToMovie($0) }
+                onSelect: { movie in
+                    viewModel.cacheStub(movie)
+                    navigator.goToMovie(movie)
+                }
             )
         }
         .navigationTitle(viewModel.selectedCategory.displayName)

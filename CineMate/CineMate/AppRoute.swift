@@ -12,22 +12,17 @@ import Foundation
 /// Whenever you add a new screen, introduce a matching case here *and* handle
 /// it inside `RootView.navigationDestination`.
 enum AppRoute: Hashable {
+    case movie(id: Int)
+    case person(id: Int)
+    case genre(name: String)
+}
 
-    /// Opens **`MovieDetailView`** for the selected `Movie`.
-    case movieDetails(Movie)
-
-    /// Opens **`CastMemberDetailView`** for a `CastMember`
-    /// (i.e. an actor/actress tapped in a cast list).
-    case personDetails(CastMember)
-
-    /// Opens **`CastMemberDetailView`** for a `CrewMember`
-    /// (e.g. director, writer) after it has been mapped to a `CastMember`
-    /// via `CastMember(init from:)`.
-    case crewDetails(CrewMember)
-
-    /// Opens **`GenreDetailView`** for a specific genre name.
-    /// Used when the user taps a genre (e.g. "Action") and
-    /// wants to browse all movies within that genre.
-    ///
-    /// The `String` value represents the genre's display name.
-    case genreDetails(String)}
+extension AppRoute {
+    var caseName: String {
+        switch self {
+        case .movie:  return "movie"
+        case .person: return "person"
+        case .genre:  return "genre"
+        }
+    }
+}

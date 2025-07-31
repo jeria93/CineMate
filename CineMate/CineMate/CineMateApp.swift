@@ -41,9 +41,9 @@ struct CineMate: App {
 
         // initialise view-models that depend on the repo
         _movieVM    = StateObject(wrappedValue: MovieViewModel(repository: repo))
-        _castVM     = StateObject(wrappedValue: CastViewModel (repository: repo))
+        _castVM     = StateObject(wrappedValue: CastViewModel(repository: repo))
         _discoverVM = StateObject(wrappedValue: DiscoverViewModel(repository: repo))
-        _personVM   = StateObject(wrappedValue: PersonViewModel  (repository: repo))
+        _personVM   = StateObject(wrappedValue: PersonViewModel(repository: repo))
     }
 
     var body: some Scene {
