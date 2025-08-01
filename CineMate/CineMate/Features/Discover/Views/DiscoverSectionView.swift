@@ -16,6 +16,9 @@ struct DiscoverSectionView: View {
             Text(title)
                 .font(.title2.bold())
                 .padding(.horizontal)
+                .onTapGesture {
+                    print("Add navigation to SeeAllMoviesView here.")
+                }
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {

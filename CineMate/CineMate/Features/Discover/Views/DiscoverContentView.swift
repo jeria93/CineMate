@@ -23,12 +23,6 @@ struct DiscoverContentView: View {
                         movies: viewModel.topRatedMovies
                     )
                 }
-                if !viewModel.popularMovies.isEmpty {
-                    DiscoverSectionView(
-                        title: "Popular",
-                        movies: viewModel.popularMovies
-                    )
-                }
                 if !viewModel.trendingMovies.isEmpty {
                     DiscoverSectionView(
                         title: "Trending",
