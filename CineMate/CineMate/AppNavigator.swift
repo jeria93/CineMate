@@ -7,63 +7,96 @@
 
 import SwiftUI
 
+/// Centralized enum-based navigator driving navigation via a shared
+/// `NavigationStack` (bound in `RootView`). All destination changes are
+/// represented as `AppRoute` values that are either pushed or replace the
+/// existing route of the same kind.
 @MainActor
 final class AppNavigator: ObservableObject {
-    // Binds to NavigationStack in RootView
+    /// The current navigation path that SwiftUI observes.
     @Published var path: [AppRoute] = []
 
-    func goToMovie(_ movie: Movie) {
-        pushOrReplace(.movie(id: movie.id))
-    }
-    func goToPerson(_ castMember: CastMember) {
-        pushOrReplace(.person(id: castMember.id))
-    }
-    func goToCrew(_ crew: CrewMember) {
-        pushOrReplace(.person(id: crew.id))
-    }
+    // MARK: - Public navigation helpers
+
+    /// Navigate to a genre screen by name.
     func goToGenre(_ name: String) {
+        log("[Navigator] goToGenre: \(name)")
         pushOrReplace(.genre(name: name))
     }
 
-
-    private func pushOrReplace(_ route: AppRoute) {
-        replaceLast(ofKind: route.caseName, with: route)
+    /// Navigate to a movie by its ID.
+    func goToMovie(id: Int) {
+        log("[Navigator] goToMovie(id: \(id))")
+        pushOrReplace(.movie(id: id))
+        logCurrentPath()
     }
 
-    /// Pops **one** level off the stack. Handy if you need a custom back-button
-    /// outside of SwiftUI’s default navigation bar.
+    /// Navigate to a person (cast/crew) by their ID.
+    func goToPerson(id: Int) {
+        log("[Navigator] goToPerson(id: \(id))")
+        pushOrReplace(.person(id: id))
+        logCurrentPath()
+    }
+
+    /// Navigate to a crew member; internally treated as a person route.
+    func goToCrew(id: Int) {
+        log("[Navigator] goToCrew(id: \(id))")
+        pushOrReplace(.person(id: id))
+        logCurrentPath()
+    }
+
+    /// Pop one level from the navigation stack.
     func goBack() {
+        log("[Navigator] goBack (before): \(describePath())")
         _ = path.popLast()
+        log("[Navigator] goBack (after): \(describePath())")
     }
 
-    /// Clears the entire navigation stack – typically called whenever the user
-    /// switches tab so each tab gets a *fresh* root view.
+    /// Clear the entire navigation stack (e.g., when switching tabs).
     func reset() {
+        log("[Navigator] reset navigation stack")
         path.removeAll()
     }
 
-    /// Replaces the last route of a given kind with a new one, or appends if none exists.
+    // MARK: - Internal
+
+    /// Pushes or replaces the last route of the same kind.
+    private func pushOrReplace(_ route: AppRoute) {
+        log("[Navigator] pushOrReplace requested for: \(route)")
+        replaceLast(ofKind: route.caseName, with: route)
+    }
+
+    /// Replaces the last route of the given kind with a new one, or appends if none exists.
     /// - Parameters:
-    ///   - kind: The route case name (e.g., "movie", "person") used to identify matching entries.
+    ///   - kind: The route case name (e.g., "movie", "person") used to identify matches.
     ///   - route: The new route to apply.
     func replaceLast(ofKind kind: String, with route: AppRoute) {
+        log("[Navigator] replaceLast of kind '\(kind)' with \(route); current path: \(describePath())")
         if let i = path.lastIndex(where: { $0.caseName == kind }) {
             path[i] = route
-            path.removeSubrange(i+1 ..< path.count)
+            path.removeSubrange(i + 1 ..< path.count)
         } else {
             path.append(route)
         }
-    }
-//    navigate through id
-    func goToMovie(id: Int) {
-        pushOrReplace(.movie(id: id))
+        log("[Navigator] new path: \(describePath())")
     }
 
-    func goToPerson(id: Int) {
-        pushOrReplace(.person(id: id))
+    // MARK: - Debug / Logging helpers
+
+    private func log(_ message: String) {
+        print(message)
     }
 
-    func goToCrew(id: Int) {
-        pushOrReplace(.person(id: id))
+    private func logCurrentPath() {
+        print("[Navigator] current path snapshot: \(describePath())")
+    }
+
+    private func describePath() -> String {
+        guard !path.isEmpty else { return "⟨empty⟩" }
+        return path.enumerated()
+            .map { index, route in
+                "[\(index)] \(type(of: route)) \(route)"
+            }
+            .joined(separator: " → ")
     }
 }

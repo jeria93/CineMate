@@ -11,32 +11,30 @@ struct DiscoverView: View {
     @ObservedObject var viewModel: DiscoverViewModel
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if viewModel.isLoading {
-                    LoadingView(title: "Loading…")
-                } else if let err = viewModel.error {
-                    ErrorMessageView(
-                        title: "Something went wrong",
-                        message: err.localizedDescription
-                    )
-                } else if viewModel.allSectionsAreEmpty {
-                    EmptyStateView(
-                        systemImage: "film",
-                        title: "No movies to show.",
-                        message: "There’s no content here at the moment."
-                    )
-                } else {
-                    DiscoverContentView(viewModel: viewModel)
-                }
+        Group {
+            if viewModel.isLoading {
+                LoadingView(title: "Loading…")
+            } else if let err = viewModel.error {
+                ErrorMessageView(
+                    title: "Something went wrong",
+                    message: err.localizedDescription
+                )
+            } else if viewModel.allSectionsAreEmpty {
+                EmptyStateView(
+                    systemImage: "film",
+                    title: "No movies to show.",
+                    message: "There’s no content here at the moment."
+                )
+            } else {
+                DiscoverContentView(viewModel: viewModel)
             }
-            .navigationTitle("Discover")
-            .task {
-                await viewModel.fetchAllSections()
-            }
-            .refreshable {
-                await viewModel.fetchAllSections()
-            }
+        }
+        .navigationTitle("Discover")
+        .task {
+            await viewModel.fetchAllSections()
+        }
+        .refreshable {
+            await viewModel.fetchAllSections()
         }
     }
 }

@@ -66,7 +66,10 @@ struct MovieDetailView: View {
                 }
                 .padding(.horizontal)
             }
-            .onAppear { proxy.scrollTo("TOP", anchor: .top) }
+            .onAppear {
+                proxy.scrollTo("TOP", anchor: .top)
+                print("[MovieDetailView] appeared for id:", movieId)
+            }
             .onChange(of: movieId) { proxy.scrollTo("TOP", anchor: .top) }
         }
         .task(id: movieId) {

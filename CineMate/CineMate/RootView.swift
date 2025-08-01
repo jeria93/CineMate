@@ -68,11 +68,12 @@ struct RootView: View {
             .onChange(of: selectedTab) {
                 navigator.reset()
             }
-            .navigationDestination(
-                for: AppRoute.self,
-                destination: destination
-            )
+            .navigationDestination(for: AppRoute.self) { route in
+                destination(for: debugRoute(route))
+            }
         }
+
+        
     }
 }
 
@@ -96,6 +97,13 @@ private extension RootView {
         case .genre(let name):
             GenreDetailView(genreName: name)
         }
+    }
+
+    private func debugRoute(_ route: AppRoute) -> AppRoute {
+        #if DEBUG
+        print("[RootView] resolving route: \(route); current path: \(navigator.path)")
+        #endif
+        return route
     }
 
     /// Resolves a cast/crew member by id, falling back to a minimal placeholder.
