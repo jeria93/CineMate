@@ -15,6 +15,7 @@ enum AppRoute: Hashable {
     case movie(id: Int)
     case person(id: Int)
     case genre(name: String)
+    case seeAllMovies(title: String, filter: DiscoverFilter)
 }
 
 extension AppRoute {
@@ -23,6 +24,7 @@ extension AppRoute {
         case .movie:  return "movie"
         case .person: return "person"
         case .genre:  return "genre"
+        case .seeAllMovies: return "seeAllMovies"
         }
     }
 }

@@ -45,6 +45,11 @@ final class AppNavigator: ObservableObject {
         logCurrentPath()
     }
 
+    /// Navigate to ...
+    func goToSeeAllMovies(title: String, filter: DiscoverFilter) {
+        log("[Navigator] goToSeeAllMovies: \(title)")
+        pushOrReplace(.seeAllMovies(title: title, filter: filter))
+    }
     /// Pop one level from the navigation stack.
     func goBack() {
         log("[Navigator] goBack (before): \(describePath())")

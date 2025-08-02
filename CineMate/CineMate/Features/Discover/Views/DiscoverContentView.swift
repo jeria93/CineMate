@@ -13,39 +13,27 @@ struct DiscoverContentView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                GenreSelectorView(genres: viewModel.genres, selectedGenreId: viewModel.selectedGenreId) { selected in
+                GenreSelectorView(
+                    genres: viewModel.genres,
+                    selectedGenreId: viewModel.selectedGenreId
+                ) { selected in
                     viewModel.selectedGenreId = selected.id
                 }
 
                 if !viewModel.topRatedMovies.isEmpty {
-                    DiscoverSectionView(
-                        title: "Top Rated",
-                        movies: viewModel.topRatedMovies
-                    )
+                    DiscoverSectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
                 }
                 if !viewModel.trendingMovies.isEmpty {
-                    DiscoverSectionView(
-                        title: "Trending",
-                        movies: viewModel.trendingMovies
-                    )
+                    DiscoverSectionView(title: "Trending", movies: viewModel.trendingMovies)
                 }
                 if !viewModel.nowPlayingMovies.isEmpty {
-                    DiscoverSectionView(
-                        title: "Now Playing",
-                        movies: viewModel.nowPlayingMovies
-                    )
+                    DiscoverSectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
                 }
                 if !viewModel.upcomingMovies.isEmpty {
-                    DiscoverSectionView(
-                        title: "Upcoming",
-                        movies: viewModel.upcomingMovies
-                    )
+                    DiscoverSectionView(title: "Upcoming", movies: viewModel.upcomingMovies)
                 }
                 if !viewModel.horrorMovies.isEmpty {
-                    DiscoverSectionView(
-                        title: "Horror",
-                        movies: viewModel.horrorMovies
-                    )
+                    DiscoverSectionView(title: "Horror", movies: viewModel.horrorMovies)
                 }
             }
             .padding(.vertical)
@@ -55,8 +43,4 @@ struct DiscoverContentView: View {
 
 #Preview("Default") {
     DiscoverContentView.previewDefault
-}
-
-#Preview("Horror Only") {
-    DiscoverContentView.previewHorrorOnly
 }

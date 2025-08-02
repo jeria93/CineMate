@@ -10,6 +10,7 @@ import SwiftUI
 struct DiscoverSectionView: View {
     let title: String
     let movies: [Movie]
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -17,7 +18,7 @@ struct DiscoverSectionView: View {
                 .font(.title2.bold())
                 .padding(.horizontal)
                 .onTapGesture {
-                    print("Add navigation to SeeAllMoviesView here.")
+                    navigator.goToSeeAllMovies(title: title, filter: DiscoverFilterProvider.filter(for: title))
                 }
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -34,17 +35,17 @@ struct DiscoverSectionView: View {
 }
 
 #Preview("Default") {
-    DiscoverSectionView.previewDefault
+    DiscoverSectionView.previewDefault.withPreviewNavigation()
 }
 
 #Preview("Empty") {
-    DiscoverSectionView.previewEmpty
+    DiscoverSectionView.previewEmpty.withPreviewNavigation()
 }
 
 #Preview("One Movie") {
-    DiscoverSectionView.previewOneMovie
+    DiscoverSectionView.previewOneMovie.withPreviewNavigation()
 }
 
 #Preview("No Posters") {
-    DiscoverSectionView.previewNoPosters
+    DiscoverSectionView.previewNoPosters.withPreviewNavigation()
 }

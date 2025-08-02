@@ -31,6 +31,7 @@ final class MovieViewModel: ObservableObject {
 
     // Dependencies
     private let repository: MovieProtocol
+    var underlyingRepository: MovieProtocol { repository }
 
     // Caches / in-flight guards
     private var listCache: [MovieCategory: [Movie]] = [:]

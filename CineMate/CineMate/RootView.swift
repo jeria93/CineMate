@@ -73,7 +73,7 @@ struct RootView: View {
             }
         }
 
-        
+
     }
 }
 
@@ -96,13 +96,21 @@ private extension RootView {
 
         case .genre(let name):
             GenreDetailView(genreName: name)
+
+        case .seeAllMovies(title: let title, filter: let filter):
+            SeeAllMoviesView(
+                viewModel: SeeAllMoviesViewModel(repository: movieVM.underlyingRepository, filter: filter),
+                title: title
+            )
+
+
         }
     }
 
     private func debugRoute(_ route: AppRoute) -> AppRoute {
-        #if DEBUG
+#if DEBUG
         print("[RootView] resolving route: \(route); current path: \(navigator.path)")
-        #endif
+#endif
         return route
     }
 

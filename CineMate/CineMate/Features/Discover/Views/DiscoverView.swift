@@ -14,18 +14,27 @@ struct DiscoverView: View {
         Group {
             if viewModel.isLoading {
                 LoadingView(title: "Loading…")
-            } else if let err = viewModel.error {
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            else if let error = viewModel.error {
                 ErrorMessageView(
-                    title: "Something went wrong",
-                    message: err.localizedDescription
+                    title: "Failed to Load",
+                    message: error.localizedDescription,
+                    onRetry: {
+                        Task { await viewModel.fetchAllSections() }
+                    }
                 )
-            } else if viewModel.allSectionsAreEmpty {
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            else if viewModel.allSectionsAreEmpty {
                 EmptyStateView(
                     systemImage: "film",
-                    title: "No movies to show.",
-                    message: "There’s no content here at the moment."
+                    title: "No Movies",
+                    message: "We couldn't find any movies for your filters"
                 )
-            } else {
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            else {
                 DiscoverContentView(viewModel: viewModel)
             }
         }
