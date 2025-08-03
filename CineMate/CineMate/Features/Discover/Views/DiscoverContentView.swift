@@ -7,36 +7,57 @@
 
 import SwiftUI
 
+/// Displays the Discover screen content:
+/// - Horizontal genre selector (auto-scrolls to selected genre)
+/// - Movie sections (Top Rated, Trending, etc.)
+/// - Scrolls to top automatically when genre changes.
 struct DiscoverContentView: View {
-    let viewModel: DiscoverViewModel
+    @ObservedObject var viewModel: DiscoverViewModel
+    @State private var lastSelectedGenreId: Int? = nil
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                GenreSelectorView(
-                    genres: viewModel.genres,
-                    selectedGenreId: viewModel.selectedGenreId
-                ) { selected in
-                    viewModel.selectedGenreId = selected.id
-                }
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 24, pinnedViews: []) {
+                    // Genre selector
+                    GenreSelectorView(
+                        genres: viewModel.genres,
+                        selectedGenreId: viewModel.selectedGenreId
+                    ) { selected in
+                        viewModel.selectedGenreId = selected
+                    }
+                    .id("genreSelector") // For scroll-to-top
 
-                if !viewModel.topRatedMovies.isEmpty {
-                    DiscoverSectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
+                    // Sections
+                    sectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
+                    sectionView(title: "Trending", movies: viewModel.trendingMovies)
+                    sectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
+                    sectionView(title: "Upcoming", movies: viewModel.upcomingMovies)
+                    sectionView(title: "Horror", movies: viewModel.horrorMovies)
                 }
-                if !viewModel.trendingMovies.isEmpty {
-                    DiscoverSectionView(title: "Trending", movies: viewModel.trendingMovies)
-                }
-                if !viewModel.nowPlayingMovies.isEmpty {
-                    DiscoverSectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
-                }
-                if !viewModel.upcomingMovies.isEmpty {
-                    DiscoverSectionView(title: "Upcoming", movies: viewModel.upcomingMovies)
-                }
-                if !viewModel.horrorMovies.isEmpty {
-                    DiscoverSectionView(title: "Horror", movies: viewModel.horrorMovies)
-                }
+                .padding(.vertical)
             }
-            .padding(.vertical)
+            // Auto scroll-to-top when selected genre changes
+            .onChange(of: viewModel.selectedGenreId) { _, newValue in
+                guard lastSelectedGenreId != newValue else { return }
+                lastSelectedGenreId = newValue
+                scrollToTop(proxy: proxy)
+            }
+        }
+    }
+
+    /// Scrolls the main ScrollView to top with animation
+    private func scrollToTop(proxy: ScrollViewProxy) {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            proxy.scrollTo("genreSelector", anchor: .top)
+        }
+    }
+
+    /// Generates a DiscoverSectionView only if movies are available
+    @ViewBuilder
+    private func sectionView(title: String, movies: [Movie]) -> some View {
+        if !movies.isEmpty {
+            DiscoverSectionView(title: title, movies: movies)
         }
     }
 }
