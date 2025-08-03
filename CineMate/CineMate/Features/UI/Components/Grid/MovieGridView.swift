@@ -30,13 +30,13 @@ struct MovieGridView: View {
 }
 
 #Preview("Default Grid") {
-    MovieGridView.previewDefault
+    MovieGridView.previewDefault.withPreviewNavigation()
 }
 
 #Preview("Long Grid") {
-    MovieGridView.previewLongList
+    MovieGridView.previewLongList.withPreviewNavigation()
 }
 
 #Preview("Empty Grid") {
-    MovieGridView.previewEmpty
+    MovieGridView.previewEmpty.withPreviewNavigation()
 }

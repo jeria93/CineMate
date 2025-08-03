@@ -11,39 +11,34 @@ struct DiscoverView: View {
     @ObservedObject var viewModel: DiscoverViewModel
 
     var body: some View {
-        DiscoverContentView(viewModel: viewModel)
-            .navigationTitle("Discover")
-            .task {
-                await viewModel.fetchAllSections()
+        Group {
+            if viewModel.isLoading {
+                LoadingView(title: "Loading…")
+            } else if let err = viewModel.error {
+                ErrorMessageView(
+                    title: "Something went wrong",
+                    message: err.localizedDescription
+                )
+            } else if viewModel.allSectionsAreEmpty {
+                EmptyStateView(
+                    systemImage: "film",
+                    title: "No movies to show.",
+                    message: "There’s no content here at the moment."
+                )
+            } else {
+                DiscoverContentView(viewModel: viewModel)
             }
-            .refreshable {
-                await viewModel.fetchAllSections()
-            }
-            .overlay {
-                Group {
-                    if viewModel.isLoading {
-                        LoadingView(title: "Loading…")
-                    } else if let error = viewModel.error {
-                        ErrorMessageView(
-                            title: "Failed to Load",
-                            message: error.localizedDescription,
-                            onRetry: {
-                                Task { await viewModel.fetchAllSections() }
-                            }
-                        )
-                    } else if viewModel.allSectionsAreEmpty {
-                        EmptyStateView(
-                            systemImage: "film",
-                            title: "No Movies",
-                            message: "We couldn't find any movies for your filters"
-                        )
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.black.opacity(0.25))
-            }
+        }
+        .navigationTitle("Discover")
+        .task {
+            await viewModel.fetchAllSections()
+        }
+        .refreshable {
+            await viewModel.fetchAllSections()
+        }
     }
 }
+
 #Preview("Default") {
     DiscoverView.previewDefault
 }
