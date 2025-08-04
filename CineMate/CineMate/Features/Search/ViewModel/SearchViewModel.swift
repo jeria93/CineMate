@@ -91,6 +91,13 @@ private extension SearchViewModel {
 
     /// Core search logic with cache + in-flight protection.
     func executeSearch(for trimmed: String) async {
+        // 0. Skip network calls entirely in Xcode Previews
+        if ProcessInfo.processInfo.isPreview {
+            results = SharedPreviewMovies.moviesList
+            error = nil
+            return
+        }
+
         // 1. Return cached results if available
         if let cached = cache[trimmed] {
             results = cached
