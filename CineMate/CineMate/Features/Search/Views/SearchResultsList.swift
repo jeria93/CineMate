@@ -19,9 +19,9 @@ struct SearchResultsList: View {
 }
 
 #Preview("Default") {
-    SearchResultsList.previewDefault
+    SearchResultsList.previewDefault.withPreviewNavigation()
 }
 
 #Preview("Empty") {
-    SearchResultsList.previewEmpty
+    SearchResultsList.previewEmpty.withPreviewNavigation()
 }

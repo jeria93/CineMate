@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Provides SwiftUI previews for all main SearchView states.
+/// Uses `PreviewFactory` for consistent mock data and layout testing.
 extension SearchView {
 
     /// Preview showing a list of search results for a valid query.

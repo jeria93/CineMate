@@ -8,11 +8,7 @@
 import SwiftUI
 
 struct SearchView: View {
-    @ObservedObject private var viewModel: SearchViewModel
-
-    init(viewModel: SearchViewModel) {
-        self.viewModel = viewModel
-    }
+    @ObservedObject var viewModel: SearchViewModel
 
     var body: some View {
             VStack {
@@ -40,11 +36,11 @@ struct SearchView: View {
 }
 
 #Preview("Prompt") {
-    SearchView.previewPrompt
+    SearchView.previewPrompt.withPreviewNavigation()
 }
 
 #Preview("With Results") {
-    SearchView.previewDefault
+    SearchView.previewDefault.withPreviewNavigation()
 }
 
 #Preview("Empty State") {
