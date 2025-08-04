@@ -12,6 +12,7 @@ struct MoviePosterView: View {
 
     @State private var isImageLoaded = false
     @State private var isTapped = false
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         AsyncImage(url: movie.posterSmallURL) { phase in
@@ -32,6 +33,7 @@ struct MoviePosterView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             isTapped = false
                         }
+                        navigator.goToMovie(id: movie.id)
                     }
                     .onAppear {
                         isImageLoaded = true
@@ -63,9 +65,9 @@ struct MoviePosterView: View {
 }
 
 #Preview("Default") {
-    MoviePosterView.previewDefault
+    MoviePosterView.previewDefault.withPreviewNavigation()
 }
 
 #Preview("Missing Poster") {
-    MoviePosterView.previewMissingPoster
+    MoviePosterView.previewMissingPoster.withPreviewNavigation()
 }

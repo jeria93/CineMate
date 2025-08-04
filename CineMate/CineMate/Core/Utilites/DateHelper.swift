@@ -40,4 +40,12 @@ enum DateHelper {
         let year = Calendar.current.component(.year, from: Date())
         return "\(year)"
     }
+
+    /// Returns today's date as a string in "yyyy-MM-dd" format (TMDB compatible).
+    static func todayString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter.string(from: Date())
+    }
 }

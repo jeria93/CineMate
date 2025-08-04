@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RelatedMovieCardView: View {
     let movie: Movie
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -25,9 +26,12 @@ struct RelatedMovieCardView: View {
                 .lineLimit(1)
         }
         .frame(width: 100)
+        .onTapGesture {
+            navigator.goToMovie(id: movie.id)
+        }
     }
 }
 
 #Preview {
-    RelatedMovieCardView.preview
+    RelatedMovieCardView.preview.withPreviewNavigation()
 }

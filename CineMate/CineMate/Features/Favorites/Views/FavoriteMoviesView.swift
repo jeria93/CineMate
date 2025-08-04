@@ -8,20 +8,16 @@
 import SwiftUI
 
 struct FavoriteMoviesView: View {
-    @StateObject private var viewModel: FavoriteMoviesViewModel
-    
-    init(viewModel: FavoriteMoviesViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
+    @ObservedObject var viewModel: FavoriteMoviesViewModel
+
     
     var body: some View {
-        NavigationStack {
             List(viewModel.favoriteMovies) { movies in
                 MovieRowView(movie: movies)
                 
             }
             .navigationTitle("Favorites")
-        }
+
     }
 }
 

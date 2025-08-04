@@ -7,13 +7,20 @@
 
 import Foundation
 
-/// ViewModel responsible for managing search logic and state.
-/// Validates user input, performs debounced searches via a repository,
-/// and updates UI-related properties for display in the view.
+/// ViewModel that drives the Search screen.
+///
+/// Responsibilities:
+/// - Validates and debounces the user’s query to avoid spamming the API.
+/// - Caches results in-memory per trimmed query to save network calls.
+/// - Uses an “in-flight” guard to prevent duplicate requests for the same query while one is running.
+/// - Publishes UI state (loading, errors, validation messages) for SwiftUI views.
+///
+/// Threading:
+/// - Annotated with `@MainActor` to keep all published state mutations on the main thread.
 @MainActor
 final class SearchViewModel: ObservableObject {
 
-    // MARK: - Published Properties
+    // MARK: - Published
     @Published var query: String = "" {
         didSet { debounceSearch() }
     }
@@ -25,31 +32,25 @@ final class SearchViewModel: ObservableObject {
     @Published var trimmedQuery: String = ""
 
     // MARK: - Dependencies
-    private let repository: MovieProtocol
+    internal let repository: MovieProtocol
     private var debounceTask: Task<Void, Never>?
 
-    // MARK: - Init
+    // MARK: - Cache & In-flight
+    private var cache: [String: [Movie]] = [:]
+    private var inFlight: Set<String> = []
 
-    /// Creates a new `SearchViewModel` with an optional repository.
-    /// - Parameter repository: A movie repository, defaults to the live implementation.
+    /// Max number of cached queries before old ones are removed
+    private let maxCacheSize = 20
+
+    // MARK: - Init
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
     }
 
-    // MARK: - Search Trigger
+    // MARK: - Public API
 
-    /// Debounces search input to avoid frequent requests.
-    /// Waits 0.4 seconds after the user stops typing before validating and searching.
-    private func debounceSearch() {
-        debounceTask?.cancel()
-        debounceTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 400_000_000)
-            await self?.handleQuery()
-        }
-    }
-
-    /// Manually triggers a search with the given query (e.g., on return key).
-    /// - Parameter query: The query to search for.
+    /// Public entry point if you want to bypass debounce and run a search immediately.
+    /// - Parameter query: Raw user input.
     func search(_ query: String) async {
         let result = SearchValidator.validate(query)
         guard result.isValid, let trimmed = result.trimmed else { return }
@@ -57,55 +58,103 @@ final class SearchViewModel: ObservableObject {
         lastValidQuery = trimmed
         await executeSearch(for: trimmed)
     }
+}
 
-    // MARK: - Logic Helpers
+// MARK: - Private Helpers
+private extension SearchViewModel {
 
-    /// Validates the current query and initiates a search if valid.
-    private func handleQuery() async {
+    /// Cancels any ongoing debounce task and starts a new one.
+    /// Waits 0.4s before validating and possibly executing the search.
+    func debounceSearch() {
+        debounceTask?.cancel()
+        debounceTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            await self?.handleQuery()
+        }
+    }
+
+    /// Validates the current `query`, updates validation UI, and triggers the search if valid.
+    func handleQuery() async {
         let result = SearchValidator.validate(query)
 
         trimmedQuery = result.trimmed ?? ""
         validationMessage = result.message
 
-        if let trimmed = result.trimmed, result.isValid {
-            await executeSearch(for: trimmed)
-        } else {
+        guard let trimmed = result.trimmed, result.isValid else {
             resetSearchState()
+            return
         }
+
+        lastValidQuery = trimmed
+        await executeSearch(for: trimmed)
     }
 
-    /// Performs the actual search using the repository and updates state accordingly.
-    /// - Parameter trimmed: A validated and trimmed query string.
-    private func executeSearch(for trimmed: String) async {
+    /// Core search logic with cache + in-flight protection.
+    func executeSearch(for trimmed: String) async {
+        // 0. Skip network calls entirely in Xcode Previews
+        if ProcessInfo.processInfo.isPreview {
+            results = SharedPreviewMovies.moviesList
+            error = nil
+            return
+        }
+
+        // 1. Return cached results if available
+        if let cached = cache[trimmed] {
+            results = cached
+            error = cached.isEmpty ? .noResults : nil
+            return
+        }
+
+        // 2. Prevent duplicate in-flight requests
+        guard !inFlight.contains(trimmed) else { return }
+        inFlight.insert(trimmed)
+
         setLoading(true)
 
         do {
+            // 3. Fetch from repository
             let fetchedResults = try await repository.searchMovies(query: trimmed)
+
+            // 4. Insert into cache and trim if necessary
+            cache[trimmed] = fetchedResults
+            trimCacheIfNeeded()
+
+            // 5. Update published results
             results = fetchedResults
-            if fetchedResults.isEmpty {
-                error = .noResults
-            }
+            error = fetchedResults.isEmpty ? .noResults : nil
         } catch {
-            self.error = .networkFailure
             results = []
+            self.error = .networkFailure
         }
 
+        // 6. Remove from in-flight and stop loading
+        inFlight.remove(trimmed)
         setLoading(false)
     }
 
-    /// Sets loading state and clears previous error if applicable.
-    /// - Parameter loading: Whether the search is loading or not.
-    private func setLoading(_ loading: Bool) {
+    /// Toggles loading state and clears old errors when starting a new request.
+    func setLoading(_ loading: Bool) {
         isLoading = loading
         if loading {
             error = nil
         }
     }
 
-    /// Resets the state of the search (e.g., when validation fails).
-    private func resetSearchState() {
+    /// Clears visible results & states when the query is invalid.
+    func resetSearchState() {
         results = []
         error = nil
         isLoading = false
+    }
+
+    /// Ensures the cache does not grow beyond `maxCacheSize`.
+    func trimCacheIfNeeded() {
+        if cache.count > maxCacheSize {
+            let excess = cache.count - maxCacheSize
+            let keysToRemove = cache.keys.prefix(excess)
+            for key in keysToRemove {
+                cache.removeValue(forKey: key)
+            }
+        }
     }
 }

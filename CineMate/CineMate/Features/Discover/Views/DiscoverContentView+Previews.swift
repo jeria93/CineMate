@@ -14,10 +14,13 @@ extension DiscoverContentView {
     /// Preview showing all content sections populated.
     static var previewDefault: some View {
         DiscoverContentView(viewModel: PreviewFactory.discoverViewModel())
+            .withPreviewNavigation()
     }
 
     /// Preview showing only the "Horror" section.
     static var previewHorrorOnly: some View {
         DiscoverContentView(viewModel: PreviewFactory.horrorOnlyDiscoverViewModel())
+            .withPreviewNavigation()
     }
+
 }

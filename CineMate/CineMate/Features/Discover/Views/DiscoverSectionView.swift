@@ -10,15 +10,16 @@ import SwiftUI
 struct DiscoverSectionView: View {
     let title: String
     let movies: [Movie]
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            NavigationLink(destination: makeSeeAllDestination()) {
-                Text(title)
-                    .font(.title2)
-                    .bold()
-                    .padding(.horizontal)
-            }
+            Text(title)
+                .font(.title2.bold())
+                .padding(.horizontal)
+                .onTapGesture {
+                    navigator.goToSeeAllMovies(title: title, filter: DiscoverFilterProvider.filter(for: title))
+                }
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
@@ -31,29 +32,20 @@ struct DiscoverSectionView: View {
         }
         .padding(.top)
     }
-
-    private func makeSeeAllDestination() -> some View {
-        let filter = DiscoverFilterProvider.filter(for: title)
-        let viewModel = SeeAllMoviesViewModel(
-            repository: MovieRepository(),
-            filter: filter
-        )
-        return SeeAllMoviesView(title: title, viewModel: viewModel)
-    }
 }
 
 #Preview("Default") {
-    DiscoverSectionView.previewDefault
+    DiscoverSectionView.previewDefault.withPreviewNavigation()
 }
 
 #Preview("Empty") {
-    DiscoverSectionView.previewEmpty
+    DiscoverSectionView.previewEmpty.withPreviewNavigation()
 }
 
 #Preview("One Movie") {
-    DiscoverSectionView.previewOneMovie
+    DiscoverSectionView.previewOneMovie.withPreviewNavigation()
 }
 
 #Preview("No Posters") {
-    DiscoverSectionView.previewNoPosters
+    DiscoverSectionView.previewNoPosters.withPreviewNavigation()
 }

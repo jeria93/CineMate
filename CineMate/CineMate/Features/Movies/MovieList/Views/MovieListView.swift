@@ -8,32 +8,36 @@
 import SwiftUI
 
 struct MovieListView: View {
-    @StateObject private var viewModel: MovieViewModel
-    @StateObject private var castViewModel: CastViewModel
-
-    init(viewModel: MovieViewModel, castViewModel: CastViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-        _castViewModel = StateObject(wrappedValue: castViewModel)
-    }
+    @ObservedObject var viewModel: MovieViewModel
+    @ObservedObject var castViewModel: CastViewModel
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
-        NavigationStack {
-            VStack {
-                MovieCategoryPicker(selectedCategory: $viewModel.selectedCategory)
+        VStack {
+            MovieCategoryPicker(selectedCategory: $viewModel.selectedCategory)
 
-                MovieListContentView(
-                    viewModel: viewModel,
-                    castViewModel: castViewModel
-                )
-            }
-            .navigationTitle(viewModel.selectedCategory.displayName)
-            .task {
-                await viewModel.loadMovies()
-            }
+            MovieListContentView(
+                viewModel: viewModel,
+                castViewModel: castViewModel,
+                onSelect: { movie in
+                    viewModel.cacheStub(movie)
+                    navigator.goToMovie(id: movie.id)
+                }
+            )
+        }
+        .navigationTitle(viewModel.selectedCategory.displayName)
+        .task(id: viewModel.selectedCategory) {
+            await viewModel.loadMovies()
+        }
+        .refreshable {
+            await viewModel.loadMovies()
         }
     }
 }
 
-#Preview("MovieList Default") {
-    MovieListView.previewWithMovies
+#if DEBUG
+// MARK: - Previews
+#Preview("MovieList - Default") {
+    MovieListView.previewWithMovies.withPreviewNavigation()
 }
+#endif

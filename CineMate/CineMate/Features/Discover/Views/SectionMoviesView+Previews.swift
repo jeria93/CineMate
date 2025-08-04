@@ -22,32 +22,32 @@ extension SeeAllMoviesView {
     static var previewDefault: some View {
         PreviewFactory.resetAllPreviewData()
         return SeeAllMoviesView(
-            title: "Popular Movies",
-            viewModel: .preview
+            viewModel: .preview,
+            title: "Popular Movies"
         )
     }
 
     /// Simulates a loading state with spinner
     static var previewLoading: some View {
         SeeAllMoviesView(
-            title: "Loading...",
-            viewModel: .loading
+            viewModel: .loading,
+            title: "Loading…"
         )
     }
 
     /// Simulates an error state with retry button
     static var previewError: some View {
         SeeAllMoviesView(
-            title: "Error",
-            viewModel: .error
+            viewModel: .error,
+            title: "Error"
         )
     }
 
     /// Simulates an empty state with no movies returned
     static var previewEmpty: some View {
         SeeAllMoviesView(
-            title: "Empty",
-            viewModel: .empty
+            viewModel: .empty,
+            title: "Empty"
         )
     }
 }

@@ -12,6 +12,7 @@ struct DiscoverMovieRow: View {
 
     @State private var isImageLoaded = false
     @State private var isTapped = false
+    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -33,6 +34,7 @@ struct DiscoverMovieRow: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                 isTapped = false
                             }
+                            navigator.goToMovie(id: movie.id)
                         }
                         .onAppear {
                             isImageLoaded = true
@@ -67,9 +69,9 @@ struct DiscoverMovieRow: View {
 }
 
 #Preview("With Poster") {
-    DiscoverMovieRow.previewPoster
+    DiscoverMovieRow.previewPoster.withPreviewNavigation()
 }
 
 #Preview("No Poster") {
-    DiscoverMovieRow.previewNoPoster
+    DiscoverMovieRow.previewNoPoster.withPreviewNavigation()
 }

@@ -10,32 +10,26 @@ import SwiftUI
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
     @ObservedObject var castViewModel: CastViewModel
+    let onSelect: (Movie) -> Void
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
-                ProgressView("Loading movies...")
-            } else if let error = viewModel.errorMessage {
-                VStack {
-                    Text("Error: \(error)")
-                    Button("Retry") {
-                        Task {
-                            await viewModel.loadMovies()
-                        }
-                    }
+            switch (viewModel.isLoading, viewModel.errorMessage) {
+            case (true, _):
+                LoadingView(title: "Loading movies…")
+
+            case (false, let error?):
+                ErrorMessageView(title: "Failed", message: error) {
+                    Task { await viewModel.loadMovies() }
                 }
-            } else {
+
+            default:
                 List(viewModel.movies) { movie in
-                    NavigationLink {
-                        MovieDetailView(
-                            movie: movie,
-                            viewModel: viewModel,
-                            castViewModel: castViewModel
-                        )
-                    } label: {
-                        MovieRowView(movie: movie)
-                    }
+                    MovieRowView(movie: movie)
+                        .contentShape(Rectangle())
+                        .onTapGesture { onSelect(movie) }
                 }
+                .listStyle(.plain)
             }
         }
     }

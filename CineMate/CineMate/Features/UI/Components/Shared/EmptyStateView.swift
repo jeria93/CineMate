@@ -34,10 +34,8 @@ struct EmptyStateView: View {
                     .padding(.top, 8)
             }
         }
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .padding()
+        .background(.ultraThinMaterial)
     }
 }
 

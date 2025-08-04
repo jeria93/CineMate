@@ -8,11 +8,7 @@
 import SwiftUI
 
 struct AccountView: View {
-    @StateObject private var viewModel: AccountViewModel
-
-    init(viewModel: AccountViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
+    @ObservedObject var viewModel: AccountViewModel
 
     var body: some View {
         Text("AccountView")

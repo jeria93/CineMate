@@ -14,9 +14,10 @@ extension MovieDetailView {
         PreviewID.reset()
 
         return MovieDetailView(
-            movie: SharedPreviewMovies.starWars,
+            movieId: SharedPreviewMovies.starWars.id,
             viewModel: PreviewFactory.movieDetailViewModelWithData(),
             castViewModel: PreviewFactory.castViewModel()
         )
+        .withPreviewNavigation()
     }
 }

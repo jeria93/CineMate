@@ -15,8 +15,7 @@ struct RelatedMoviesSection: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("You might also like")
-                .font(.title2)
-                .bold()
+                .font(.title2.bold())
                 .padding(.horizontal)
 
             if movies.isEmpty {
@@ -32,15 +31,7 @@ struct RelatedMoviesSection: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(movies) { movie in
-                            NavigationLink {
-                                MovieDetailView(
-                                    movie: movie,
-                                    viewModel: movieViewModel,
-                                    castViewModel: castViewModel
-                                )
-                            } label: {
-                                RelatedMovieCardView(movie: movie)
-                            }
+                            RelatedMovieCardView(movie: movie)
                         }
                     }
                     .padding(.horizontal)
@@ -51,17 +42,17 @@ struct RelatedMoviesSection: View {
 }
 
 #Preview("With Mock Movies") {
-    RelatedMoviesSection.previewWithMovies
+    RelatedMoviesSection.previewWithMovies.withPreviewNavigation()
 }
 
 #Preview("Empty State") {
-    RelatedMoviesSection.previewEmpty
+    RelatedMoviesSection.previewEmpty.withPreviewNavigation()
 }
 
 #Preview("Single Movie") {
-    RelatedMoviesSection.previewSingleMovie
+    RelatedMoviesSection.previewSingleMovie.withPreviewNavigation()
 }
 
 #Preview("Many Movies") {
-    RelatedMoviesSection.previewManyMovies
+    RelatedMoviesSection.previewManyMovies.withPreviewNavigation()
 }

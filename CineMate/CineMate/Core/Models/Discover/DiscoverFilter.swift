@@ -8,7 +8,7 @@
 import Foundation
 
 /// A filter model for building query parameters used with TMDB's `/discover/movie` endpoint.
-struct DiscoverFilter: Equatable {
+struct DiscoverFilter: Equatable, Hashable {
     var sortOption: SortOption = .popularityDesc
     var withGenres: [Int] = []
     var releaseYear: String? = nil

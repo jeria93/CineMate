@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DirectorView: View {
     let director: CrewMember?
-    let repository: MovieProtocol
+    @EnvironmentObject private var nav: AppNavigator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -17,25 +17,13 @@ struct DirectorView: View {
                 .font(.headline)
 
             if let director {
-                NavigationLink {
-                    CastMemberDetailView(
-                        member: CastMember(
-                            id: director.id,
-                            name: director.name,
-                            character: "Director",
-                            profilePath: director.profilePath
-                        ),
-                        viewModel: PersonViewModel(repository: repository)
-                    )
-                } label: {
-                    HStack(spacing: 12) {
-                        DirectorImageView(url: director.profileURL)
-
-                        Text(director.name)
-                            .font(.subheadline)
-                            .bold()
-                    }
+                HStack(spacing: 12) {
+                    DirectorImageView(url: director.profileURL)
+                    Text(director.name)
+                        .font(.subheadline.bold())
                 }
+                .contentShape(Rectangle())
+                .onTapGesture { nav.goToCrew(id: director.id) }
             } else {
                 DirectorUnavailableView()
             }
@@ -44,13 +32,13 @@ struct DirectorView: View {
 }
 
 #Preview("Director – Nolan") {
-    DirectorView.previewWithDirector
+    DirectorView.previewWithDirector.withPreviewNavigation()
 }
 
 #Preview("Director – No Director") {
-    DirectorView.previewNoDirector
+    DirectorView.previewNoDirector.withPreviewNavigation()
 }
 
 #Preview("Director – Partial") {
-    DirectorView.previewPartialDirector
+    DirectorView.previewPartialDirector.withPreviewNavigation()
 }

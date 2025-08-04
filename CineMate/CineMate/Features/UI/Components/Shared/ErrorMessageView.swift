@@ -32,13 +32,26 @@ struct ErrorMessageView: View {
                     .padding(.top, 8)
             }
         }
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .padding()
+        .background(.ultraThinMaterial)
+        .ignoresSafeArea()
     }
 }
 
+#Preview("Default Error") {
+    ErrorMessageView(
+        title: "Oops! Something went wrong.",
+        message: "Unable to connect to the server."
+    )
+}
+
+#Preview("Error with Retry") {
+    ErrorMessageView(
+        title: "Failed to Load",
+        message: "Please check your internet connection.",
+        onRetry: { print("Retry tapped!") }
+    )
+}
 #Preview("Default Error") {
     ErrorMessageView(
         title: "Oops! Something went wrong.",

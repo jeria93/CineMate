@@ -21,9 +21,8 @@ struct LoadingView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .padding()
+        .background(.ultraThinMaterial)
+        .ignoresSafeArea()
     }
 }
 

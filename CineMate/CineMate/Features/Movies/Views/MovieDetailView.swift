@@ -8,73 +8,101 @@
 import SwiftUI
 
 struct MovieDetailView: View {
-    let movie: Movie
-    @StateObject private var viewModel: MovieViewModel
-    @StateObject private var castViewModel: CastViewModel
+    let movieId: Int
+    @ObservedObject var viewModel: MovieViewModel
+    @ObservedObject var castViewModel: CastViewModel
 
-    init(movie: Movie, viewModel: MovieViewModel, castViewModel: CastViewModel) {
-        self.movie = movie
-        _viewModel = StateObject(wrappedValue: viewModel)
-        _castViewModel = StateObject(wrappedValue: castViewModel)
-    }
+    private var movie: Movie? { viewModel.movie(by: movieId) }
 
     var body: some View {
-        ScrollView {
-            PosterImageView(
-                url: movie.posterLargeURL,
-                title: movie.title,
-                width: 300,
-                height: 450
-            )
-            .overlay(alignment: .topTrailing) {
-                FavoriteButton(
-                    isFavorite: viewModel.isFavorite(movie),
-                    toggleAction: { viewModel.toggleFavorite(for: movie) }
-                )
-                .padding()
-            }
-            
-            VStack(alignment: .leading, spacing: 16) {
-                MovieDetailInfoView(movie: movie, viewModel: viewModel)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .center, spacing: 16) {
+                    Color.clear.frame(height: 1).id("TOP")
 
-                if let credits = viewModel.movieCredits {
-                    MovieCreditsView(credits: credits)
-                    if let director = credits.crew.first(where: { $0.job == "Director" }) {
-                        DirectorView(director: director, repository: viewModel.repository)
+                    if let movie {
+                        PosterImageView(
+                            url: movie.posterLargeURL,
+                            title: movie.title,
+                            width: 300,
+                            height: 450
+                        )
+                        .overlay(alignment: .topTrailing) {
+                            FavoriteButton(
+                                isFavorite: viewModel.isFavorite(movie),
+                                toggleAction: { viewModel.toggleFavorite(for: movie) }
+                            )
+                            .padding()
+                        }
+
+                        MovieDetailInfoView(movie: movie, viewModel: viewModel)
+                        MovieDetailActionBarView(movie: movie)
+                    } else if viewModel.isLoadingDetail {
+                        LoadingView(title: "Loading movie…")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .padding(.top, 80)
+                    } else {
+                        ErrorMessageView(
+                            title: "Failed to load movie",
+                            message: "Something went wrong or no data was found.",
+                            onRetry: {
+                                Task { await viewModel.loadMovieDetails(for: movieId) }
+                            }
+                        )
+                        .padding(.top, 80)
                     }
-                    CastCarouselView(cast: credits.cast, repository: viewModel.repository)
-                }
 
-                MovieDetailActionBarView(movie: movie)
+                    if let credits = viewModel.movieCredits {
+                        CreditsSection(credits: credits)
+                    }
 
-                if let recommended = viewModel.recommendedMovies {
-                    RelatedMoviesSection(
-                        movies: recommended,
-                        movieViewModel: viewModel,
-                        castViewModel: castViewModel
-                    )
-                    .transition(.opacity)
-                    .animation(.easeInOut(duration: 0.3), value: recommended)
+                    if let recs = viewModel.recommendedMovies, !recs.isEmpty {
+                        RelatedMoviesSection(
+                            movies: recs,
+                            movieViewModel: viewModel,
+                            castViewModel: castViewModel
+                        )
+                    }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
+            .onAppear {
+                proxy.scrollTo("TOP", anchor: .top)
+                print("[MovieDetailView] appeared for id:", movieId)
+            }
+            .onChange(of: movieId) { proxy.scrollTo("TOP", anchor: .top) }
         }
-        .task { await loadData() }
-        .navigationTitle(movie.title)
+        .task(id: movieId) {
+            await viewModel.loadMovieDetails(for: movieId)
+        }
+        .navigationTitle(movie?.title ?? "Loading…")
         .navigationBarTitleDisplayMode(.inline)
+        .overlay {
+            if viewModel.isLoadingDetail && movie != nil {
+                LoadingView(title: "Loading details…")
+                    .scaleEffect(1.2)
+            }
+        }
+    }
+}
+
+// Reuse existing small component
+private struct CreditsSection: View {
+    let credits: MovieCredits
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            MovieCreditsView(credits: credits)
+
+            if let director = credits.crew.first(where: { $0.job == "Director" }) {
+                DirectorView(director: director)
+            }
+
+            CastCarouselView(cast: credits.cast)
+        }
     }
 }
 
 #Preview("Star Wars Detail") {
-    MovieDetailView.previewDefault
-}
-
-private extension MovieDetailView {
-    private func loadData() async {
-        await viewModel.loadMovieCredits(for: movie.id)
-        await viewModel.loadMovieVideos(for: movie.id)
-        await viewModel.fetchRecommendedMovies(for: movie.id)
-        await viewModel.loadMovieDetails(for: movie.id)
-        await viewModel.loadWatchProviders(for: movie.id)
-    }
+    MovieDetailView.previewDefault.withPreviewNavigation()
 }

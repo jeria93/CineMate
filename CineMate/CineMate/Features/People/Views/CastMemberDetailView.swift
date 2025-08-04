@@ -1,43 +1,45 @@
+//
+//  CastMemberDetailView.swift
+//  CineMate
+//
+//  Created by Nicholas Samuelsson Jeria on 2025-06-22.
+//
+
 import SwiftUI
 
 struct CastMemberDetailView: View {
     let member: CastMember
-    @StateObject private var viewModel: PersonViewModel
-
-    init(member: CastMember, viewModel: PersonViewModel) {
-        self.member = member
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
-
+    @ObservedObject var viewModel: PersonViewModel
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                CastMemberImageView(url: member.profileURL)
-                    .padding(.top, 16)
-
+                CastMemberImageView(
+                    url: viewModel.personDetail?.profileURL ?? member.profileURL
+                )
+                .padding(.top, 16)
+                
                 HStack(spacing: 12) {
-                    Text(member.name)
+                    Text(viewModel.personDetail?.name ?? member.name)
                         .font(.title)
                         .bold()
-
+                    
                     FavoriteButton(
                         isFavorite: viewModel.isFavoriteCast(id: member.id),
-                        toggleAction: {
-                            viewModel.toggleFavoriteCast(id: member.id)
-                        }
+                        toggleAction: { viewModel.toggleFavoriteCast(id: member.id) }
                     )
                 }
-
-                if let role = member.character {
+                
+                if let role = viewModel.personDetail?.knownForDepartment ?? member.character {
                     Text("Role: \(role)")
                         .font(.headline)
                         .foregroundStyle(.secondary)
                 }
-
+                
                 if let detail = viewModel.personDetail {
                     SectionHeader(title: "Biography")
                     PersonInfoView(detail: detail)
-
+                    
                     SectionHeader(title: "Links")
                     PersonLinksView(
                         imdbURL: detail.imdbURL,
@@ -46,24 +48,20 @@ struct CastMemberDetailView: View {
                         twitterURL: viewModel.personExternalIDs?.twitterURL,
                         facebookURL: viewModel.personExternalIDs?.facebookURL
                     )
+                    
                     SectionHeader(title: "Details")
                     PersonMetaInfoView(detail: detail)
                 }
-
-                // "Most Iconic Roles" (Known For)
+                
                 if !viewModel.knownForMovies.isEmpty {
-                    KnownForScrollView(movies: viewModel.knownForMovies)
+                    KnownForScrollView(movies: viewModel.knownForMovies, movieViewModel: nil)
                 }
-
+                
                 if !viewModel.personMovies.isEmpty {
                     SectionHeader(title: "Filmography")
                     HorizontalMoviesScrollView(filmography: viewModel.personMovies)
                 }
-
-                if viewModel.isLoading {
-                    ProgressView("Loading...")
-                }
-
+                
                 if let error = viewModel.errorMessage {
                     Text("Error: \(error)")
                         .foregroundStyle(.red)
@@ -72,20 +70,32 @@ struct CastMemberDetailView: View {
             .padding()
         }
         .navigationBarTitleDisplayMode(.inline)
-        .task { await loadData() }
+        .overlay {
+            if viewModel.isLoading {
+                LoadingView(title: "Loading…")
+                    .scaleEffect(1.3)
+                    .padding(32)
+                    .background(.ultraThinMaterial,
+                                in: RoundedRectangle(cornerRadius: 16))
+            }
+        }
+        .task(id: member.id) {
+            viewModel.resetForNewPerson()
+            
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask { await viewModel.loadPersonDetail(for: member.id) }
+                group.addTask { await viewModel.loadPersonMovieCredits(for: member.id) }
+            }
+        }
+        .onAppear {
+            print("[CastMemberDetailView] appeared for member id:", member.id)
+        }
+        .onDisappear {
+            viewModel.cancelOngoingTasks(for: member.id)
+        }
     }
 }
 
 #Preview("Default") {
     PreviewFactory.castMemberDetailView()
-}
-
-private extension CastMemberDetailView {
-    private func loadData() async {
-        debugPrint("Loading personId = \(member.id)")
-        await viewModel.loadPersonDetail(for: member.id)
-        await viewModel.loadPersonMovieCredits(for: member.id)
-        debugPrint("personDetail = \(String(describing: viewModel.personDetail))")
-        debugPrint("personMovies count = \(viewModel.personMovies.count)")
-    }
 }

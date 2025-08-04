@@ -17,7 +17,7 @@ struct HorizontalMoviesScrollView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(displayedMovies, id: \.uniqueKey) { movie in
-                        PersonMovieCardView(movie: movie)
+                        PersonMovieCardView(movie: movie, movieViewModel: nil)
                     }
                     
                     if !isExpanded && filmography.count > maxVisible {

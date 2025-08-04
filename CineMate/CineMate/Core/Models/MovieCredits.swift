@@ -17,7 +17,7 @@ struct MovieCredits: Codable {
 
 /// Represents an actor or actress in a movie's cast list.
 /// Part of: `MovieCredits.cast`
-struct CastMember: Codable, Identifiable {
+struct CastMember: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
     let character: String?
@@ -30,7 +30,7 @@ struct CastMember: Codable, Identifiable {
 
 /// Represents a crew member (director, writer etc.) in a movie's crew list.
 /// Part of: `MovieCredits.crew`
-struct CrewMember: Codable, Identifiable {
+struct CrewMember: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
     let job: String?

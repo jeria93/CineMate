@@ -1,85 +1,119 @@
 # CineMate
 
-**CineMate** is a SwiftUI-based iOS app that lets users browse, filter, and save movies using The Movie Database (**TMDB**) API.  
-Built with **MVVM architecture**, clean SwiftUI views, and a modular structure with previews, mock data, and secure API handling.  
-**Planned support for Google Sign-In via Firebase Authentication.**
+**CineMate** is a SwiftUI iOS app for browsing, filtering, and saving movies powered by The Movie Database (**TMDB**) API.  
+It emphasizes clean architecture, responsive UI iteration, and secure secret handling — all built with modern Swift concurrency, enum-based navigation, and feature-first modularity.
 
-> **Recommended setup:** Xcode **15.3** + iOS **17.4** (simulator or real device)
+**Key highlights:**  
+- MVVM with init-based dependency injection  
+- Enum-driven navigation (`AppRoute` / `AppNavigator`) with push/replace semantics for predictable routing  
+- Region-aware content & streaming availability  
+- Search with debounce, pagination, in-flight guard and caching  
+- Previews + mocks for offline UI development  
+- Secure API key management with sanitized history  
+
+> **Recommended setup:** Xcode **15.3+** and iOS **17.4** (deployment targets include 17.4 and 18.5)  
+> **Quick start:** clone → copy `Secrets.example.plist` to `Secrets.plist` → fill in TMDB credentials → Run in Xcode
 
 ---
 
 ## Prerequisites
 
-Before running the app, you need two local configuration files:
+You need the following local configuration files before running the app:
 
 | File | Location | Purpose |
 |------|----------|---------|
-| `Secrets.plist` | `CineMate/Secrets.plist` | Stores your TMDB API keys |
-| `GoogleService-Info.plist` | `CineMate/GoogleService-Info.plist` | Firebase configuration for Google Sign-In *(planned)* |
+| `Secrets.plist` | `CineMate/Secrets.plist` | TMDB API keys and tokens |
+| `GoogleService-Info.plist` | `CineMate/GoogleService-Info.plist` | Firebase config for Google Sign-In *(planned)* |
 
-> These files are **ignored in Git** to protect your secrets. Use the provided `Secrets.example.plist` as a reference.
+> These are **excluded from version control**. Use `Secrets.example.plist` as a template.
 
 ---
 
-## 🔐 Secrets & Security
+## Secrets & Security
 
-These files are listed in `.gitignore` and protected by `.github/CODEOWNERS`:
+The sensitive files below are ignored in Git and enforced via repository config (`.gitignore`, `.github/CODEOWNERS`):
 
-- `Secrets.plist`
-- `GoogleService-Info.plist` *(planned use with Firebase)*
+- `Secrets.plist`  
+- `GoogleService-Info.plist` *(future Firebase integration)*  
 
-This ensures sensitive data is never committed to GitHub, even by mistake.
-
-> 🛡️ **Note:** `Secrets.plist` was accidentally committed earlier in development.  
-> In **June 2025**, the full Git history was sanitized using [`git-filter-repo`](https://github.com/newren/git-filter-repo) to ensure no sensitive data remains in any commit.
-> Only `Secrets.example.plist` remains for safe local use.
+> **Historic note:** `Secrets.plist` was unintentionally committed early in development. In **June 2025** the Git history was rewritten/sanitized using `git-filter-repo` to purge any leaked secrets. Only `Secrets.example.plist` remains in history for safe reference.
 
 ---
 
 ## Project Setup (Xcode)
 
-### 1 — Add `Secrets.plist`
-
-1. Open project in **Xcode 15.3**
-2. In **CineMate** folder → right-click → **New File… → Property List**
-3. Name it `Secrets.plist`
-4. Open as **Source Code** and paste:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<plist version="1.0">
-<dict>
-<key>TMDB_API_KEY</key>
-<string>PUT-YOUR-API-KEY-HERE</string>
-<key>TMDB_BEARER_TOKEN</key>
-<string>PUT-YOUR-BEARER-TOKEN-HERE</string>
-</dict>
-</plist>
-```
-
-### 2 — Add `GoogleService-Info.plist` *(optional for now)*
-
-1. Go to **Firebase Console → Project Settings → General → Your Apps**
-2. Download the `GoogleService-Info.plist`
-3. Drag it into your **CineMate** folder in Xcode
-4. Tick **"Copy if needed"**
+1. Open the project in **Xcode 15.3** or later.  
+2. Add your `Secrets.plist`:
+   - Right-click on the **CineMate** folder → **New File… → Property List**  
+   - Name it `Secrets.plist`  
+   - Open as source and add keys (example below):
+     ```xml
+     <?xml version="1.0" encoding="UTF-8"?>
+     <plist version="1.0">
+     <dict>
+     <key>TMDB_API_KEY</key>
+     <string>PUT-YOUR-API-KEY-HERE</string>
+     <key>TMDB_BEARER_TOKEN</key>
+     <string>PUT-YOUR-BEARER-TOKEN-HERE</string>
+     </dict>
+     </plist>
+     ```
+3. *(Optional)* Add `GoogleService-Info.plist` from Firebase for planned Google Sign-In.  
+4. Select device/simulator (iOS 17.4+) and run (Cmd+R).
 
 ---
 
-## Architecture & Concepts
+## Architecture & Design
 
-- **MVVM** (Model–View–ViewModel)  
-- Simple **dependency injection** (init-based)  
-- **Repository pattern** for data abstraction  
-- Unified TMDB service layer  
-- Previews and mocks for fast UI iteration  
-- Secure API key handling with `Secrets.plist`  
-- **Feature-first** folder structure  
-- Principles: **SRP** and **SoC**  
-- SwiftUI-only, async/await  
-- Icons from [Simple Icons](https://simpleicons.org/)  
-- Planned: **Firebase Auth** (Google Sign-In)
+- **MVVM** with focused ViewModels driving SwiftUI views.  
+- **Init-based dependency injection** for testability and simplicity.  
+- **Repository pattern** abstracts the TMDB service layer and enables mocking.  
+- **Enum-driven navigation** (`AppRoute` / `AppNavigator`) with push/replace semantics for deterministic routing and programmatic control.  
+- **PreviewFactory + mocks** allow fast UI iteration without network dependency.  
+- **Caching & in-flight protection** prevents duplicate API calls, reduces UI flicker, and improves perceived performance.  
+- **Pagination / Infinite scroll** with explicit state (current page, total pages, loading guard) for long result sets.  
+- **Region-awareness** using `Locale.current.region?.identifier` for localized content and streaming providers.  
+- **Principles:** Single Responsibility (SRP), Separation of Concerns (SoC), minimal over-engineering.
 
+---
+
+## Caching & Network Efficiency
+
+Goals:
+- Avoid redundant network calls  
+- Prevent concurrent duplicate requests (in-flight guard)  
+- Provide instant responses for previously-searched queries  
+- Reduce UI blinking when reloading same data  
+- Bound memory usage via eviction/trimming  
+
+Implementation highlights:
+- In-memory cache keyed by normalized queries  
+- `Set` tracks active in-flight queries  
+- Pagination state per search for incremental loading  
+- Preview shortcut bypasses real network calls (`ProcessInfo.processInfo.isPreview`)
+
+---
+
+## Navigation
+
+Centralized, enum-based navigation using `AppRoute` and `AppNavigator`.  
+Supports:
+- Push and replace semantics  
+- Decoupled programmatic flows  
+- Deterministic behavior useful in testing  
+
+Example usage:
+```swift
+navigator.goTo(.movieDetail(id: movie.id), replace: false)
+```
+
+---
+
+## Previews & Mocks
+
+- `PreviewFactory` supplies ViewModels in different UI states (loading, error, empty, populated).  
+- `MockMovieRepository` and shared preview data enable offline rendering.  
+- Helpers like `.withPreviewNavigation()` simulate realistic navigation context in canvas.
 
 ---
 
@@ -96,129 +130,83 @@ This ensures sensitive data is never committed to GitHub, even by mistake.
 > **Watch CineMate in Action**  
 > [Click here to view full demo on Vimeo »](https://vimeo.com/1098629918)
 
-### Popular Movie List
-
-Displays a scrollable list of popular movies from TMDB.
+### Popular Movie List  
+Scrollable list of popular movies with smooth loading and preview.
 
 <img src="Assets/popular_list.gif" width="350" alt="Popular List Demo" />
 
----
-
-### Genre Filtering
-
-Users can toggle between Popular, Top Rated, Trending, and Upcoming.
+### Genre Filtering  
+Toggle between genres with instant feedback, cancellation, and in-memory caching.
 
 <img src="Assets/genre_filtering.gif" width="350" alt="Genre Filtering Demo" />
 
----
-
-### Movie Detail + Share
-
-Tap any movie to view trailer, details, and share it.
+### Movie Detail + Share  
+View trailers, details and share movie info seamlessly.
 
 <img src="Assets/movie_detail_share.gif" width="350" alt="Movie Detail & Share Demo" />
 
----
-
-### List Scroll Animation
-
-Smooth scrolling UI powered by SwiftUI and async/await.
+### List Scroll & Infinite Loading  
+Smooth infinite scroll and pagination for search and long collections.
 
 <img src="Assets/movie_list_scroll.gif" width="350" alt="Movie Scroll Demo" />
 
 ---
+
 ## Region-Based Streaming Support
 
-CineMate automatically detects the user's **current country** and adjusts:
+CineMate detects the user's **current country** and adjusts:
 
-- **Movie content** (Popular, Top Rated, Trending, Upcoming) based on region (🇸🇪 Sweden, 🇮🇳 India, 🇨🇱 Chile, etc.)
-- **Streaming services** (Netflix, HBO Max, Apple TV, etc.) available **specifically for that country**
+- **Movie content** (Popular, Top Rated, Trending, Upcoming) per region (🇸🇪 Sweden, 🇮🇳 India, 🇨🇱 Chile, etc.)  
+- **Streaming providers** (Netflix, HBO Max, Apple TV, etc.) available specifically for that region  
 
-This is handled automatically via:
-
+Handled automatically via:
 ```swift
 Locale.current.region?.identifier ?? "US"
 ```
 
-No user setup is needed — content is localized based on the device’s current region.
-
-> If you're in Chile, you’ll see what’s trending there.  
-> If you're in Sweden, you’ll get Swedish watch providers.
+> Content is localized without user configuration.  
 
 ---
 
-### Simulator & Debug Notes
+## Debug & Limitations
 
-> **Important:** The iOS Simulator may not reflect your real geographic location.
-
-- `Locale.current.region` in Simulator follows **macOS settings**, not simulator device settings.
-- You may not see expected content or watch providers when running on a Mac.
-- For accurate testing, run CineMate on a **real device**.
-
-Optional debugging tip:
-
-```swift
-#if DEBUG
-print("Using region: \(region)")
-#endif
-```
-
-You can even force a region in testing:
-
-```swift
-let region = "CL" // For testing Chile region
-```
+- **Simulator caveat:** `Locale.current.region` in Simulator follows macOS settings; real device gives more accurate region-based results.  
+- **Streaming deep links:** Most provider links are web URLs; direct app opening is not guaranteed. TMDB does not expose custom deep link schemes like `netflix://` in a reliable way.  
+- **Firebase / Google Sign-In:** Planned but not fully integrated yet.
 
 ---
 
-### Streaming App Limitations
+## Planned / Roadmap
 
-While CineMate lists platforms where movies are available (e.g., Netflix, Apple TV, HBO Max):
-
-- **Opening apps directly is not guaranteed**
-- Most providers only expose **web URLs** (like `https://www.netflix.com/watch/XYZ`)
-- Some platforms support **universal links** that redirect to the app *if installed* on a real device
-- This behavior **does not work in Simulator**
-
-> TMDB does **not** provide custom deep links like `netflix://` or `hbomax://`, so opening apps directly is limited.
-
-Still — CineMate gives users **clear visibility** into which platforms host each movie, filtered by region.
+- Firebase Authentication (Google Sign-In)  
+- Persistent or shared caching layer (beyond in-memory)  
+- Enhanced offline support  
+- Metrics / telemetry for cache hit/miss and latency analysis  
 
 ---
-
 
 ## External Resources
 
-- [TMDB – The Movie Database](https://www.themoviedb.org/)
-- [Firebase](https://firebase.google.com/)
-- [Simple Icons](https://simpleicons.org)
+- [TMDB – The Movie Database](https://www.themoviedb.org/)  
+- [Firebase](https://firebase.google.com/)  
+- [Simple Icons](https://simpleicons.org/)  
 
 ---
 
-## Portfolio Notes
+## Portfolio
 
-This app is part of my iOS development portfolio. It demonstrates:
+Demonstrates:
+- Real-world async API integration with TMDB  
+- Secure secret management and history sanitization  
+- Enum-based deterministic navigation  
+- State-driven SwiftUI with caching, debounce, pagination, and in-flight guards  
+- Preview-first development for fast iteration  
 
-- Real-world API handling (TMDB)
-- Secure API key management
-- UI/UX considerations with empty state views and genre filtering
-- Professional GitHub setup (CODEOWNERS, branch protection, secrets ignored)
-- Consideration for advanced patterns like Dependency Injection, SRP, and SoC
-- ⭐️ If you find CineMate useful or inspiring, feel free to leave a star on GitHub — every bit of support is appreciated.
-
-> This project is still evolving — new features and improvements are added continuously.
-
-> Want to follow my journey?
-**Connect on LinkedIn:** [nicholas-samuelsson-jeria](https://www.linkedin.com/in/nicholas-samuelsson-jeria-69778391)
-
-> **Watch CineMate in Action**  
-> [Click here to view full demo on Vimeo »](https://vimeo.com/1098629918)
+> Star the repo if you find it useful or inspiring.
 
 ---
 
 ## Folder Structure
-
-The CineMate project follows a modular architecture with feature-based separation, MVVM, and reusable components.
 
 ```
 CineMate/
@@ -248,20 +236,20 @@ CineMate/
 │   └── Secrets/
 └── README.md
 ```
+
 ---
 
-## 🔐 Google Sign-In Overview *(planned)*
+## Google Sign-In Overview *(planned)*
 
-> Support for Firebase Authentication is in progress.  
-> Below is a code example showing how sign-in will work:
+> Firebase Authentication integration example:
 
 ```swift
 let credential = GoogleAuthProvider.credential(
-withIDToken: idToken,
-accessToken: accessToken
+    withIDToken: idToken,
+    accessToken: accessToken
 )
 Auth.auth().signIn(with: credential) { result, error in
-// Signed in to Firebase
+    // Signed in to Firebase
 }
 ```
 

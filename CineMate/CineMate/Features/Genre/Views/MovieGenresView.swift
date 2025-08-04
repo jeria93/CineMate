@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct MovieGenresView: View {
-    let genres: [String]
-    
+    let genres: [Genre]
+    @EnvironmentObject private var navigator: AppNavigator
+
     var body: some View {
         if genres.isEmpty {
             Label("Genres not available", systemImage: "questionmark.app.dashed")
@@ -17,39 +18,49 @@ struct MovieGenresView: View {
                 .foregroundColor(.secondary)
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(genres, id: \.self) { genre in
-                        NavigationLink(destination: GenreDetailView(genreName: genre)) {
-                            Text(genre)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.accentColor.opacity(0.2))
-                                .clipShape(Capsule())
-                        }
+                HStack(spacing: 10) {
+                    ForEach(genres) { genre in
+                        Text(genre.name)
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(Color.accentColor.opacity(0.12))
+                            )
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+                            )
+                            .contentShape(Capsule())
+                            .onTapGesture {
+                                navigator.goToGenre(genre.name)
+//                                Byt ut till ChipView?
+                            }
                     }
                 }
+                .padding(.horizontal, 4)
             }
         }
     }
 }
 
 #Preview("With Genres") {
-    MovieGenresView.previewGenres
+    MovieGenresView.previewGenres.withPreviewNavigation()
 }
 
 #Preview("Empty Genres") {
-    MovieGenresView.previewEmpty
+    MovieGenresView.previewEmpty.withPreviewNavigation()
 }
 
 extension MovieGenresView {
     /// Shows a list of genre chips with links
     static var previewGenres: some View {
-        MovieGenresView(genres: Genre.all.map { $0.name })
+        MovieGenresView(genres: GenrePreviewData.genres)
             .padding()
             .background(Color(.systemBackground))
     }
-    
+
     /// Shows fallback UI when no genres are available
     static var previewEmpty: some View {
         MovieGenresView(genres: [])

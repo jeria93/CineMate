@@ -8,33 +8,15 @@
 import SwiftUI
 
 struct SeeAllMoviesView: View {
-    @StateObject private var viewModel: SeeAllMoviesViewModel
+    @StateObject var viewModel: SeeAllMoviesViewModel
     let title: String
 
-    init(title: String, viewModel: SeeAllMoviesViewModel) {
-        self.title = title
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
-
     var body: some View {
-        ScrollView {
-            MovieGridView(movies: viewModel.movies) {
-                Task { await viewModel.fetchMoreMovies() }
-            }
-
-            if viewModel.isLoading {
+        Group {
+            if viewModel.isLoading && viewModel.movies.isEmpty {
                 LoadingView(title: "Loading movies...")
-            }
-        }
-        .padding()
-        .navigationTitle(title)
-        .task {
-            if !ProcessInfo.processInfo.isPreview {
-                await viewModel.loadInitialMovies()
-            }
-        }
-        .overlay {
-            if viewModel.hasError {
+
+            } else if viewModel.hasError && viewModel.movies.isEmpty {
                 ErrorMessageView(
                     title: "Oops!",
                     message: viewModel.errorMessage ?? "Unknown error",
@@ -42,29 +24,54 @@ struct SeeAllMoviesView: View {
                         Task { await viewModel.fetchMoreMovies() }
                     }
                 )
+
             } else if !viewModel.isLoading && viewModel.movies.isEmpty {
                 EmptyStateView(
                     systemImage: "film",
                     title: "No Movies Found",
                     message: "Try changing filters or come back later."
                 )
+
+            } else {
+                ScrollView {
+                    MovieGridView(movies: viewModel.movies) {
+                        Task { await viewModel.fetchMoreMovies() }
+                    }
+                    .padding()
+
+                    if viewModel.isLoading && !viewModel.movies.isEmpty {
+                        LoadingView(title: "Loading more movies...")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical)
+                    }
+                }
+            }
+        }
+        .navigationTitle(title)
+        .refreshable {
+            viewModel.clearCache()
+            await viewModel.loadInitialMovies()
+        }
+        .task {
+            if viewModel.movies.isEmpty {
+                await viewModel.loadInitialMovies()
             }
         }
     }
 }
 
 #Preview("Default") {
-    SeeAllMoviesView.previewDefault
+    SeeAllMoviesView.previewDefault.withPreviewNavigation()
 }
 
 #Preview("Empty") {
-    SeeAllMoviesView.previewEmpty
+    SeeAllMoviesView.previewEmpty.withPreviewNavigation()
 }
 
 #Preview("Loading") {
-    SeeAllMoviesView.previewLoading
+    SeeAllMoviesView.previewLoading.withPreviewNavigation()
 }
 
 #Preview("Error") {
-    SeeAllMoviesView.previewError
+    SeeAllMoviesView.previewError.withPreviewNavigation()
 }
