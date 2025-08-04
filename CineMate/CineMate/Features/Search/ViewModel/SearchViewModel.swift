@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /// ViewModel that drives the Search screen.
 ///
 /// Responsibilities:
@@ -40,16 +39,33 @@ final class SearchViewModel: ObservableObject {
     private var cache: [String: [Movie]] = [:]
     private var inFlight: Set<String> = []
 
+    /// Max number of cached queries before old ones are removed
+    private let maxCacheSize = 20
+
     // MARK: - Init
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
     }
 
-    // MARK: - Debounce
+    // MARK: - Public API
+
+    /// Public entry point if you want to bypass debounce and run a search immediately.
+    /// - Parameter query: Raw user input.
+    func search(_ query: String) async {
+        let result = SearchValidator.validate(query)
+        guard result.isValid, let trimmed = result.trimmed else { return }
+
+        lastValidQuery = trimmed
+        await executeSearch(for: trimmed)
+    }
+}
+
+// MARK: - Private Helpers
+private extension SearchViewModel {
 
     /// Cancels any ongoing debounce task and starts a new one.
     /// Waits 0.4s before validating and possibly executing the search.
-    private func debounceSearch() {
+    func debounceSearch() {
         debounceTask?.cancel()
         debounceTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: 400_000_000)
@@ -57,10 +73,8 @@ final class SearchViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Validation & Dispatch
-
     /// Validates the current `query`, updates validation UI, and triggers the search if valid.
-    private func handleQuery() async {
+    func handleQuery() async {
         let result = SearchValidator.validate(query)
 
         trimmedQuery = result.trimmed ?? ""
@@ -75,31 +89,30 @@ final class SearchViewModel: ObservableObject {
         await executeSearch(for: trimmed)
     }
 
-    /// Public entry point if you want to bypass debounce and run a search immediately.
-    /// - Parameter query: Raw user input.
-    func search(_ query: String) async {
-        let result = SearchValidator.validate(query)
-        guard result.isValid, let trimmed = result.trimmed else { return }
-
-        lastValidQuery = trimmed
-        await executeSearch(for: trimmed)
-    }
-
-    // MARK: - Search
-    private func executeSearch(for trimmed: String) async {
+    /// Core search logic with cache + in-flight protection.
+    func executeSearch(for trimmed: String) async {
+        // 1. Return cached results if available
         if let cached = cache[trimmed] {
             results = cached
             error = cached.isEmpty ? .noResults : nil
             return
         }
 
+        // 2. Prevent duplicate in-flight requests
         guard !inFlight.contains(trimmed) else { return }
         inFlight.insert(trimmed)
+
         setLoading(true)
 
         do {
+            // 3. Fetch from repository
             let fetchedResults = try await repository.searchMovies(query: trimmed)
+
+            // 4. Insert into cache and trim if necessary
             cache[trimmed] = fetchedResults
+            trimCacheIfNeeded()
+
+            // 5. Update published results
             results = fetchedResults
             error = fetchedResults.isEmpty ? .noResults : nil
         } catch {
@@ -107,21 +120,34 @@ final class SearchViewModel: ObservableObject {
             self.error = .networkFailure
         }
 
+        // 6. Remove from in-flight and stop loading
         inFlight.remove(trimmed)
         setLoading(false)
     }
 
     /// Toggles loading state and clears old errors when starting a new request.
-    private func setLoading(_ loading: Bool) {
+    func setLoading(_ loading: Bool) {
         isLoading = loading
         if loading {
             error = nil
         }
     }
+
     /// Clears visible results & states when the query is invalid.
-    private func resetSearchState() {
+    func resetSearchState() {
         results = []
         error = nil
         isLoading = false
+    }
+
+    /// Ensures the cache does not grow beyond `maxCacheSize`.
+    func trimCacheIfNeeded() {
+        if cache.count > maxCacheSize {
+            let excess = cache.count - maxCacheSize
+            let keysToRemove = cache.keys.prefix(excess)
+            for key in keysToRemove {
+                cache.removeValue(forKey: key)
+            }
+        }
     }
 }
