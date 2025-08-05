@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MovieListView: View {
     @ObservedObject var viewModel: MovieViewModel
-    @ObservedObject var castViewModel: CastViewModel
+    let castViewModel: CastViewModel
     @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
@@ -34,6 +34,13 @@ struct MovieListView: View {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Previews
+#Preview("MovieList - Default") {
+    MovieListView.previewWithMovies.withPreviewNavigation()
+}
+#endif
 
 #if DEBUG
 // MARK: - Previews
