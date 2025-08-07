@@ -44,11 +44,11 @@ extension PreviewFactory {
     /// - Query is "Unknown" with no matching movies.
     static func emptySearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "Unknown"
         vm.results = []
         vm.trimmedQuery = "Unknown"
         vm.isLoading = false
         vm.error = nil
+        vm.query = "Unknown"
         return vm
     }
 
@@ -89,7 +89,7 @@ extension PreviewFactory {
     /// - Query is empty, shows the friendly prompt.
     static func promptSearchViewModel() -> SearchViewModel {
         let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = ""
+        vm.query = "prompt"
         vm.results = []
         vm.isLoading = false
         vm.error = nil

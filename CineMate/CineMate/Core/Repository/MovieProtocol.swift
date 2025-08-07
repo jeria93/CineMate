@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Protocol defining all movie, person, search, and discovery methods.
+/// Implemented by `MovieRepository`.
 protocol MovieProtocol {
     // MARK: - Paging
     func fetchMovies(category: MovieCategory, page: Int) async throws -> MovieResult
@@ -22,7 +24,9 @@ protocol MovieProtocol {
     func fetchPersonDetail(for personId: Int) async throws -> PersonDetail
     func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit]
     func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs
-    func searchMovies(query: String) async throws -> [Movie]
+
+    /// Updated: supports pagination
+    func searchMovies(query: String, page: Int) async throws -> MovieResult
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie]
 
     // MARK: - Misc

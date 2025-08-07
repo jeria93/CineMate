@@ -24,6 +24,21 @@ import Foundation
 /// }
 /// ```
 final class MockMovieRepository: MovieProtocol {
+    
+    func searchMovies(query: String, page: Int) async throws -> MovieResult {
+        try await Task.sleep(nanoseconds: Delay.short)
+
+        // Always return the same movies regardless of query or page
+        let mockResults = SharedPreviewMovies.moviesList
+
+        return MovieResult(
+            page: page,
+            results: mockResults,
+            totalPages: 1,
+            totalResults: mockResults.count
+        )
+    }
+
 
     // MARK: - Mock Delay Configuration
     /// Centralized mock delays for consistent simulation

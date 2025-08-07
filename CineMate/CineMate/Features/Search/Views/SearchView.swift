@@ -1,10 +1,17 @@
+//
+//  SearchView.swift
+//  CineMate
+//
+//  Created by Nicholas Samuelsson Jeria on 2025-07-05.
+//
+
 import SwiftUI
 
 struct SearchView: View {
     @ObservedObject var viewModel: SearchViewModel
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack {
             SearchBarView(text: $viewModel.query)
 
             if let message = viewModel.validationMessage {
@@ -32,7 +39,12 @@ struct SearchView: View {
         } else if viewModel.results.isEmpty && !viewModel.trimmedQuery.isEmpty {
             EmptyResultsView(query: viewModel.trimmedQuery)
         } else {
-            SearchResultsList(movies: viewModel.results)
+            SearchResultsList(
+                movies: viewModel.results,
+                loadMoreAction: { movie in
+                    Task { await viewModel.loadNextPageIfNeeded(currentItem: movie) }
+                }
+            )
         }
     }
 }
@@ -58,5 +70,5 @@ struct SearchView: View {
 }
 
 #Preview("Validation Error") {
-    SearchView.previewValidation
+    SearchView.previewValidation.withPreviewNavigation()
 }

@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Handles all TMDB API requests for movies, people, search and discovery.
+/// Used by `MovieRepository` as the network layer.
 final class TMDBService {
 
     private let baseURL = "https://api.themoviedb.org/3"
@@ -84,10 +86,12 @@ final class TMDBService {
     }
 
     // MARK: - Search & Discover
-    func searchMovies(query: String) async throws -> [Movie] {
-        let queryItems = [URLQueryItem(name: "query", value: query)]
-        let result: MovieResult = try await request(endpoint: .search(query), queryItems: queryItems)
-        return result.results
+    func searchMovies(query: String, page: Int = 1) async throws -> MovieResult {
+        let queryItems = [
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "page", value: "\(page)")
+        ]
+        return try await request(endpoint: .search(query), queryItems: queryItems)
     }
 
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {

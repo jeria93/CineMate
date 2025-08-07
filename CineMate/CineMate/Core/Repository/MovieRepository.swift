@@ -67,8 +67,8 @@ final class MovieRepository: MovieProtocol {
     }
 
     // MARK: - Search & Discover
-    func searchMovies(query: String) async throws -> [Movie] {
-        try await service.searchMovies(query: query)
+    func searchMovies(query: String, page: Int) async throws -> MovieResult {
+        try await service.searchMovies(query: query, page: page)
     }
 
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {

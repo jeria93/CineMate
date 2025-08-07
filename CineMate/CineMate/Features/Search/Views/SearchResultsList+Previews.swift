@@ -12,11 +12,11 @@ extension SearchResultsList {
     /// Preview with a list of common mock movies.
     static var previewDefault: some View {
         SharedPreviewMovies.resetIDs()
-        return SearchResultsList(movies: SharedPreviewMovies.moviesList)
+        return SearchResultsList(movies: SharedPreviewMovies.moviesList, loadMoreAction: {_ in })
     }
 
     /// Preview with an empty list to simulate no results.
     static var previewEmpty: some View {
-        SearchResultsList(movies: [])
+        SearchResultsList(movies: [], loadMoreAction: {_ in })
     }
 }

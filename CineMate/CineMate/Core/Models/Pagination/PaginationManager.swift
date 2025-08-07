@@ -13,18 +13,6 @@ import Foundation
 /// - Tracks the current page, total pages, and loading state.
 /// - Prevents duplicate concurrent page fetches (in-flight protection).
 /// - Provides a simple API to start, finish, and reset pagination.
-///
-/// Usage Example:
-/// ```swift
-/// if paginationManager.startFetchingNextPage() {
-///     let nextPage = paginationManager.state.currentPage + 1
-///     Task {
-///         let response = try await repository.fetchMovies(page: nextPage)
-///         movies.append(contentsOf: response.movies)
-///         paginationManager.finishFetching(page: nextPage, totalPages: response.totalPages)
-///     }
-/// }
-/// ```
 final class PaginationManager {
     /// Internal state tracking the current page, total pages, and fetch status.
     private(set) var state = PaginationState()
@@ -37,7 +25,6 @@ final class PaginationManager {
 
     /// Attempts to start fetching the next page.
     /// - Returns: `true` if fetching can start, otherwise `false`.
-    @discardableResult
     func startFetchingNextPage() -> Bool {
         guard state.hasMorePages, !state.isFetchingNextPage else { return false }
         state.isFetchingNextPage = true
@@ -52,6 +39,11 @@ final class PaginationManager {
         state.isFetchingNextPage = false
         state.currentPage = page
         state.totalPages = totalPages
+    }
+
+    /// Cancels an in-progress page fetch (sets `isFetchingNextPage` to false).
+    func cancelFetching() {
+        state.isFetchingNextPage = false
     }
 
     /// Resets the pagination to its initial state (page 1, no loading).
