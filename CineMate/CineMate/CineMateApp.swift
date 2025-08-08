@@ -36,6 +36,9 @@ struct CineMate: App {
     /// `StateObject` wrapper ensures each VM gets reference-counted and survives
     /// view redraws (e.g. when switching dark-mode, dynamic-type, etc.).
     init() {
+
+        FirebaseBootstrap.ensureConfigured() // Bootstrap Firebase
+
         let repo = MovieRepository()      // single source of data / network
         self.repo = repo                  // keep for future injections
 
