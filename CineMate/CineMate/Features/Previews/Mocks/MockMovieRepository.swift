@@ -7,73 +7,133 @@
 
 import Foundation
 
+/// **MockMovieRepository**
+///
+/// Provides mocked movie data with simulated network delays for previews and testing.
+///
+/// ### Responsibilities
+/// - Simulate TMDB API calls without real network usage
+/// - Introduce small delays to mimic realistic async behavior
+/// - Provide predictable static data for all endpoints
+///
+/// ### Usage
+/// ```swift
+/// let repo = MockMovieRepository()
+/// Task {
+///     let movies = try await repo.fetchMovies(category: .popular, page: 1)
+/// }
+/// ```
 final class MockMovieRepository: MovieProtocol {
-    func fetchGenres() async throws -> [Genre] {
-        GenrePreviewData.genres
+    
+    func searchMovies(query: String, page: Int) async throws -> MovieResult {
+        try await Task.sleep(nanoseconds: Delay.short)
+
+        // Always return the same movies regardless of query or page
+        let mockResults = SharedPreviewMovies.moviesList
+
+        return MovieResult(
+            page: page,
+            results: mockResults,
+            totalPages: 1,
+            totalResults: mockResults.count
+        )
     }
 
-    func fetchPopularMovies() async throws -> [Movie] {
-        SharedPreviewMovies.moviesList.shuffled()
+
+    // MARK: - Mock Delay Configuration
+    /// Centralized mock delays for consistent simulation
+    private enum Delay {
+        static let veryShort: UInt64 = 150_000_000 // 0.15s - UI quick feedback
+        static let short: UInt64 = 200_000_000     // 0.2s  - lightweight fetch
+        static let medium: UInt64 = 300_000_000    // 0.3s  - standard detail
+        static let long: UInt64 = 400_000_000      // 0.4s  - list or search
+        static let veryLong: UInt64 = 500_000_000  // 0.5s  - heavy or multi-fetch
     }
 
-    func fetchTrendingMovies() async throws -> [Movie] {
-        [SharedPreviewMovies.inception, SharedPreviewMovies.starWars]
+    // MARK: - Paging
+    func fetchMovies(category: MovieCategory, page: Int) async throws -> MovieResult {
+        try await Task.sleep(nanoseconds: Delay.veryLong)
+
+        let allMovies = SharedPreviewMovies.moviesList
+        let pageSize = 3
+        let startIndex = (page - 1) * pageSize
+        let endIndex = min(startIndex + pageSize, allMovies.count)
+        let pageResults = Array(allMovies[startIndex..<endIndex])
+
+        return MovieResult(
+            page: page,
+            results: pageResults,
+            totalPages: Int(ceil(Double(allMovies.count) / Double(pageSize))),
+            totalResults: allMovies.count
+        )
     }
 
-    func fetchTopRatedMovies() async throws -> [Movie] {
-        SharedPreviewMovies.moviesList
-    }
-
-    func fetchUpcomingMovies() async throws -> [Movie] {
-        SharedPreviewMovies.moviesList
-    }
-
-    func fetchNowPlayingMovies() async throws -> [Movie] {
-        SharedPreviewMovies.moviesList.reversed()
+    // MARK: - Movies
+    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
+        try await Task.sleep(nanoseconds: Delay.long)
+        return MovieDetailPreviewData.starWarsDetail
     }
 
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        MovieCreditsPreviewData.starWarsCredits()
+        try await Task.sleep(nanoseconds: Delay.medium)
+        return MovieCreditsPreviewData.starWarsCredits()
     }
 
     func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
-        PreviewData.sampleVideos
+        try await Task.sleep(nanoseconds: Delay.medium)
+        return PreviewData.sampleVideos
     }
 
     func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
-        SharedPreviewMovies.moviesList
-    }
-
-    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
-        MovieDetailPreviewData.starWarsDetail
-    }
-
-    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
-        PersonPreviewData.markHamill
-    }
-
-    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
-        PersonPreviewData.movieCredits
-    }
-
-    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
-        PersonLinksPreviewData.markHamill
+        try await Task.sleep(nanoseconds: Delay.medium)
+        return SharedPreviewMovies.moviesList
     }
 
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
-        PreviewData.mockWatchProviderRegion
+        try await Task.sleep(nanoseconds: Delay.short)
+        return PreviewData.mockWatchProviderRegion
     }
 
+    // MARK: - Person
+    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
+        try await Task.sleep(nanoseconds: Delay.medium)
+        return PersonPreviewData.markHamill
+    }
+
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
+        try await Task.sleep(nanoseconds: Delay.medium)
+        return PersonPreviewData.movieCredits
+    }
+
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
+        try await Task.sleep(nanoseconds: Delay.short)
+        return PersonLinksPreviewData.markHamill
+    }
+
+    // MARK: - Search & Discover
     func searchMovies(query: String) async throws -> [Movie] {
-        SharedPreviewMovies.moviesList.filter {
+        try await Task.sleep(nanoseconds: Delay.long)
+        return SharedPreviewMovies.moviesList.filter {
             $0.title.lowercased().contains(query.lowercased())
         }
     }
 
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
+        try await Task.sleep(nanoseconds: Delay.long)
         if filters.contains(where: { $0.name == "with_genres" && $0.value == "27" }) {
             return DiscoverHorrorPreviewData.horrorMovies
         }
         return SharedPreviewMovies.moviesList
+    }
+
+    // MARK: - Misc
+    func fetchNowPlayingMovies() async throws -> [Movie] {
+        try await Task.sleep(nanoseconds: Delay.long)
+        return SharedPreviewMovies.moviesList.reversed()
+    }
+
+    func fetchGenres() async throws -> [Genre] {
+        try await Task.sleep(nanoseconds: Delay.short)
+        return GenrePreviewData.genres
     }
 }

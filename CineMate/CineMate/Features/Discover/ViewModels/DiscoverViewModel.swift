@@ -8,22 +8,45 @@
 import Foundation
 import SwiftUI
 
-/// ViewModel responsible for managing the Discover screen state.
+/// **DiscoverViewModel**
 ///
-/// - Fetches and caches multiple movie sections (Top Rated, Popular, Now Playing, Trending, Upcoming, Horror).
-/// - Applies local filtering to ensure Upcoming movies are relevant (future releases only).
-/// - Supports dynamic genre filtering with in-memory caching to avoid redundant network calls.
-/// - Cancels in-flight requests when switching genres rapidly.
+/// Manages the Discover screen state, including multiple movie sections and genre-based filtering.
+///
+/// ### Responsibilities
+/// - Fetch and cache multiple movie sections (Top Rated, Popular, Now Playing, Trending, Upcoming, Horror)
+/// - Support genre-based filtering with in-memory caching to prevent redundant API calls
+/// - Filter Upcoming movies to future releases and Trending movies to the last 5 years
+/// - Manage in-flight protection for simultaneous section fetches and filtering
+/// - Handle errors and loading states for smooth UI updates
+///
+/// ### Usage
+/// ```swift
+/// @StateObject private var discoverVM = DiscoverViewModel()
+///
+/// // Load all sections (initial)
+/// Task { await discoverVM.fetchAllSections() }
+///
+/// // Change genre (auto-triggers filterSections)
+/// discoverVM.selectedGenreId = 28 // e.g., Action
+/// ```
 @MainActor
 final class DiscoverViewModel: ObservableObject {
 
-    // MARK: - Published Properties
+    // MARK: - Published State (UI bindings)
 
+    /// Current combined results for the selected genre (if used)
     @Published var results: [Movie] = []
+
+    /// Indicates whether any section is currently loading
     @Published var isLoading = false
+
+    /// Holds any error that occurred during fetching or filtering
     @Published var error: SearchError?
+
+    /// Current Discover filter (sorting, genre, etc.)
     @Published var filters = DiscoverFilter()
 
+    /// Section-specific movie arrays
     @Published var topRatedMovies: [Movie] = []
     @Published var popularMovies: [Movie] = []
     @Published var nowPlayingMovies: [Movie] = []
@@ -31,9 +54,10 @@ final class DiscoverViewModel: ObservableObject {
     @Published var upcomingMovies: [Movie] = []
     @Published var horrorMovies: [Movie] = []
 
+    /// List of genres used for filtering (mocked in previews)
     @Published var genres: [Genre] = ProcessInfo.processInfo.isPreview ? GenrePreviewData.genres : []
 
-    /// Returns `true` if all movie sections are empty.
+    /// Returns `true` if all sections are empty (used for empty-state UI)
     var allSectionsAreEmpty: Bool {
         topRatedMovies.isEmpty &&
         popularMovies.isEmpty &&
@@ -43,26 +67,26 @@ final class DiscoverViewModel: ObservableObject {
         horrorMovies.isEmpty
     }
 
-    /// Currently selected genre ID. `nil` means "All genres".
-    /// Setting this triggers `filterSections()`.
+    /// Currently selected genre ID. `nil` = All genres.
+    /// Setting this triggers an async `filterSections()` call.
     @Published var selectedGenreId: Int? = nil {
         didSet {
             Task { await filterSections() }
         }
     }
 
-    // MARK: - Private State
+    // MARK: - Private State (in-flight protection & cache)
 
-    /// Task for fetching all sections to prevent duplicate API calls.
+    /// Task that fetches all sections (cancelled if a new fetch starts)
     private var fetchAllTask: Task<Void, Never>?
 
-    /// Task for filtering sections with in-flight cancel support.
+    /// Task that filters sections (cancelled if the user switches genres)
     private var filterSectionsTask: Task<Void, Never>?
-    
-    /// Cached sections, keyed by genre ID (`nil` = all genres).
+
+    /// In-memory cache of sections by genre ID (`nil` = all genres)
     private var sectionCache: [Int?: MovieSections] = [:]
 
-    /// Repository responsible for TMDB movie fetches.
+    /// Repository for fetching movie data (injected for production or mock)
     private let repository: MovieProtocol
 
     // MARK: - Initialization
@@ -74,28 +98,23 @@ final class DiscoverViewModel: ObservableObject {
 
     // MARK: - Public API
 
-    /// Filters all Discover sections for the selected genre.
-    ///
+    /// Filters all Discover sections based on the selected genre.
     /// - Cancels any in-flight filter task before starting a new one.
-    /// - Maintains the same section order as `fetchAllSections()`.
-    /// - Filters Upcoming movies to future dates and Trending to the last 5 years.
+    /// - Uses cached results when available for faster UI response.
     func filterSections() async {
-        // 1. Cancel any running task
         filterSectionsTask?.cancel()
-
-        // 2. Start a new detached task (avoids blocking UI)
         filterSectionsTask = Task.detached(priority: .medium) { [weak self] in
             guard let self else { return }
 
             let key = await self.selectedGenreId
 
-            // Serve cached result if available
+            // 1. Use cache if available
             if let cached = await self.sectionCache[key] {
                 await MainActor.run { self.apply(cached) }
                 return
             }
 
-            // Handle "All" selection
+            // 2. Handle "All genres" fallback
             if key == nil {
                 if let allCached = await self.sectionCache[nil] {
                     await MainActor.run { self.apply(allCached) }
@@ -107,10 +126,10 @@ final class DiscoverViewModel: ObservableObject {
 
             guard let genreId = key else { return }
 
-            // Prepare queries
             let fiveYearsAgo = Calendar.current.date(byAdding: .year, value: -5, to: Date())!
 
             do {
+                // Fetch all sections in parallel
                 async let topRated = self.repository.discoverMovies(
                     filters: DiscoverFilter(sortOption: .voteAverageDesc, withGenres: [genreId]).queryItems
                 )
@@ -139,7 +158,7 @@ final class DiscoverViewModel: ObservableObject {
                     return date >= fiveYearsAgo
                 }
 
-                // Build section state
+                // Combine into section container
                 let sections = MovieSections(
                     topRated:   try await topRated,
                     popular:    try await popular,
@@ -149,7 +168,7 @@ final class DiscoverViewModel: ObservableObject {
                     horror:     []
                 )
 
-                // Cache and apply if not cancelled
+                // Cache & apply if not cancelled
                 if !Task.isCancelled {
                     await MainActor.run {
                         self.sectionCache[key] = sections
@@ -170,10 +189,8 @@ final class DiscoverViewModel: ObservableObject {
         await filterSectionsTask?.value
     }
 
-    /// Fetches all sections for the "All genres" state.
-    ///
-    /// - Uses caching to avoid duplicate requests.
-    /// - Filters Upcoming movies to future dates and Trending to the last 5 years.
+    /// Fetches all sections for "All genres" and caches the result.
+    /// - Uses in-flight protection to prevent overlapping calls.
     func fetchAllSections() async {
         if let cached = sectionCache[nil] {
             apply(cached)
@@ -197,10 +214,11 @@ final class DiscoverViewModel: ObservableObject {
             error = nil
 
             do {
-                async let topRated   = repository.fetchTopRatedMovies()
-                async let popular    = repository.fetchPopularMovies()
-                async let nowPlaying = repository.fetchNowPlayingMovies()
-                async let trendingRaw   = repository.fetchTrendingMovies()
+                // Fetch multiple sections concurrently
+                async let topRated    = repository.fetchMovies(category: .topRated, page: 1).results
+                async let popular     = repository.fetchMovies(category: .popular, page: 1).results
+                async let nowPlaying  = repository.fetchNowPlayingMovies()
+                async let trendingRaw = repository.fetchMovies(category: .trending, page: 1).results
 
                 async let upcomingRaw = repository.discoverMovies(
                     filters: DiscoverFilter(sortOption: .releaseDateAsc).queryItems
@@ -211,6 +229,7 @@ final class DiscoverViewModel: ObservableObject {
                     filters: DiscoverFilter(withGenres: [27]).queryItems
                 )
 
+                // Local filtering
                 let upcomingFiltered = try await upcomingRaw.filter {
                     guard let date = $0.releaseDate.flatMap(DateHelper.parse) else { return false }
                     return date >= Date()
@@ -231,6 +250,7 @@ final class DiscoverViewModel: ObservableObject {
                     horror:     try await horror
                 )
 
+                // Cache and apply
                 sectionCache[nil] = sections
                 apply(sections)
             } catch {
@@ -245,7 +265,7 @@ final class DiscoverViewModel: ObservableObject {
 
     // MARK: - Private Helpers
 
-    /// Fetches all available genres from the repository.
+    /// Fetches the list of available genres from the repository.
     private func fetchGenres() async {
         do {
             genres = try await repository.fetchGenres()
@@ -254,7 +274,7 @@ final class DiscoverViewModel: ObservableObject {
         }
     }
 
-    /// Applies a `MovieSections` container to all published arrays.
+    /// Applies a `MovieSections` container to all published properties.
     private func apply(_ s: MovieSections) {
         topRatedMovies   = s.topRated
         popularMovies    = s.popular
@@ -266,7 +286,6 @@ final class DiscoverViewModel: ObservableObject {
 }
 
 /// A container for all discover movie sections.
-/// The order matches how sections are displayed in the UI.
 private struct MovieSections {
     let topRated:   [Movie]
     let popular:    [Movie]

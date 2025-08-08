@@ -32,7 +32,10 @@ struct Movie: Identifiable, Codable, Equatable, Hashable {
 }
 
 struct MovieResult: Codable {
+    let page: Int
     let results: [Movie]
+    let totalPages: Int
+    let totalResults: Int
 }
 
 extension Movie {

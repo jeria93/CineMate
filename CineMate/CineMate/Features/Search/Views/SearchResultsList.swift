@@ -7,21 +7,40 @@
 
 import SwiftUI
 
+/// Scrollable list of search results with infinite scroll support.
 struct SearchResultsList: View {
     let movies: [Movie]
+    let loadMoreAction: (Movie) -> Void
 
     var body: some View {
-        List(movies) { movie in
-            MovieRowView(movie: movie)
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(movies) { movie in
+                    MovieRowView(movie: movie)
+                        .onAppear {
+                            loadMoreAction(movie)
+                        }
+                }
+                if let last = movies.last {
+                    Color.clear
+                        .frame(height: 1)
+                        .id(movies.count)
+                        .onAppear {
+                            loadMoreAction(last)
+                        }
+                }
+            }
+            .padding(.horizontal)
         }
-        .listStyle(.plain)
+        .scrollIndicators(.hidden)
+        .onAppear {
+            if let last = movies.last {
+                loadMoreAction(last)
+            }
+        }
     }
 }
 
 #Preview("Default") {
     SearchResultsList.previewDefault.withPreviewNavigation()
-}
-
-#Preview("Empty") {
-    SearchResultsList.previewEmpty.withPreviewNavigation()
 }

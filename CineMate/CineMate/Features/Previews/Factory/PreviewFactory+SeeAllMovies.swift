@@ -8,44 +8,54 @@
 import Foundation
 
 /// Preview factory extension for creating mock states of `SeeAllMoviesViewModel`.
-/// These static properties provide common UI preview scenarios for SwiftUI views.
+/// Provides a set of common UI preview scenarios for SwiftUI views.
 ///
-/// Usage:
-/// - `.preview`: Shows a list of mock movies
-/// - `.loading`: Simulates a loading state
-/// - `.error`: Simulates an error state
-/// - `.empty`: Represents an empty result state
+/// ### Usage
+/// ```swift
+/// SeeAllMoviesView(viewModel: .preview, title: "Popular Movies")
+/// SeeAllMoviesView(viewModel: .loading, title: "Loading…")
+/// SeeAllMoviesView(viewModel: .error, title: "Error")
+/// SeeAllMoviesView(viewModel: .empty, title: "Empty State")
+/// ```
 @MainActor
 extension SeeAllMoviesViewModel {
 
     /// A mock view model with populated movie list for previewing normal state.
     static var preview: SeeAllMoviesViewModel {
         PreviewID.reset()
-        let viewModel = SeeAllMoviesViewModel(
+        let vm = SeeAllMoviesViewModel(
             repository: MockMovieRepository(),
             filter: DiscoverFilter()
         )
-        viewModel.movies = SharedPreviewMovies.moviesList
-        return viewModel
+        vm.movies = SharedPreviewMovies.moviesList
+        return vm
     }
 
-    /// A mock view model simulating a loading state.
+    /// A mock view model simulating a loading state (initial or paginated).
     static var loading: SeeAllMoviesViewModel {
-        let viewModel = SeeAllMoviesViewModel(repository: MockMovieRepository(), filter: DiscoverFilter())
-        viewModel.isLoading = true
-        return viewModel
+        let vm = SeeAllMoviesViewModel(
+            repository: MockMovieRepository(),
+            filter: DiscoverFilter()
+        )
+        vm.isLoading = true
+        return vm
     }
 
-    /// A mock view model simulating an error state.
+    /// A mock view model simulating an error state with a message.
     static var error: SeeAllMoviesViewModel {
-        let viewModel = SeeAllMoviesViewModel(repository: MockMovieRepository(), filter: DiscoverFilter())
-        viewModel.hasError = true
-        viewModel.errorMessage = "Something went wrong."
-        return viewModel
+        let vm = SeeAllMoviesViewModel(
+            repository: MockMovieRepository(),
+            filter: DiscoverFilter()
+        )
+        vm.errorMessage = "Something went wrong. Please try again."
+        return vm
     }
 
     /// A mock view model representing an empty state with no results.
     static var empty: SeeAllMoviesViewModel {
-        SeeAllMoviesViewModel(repository: MockMovieRepository(), filter: DiscoverFilter())
+        SeeAllMoviesViewModel(
+            repository: MockMovieRepository(),
+            filter: DiscoverFilter()
+        )
     }
 }

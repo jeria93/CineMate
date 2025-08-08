@@ -31,7 +31,7 @@ extension SeeAllMoviesView {
     static var previewLoading: some View {
         SeeAllMoviesView(
             viewModel: .loading,
-            title: "Loading…"
+            title: ""
         )
     }
 

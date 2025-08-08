@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
-    @ObservedObject var castViewModel: CastViewModel
+    let castViewModel: CastViewModel
     let onSelect: (Movie) -> Void
 
     var body: some View {
@@ -28,13 +28,17 @@ struct MovieListContentView: View {
                     MovieRowView(movie: movie)
                         .contentShape(Rectangle())
                         .onTapGesture { onSelect(movie) }
+                        .task {
+                            if viewModel.movies.last?.id == movie.id {
+                                await viewModel.loadNextPageIfNeeded(currentItem: movie)
+                            }
+                        }
                 }
                 .listStyle(.plain)
             }
         }
     }
 }
-
 #Preview("List Preview") {
     MovieListContentView.previewList
 }

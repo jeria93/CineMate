@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Enum containing all TMDB endpoints used in the app.
 enum TMDBEndpoint {
     case movieDetail(Int)
     case popular
@@ -24,7 +25,6 @@ enum TMDBEndpoint {
     case discover
     case nowPlaying
     case movieGenres
-
 
     var path: String {
         switch self {

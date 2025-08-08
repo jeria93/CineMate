@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MovieListView: View {
     @ObservedObject var viewModel: MovieViewModel
-    @ObservedObject var castViewModel: CastViewModel
+    let castViewModel: CastViewModel
     @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {

@@ -8,97 +8,154 @@
 import Foundation
 import SwiftUI
 
-/// Responsible for loading and caching movie lists, detail data, credits,
-/// recommendations, and related metadata. Uses in-flight guards to avoid
-/// duplicate concurrent network requests and provides lightweight stubs so
-/// the UI can show something immediately while full detail loads.
+/// **MovieViewModel**
+///
+/// Manages the movie list, pagination, and detailed movie data for the CineMate app.
+///
+/// ### Responsibilities
+/// - Fetch and cache paginated movie lists from the repository
+/// - Load movie details including credits, videos, recommendations, and watch providers
+/// - Manage favorites in-memory
+/// - Provide in-flight protection to prevent duplicate or conflicting network requests
+/// - Handle errors and loading states for smooth UI updates
+///
+/// ### Usage
+/// ```swift
+/// @StateObject private var movieVM = MovieViewModel()
+///
+/// // Load first page
+/// Task { await movieVM.loadMovies() }
+///
+/// // Load next page when user scrolls to bottom
+/// Task { await movieVM.loadNextPageIfNeeded(currentItem: lastMovie) }
+///
+/// // Load detailed info for a selected movie
+/// Task { await movieVM.loadMovieDetails(for: movie.id) }
+/// ```
 @MainActor
 final class MovieViewModel: ObservableObject {
-    // MARK: - State
+
+    // MARK: - Published State (UI bindings)
+
+    /// Current list of movies for the selected category (paginated)
     @Published var movies: [Movie] = []
+
+    /// Loaded movie detail for the currently viewed movie
     @Published var movieDetail: MovieDetail?
+
+    /// Loaded credits for the current movie
     @Published var movieCredits: MovieCredits?
+
+    /// Recommended movies based on the current movie
     @Published var recommendedMovies: [Movie]?
+
+    /// Region-specific watch providers for the current movie
     @Published var watchProviderRegion: WatchProviderRegion?
+
+    /// Trailer and video content for the current movie
     @Published var movieVideos: [MovieVideo]?
+
+    /// Indicates if a movie detail request is currently in progress
     @Published var isLoadingDetail = false
 
+    /// Currently selected movie category (Popular, Top Rated, etc.)
     @Published var selectedCategory: MovieCategory = .popular
+
+    /// Indicates if the list (first page or refresh) is currently loading
     @Published var isLoading = false
+
+    /// Optional error message to display in the UI
     @Published var errorMessage: String?
 
+    /// Set of favorite movie IDs stored locally (in-memory)
     @Published var favoriteMovies: Set<Int> = []
 
-    // Dependencies
+    // MARK: - Pagination
+    /// Manages page tracking and prevents duplicate next-page fetches
+    let pagination = PaginationManager()
+
+    // MARK: - Dependencies
     private let repository: MovieProtocol
+    /// Exposes the underlying repository (useful for previews/tests)
     var underlyingRepository: MovieProtocol { repository }
 
-    // Caches / in-flight guards
-    private var listCache: [MovieCategory: [Movie]] = [:]
-    private var listInFlight: Task<Void, Never>? = nil
+    // MARK: - In-flight guards
+    /// Tracks which movie IDs are currently fetching details to avoid duplicates
     private var detailInFlight: Set<Int> = []
 
+    /// Current list-fetch task, used for cancellation and race-condition protection
+    private var listTask: Task<Void, Never>?
+
+    // MARK: - Initialization
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
     }
 
-    // MARK: - Favorites
-    func toggleFavorite(for movie: Movie) {
-        if favoriteMovies.contains(movie.id) {
-            favoriteMovies.remove(movie.id)
-        } else {
-            favoriteMovies.insert(movie.id)
-        }
-    }
-
-    func isFavorite(_ movie: Movie) -> Bool {
-        favoriteMovies.contains(movie.id)
-    }
-
     // MARK: - List Loading
 
-    /// Loads the movie list for the currently selected category.
-    /// Uses cache and in-flight guard to prevent duplicate work.
-    func loadMovies() async {
-        if let cached = listCache[selectedCategory] {
-            movies = cached
-            return
-        }
+    /// Loads movies for the current category, supporting pagination.
+    /// Cancels any in-flight list-fetch to prevent race conditions.
+    /// - Parameter page: The page to load (1 for first page/reset).
+    func loadMovies(page: Int = 1) async {
+        // Cancel any previous list task to prevent overlapping requests
+        listTask?.cancel()
 
-        if let task = listInFlight {
-            await task.value
-            return
-        }
+        listTask = Task {
+            if page == 1 {
+                pagination.reset()
+                isLoading = true
+                errorMessage = nil
+            } else {
+                guard pagination.startFetchingNextPage() else { return }
+            }
 
-        listInFlight = Task {
-            isLoading = true
             defer { isLoading = false }
 
             do {
-                let fetched: [Movie]
-                switch selectedCategory {
-                case .popular: fetched = try await repository.fetchPopularMovies()
-                case .topRated: fetched = try await repository.fetchTopRatedMovies()
-                case .trending: fetched = try await repository.fetchTrendingMovies()
-                case .upcoming: fetched = try await repository.fetchUpcomingMovies()
+                let response = try await repository.fetchMovies(category: selectedCategory, page: page)
+                guard !Task.isCancelled else { return } // Skip if cancelled mid-fetch
+
+                // Update movies array
+                if page == 1 {
+                    movies = response.results
+                } else {
+                    movies.append(contentsOf: response.results)
                 }
 
-                movies = fetched
-                listCache[selectedCategory] = fetched
+                pagination.finishFetching(page: response.page, totalPages: response.totalPages)
                 errorMessage = nil
             } catch {
-                errorMessage = error.localizedDescription
+                if !Task.isCancelled {
+                    errorMessage = error.localizedDescription
+
+                    // Ensure pagination state is consistent after an error
+                    if page != 1 {
+                        pagination.finishFetching(
+                            page: pagination.state.currentPage,
+                            totalPages: pagination.state.totalPages
+                        )
+                    }
+                }
             }
         }
 
-        await listInFlight?.value
-        listInFlight = nil
+        await listTask?.value
+    }
+
+    /// Loads the next page if the given `currentItem` is the last in the list.
+    /// Used for infinite scrolling.
+    func loadNextPageIfNeeded(currentItem: Movie) async {
+        guard let last = movies.last,
+              last.id == currentItem.id,
+              pagination.hasMorePages else { return }
+
+        await loadMovies(page: pagination.state.currentPage + 1)
     }
 
     // MARK: - Detail Loading
 
-    /// Loads detailed data (detail, credits, recommendations, providers, videos)
-    /// for a specific movie ID. Guards against duplicate concurrent loads.
+    /// Loads full detail, credits, recommendations, watch providers, and videos for a given movie.
+    /// - Parameter movieId: The ID of the movie to load details for.
     func loadMovieDetails(for movieId: Int) async {
         guard !detailInFlight.contains(movieId) else { return }
         detailInFlight.insert(movieId)
@@ -109,6 +166,7 @@ final class MovieViewModel: ObservableObject {
             detailInFlight.remove(movieId)
         }
 
+        // Fetch all detail endpoints concurrently
         async let details     = repository.fetchMovieDetails(for: movieId)
         async let credits     = repository.fetchMovieCredits(for: movieId)
         async let recommended = repository.fetchRecommendedMovies(for: movieId)
@@ -119,10 +177,9 @@ final class MovieViewModel: ObservableObject {
             let d = try await details
             movieDetail = d
 
-            // Cache a lightweight stub so UI that asks via `movie(by:)` has immediate data.
+            // Cache a lightweight stub for immediate UI usage
             if !movies.contains(where: { $0.id == d.id }) {
-                let stub = makeStub(from: d)
-                movies.append(stub)
+                movies.append(makeStub(from: d))
             }
 
             movieCredits        = try await credits
@@ -132,17 +189,28 @@ final class MovieViewModel: ObservableObject {
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
-            print("MovieViewModel loadMovieDetails error:", error)
         }
     }
 
+    // MARK: - Favorites
+
+    /// Adds or removes a movie from the in-memory favorites set.
+    func toggleFavorite(for movie: Movie) {
+        if favoriteMovies.contains(movie.id) {
+            favoriteMovies.remove(movie.id)
+        } else {
+            favoriteMovies.insert(movie.id)
+        }
+    }
+
+    /// Returns `true` if the given movie is currently marked as favorite.
+    func isFavorite(_ movie: Movie) -> Bool {
+        favoriteMovies.contains(movie.id)
+    }
 
     // MARK: - Helpers
 
-    /// Returns a movie by ID, preferring:
-    /// 1. Explicitly cached list item.
-    /// 2. Transient stub derived from detail.
-    /// 3. Recommendation fallback.
+    /// Returns the best available `Movie` for a given ID, preferring list, then detail, then recommendations.
     func movie(by id: Int) -> Movie? {
         if let existing = movies.first(where: { $0.id == id }) {
             return existing
@@ -156,13 +224,13 @@ final class MovieViewModel: ObservableObject {
         return nil
     }
 
-    /// Inject a stub externally (e.g., before navigation) so detail view has something instantly.
+    /// Caches a stub `Movie` for immediate UI usage (prevents empty placeholders in navigation).
     func cacheStub(_ stub: Movie) {
         guard !movies.contains(where: { $0.id == stub.id }) else { return }
         movies.append(stub)
     }
 
-    /// Builds a minimal `Movie` from full `MovieDetail`.
+    /// Converts a full `MovieDetail` into a lightweight `Movie` for use in lists.
     private func makeStub(from detail: MovieDetail) -> Movie {
         Movie(
             id: detail.id,

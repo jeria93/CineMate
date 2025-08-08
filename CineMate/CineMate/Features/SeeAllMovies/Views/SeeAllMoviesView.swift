@@ -20,30 +20,31 @@ struct SeeAllMoviesView: View {
                 ErrorMessageView(
                     title: "Oops!",
                     message: viewModel.errorMessage ?? "Unknown error",
-                    onRetry: {
-                        Task { await viewModel.fetchMoreMovies() }
-                    }
+                    onRetry: { Task { await viewModel.loadInitialMovies() } }
                 )
 
-            } else if !viewModel.isLoading && viewModel.movies.isEmpty {
+            } else if viewModel.movies.isEmpty {
                 EmptyStateView(
                     systemImage: "film",
                     title: "No Movies Found",
                     message: "Try changing filters or come back later."
                 )
-
             } else {
-                ScrollView {
-                    MovieGridView(movies: viewModel.movies) {
-                        Task { await viewModel.fetchMoreMovies() }
+                ScrollView(showsIndicators: false) {
+                    LazyVGrid(
+                        columns: Array(repeating: .init(.flexible(), spacing: 16), count: 3),
+                        spacing: 16
+                    ) {
+                        ForEach(viewModel.movies) { movie in
+                            MoviePosterView(movie: movie)
+                                .onAppear {
+                                    if movie.id == viewModel.movies.last?.id {
+                                        Task { await viewModel.loadNextPageIfNeeded(currentItem: movie) }
+                                    }
+                                }
+                        }
                     }
                     .padding()
-
-                    if viewModel.isLoading && !viewModel.movies.isEmpty {
-                        LoadingView(title: "Loading more movies...")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical)
-                    }
                 }
             }
         }
@@ -53,9 +54,7 @@ struct SeeAllMoviesView: View {
             await viewModel.loadInitialMovies()
         }
         .task {
-            if viewModel.movies.isEmpty {
-                await viewModel.loadInitialMovies()
-            }
+            await viewModel.loadInitialMovies()
         }
     }
 }
