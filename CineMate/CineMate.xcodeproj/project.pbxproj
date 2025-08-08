@@ -67,6 +67,7 @@
 		03431A2C2E2AEBD100B94A83 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03431A2B2E2AEBD100B94A83 /* RootView.swift */; };
 		034AAEED2E00BA6600099259 /* TMDBEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */; };
 		034AAEEF2E00BCD000099259 /* TMDBError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEE2E00BCD000099259 /* TMDBError.swift */; };
+		0353E0082E46852800871BBB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0353E0072E46852800871BBB /* GoogleService-Info.plist */; };
 		035553102E2A4D51008064ED /* DirectorPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0355530F2E2A4D51008064ED /* DirectorPreviewData.swift */; };
 		0355ABCE2E107E11002E6F77 /* KnownForScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0355ABCD2E107E11002E6F77 /* KnownForScrollView.swift */; };
 		0355ABD02E1082D3002E6F77 /* PersonExternalIDs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0355ABCF2E1082D3002E6F77 /* PersonExternalIDs.swift */; };
@@ -261,6 +262,7 @@
 		03431A2B2E2AEBD100B94A83 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBEndpoint.swift; sourceTree = "<group>"; };
 		034AAEEE2E00BCD000099259 /* TMDBError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBError.swift; sourceTree = "<group>"; };
+		0353E0072E46852800871BBB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0355530F2E2A4D51008064ED /* DirectorPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorPreviewData.swift; sourceTree = "<group>"; };
 		0355ABCD2E107E11002E6F77 /* KnownForScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownForScrollView.swift; sourceTree = "<group>"; };
 		0355ABCF2E1082D3002E6F77 /* PersonExternalIDs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonExternalIDs.swift; sourceTree = "<group>"; };
@@ -438,6 +440,7 @@
 				03431A272E2AE17900B94A83 /* AppRoute.swift */,
 				03431A292E2AE43E00B94A83 /* AppNavigator.swift */,
 				03431A2B2E2AEBD100B94A83 /* RootView.swift */,
+				0353E0072E46852800871BBB /* GoogleService-Info.plist */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -1262,6 +1265,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				030E469E2DFDA7DD00285FE7 /* Secrets.example.plist in Resources */,
+				0353E0082E46852800871BBB /* GoogleService-Info.plist in Resources */,
 				033DE9762E0144B4009FB949 /* Secrets.plist in Resources */,
 				030612292DF4BEB40013F7AF /* Assets.xcassets in Resources */,
 			);
