@@ -147,6 +147,8 @@ final class FirestoreFavoritesRepository {
     ///
     /// - Parameter doc: A Firestore document snapshot.
     /// - Returns: A `Movie` object or `nil` if required fields are missing.
+
+//    You could also test to do DTO instead of mapping the Movie
     private static func mapToMovie(doc: DocumentSnapshot) -> Movie? {
         let data = doc.data() ?? [:]
 

@@ -8,42 +8,28 @@
 import Foundation
 import FirebaseFirestore
 
-/// **Centralized Firestore path builder**
-///
-/// Provides static helper methods to build Firestore collection/document paths
-/// in one place, avoiding magic strings and ensuring consistency.
-///
-/// ### Responsibilities
-/// - Define Firestore collection/document paths for the app.
-/// - Keep path logic in a single location for easier maintenance.
-/// - Prevent typos or mismatches in collection/document names.
-///
-/// ### Usage
-/// ```swift
-/// let uid = try await authService.isLoggedIn()
-/// let favoritesRef = FirestorePaths.userFavorites(uid: uid)
-/// try await favoritesRef.addDocument(data: ["title": "Inception"])
-/// ```
-///
-/// **Firestore structure:**
-/// ```
-/// users
-///   └── {uid}
-///         └── favorites
-///               ├── {movieDoc1}
-///               ├── {movieDoc2}
-///               └── ...
-/// ```
+/// # FirestorePaths
+/// Centralizes Firestore path construction to avoid magic strings and keep paths consistent.
+/// Keep path logic here so calling sites stay clean and testable.
 enum FirestorePaths {
 
-    /// Returns a reference to the "favorites" collection for a specific user.
-    ///
-    /// - Parameter uid: The unique Firebase Auth user ID.
-    /// - Returns: A `CollectionReference` pointing to `/users/{uid}/favorites`.
+    /// `/users/{uid}/favorites` – the user's movie favorites collection.
+    /// - Parameter uid: Firebase Auth user ID.
+    /// - Returns: Collection reference for the user's movie favorites.
     static func userFavorites(uid: String) -> CollectionReference {
         Firestore.firestore()
-            .collection("users")      // Root collection for all users
-            .document(uid)            // Specific user's document
-            .collection("favorites")  // Subcollection containing their favorite movies
+            .collection("users")      // Root: all users
+            .document(uid)            // User document
+            .collection("favorites")  // Movie favorites subcollection
+    }
+
+    /// `/users/{uid}/favorite_people` – the user's people (actors/directors) favorites collection.
+    /// - Parameter uid: Firebase Auth user ID.
+    /// - Returns: Collection reference for the user's people favorites.
+    static func userFavoritePeople(uid: String) -> CollectionReference {
+        Firestore.firestore()
+            .collection("users")             // Root: all users
+            .document(uid)                   // User document
+            .collection("favorite_people")   // People favorites subcollection
     }
 }

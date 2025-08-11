@@ -68,6 +68,8 @@
 		03431A282E2AE17900B94A83 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03431A272E2AE17900B94A83 /* AppRoute.swift */; };
 		03431A2A2E2AE43E00B94A83 /* AppNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03431A292E2AE43E00B94A83 /* AppNavigator.swift */; };
 		03431A2C2E2AEBD100B94A83 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03431A2B2E2AEBD100B94A83 /* RootView.swift */; };
+		034531B22E4A9215003A44AC /* PersonRef.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034531B12E4A9215003A44AC /* PersonRef.swift */; };
+		034531B42E4A92FB003A44AC /* FirestoreFavoritePeopleRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034531B32E4A92FB003A44AC /* FirestoreFavoritePeopleRepository.swift */; };
 		034AAEED2E00BA6600099259 /* TMDBEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */; };
 		034AAEEF2E00BCD000099259 /* TMDBError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEE2E00BCD000099259 /* TMDBError.swift */; };
 		0353E0082E46852800871BBB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0353E0072E46852800871BBB /* GoogleService-Info.plist */; };
@@ -267,6 +269,8 @@
 		03431A272E2AE17900B94A83 /* AppRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoute.swift; sourceTree = "<group>"; };
 		03431A292E2AE43E00B94A83 /* AppNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigator.swift; sourceTree = "<group>"; };
 		03431A2B2E2AEBD100B94A83 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		034531B12E4A9215003A44AC /* PersonRef.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonRef.swift; sourceTree = "<group>"; };
+		034531B32E4A92FB003A44AC /* FirestoreFavoritePeopleRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFavoritePeopleRepository.swift; sourceTree = "<group>"; };
 		034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBEndpoint.swift; sourceTree = "<group>"; };
 		034AAEEE2E00BCD000099259 /* TMDBError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBError.swift; sourceTree = "<group>"; };
 		0353E0072E46852800871BBB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -469,6 +473,7 @@
 				03046E472E1311AD0024AD46 /* Genre.swift */,
 				038C86E12E14190200247D61 /* WatchProviders.swift */,
 				039AF9A62E258C1200B90527 /* Discover */,
+				034531B12E4A9215003A44AC /* PersonRef.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1063,6 +1068,7 @@
 			children = (
 				0319D5682E47D09200A906B9 /* FirestorePaths.swift */,
 				0319D56A2E47E08900A906B9 /* FirestoreFavoritesRepository.swift */,
+				034531B32E4A92FB003A44AC /* FirestoreFavoritePeopleRepository.swift */,
 			);
 			path = Firestore;
 			sourceTree = "<group>";
@@ -1471,12 +1477,14 @@
 				036623782E2065CD008FDE2E /* DiscoverPreviewData.swift in Sources */,
 				03EE7E652E2ACD9100674B84 /* PreviewFactory+MovieViewModel.swift in Sources */,
 				0313920F2E1B12CB0047ED6B /* SearchResultsList.swift in Sources */,
+				034531B42E4A92FB003A44AC /* FirestoreFavoritePeopleRepository.swift in Sources */,
 				0366237E2E206665008FDE2E /* DiscoverMovieRow.swift in Sources */,
 				039AF9A52E2589F600B90527 /* MovieLoaderHelper.swift in Sources */,
 				03D8D2B22E09EE1D006A117D /* RelatedMoviesSection+Previews.swift in Sources */,
 				030612342DF4BF4E0013F7AF /* Movie.swift in Sources */,
 				0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */,
 				0368AFC12DF61333009B1F56 /* MovieCategory.swift in Sources */,
+				034531B22E4A9215003A44AC /* PersonRef.swift in Sources */,
 				0319D5692E47D09200A906B9 /* FirestorePaths.swift in Sources */,
 				030612472DF4C05C0013F7AF /* SecretManager.swift in Sources */,
 				03E090DD2E25A2F600ECBF5F /* GenreSelectorView+Previews.swift in Sources */,
