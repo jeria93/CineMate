@@ -13,7 +13,7 @@ struct SearchResultsList: View {
     let favoriteIDs: Set<Int>
     let onToggleFavorite: (Movie) -> Void
     let loadMoreAction: (Movie) -> Void
-    
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
@@ -23,28 +23,21 @@ struct SearchResultsList: View {
                         isFavorite: favoriteIDs.contains(movie.id),
                         onToggleFavorite: { onToggleFavorite(movie) }
                     )
-                    .onAppear { loadMoreAction(movie) }
                 }
+
+                // Sentinel: triggs "load more" when last cell appears
                 if let last = movies.last {
                     Color.clear
                         .frame(height: 1)
-                        .id(movies.count)
-                        .onAppear {
-                            loadMoreAction(last)
-                        }
+                        .onAppear { loadMoreAction(last) }
                 }
             }
             .padding(.horizontal)
         }
         .scrollIndicators(.hidden)
-        .onAppear {
-            if let last = movies.last {
-                loadMoreAction(last)
-            }
-        }
     }
 }
 
-//#Preview("Default") {
-//    SearchResultsList.previewDefault.withPreviewNavigation()
-//}
+#Preview("Default") {
+    SearchResultsList.previewDefault.withPreviewNavigation()
+}

@@ -56,26 +56,26 @@ struct SearchView: View {
     }
 }
 
-//#Preview("Prompt") {
-//    SearchView.previewPrompt.withPreviewNavigation()
-//}
-//
-//#Preview("With Results") {
-//    SearchView.previewDefault.withPreviewNavigation()
-//}
-//
-//#Preview("Empty State") {
-//    SearchView.previewEmpty.withPreviewNavigation()
-//}
-//
-//#Preview("Loading") {
-//    SearchView.previewLoading.withPreviewNavigation()
-//}
-//
-//#Preview("Error") {
-//    SearchView.previewError.withPreviewNavigation()
-//}
-//
-//#Preview("Validation Error") {
-//    SearchView.previewValidation.withPreviewNavigation()
-//}
+#Preview("Prompt") {
+    SearchView.previewPrompt.withPreviewNavigation()
+}
+
+#Preview("With Results") {
+    SearchView.previewDefault.withPreviewNavigation()
+}
+
+#Preview("Empty State") {
+    SearchView.previewEmpty.withPreviewNavigation()
+}
+
+#Preview("Loading") {
+    SearchView.previewLoading.withPreviewNavigation()
+}
+
+#Preview("Error") {
+    SearchView.previewError.withPreviewNavigation()
+}
+
+#Preview("Validation Error") {
+    SearchView.previewValidation.withPreviewNavigation()
+}

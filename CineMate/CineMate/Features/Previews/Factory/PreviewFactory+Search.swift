@@ -7,92 +7,91 @@
 
 import SwiftUI
 
-/// Preview factory helpers for `SearchViewModel`.
+/// Provides mock `SearchViewModel` instances for SwiftUI previews.
 ///
-/// Provides **preconfigured view models** for SwiftUI previews, allowing
-/// you to visualize all UI states of the Search feature without triggering
-/// network requests or debounce logic.
-///
-/// States covered:
-/// - `previewDefault`  → Successful search with results
-/// - `previewEmpty`    → No results for a valid query
-/// - `previewLoading`  → Search in progress (spinner)
-/// - `previewError`    → Simulated network/API failure
-/// - `previewValidation` → Invalid query with validation message
-/// - `previewPrompt`   → Initial idle state (empty query)
-///
-/// All previews:
-/// - Disable `isLoading` except for the loading state
-/// - Avoid triggering `executeSearch`
-/// - Set `error` or `results` explicitly for a deterministic UI
+/// These helpers simulate various search states without triggering
+/// network requests or debounce logic. Each method returns a configured
+/// instance of `SearchViewModel` using `_previewInject` for safe state setup.
 @MainActor
 extension PreviewFactory {
 
-    /// Default state with mock search results for "Star".
-    /// - Shows the list of movies and no error.
+    /// Preview showing a successful search with mock results.
     static func searchViewModel() -> SearchViewModel {
         PreviewID.reset()
-        let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "Star"
-        vm.results = SharedPreviewMovies.moviesList
-        vm.isLoading = false
-        vm.error = nil
-        return vm
+        return SearchViewModel(repository: MockMovieRepository())
+            ._previewInject(
+                query: "Star",
+                results: SharedPreviewMovies.moviesList,
+                isLoading: false,
+                error: nil,
+                lastValidQuery: "Star",
+                trimmedQuery: "Star"
+            )
     }
 
-    /// Simulates an empty result for a valid query.
-    /// - Query is "Unknown" with no matching movies.
+    /// Preview showing a valid query that returns no results.
     static func emptySearchViewModel() -> SearchViewModel {
-        let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.results = []
-        vm.trimmedQuery = "Unknown"
-        vm.isLoading = false
-        vm.error = nil
-        vm.query = "Unknown"
-        return vm
+        SearchViewModel(repository: MockMovieRepository())
+            ._previewInject(
+                query: "Unknown",
+                results: [],
+                isLoading: false,
+                error: nil,
+                lastValidQuery: "Unknown",
+                trimmedQuery: "Unknown"
+            )
     }
 
-    /// Simulates a loading state.
-    /// - Query is "Loading", spinner is visible.
+    /// Preview showing a search in progress (loading state).
     static func loadingSearchViewModel() -> SearchViewModel {
-        let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "Loading"
-        vm.results = []
-        vm.isLoading = true
-        vm.error = nil
-        return vm
+        SearchViewModel(repository: MockMovieRepository())
+            ._previewInject(
+                query: "Loading",
+                results: [],
+                isLoading: true,
+                error: nil,
+                lastValidQuery: "Loading",
+                trimmedQuery: "Loading"
+            )
     }
 
-    /// Simulates a failed search request (network or API error).
-    /// - Query is "Error", shows an error message.
+    /// Preview showing a simulated API/network error.
     static func errorSearchViewModel() -> SearchViewModel {
-        let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "Error"
-        vm.results = []
-        vm.isLoading = false
-        vm.error = .custom("Something went wrong")
-        return vm
+        SearchViewModel(repository: MockMovieRepository())
+            ._previewInject(
+                query: "Error",
+                results: [],
+                isLoading: false,
+                error: .custom("Something went wrong"),
+                lastValidQuery: "Error",
+                trimmedQuery: "Error"
+            )
     }
 
-    /// Simulates a validation error for an invalid query.
-    /// - Query is "?" and shows a red validation message.
+    /// Preview showing an invalid query with a validation message.
     static func invalidSearchViewModel() -> SearchViewModel {
-        let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "?"
-        vm.results = []
-        vm.isLoading = false
-        vm.validationMessage = "Only letters and numbers are allowed."
-        return vm
+        SearchViewModel(repository: MockMovieRepository())
+            ._previewInject(
+                query: "?",
+                results: [],
+                isLoading: false,
+                error: nil,
+                validationMessage: "Only letters and numbers are allowed.",
+                lastValidQuery: nil,
+                trimmedQuery: ""
+            )
     }
 
-    /// Represents the initial search prompt (empty input).
-    /// - Query is empty, shows the friendly prompt.
+    /// Preview showing the initial idle state with an empty query.
     static func promptSearchViewModel() -> SearchViewModel {
-        let vm = SearchViewModel(repository: MockMovieRepository())
-        vm.query = "prompt"
-        vm.results = []
-        vm.isLoading = false
-        vm.error = nil
-        return vm
+        SearchViewModel(repository: MockMovieRepository())
+            ._previewInject(
+                query: "",
+                results: [],
+                isLoading: false,
+                error: nil,
+                lastValidQuery: nil,
+                trimmedQuery: ""
+            )
     }
 }
