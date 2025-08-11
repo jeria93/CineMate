@@ -18,39 +18,41 @@ import SwiftUI
 @MainActor
 extension PreviewFactory {
 
-    /// Default: list with favorites (happy path).
-    static func favoritesViewModel() -> FavoriteMoviesViewModel {
-        PreviewID.reset()
+    // MARK: - Core small builder
+
+    /// Build an exact-state FavoriteMoviesViewModel.
+    /// - Parameter movies: Movies that should appear as favorites.
+    static func favoritesVM(with movies: [Movie]) -> FavoriteMoviesViewModel {
         let vm = FavoriteMoviesViewModel()
-        vm.favoriteMovies = SharedPreviewMovies.moviesList
+        vm.favoriteMovies = movies
         vm.isLoading = false
         vm.errorMessage = nil
         return vm
+    }
+
+    // MARK: - Ready-made scenarios
+
+    /// Default: list with favorites (happy path).
+    static func favoritesViewModel() -> FavoriteMoviesViewModel {
+        SharedPreviewMovies.resetIDs()
+        return favoritesVM(with: SharedPreviewMovies.moviesList)
     }
 
     /// Empty: no favorites yet.
     static func emptyFavoritesViewModel() -> FavoriteMoviesViewModel {
-        let vm = FavoriteMoviesViewModel()
-        vm.favoriteMovies = []
-        vm.isLoading = false
-        vm.errorMessage = nil
-        return vm
+        favoritesVM(with: [])
     }
 
     /// Loading: spinner visible.
     static func loadingFavoritesViewModel() -> FavoriteMoviesViewModel {
-        let vm = FavoriteMoviesViewModel()
-        vm.favoriteMovies = []
+        let vm = favoritesVM(with: [])
         vm.isLoading = true
-        vm.errorMessage = nil
         return vm
     }
 
     /// Error: simulated failure (e.g., network issue).
     static func errorFavoritesViewModel() -> FavoriteMoviesViewModel {
-        let vm = FavoriteMoviesViewModel()
-        vm.favoriteMovies = []
-        vm.isLoading = false
+        let vm = favoritesVM(with: [])
         vm.errorMessage = "Network unreachable"
         return vm
     }

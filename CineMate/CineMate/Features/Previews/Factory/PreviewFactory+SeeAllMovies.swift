@@ -12,10 +12,10 @@ import Foundation
 ///
 /// ### Usage
 /// ```swift
-/// SeeAllMoviesView(viewModel: .preview, title: "Popular Movies")
-/// SeeAllMoviesView(viewModel: .loading, title: "Loading…")
-/// SeeAllMoviesView(viewModel: .error, title: "Error")
-/// SeeAllMoviesView(viewModel: .empty, title: "Empty State")
+/// SeeAllMoviesView(movieViewModel: .preview, title: "Popular Movies")
+/// SeeAllMoviesView(movieViewModel: .loading, title: "Loading…")
+/// SeeAllMoviesView(movieViewModel: .error, title: "Error")
+/// SeeAllMoviesView(movieViewModel: .empty, title: "Empty State")
 /// ```
 @MainActor
 extension SeeAllMoviesViewModel {

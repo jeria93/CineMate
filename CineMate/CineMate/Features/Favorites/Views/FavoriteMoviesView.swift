@@ -13,16 +13,12 @@ struct FavoriteMoviesView: View {
     var body: some View {
         contentView
             .navigationTitle("Favorites")
-            .task { await viewModel.startFavoritesListenerIfNeeded() }
-            .onDisappear { viewModel.stopFavoritesListenerIfNeeded() }
     }
 
     @ViewBuilder
     private var contentView: some View {
         if let message = viewModel.errorMessage {
-            ErrorMessageView(title: "Failed to load", message: message) {
-                Task { await viewModel.startFavoritesListenerIfNeeded() }
-            }
+            ErrorMessageView(title: "Failed to load", message: message)
         } else if viewModel.isLoading {
             LoadingView(title: "Loading favorites...")
         } else if viewModel.favoriteMovies.isEmpty {

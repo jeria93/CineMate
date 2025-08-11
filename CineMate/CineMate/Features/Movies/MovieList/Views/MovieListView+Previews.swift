@@ -12,6 +12,7 @@ extension MovieListView {
     static var previewWithMovies: some View {
         MovieListView(
             viewModel: PreviewFactory.movieListViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel(),
             castViewModel: PreviewFactory.castViewModel()
         )
     }

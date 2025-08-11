@@ -13,7 +13,8 @@ extension MovieListContentView {
     static var previewList: some View {
         MovieListContentView(
             viewModel: PreviewFactory.movieListViewModel(),
-            castViewModel: PreviewFactory.castViewModel()
+            castViewModel: PreviewFactory.castViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
 
@@ -21,13 +22,17 @@ extension MovieListContentView {
     static var previewLoading: some View {
         MovieListContentView(
             viewModel: PreviewFactory.loadingMovieViewModel(),
-            castViewModel: PreviewFactory.castViewModel()        )
+            castViewModel: PreviewFactory.castViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 
     /// Preview: error state.
     static var previewError: some View {
         MovieListContentView(
             viewModel: PreviewFactory.errorMovieViewModel(),
-            castViewModel: PreviewFactory.castViewModel(),        )
+            castViewModel: PreviewFactory.castViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 }

@@ -44,7 +44,7 @@ struct RootView: View {
         NavigationStack(path: $navigator.path) {
 
             TabView(selection: $selectedTab) {
-                MovieListView(viewModel: movieVM, castViewModel: castVM)
+                MovieListView(viewModel: movieVM, favoriteViewModel: favVM, castViewModel: castVM)
                     .tabItem { Label("Movies", systemImage: "film") }
                     .tag(MainTab.movies)
 
@@ -65,6 +65,8 @@ struct RootView: View {
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
                     .tag(MainTab.account)
             }
+            .task { await favVM.startFavoritesListenerIfNeeded() }
+//            .onDisappear { favVM.stopFavoritesListenerIfNeeded() } test if app crashes or has other unatural behaviour
             .onChange(of: selectedTab) {
                 navigator.reset()
             }
@@ -86,8 +88,9 @@ private extension RootView {
         case .movie(let id):
             MovieDetailView(
                 movieId: id,
-                viewModel: movieVM,
-                castViewModel: castVM
+                movieViewModel: movieVM,
+                castViewModel: castVM,
+                favoriteViewModel: favVM
             )
 
         case .person(let id):

@@ -10,13 +10,12 @@ import SwiftUI
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
     let castViewModel: CastViewModel
+    @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
     var body: some View {
         content
             .listStyle(.plain)
-            .refreshable {
-                await viewModel.loadMovies(page: 1)
-            }
+            .refreshable { await viewModel.loadMovies(page: 1) }
             .task {
                 if viewModel.movies.isEmpty && !viewModel.isLoading {
                     await viewModel.loadMovies(page: 1)
@@ -49,9 +48,9 @@ private extension MovieListContentView {
             List(viewModel.movies) { movie in
                 MovieRowView(
                     movie: movie,
-                    isFavorite: viewModel.isFavorite(movie),
+                    isFavorite: favoriteViewModel.favoriteMovies.contains(where: { $0.id == movie.id }),
                     onToggleFavorite: {
-                        viewModel.toggleFavorite(for: movie)
+                        Task { await favoriteViewModel.toggleFavorite(movie: movie)}
                     }
                 )
                 .contentShape(Rectangle())
@@ -61,11 +60,7 @@ private extension MovieListContentView {
                     }
                 }
             }
-            .overlay(alignment: .bottom) {
-                if viewModel.isLoading && !viewModel.movies.isEmpty {
-                    ProgressView().padding(.vertical, 10)
-                }
-            }
+            .scrollIndicators(.hidden)
         }
     }
 }

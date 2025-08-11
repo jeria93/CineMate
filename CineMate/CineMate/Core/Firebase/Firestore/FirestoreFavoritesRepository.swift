@@ -83,6 +83,7 @@ final class FirestoreFavoritesRepository {
         if let releaseDate = movie.releaseDate { data["releaseDate"] = releaseDate }
         if let voteAverage = movie.voteAverage { data["voteAverage"] = voteAverage }
         if let genres = movie.genres { data["genres"] = genres }
+        if let overview = movie.overview { data["overview"] = overview }
 
         // Merge to avoid overwriting existing fields unnecessarily
         try await document.setData(data, merge: true)
@@ -158,11 +159,12 @@ final class FirestoreFavoritesRepository {
         let releaseDate = data["releaseDate"] as? String
         let voteAverage = data["voteAverage"] as? Double
         let genres = data["genres"] as? [String]
+        let overview = data["overview"] as? String
 
         return Movie(
             id: id,
             title: title,
-            overview: nil,
+            overview: overview,
             posterPath: posterPath,
             backdropPath: nil,
             releaseDate: releaseDate,

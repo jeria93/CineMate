@@ -24,10 +24,9 @@ struct CastMemberDetailView: View {
                         .font(.title)
                         .bold()
                     
-                    FavoriteButton(
-                        isFavorite: viewModel.isFavoriteCast(id: member.id),
-                        toggleAction: { viewModel.toggleFavoriteCast(id: member.id) }
-                    )
+                    HeartButton(isOn: viewModel.isFavoriteCast(id: member.id)) {
+                        viewModel.toggleFavoriteCast(id: member.id)
+                    }
                 }
                 
                 if let role = viewModel.personDetail?.knownForDepartment ?? member.character {
