@@ -22,8 +22,8 @@ struct SearchView: View {
             contentView
         }
         .navigationTitle("Search")
-        .task { await favoriteViewModel.startFavoritesListener() }
-        .onDisappear { favoriteViewModel.stopFavoritesListener() }
+        .task { await favoriteViewModel.startFavoritesListenerIfNeeded() }
+        .onDisappear { favoriteViewModel.stopFavoritesListenerIfNeeded() }
     }
 
     // MARK: - State-driven UI

@@ -11,19 +11,43 @@ struct FavoriteMoviesView: View {
     @ObservedObject var viewModel: FavoriteMoviesViewModel
 
     var body: some View {
-        List(viewModel.favoriteMovies) { movie in
-            MovieRowView(
-                movie: movie,
-                isFavorite: true,
-                onToggleFavorite: { Task { await viewModel.toggleFavorite(movie: movie) } }
+        contentView
+            .navigationTitle("Favorites")
+            .task { await viewModel.startFavoritesListenerIfNeeded() }
+            .onDisappear { viewModel.stopFavoritesListenerIfNeeded() }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        if let message = viewModel.errorMessage {
+            ErrorMessageView(title: "Failed to load", message: message) {
+                Task { await viewModel.startFavoritesListenerIfNeeded() }
+            }
+        } else if viewModel.isLoading {
+            LoadingView(title: "Loading favorites...")
+        } else if viewModel.favoriteMovies.isEmpty {
+            EmptyStateView(
+                systemImage: "heart",
+                title: "No favorites yet",
+                message: "Tap the heart on a movie to add it to your favorites"
             )
+        } else {
+            List(viewModel.favoriteMovies) { movie in
+                MovieRowView(
+                    movie: movie,
+                    isFavorite: true,
+                    onToggleFavorite: {
+                        Task { await viewModel.toggleFavorite(movie: movie) }
+                    }
+                )
+            }
+            .listStyle(.plain)
+            .scrollIndicators(.hidden)
         }
-        .navigationTitle("Favorites")
-        .task { await viewModel.startFavoritesListener() }
-        .onDisappear { viewModel.stopFavoritesListener() }
     }
 }
 
-#Preview {
-    FavoriteMoviesView.previewDefault
-}
+#Preview("Default") { FavoriteMoviesView.previewDefault }
+#Preview("Empty") { FavoriteMoviesView.previewEmpty }
+#Preview("Loading") { FavoriteMoviesView.previewLoading }
+#Preview("Error") { FavoriteMoviesView.previewError }
