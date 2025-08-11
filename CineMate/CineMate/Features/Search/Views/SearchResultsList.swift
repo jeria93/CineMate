@@ -10,16 +10,20 @@ import SwiftUI
 /// Scrollable list of search results with infinite scroll support.
 struct SearchResultsList: View {
     let movies: [Movie]
+    let favoriteIDs: Set<Int>
+    let onToggleFavorite: (Movie) -> Void
     let loadMoreAction: (Movie) -> Void
-
+    
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
                 ForEach(movies) { movie in
-                    MovieRowView(movie: movie)
-                        .onAppear {
-                            loadMoreAction(movie)
-                        }
+                    MovieRowView(
+                        movie: movie,
+                        isFavorite: favoriteIDs.contains(movie.id),
+                        onToggleFavorite: { onToggleFavorite(movie) }
+                    )
+                    .onAppear { loadMoreAction(movie) }
                 }
                 if let last = movies.last {
                     Color.clear
@@ -41,6 +45,6 @@ struct SearchResultsList: View {
     }
 }
 
-#Preview("Default") {
-    SearchResultsList.previewDefault.withPreviewNavigation()
-}
+//#Preview("Default") {
+//    SearchResultsList.previewDefault.withPreviewNavigation()
+//}

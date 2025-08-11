@@ -18,11 +18,7 @@ struct MovieListView: View {
 
             MovieListContentView(
                 viewModel: viewModel,
-                castViewModel: castViewModel,
-                onSelect: { movie in
-                    viewModel.cacheStub(movie)
-                    navigator.goToMovie(id: movie.id)
-                }
+                castViewModel: castViewModel
             )
         }
         .navigationTitle(viewModel.selectedCategory.displayName)

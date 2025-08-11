@@ -1,22 +1,22 @@
+////
+////  SearchResultsList+Previews.swift
+////  CineMate
+////
+////  Created by Nicholas Samuelsson Jeria on 2025-07-16.
+////
 //
-//  SearchResultsList+Previews.swift
-//  CineMate
+//import SwiftUI
 //
-//  Created by Nicholas Samuelsson Jeria on 2025-07-16.
+//extension SearchResultsList {
 //
-
-import SwiftUI
-
-extension SearchResultsList {
-
-    /// Preview with a list of common mock movies.
-    static var previewDefault: some View {
-        SharedPreviewMovies.resetIDs()
-        return SearchResultsList(movies: SharedPreviewMovies.moviesList, loadMoreAction: {_ in })
-    }
-
-    /// Preview with an empty list to simulate no results.
-    static var previewEmpty: some View {
-        SearchResultsList(movies: [], loadMoreAction: {_ in })
-    }
-}
+//    /// Preview with a list of common mock movies.
+//    static var previewDefault: some View {
+//        SharedPreviewMovies.resetIDs()
+//        return SearchResultsList(movies: SharedPreviewMovies.moviesList, loadMoreAction: {_ in })
+//    }
+//
+//    /// Preview with an empty list to simulate no results.
+//    static var previewEmpty: some View {
+//        SearchResultsList(movies: [], loadMoreAction: {_ in })
+//    }
+//}

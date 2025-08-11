@@ -10,14 +10,17 @@ import SwiftUI
 struct FavoriteMoviesView: View {
     @ObservedObject var viewModel: FavoriteMoviesViewModel
 
-    
     var body: some View {
-            List(viewModel.favoriteMovies) { movies in
-                MovieRowView(movie: movies)
-                
-            }
-            .navigationTitle("Favorites")
-
+        List(viewModel.favoriteMovies) { movie in
+            MovieRowView(
+                movie: movie,
+                isFavorite: true,
+                onToggleFavorite: { Task { await viewModel.toggleFavorite(movie: movie) } }
+            )
+        }
+        .navigationTitle("Favorites")
+        .task { await viewModel.startFavoritesListener() }
+        .onDisappear { viewModel.stopFavoritesListener() }
     }
 }
 

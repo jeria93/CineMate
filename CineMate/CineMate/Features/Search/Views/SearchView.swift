@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @ObservedObject var viewModel: SearchViewModel
+    @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
     var body: some View {
         VStack {
@@ -21,6 +22,8 @@ struct SearchView: View {
             contentView
         }
         .navigationTitle("Search")
+        .task { await favoriteViewModel.startFavoritesListener() }
+        .onDisappear { favoriteViewModel.stopFavoritesListener() }
     }
 
     // MARK: - State-driven UI
@@ -41,6 +44,10 @@ struct SearchView: View {
         } else {
             SearchResultsList(
                 movies: viewModel.results,
+                favoriteIDs: Set(favoriteViewModel.favoriteMovies.map { $0.id }),
+                onToggleFavorite: { movie in
+                    Task { await favoriteViewModel.toggleFavorite(movie: movie) }
+                },
                 loadMoreAction: { movie in
                     Task { await viewModel.loadNextPageIfNeeded(currentItem: movie) }
                 }
@@ -49,26 +56,26 @@ struct SearchView: View {
     }
 }
 
-#Preview("Prompt") {
-    SearchView.previewPrompt.withPreviewNavigation()
-}
-
-#Preview("With Results") {
-    SearchView.previewDefault.withPreviewNavigation()
-}
-
-#Preview("Empty State") {
-    SearchView.previewEmpty.withPreviewNavigation()
-}
-
-#Preview("Loading") {
-    SearchView.previewLoading.withPreviewNavigation()
-}
-
-#Preview("Error") {
-    SearchView.previewError.withPreviewNavigation()
-}
-
-#Preview("Validation Error") {
-    SearchView.previewValidation.withPreviewNavigation()
-}
+//#Preview("Prompt") {
+//    SearchView.previewPrompt.withPreviewNavigation()
+//}
+//
+//#Preview("With Results") {
+//    SearchView.previewDefault.withPreviewNavigation()
+//}
+//
+//#Preview("Empty State") {
+//    SearchView.previewEmpty.withPreviewNavigation()
+//}
+//
+//#Preview("Loading") {
+//    SearchView.previewLoading.withPreviewNavigation()
+//}
+//
+//#Preview("Error") {
+//    SearchView.previewError.withPreviewNavigation()
+//}
+//
+//#Preview("Validation Error") {
+//    SearchView.previewValidation.withPreviewNavigation()
+//}

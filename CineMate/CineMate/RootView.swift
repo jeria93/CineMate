@@ -57,7 +57,7 @@ struct RootView: View {
                     .tabItem { Label("Discover", systemImage: "safari") }
                     .tag(MainTab.discover)
 
-                SearchView(viewModel: searchVM)
+                SearchView(viewModel: searchVM, favoriteViewModel: favVM)
                     .tabItem { Label("Search", systemImage: "magnifyingglass") }
                     .tag(MainTab.search)
 
