@@ -31,7 +31,7 @@ struct CineMate: App {
     @StateObject private var accountVM  = AccountViewModel()
     @StateObject private var discoverVM : DiscoverViewModel
     @StateObject private var personVM   : PersonViewModel
-
+    @StateObject private var favPeopleVM: FavoritePeopleViewModel
     /// Build DI-graph: repo -> view-models.
     /// `StateObject` wrapper ensures each VM gets reference-counted and survives
     /// view redraws (e.g. when switching dark-mode, dynamic-type, etc.).
@@ -47,6 +47,7 @@ struct CineMate: App {
         _castVM     = StateObject(wrappedValue: CastViewModel(repository: repo))
         _discoverVM = StateObject(wrappedValue: DiscoverViewModel(repository: repo))
         _personVM   = StateObject(wrappedValue: PersonViewModel(repository: repo))
+        _favPeopleVM = StateObject(wrappedValue: FavoritePeopleViewModel())
     }
 
     var body: some Scene {
@@ -58,7 +59,8 @@ struct CineMate: App {
                 searchVM:         searchVM,
                 accountVM:        accountVM,
                 discoverVM:       discoverVM,
-                personVM:         personVM
+                personVM:         personVM,
+                favoritePeopleVM: favPeopleVM
             )
             // Make enum-navigation available to every child view.
             .environmentObject(navigator)

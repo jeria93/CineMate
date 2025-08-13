@@ -21,4 +21,8 @@ struct PersonRef: Identifiable, Hashable, Codable {
     var profileURL: URL? {
         TMDBImageHelper.url(for: profilePath, size: .h632)
     }
+
+    var profileSmallURL: URL? {
+        TMDBImageHelper.url(for: profilePath, size: .w185)
+    }
 }

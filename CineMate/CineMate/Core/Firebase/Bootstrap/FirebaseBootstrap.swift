@@ -29,6 +29,7 @@ enum FirebaseBootstrap {
 
     /// Idempotent bootstrap entry point.
     static func ensureConfigured() {
+//        guard !ProcessInfo.processInfo.isPreview else { return }
         guard !isFirebaseConfigured else { return }
         FirebaseApp.configure()
         isFirebaseConfigured = true

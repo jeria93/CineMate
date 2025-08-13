@@ -39,6 +39,7 @@ struct RootView: View {
     let accountVM : AccountViewModel
     let discoverVM: DiscoverViewModel
     let personVM  : PersonViewModel
+    let favoritePeopleVM: FavoritePeopleViewModel
 
     var body: some View {
         NavigationStack(path: $navigator.path) {
@@ -49,10 +50,10 @@ struct RootView: View {
                     .tag(MainTab.movies)
 
 
-                FavoriteMoviesView(viewModel: favVM)
+                FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
                     .tabItem { Label("Favorites", systemImage: "heart.fill") }
                     .tag(MainTab.favorites)
-
+                
                 DiscoverView(viewModel: discoverVM)
                     .tabItem { Label("Discover", systemImage: "safari") }
                     .tag(MainTab.discover)
@@ -66,7 +67,7 @@ struct RootView: View {
                     .tag(MainTab.account)
             }
             .task { await favVM.startFavoritesListenerIfNeeded() }
-//            .onDisappear { favVM.stopFavoritesListenerIfNeeded() } test if app crashes or has other unatural behaviour
+            //            .onDisappear { favVM.stopFavoritesListenerIfNeeded() } test if app crashes or has other unexpected behaviour
             .onChange(of: selectedTab) {
                 navigator.reset()
             }
