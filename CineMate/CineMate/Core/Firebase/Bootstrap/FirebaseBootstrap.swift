@@ -8,28 +8,17 @@
 import Foundation
 import FirebaseCore
 
-/// Ensures that Firebase is configured **exactly once**.
-///
-/// Responsibilities
-/// 1. Call `FirebaseApp.configure()` a single time.
-/// 2. Hide FirebaseCore from the rest of the codebase.
-///
-/// Usage
-/// ```swift
-/// @main
-/// struct CineMate: App {
-///     init() { FirebaseBootstrap.ensureConfigured() }
-///     var body: some Scene { … }
-/// }
-/// ```
+/// Small guard that configures Firebase **once** at app launch.
+/// Skips Xcode Previews to avoid accidental SDK boot during design time.
 enum FirebaseBootstrap {
 
-    /// Indicates whether Firebase has already been configured.
+    /// Tracks if Firebase has been configured already (process-wide).
     private static var isFirebaseConfigured = false
 
-    /// Idempotent bootstrap entry point.
+    /// Idempotent entry point – safe to call multiple times.
+    /// - Skips work in previews.
     static func ensureConfigured() {
-//        guard !ProcessInfo.processInfo.isPreview else { return }
+        guard !ProcessInfo.processInfo.isPreview else { return }
         guard !isFirebaseConfigured else { return }
         FirebaseApp.configure()
         isFirebaseConfigured = true

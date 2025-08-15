@@ -8,37 +8,36 @@
 import Foundation
 import FirebaseFirestore
 
-/// # FirestoreFavoritePeopleRepository
-/// Handles reading and writing user's favorite people (actors/directors) in Firestore.
+/// Reads/writes a user's **favorite people** (actors/directors) in Firestore.
+/// Lazy Firestore handle to keep design-time flows light.
 final class FirestoreFavoritePeopleRepository {
 
-    /// Firestore database instance.
-    private let firestore: Firestore
+    /// Optional injected Firestore; falls back to shared instance.
+    private var _firestore: Firestore?
 
-    /// Creates a new repository instance.
-    /// - Parameter firestore: Optional Firestore instance (defaults to shared).
-    init(firestore: Firestore = .firestore()) {
-        self.firestore = firestore
-    }
+    /// Designated initializer.
+    /// - Parameter firestore: Custom Firestore for testing/overrides.
+    init(firestore: Firestore? = nil) { self._firestore = firestore }
 
-    /// Streams favorite people in real time for the given user.
-    /// - Parameter uid: Firebase Auth user ID.
-    /// - Returns: AsyncStream emitting `[PersonRef]` on each change.
+    /// Active Firestore instance (lazy default).
+    private var firestore: Firestore { _firestore ?? Firestore.firestore() }
+
+    /// Live stream of a user's favorite people ordered by newest first.
+    /// - Parameter uid: Owner's user ID.
+    /// - Returns: Async stream emitting full lists on every change.
     func favoritePeopleStream(uid: String) -> AsyncStream<[PersonRef]> {
         AsyncStream { continuation in
-            // Query: user's favorite people sorted by newest first
-            let query = FirestorePaths.userFavoritePeople(uid: uid)
+            let query = firestore
+                .collection("users").document(uid)
+                .collection("favorite_people")
                 .order(by: "createdAt", descending: true)
 
-            // Attach snapshot listener
             let listener = query.addSnapshotListener { snapshot, error in
                 if let error = error {
                     print("favoritePeopleStream error:", error)
                     continuation.finish()
                     return
                 }
-
-                // Map documents to PersonRef models
                 let people: [PersonRef] = snapshot?.documents.compactMap { doc in
                     let data = doc.data()
                     guard let id = data["id"] as? Int,
@@ -49,22 +48,16 @@ final class FirestoreFavoritePeopleRepository {
                         profilePath: data["profilePath"] as? String
                     )
                 } ?? []
-
-                // Emit the latest array
                 continuation.yield(people)
             }
-
-            // Remove listener when stream ends
-            continuation.onTermination = { _ in
-                listener.remove()
-            }
+            continuation.onTermination = { _ in listener.remove() }
         }
     }
 
-    /// Adds or updates a person in the user's favorites.
+    /// Adds or updates a favorite person document.
     /// - Parameters:
-    ///   - person: The `PersonRef` to save.
-    ///   - uid: Firebase Auth user ID.
+    ///   - person: Person to persist.
+    ///   - uid: Owner's user ID.
     func addFavorite(person: PersonRef, uid: String) async throws {
         try await firestore
             .collection("users").document(uid)
@@ -77,10 +70,10 @@ final class FirestoreFavoritePeopleRepository {
             ], merge: true)
     }
 
-    /// Removes a person from the user's favorites.
+    /// Removes a favorite person document.
     /// - Parameters:
-    ///   - id: TMDB person ID to remove.
-    ///   - uid: Firebase Auth user ID.
+    ///   - id: TMDB person ID.
+    ///   - uid: Owner's user ID.
     func removeFavorite(id: Int, uid: String) async throws {
         try await firestore
             .collection("users").document(uid)

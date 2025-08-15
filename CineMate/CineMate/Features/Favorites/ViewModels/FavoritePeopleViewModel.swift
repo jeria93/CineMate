@@ -7,128 +7,158 @@
 
 import Foundation
 
-/// ViewModel managing the user's **favorite people**.
-/// Starts/stops a Firestore real-time stream, exposes UI state,
-/// and handles add/remove actions. Skips work in Xcode previews.
+/// Owns UI state for **favorite people**. Supports two modes:
+/// 1) production (Firestore stream) and 2) static previews (local only).
 @MainActor
 final class FavoritePeopleViewModel: ObservableObject {
 
-    /// Current list of favorited people (read-only from outside).
+    // MARK: - UI state
+
+    /// Current favorite people for rendering.
     @Published private(set) var favorites: [PersonRef] = []
 
-    /// User-facing error message (nil when everything is OK).
+    /// User-facing error message or `nil` when OK.
     @Published var errorMessage: String?
 
-    /// Indicates whether the initial load is in progress.
+    /// True while the initial load is in progress.
     @Published var isLoading = false
 
-    // MARK: - Dependencies
+    // MARK: - Mode & dependencies
 
-    /// Firebase Auth service used to resolve the current user.
-    private let authService: FirebaseAuthService
+    /// Runtime mode: `.production` (Firebase) or `.staticPreview` (local).
+    private enum Mode { case production, staticPreview }
 
-    /// Repository for reading/writing favorites in Firestore.
-    private let repository: FirestoreFavoritePeopleRepository
+    /// Current runtime mode.
+    private let mode: Mode
 
-    // MARK: - Runtime flags/tasks
+    /// Auth service (production mode only).
+    private let auth: FirebaseAuthService?
 
-    /// The background task that hosts the Firestore stream.
+    /// Firestore repository (production mode only).
+    private let repo: FirestoreFavoritePeopleRepository?
+
+    // MARK: - Runtime
+
+    /// Active Firestore listener task.
     private var streamTask: Task<Void, Never>?
 
-    /// Prevents starting multiple listeners at the same time.
+    /// Prevents multiple listeners from starting.
     private var isListening = false
 
-    /// Tracks if at least one successful load has completed.
+    /// Tracks if at least one successful load completed.
     private var hasLoadedOnce = false
 
-    /// Creates a new instance with injectable dependencies.
+    // MARK: - Init (production)
+
+    /// Designated initializer for production mode.
     /// - Parameters:
-    ///   - authService: Auth service (defaults to production).
-    ///   - repository: Firestore repository (defaults to production).
-    init(
-        authService: FirebaseAuthService = .init(),
-        repository: FirestoreFavoritePeopleRepository = .init()
-    ) {
-        self.authService = authService
-        self.repository = repository
+    ///   - auth: Auth service.
+    ///   - repo: Firestore repository.
+    init(auth: FirebaseAuthService, repo: FirestoreFavoritePeopleRepository) {
+        self.auth = auth
+        self.repo = repo
+        self.mode = .production
     }
 
-    /// Starts the Firestore listener if not already running.
-    /// Skips entirely in Xcode previews to keep them fast/offline.
-    func startFavoritesListenerIfNeeded() async {
-        // Skip work in previews (keeps Previews fast and offline)
-        guard !ProcessInfo.processInfo.isPreview else { return }
-        guard !isListening else { return }
+    /// Convenience default for app code (`FavoritePeopleViewModel()`).
+    convenience init() {
+        self.init(auth: FirebaseAuthService(), repo: FirestoreFavoritePeopleRepository())
+    }
 
+    // MARK: - Init (static preview)
+
+    /// Static preview initializer – no Firebase, no networking.
+    /// - Parameter people: Seeded favorites for design-time UI.
+    init(static people: [PersonRef]) {
+        self.auth = nil
+        self.repo = nil
+        self.mode = .staticPreview
+        self.favorites = people
+    }
+
+    deinit { streamTask?.cancel() }
+
+    // MARK: - Public API
+
+    /// Starts the Firestore stream (no-op in static preview mode).
+    func startFavoritesListenerIfNeeded() async {
+        guard mode == .production else { return }
+        guard !isListening else { return }
         isListening = true
         errorMessage = nil
         if !hasLoadedOnce { isLoading = true }
 
-        // Capture repository strongly and avoid self where possible
         do {
-            let uid = try await authService.isLoggedIn()
+            guard let auth, let repo else { return }
+            let uid = try await auth.isLoggedIn()
 
             streamTask?.cancel()
-            let repo = repository
             streamTask = Task { [weak self] in
+                guard let self else { return }
                 for await people in repo.favoritePeopleStream(uid: uid) {
-                    await MainActor.run {
-                        self?.favorites = people
-                        self?.isLoading = false
-                        self?.hasLoadedOnce = true
-                        self?.errorMessage = nil
-                    }
+                    self.favorites = people
+                    self.isLoading = false
+                    self.hasLoadedOnce = true
+                    self.errorMessage = nil
                 }
             }
         } catch {
             isLoading = false
-            errorMessage = error.localizedDescription
             isListening = false
+            errorMessage = error.localizedDescription
         }
     }
 
-    /// Stops the active Firestore listener task (if any).
+    /// Stops the Firestore stream (no-op in static preview mode).
     func stopFavoritesListenerIfNeeded() {
-        guard !ProcessInfo.processInfo.isPreview else { return }
+        guard mode == .production else { return }
         streamTask?.cancel()
         streamTask = nil
         isListening = false
     }
 
-    /// Checks if a given person ID is already favorited.
+    /// Returns true if the given person is already a favorite.
     /// - Parameter id: TMDB person ID.
-    /// - Returns: `true` if the person exists in `favorites`.
     func isFavorite(id: Int) -> Bool {
         favorites.contains { $0.id == id }
     }
 
-    /// Toggles a person as a favorite for the current user.
-    /// Performs an optimistic UI update and falls back to the stream.
-    /// - Parameter person: The person to add/remove.
+    /// Toggles a person as favorite.
+    /// - Optimistic local update in previews; Firestore in production.
     func toggleFavorite(person: PersonRef) async {
-        do {
-            let uid = try await authService.isLoggedIn()
+        switch mode {
+        case .staticPreview:
             if isFavorite(id: person.id) {
-                try await repository.removeFavorite(id: person.id, uid: uid)
                 favorites.removeAll { $0.id == person.id }
             } else {
-                try await repository.addFavorite(person: person, uid: uid)
                 favorites.insert(person, at: 0)
             }
-        } catch {
-            errorMessage = error.localizedDescription
+
+        case .production:
+            do {
+                guard let auth, let repo else { return }
+                let uid = try await auth.isLoggedIn()
+                if isFavorite(id: person.id) {
+                    try await repo.removeFavorite(id: person.id, uid: uid)
+                    favorites.removeAll { $0.id == person.id }
+                } else {
+                    try await repo.addFavorite(person: person, uid: uid)
+                    favorites.insert(person, at: 0)
+                }
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 }
 
-/// Preview-only helper to inject state into the ViewModel
-/// without hitting Firestore or changing production paths.
+/// Convenience alias initializer to write `FavoritePeopleViewModel(preview: people)`
+/// from preview factories while keeping the static initializer internal.
+@MainActor
 extension FavoritePeopleViewModel {
-
-    /// Sets preview data for `favorites` and clears errors.
-    /// - Parameter favorites: The list to present in previews.
-    func _setPreviewFavorites(_ favorites: [PersonRef]) {
-        self.favorites = favorites
-        self.errorMessage = nil
+    /// Creates a static preview VM with seeded people.
+    /// - Parameter people: Favorites to expose to the UI.
+    convenience init(preview people: [PersonRef]) {
+        self.init(static: people)
     }
 }

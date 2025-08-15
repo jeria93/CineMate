@@ -7,74 +7,36 @@
 
 import Foundation
 
-/// # FavoriteMoviesViewModel
-///
-/// ViewModel responsible for **Favorites** feature state management.
-/// Coordinates between Firebase Authentication and Firestore to:
-/// - Ensure a user session exists (anonymous sign-in if needed)
-/// - Maintain a real-time stream of the user's favorite movies
-/// - Optimistically add/remove favorites in response to user actions
-///
-/// ## Responsibilities
-/// 1. **Expose state** (`favoriteMovies`, `isLoading`, `errorMessage`) for the UI to render
-/// 2. **Start/stop** a Firestore real-time listener for the current user's favorites
-/// 3. **Prevent duplicates** by avoiding multiple concurrent listeners
-/// 4. **Handle errors** and only show loading on the first fetch
-/// 5. **Toggle favorites** optimistically for fast UI feedback
-///
-/// ## Usage
-/// ```swift
-/// @StateObject var favVM = FavoriteMoviesViewModel()
-///
-/// // View lifecycle
-/// .task { await favVM.startFavoritesListenerIfNeeded() }
-/// .onDisappear { favVM.stopFavoritesListenerIfNeeded() }
-///
-/// // Toggle from a button
-/// Button {
-///     Task { await favVM.toggleFavorite(movie: movie) }
-/// } label: { ... }
-/// ```
-///
-/// ## Notes
-/// - Runs on `@MainActor` for safe UI state updates
-/// - Firestore stream runs in a background task and only hops to main actor for `@Published` changes
-/// - Caches state between navigations to avoid UI flicker
+/// Owns UI state and Firestore streaming for a user's **favorite movies**.
+/// Runs on the main actor; skips network work during Xcode Previews.
 @MainActor
 final class FavoriteMoviesViewModel: ObservableObject {
 
-    // MARK: - Published UI State
-
-    /// List of movies currently marked as favorites
+    /// Current favorite movies for rendering.
     @Published var favoriteMovies: [Movie] = []
 
-    /// Indicates if the initial data load is in progress
+    /// True while the initial load is in progress.
     @Published var isLoading = false
 
-    /// Contains an error message for the UI if loading fails
-    @Published var errorMessage: String? = nil
+    /// User-facing error message or `nil` when OK.
+    @Published var errorMessage: String?
 
-    // MARK: - Dependencies
-
-    /// Firestore repository for reading/writing favorites
+    /// Firestore repository used for reads/writes.
     private let repository: FirestoreFavoritesRepository
 
-    /// Authentication service to ensure a valid (anonymous) user session
+    /// Auth service used to obtain a UID.
     private let authService: FirebaseAuthService
 
-    // MARK: - Runtime Flags
+    /// Active Firestore listener task.
+    private var favoritesTask: Task<Void, Never>?
 
-    /// Active Firestore listener task
-    private var favoritesTask: Task<Void, Never>? = nil
-
-    /// Tracks whether at least one successful load has completed
+    /// Tracks if at least one successful load completed.
     private var hasLoadedOnce = false
 
-    /// Prevents starting multiple listeners at the same time
+    /// Prevents multiple listeners from starting.
     private var isListening = false
 
-    // MARK: - Init / Deinit
-
+    /// Designated initializer with injectable dependencies.
     init(
         repository: FirestoreFavoritesRepository = .init(),
         authService: FirebaseAuthService = .init()
@@ -83,29 +45,19 @@ final class FavoriteMoviesViewModel: ObservableObject {
         self.authService = authService
     }
 
-    deinit {
-        favoritesTask?.cancel()
-    }
+    deinit { favoritesTask?.cancel() }
 
-    // MARK: - View Lifecycle Hooks
-
-    /// Starts the real-time Firestore listener if not already running
-    /// - Skips execution in Xcode previews
-    /// - Shows loading only on the very first fetch
+    /// Starts the Firestore stream (no-op in previews).
     func startFavoritesListenerIfNeeded() async {
         guard !ProcessInfo.processInfo.isPreview else { return }
         guard !isListening else { return }
 
         isListening = true
         errorMessage = nil
-        if !hasLoadedOnce {
-            isLoading = true
-        }
+        if !hasLoadedOnce { isLoading = true }
 
         do {
             let uid = try await authService.isLoggedIn()
-
-            // Cancel any existing listener before starting a new one
             favoritesTask?.cancel()
             favoritesTask = Task { [repository] in
                 for await movies in repository.favoritesStream(for: uid) {
@@ -124,8 +76,7 @@ final class FavoriteMoviesViewModel: ObservableObject {
         }
     }
 
-    /// Stops the real-time listener without clearing the current data
-    /// - This prevents UI flicker when navigating back to the view
+    /// Stops the active stream without clearing current UI state.
     func stopFavoritesListenerIfNeeded() {
         guard !ProcessInfo.processInfo.isPreview else { return }
         favoritesTask?.cancel()
@@ -133,15 +84,11 @@ final class FavoriteMoviesViewModel: ObservableObject {
         isListening = false
     }
 
-    // MARK: - User Actions
-
-    /// Toggles a movie as favorite for the current user
-    /// - Optimistically updates the UI before Firestore confirms
-    /// - Falls back to stream data if any conflict occurs
+    /// Optimistically toggles a movie as favorite for the current user.
+    /// Falls back to stream updates if a conflict happens.
     func toggleFavorite(movie: Movie) async {
         do {
             let uid = try await authService.isLoggedIn()
-
             if favoriteMovies.contains(where: { $0.id == movie.id }) {
                 try await repository.removeFavorite(id: movie.id, for: uid)
                 favoriteMovies.removeAll { $0.id == movie.id }
@@ -152,5 +99,21 @@ final class FavoriteMoviesViewModel: ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+}
+
+/// Static preview builder – never touches Firebase.
+/// Produces deterministic, fully local state for SwiftUI previews.
+@MainActor
+extension FavoriteMoviesViewModel {
+
+    /// Creates a VM seeded with static data for previews.
+    /// - Parameter movies: List to expose to the UI.
+    static func preview(with movies: [Movie] = []) -> FavoriteMoviesViewModel {
+        let vm = FavoriteMoviesViewModel()
+        vm.favoriteMovies = movies
+        vm.isLoading = false
+        vm.errorMessage = nil
+        return vm
     }
 }

@@ -7,31 +7,28 @@
 
 import Foundation
 
-/// Factory helpers for building `FavoritePeopleViewModel` instances
-/// in known preview states (few/empty/many) without touching Firestore.
+/// Factory helpers for `FavoritePeopleViewModel` preview states.
+/// Uses the VM's static mode – never touches Firestore.
 @MainActor
 extension PreviewFactory {
 
-    /// Core builder that injects mock favorites (bypasses `private(set)` via a preview helper).
-    /// - Parameter people: The list to expose as current favorites.
-    /// - Returns: A preconfigured `FavoritePeopleViewModel`.
+    /// Core builder – seeds the VM with a fixed list.
+    /// - Parameter people: People to expose in the UI.
     static func favoritePeopleVM(with people: [PersonRef]) -> FavoritePeopleViewModel {
-        let vm = FavoritePeopleViewModel()
-        vm._setPreviewFavorites(people)
-        return vm
+        FavoritePeopleViewModel(preview: people)
     }
 
-    /// Ready-made: a small, realistic set of favorites.
+    /// Default scenario: a small, human-readable set.
     static func favoritePeopleDefaultVM() -> FavoritePeopleViewModel {
         favoritePeopleVM(with: FavoritePeoplePreviewData.few())
     }
 
-    /// Ready-made: no favorites yet (empty state).
+    /// Empty scenario: no favorite people.
     static func favoritePeopleEmptyVM() -> FavoritePeopleViewModel {
         favoritePeopleVM(with: FavoritePeoplePreviewData.empty())
     }
 
-    /// Ready-made: many favorites to test grid density and performance.
+    /// Many scenario: grid/scroll density checks.
     static func favoritePeopleManyVM() -> FavoritePeopleViewModel {
         favoritePeopleVM(with: FavoritePeoplePreviewData.many())
     }

@@ -29,9 +29,6 @@ struct MovieListView: View {
     }
 }
 
-#if DEBUG
-// MARK: - Previews
 #Preview("MovieList - Default") {
     MovieListView.previewWithMovies.withPreviewNavigation()
 }
-#endif

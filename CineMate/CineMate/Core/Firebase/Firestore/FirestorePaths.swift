@@ -8,28 +8,27 @@
 import Foundation
 import FirebaseFirestore
 
-/// # FirestorePaths
-/// Centralizes Firestore path construction to avoid magic strings and keep paths consistent.
-/// Keep path logic here so calling sites stay clean and testable.
+/// Central place for building Firestore paths.
+/// Keeps string literals out of call sites and ensures consistency.
 enum FirestorePaths {
 
-    /// `/users/{uid}/favorites` – the user's movie favorites collection.
+    /// `/users/{uid}/favorites` – movie favorites of a user.
     /// - Parameter uid: Firebase Auth user ID.
     /// - Returns: Collection reference for the user's movie favorites.
     static func userFavorites(uid: String) -> CollectionReference {
         Firestore.firestore()
-            .collection("users")      // Root: all users
-            .document(uid)            // User document
-            .collection("favorites")  // Movie favorites subcollection
+            .collection("users")
+            .document(uid)
+            .collection("favorites")
     }
 
-    /// `/users/{uid}/favorite_people` – the user's people (actors/directors) favorites collection.
+    /// `/users/{uid}/favorite_people` – people favorites of a user.
     /// - Parameter uid: Firebase Auth user ID.
     /// - Returns: Collection reference for the user's people favorites.
     static func userFavoritePeople(uid: String) -> CollectionReference {
         Firestore.firestore()
-            .collection("users")             // Root: all users
-            .document(uid)                   // User document
-            .collection("favorite_people")   // People favorites subcollection
+            .collection("users")
+            .document(uid)
+            .collection("favorite_people")
     }
 }
