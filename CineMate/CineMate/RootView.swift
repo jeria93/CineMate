@@ -51,9 +51,9 @@ struct RootView: View {
 
 
                 FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
-                    .tabItem { Label("Favorites", systemImage: "heart.fill") }
-                    .tag(MainTab.favorites)
-                
+                     .tabItem { Label("Favorites", systemImage: "heart.fill") }
+                     .tag(MainTab.favorites)
+
                 DiscoverView(viewModel: discoverVM)
                     .tabItem { Label("Discover", systemImage: "safari") }
                     .tag(MainTab.discover)
@@ -67,6 +67,7 @@ struct RootView: View {
                     .tag(MainTab.account)
             }
             .task { await favVM.startFavoritesListenerIfNeeded() }
+            .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
             //            .onDisappear { favVM.stopFavoritesListenerIfNeeded() } test if app crashes or has other unexpected behaviour
             .onChange(of: selectedTab) {
                 navigator.reset()
@@ -96,7 +97,8 @@ private extension RootView {
 
         case .person(let id):
             CastMemberDetailView(member: member(for: id),
-                                 viewModel: personVM)
+                                 personViewModel: personVM,
+                                 favoritePeopleVM: favoritePeopleVM)
 
         case .genre(let name):
             GenreDetailView(genreName: name)

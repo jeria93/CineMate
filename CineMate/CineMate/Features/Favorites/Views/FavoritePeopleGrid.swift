@@ -9,44 +9,62 @@ import SwiftUI
 
 struct FavoritePeopleGrid: View {
     @ObservedObject var viewModel: FavoritePeopleViewModel
+    @EnvironmentObject private var navigator: AppNavigator
 
-    private let columns = [
-        GridItem(.adaptive(minimum: 100), spacing: 16)
-    ]
+    private let cols = [GridItem(.adaptive(minimum: 110), spacing: 12)]
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(viewModel.favorites, id: \.id) { person in
-                    PersonCardView(person: person)
+        if viewModel.favorites.isEmpty {
+            EmptyStateView(systemImage: "person", title: "No favorite people",
+                           message: "Tap the heart on a person")
+        } else {
+            ScrollView {
+                LazyVGrid(columns: cols, spacing: 12) {
+                    ForEach(viewModel.favorites) { person in
+                        VStack(spacing: 8) {
+                            AsyncImage(url: person.profileSmallURL) { phase in
+                                if let image = phase.image {
+                                    image.resizable().scaledToFill()
+                                }
+                                else {
+                                    Color.gray
+                                        .opacity(0.2)
+                                        .overlay(
+                                            Image(systemName: "person")
+                                                .font(.largeTitle)
+                                        )
+                                }
+                            }
+                            .frame(width: 110, height: 150)
+                            .clipShape(
+                                RoundedRectangle(
+                                    cornerRadius: 12,
+                                    style: .continuous
+                                )
+                            )
+
+                            Text(person.name)
+                                .font(.footnote)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.center)
+                        }
+                        .onTapGesture { navigator.goToPerson(id: person.id) }
+                    }
                 }
-            }
-            .padding()
-        }
-        .overlay {
-            if viewModel.isLoading {
-                LoadingView(title: "Loading favorites...")
-            } else if let error = viewModel.errorMessage {
-                ErrorMessageView(title: "Error", message: error)
-            } else if viewModel.favorites.isEmpty {
-                EmptyStateView(
-                    systemImage: "star",
-                    title: "No Favorites Yet",
-                    message: "People you add to favorites will appear here."
-                )
+                .padding()
             }
         }
     }
 }
 
 #Preview("Few") {
-    FavoritePeopleGrid.previewFew
+    FavoritePeopleGrid.previewFew.withPreviewNavigation()
 }
 
 #Preview("Many") {
-    FavoritePeopleGrid.previewMany
+    FavoritePeopleGrid.previewMany.withPreviewNavigation()
 }
 
 #Preview("Empty") {
-    FavoritePeopleGrid.previewEmpty
+    FavoritePeopleGrid.previewEmpty.withPreviewNavigation()
 }

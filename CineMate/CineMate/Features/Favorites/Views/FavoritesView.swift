@@ -34,6 +34,6 @@ struct FavoritesView: View {
     }
 }
 
-#Preview("Default")     { FavoritesView.previewDefault }
-#Preview("Movies only") { FavoritesView.previewMoviesOnly }
-#Preview("People many") { FavoritesView.previewPeopleMany }
+#Preview("Default")     { FavoritesView.previewDefault.withPreviewNavigation() }
+#Preview("Movies only") { FavoritesView.previewMoviesOnly.withPreviewNavigation() }
+#Preview("People many") { FavoritesView.previewPeopleMany.withPreviewNavigation() }
