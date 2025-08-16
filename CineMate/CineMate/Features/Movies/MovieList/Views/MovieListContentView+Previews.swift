@@ -14,7 +14,7 @@ extension MovieListContentView {
         MovieListContentView(
             viewModel: PreviewFactory.movieListViewModel(),
             castViewModel: PreviewFactory.castViewModel(),
-            onSelect: { _ in }
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
 
@@ -23,7 +23,7 @@ extension MovieListContentView {
         MovieListContentView(
             viewModel: PreviewFactory.loadingMovieViewModel(),
             castViewModel: PreviewFactory.castViewModel(),
-            onSelect: { _ in }
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
 
@@ -32,7 +32,7 @@ extension MovieListContentView {
         MovieListContentView(
             viewModel: PreviewFactory.errorMovieViewModel(),
             castViewModel: PreviewFactory.castViewModel(),
-            onSelect: { _ in }
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
 }

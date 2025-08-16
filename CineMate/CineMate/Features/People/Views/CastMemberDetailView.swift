@@ -9,34 +9,37 @@ import SwiftUI
 
 struct CastMemberDetailView: View {
     let member: CastMember
-    @ObservedObject var viewModel: PersonViewModel
-    
+    @ObservedObject var personViewModel: PersonViewModel
+    @ObservedObject var favoritePeopleVM: FavoritePeopleViewModel
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 CastMemberImageView(
-                    url: viewModel.personDetail?.profileURL ?? member.profileURL
+                    url: personViewModel.personDetail?.profileURL ?? member.profileURL
                 )
                 .padding(.top, 16)
                 
                 HStack(spacing: 12) {
-                    Text(viewModel.personDetail?.name ?? member.name)
+                    Text(personViewModel.personDetail?.name ?? member.name)
                         .font(.title)
                         .bold()
                     
-                    FavoriteButton(
-                        isFavorite: viewModel.isFavoriteCast(id: member.id),
-                        toggleAction: { viewModel.toggleFavoriteCast(id: member.id) }
-                    )
+                    HeartButton(isOn: favoritePeopleVM.isFavorite(id: member.id)) {
+                        let name = personViewModel.personDetail?.name ?? member.name
+                        let path = personViewModel.personDetail?.profilePath ?? member.profilePath
+                        let ref = PersonRef(id: member.id, name: name, profilePath: path)
+                        Task { await favoritePeopleVM.toggleFavorite(person: ref) }
+                    }
                 }
                 
-                if let role = viewModel.personDetail?.knownForDepartment ?? member.character {
+                if let role = personViewModel.personDetail?.knownForDepartment ?? member.character {
                     Text("Role: \(role)")
                         .font(.headline)
                         .foregroundStyle(.secondary)
                 }
                 
-                if let detail = viewModel.personDetail {
+                if let detail = personViewModel.personDetail {
                     SectionHeader(title: "Biography")
                     PersonInfoView(detail: detail)
                     
@@ -44,25 +47,25 @@ struct CastMemberDetailView: View {
                     PersonLinksView(
                         imdbURL: detail.imdbURL,
                         tmdbURL: detail.tmdbURL,
-                        instagramURL: viewModel.personExternalIDs?.instagramURL,
-                        twitterURL: viewModel.personExternalIDs?.twitterURL,
-                        facebookURL: viewModel.personExternalIDs?.facebookURL
+                        instagramURL: personViewModel.personExternalIDs?.instagramURL,
+                        twitterURL: personViewModel.personExternalIDs?.twitterURL,
+                        facebookURL: personViewModel.personExternalIDs?.facebookURL
                     )
                     
                     SectionHeader(title: "Details")
                     PersonMetaInfoView(detail: detail)
                 }
                 
-                if !viewModel.knownForMovies.isEmpty {
-                    KnownForScrollView(movies: viewModel.knownForMovies, movieViewModel: nil)
+                if !personViewModel.knownForMovies.isEmpty {
+                    KnownForScrollView(movies: personViewModel.knownForMovies, movieViewModel: nil)
                 }
                 
-                if !viewModel.personMovies.isEmpty {
+                if !personViewModel.personMovies.isEmpty {
                     SectionHeader(title: "Filmography")
-                    HorizontalMoviesScrollView(filmography: viewModel.personMovies)
+                    HorizontalMoviesScrollView(filmography: personViewModel.personMovies)
                 }
                 
-                if let error = viewModel.errorMessage {
+                if let error = personViewModel.errorMessage {
                     Text("Error: \(error)")
                         .foregroundStyle(.red)
                 }
@@ -71,7 +74,7 @@ struct CastMemberDetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .overlay {
-            if viewModel.isLoading {
+            if personViewModel.isLoading {
                 LoadingView(title: "Loading…")
                     .scaleEffect(1.3)
                     .padding(32)
@@ -80,18 +83,18 @@ struct CastMemberDetailView: View {
             }
         }
         .task(id: member.id) {
-            viewModel.resetForNewPerson()
+            personViewModel.resetForNewPerson()
             
             await withTaskGroup(of: Void.self) { group in
-                group.addTask { await viewModel.loadPersonDetail(for: member.id) }
-                group.addTask { await viewModel.loadPersonMovieCredits(for: member.id) }
+                group.addTask { await personViewModel.loadPersonDetail(for: member.id) }
+                group.addTask { await personViewModel.loadPersonMovieCredits(for: member.id) }
             }
         }
         .onAppear {
             print("[CastMemberDetailView] appeared for member id:", member.id)
         }
         .onDisappear {
-            viewModel.cancelOngoingTasks(for: member.id)
+            personViewModel.cancelOngoingTasks(for: member.id)
         }
     }
 }

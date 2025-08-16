@@ -9,6 +9,9 @@ import SwiftUI
 
 struct MovieRowView: View {
     let movie: Movie
+    let isFavorite: Bool
+    let onToggleFavorite: () -> Void
+
     @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
@@ -26,7 +29,18 @@ struct MovieRowView: View {
                 overviewFont: .subheadline,
                 showFullOverview: false
             )
+
             Spacer()
+
+            Button {
+                onToggleFavorite()
+            } label: {
+                Image(systemName: isFavorite ? "heart.fill" : "heart")
+                    .foregroundStyle(isFavorite ? .red : .gray)
+                    .font(.title3)
+            }
+            .buttonStyle(.borderless)
+
         }
         .padding(.vertical, 8)
         .background(Color(.systemBackground))
@@ -38,22 +52,22 @@ struct MovieRowView: View {
     }
 }
 
-#Preview("Default") {
-    MovieRowView.previewDefault.withPreviewNavigation()
-}
-
-#Preview("No poster") {
-    MovieRowView.previewNoPoster.withPreviewNavigation()
-}
-
-#Preview("No overview") {
-    MovieRowView.previewNoOverview.withPreviewNavigation()
-}
-
-#Preview("Long overview") {
-    MovieRowView.previewLongOverview.withPreviewNavigation()
-}
-
-#Preview("Minimal data") {
-    MovieRowView.previewMinimalData.withPreviewNavigation()
-}
+//#Preview("Default") {
+//    MovieRowView.previewDefault.withPreviewNavigation()
+//}
+//
+//#Preview("No poster") {
+//    MovieRowView.previewNoPoster.withPreviewNavigation()
+//}
+//
+//#Preview("No overview") {
+//    MovieRowView.previewNoOverview.withPreviewNavigation()
+//}
+//
+//#Preview("Long overview") {
+//    MovieRowView.previewLongOverview.withPreviewNavigation()
+//}
+//
+//#Preview("Minimal data") {
+//    MovieRowView.previewMinimalData.withPreviewNavigation()
+//}

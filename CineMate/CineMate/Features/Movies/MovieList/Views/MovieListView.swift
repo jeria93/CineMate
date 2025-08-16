@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MovieListView: View {
     @ObservedObject var viewModel: MovieViewModel
+    @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
     let castViewModel: CastViewModel
     @EnvironmentObject private var navigator: AppNavigator
 
@@ -19,25 +20,15 @@ struct MovieListView: View {
             MovieListContentView(
                 viewModel: viewModel,
                 castViewModel: castViewModel,
-                onSelect: { movie in
-                    viewModel.cacheStub(movie)
-                    navigator.goToMovie(id: movie.id)
-                }
+                favoriteViewModel: favoriteViewModel
             )
         }
         .navigationTitle(viewModel.selectedCategory.displayName)
-        .task(id: viewModel.selectedCategory) {
-            await viewModel.loadMovies()
-        }
-        .refreshable {
-            await viewModel.loadMovies()
-        }
+        .task(id: viewModel.selectedCategory) { await viewModel.loadMovies() }
+        .refreshable { await viewModel.loadMovies() }
     }
 }
 
-#if DEBUG
-// MARK: - Previews
 #Preview("MovieList - Default") {
     MovieListView.previewWithMovies.withPreviewNavigation()
 }
-#endif

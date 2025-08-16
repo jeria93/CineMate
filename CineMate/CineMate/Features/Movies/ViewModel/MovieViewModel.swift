@@ -67,9 +67,6 @@ final class MovieViewModel: ObservableObject {
     /// Optional error message to display in the UI
     @Published var errorMessage: String?
 
-    /// Set of favorite movie IDs stored locally (in-memory)
-    @Published var favoriteMovies: Set<Int> = []
-
     // MARK: - Pagination
     /// Manages page tracking and prevents duplicate next-page fetches
     let pagination = PaginationManager()
@@ -190,22 +187,6 @@ final class MovieViewModel: ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
         }
-    }
-
-    // MARK: - Favorites
-
-    /// Adds or removes a movie from the in-memory favorites set.
-    func toggleFavorite(for movie: Movie) {
-        if favoriteMovies.contains(movie.id) {
-            favoriteMovies.remove(movie.id)
-        } else {
-            favoriteMovies.insert(movie.id)
-        }
-    }
-
-    /// Returns `true` if the given movie is currently marked as favorite.
-    func isFavorite(_ movie: Movie) -> Bool {
-        favoriteMovies.contains(movie.id)
     }
 
     // MARK: - Helpers

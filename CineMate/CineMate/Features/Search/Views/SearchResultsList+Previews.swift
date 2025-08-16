@@ -9,14 +9,18 @@ import SwiftUI
 
 extension SearchResultsList {
 
-    /// Preview with a list of common mock movies.
+    /// Preview with a list of common mock movies and a couple marked as favorites.
     static var previewDefault: some View {
         SharedPreviewMovies.resetIDs()
-        return SearchResultsList(movies: SharedPreviewMovies.moviesList, loadMoreAction: {_ in })
-    }
+        let movies = SharedPreviewMovies.moviesList
+        // Mark the first two items as favorites for visual verification
+        let favIDs = Set(movies.prefix(2).map { $0.id })
 
-    /// Preview with an empty list to simulate no results.
-    static var previewEmpty: some View {
-        SearchResultsList(movies: [], loadMoreAction: {_ in })
+        return SearchResultsList(
+            movies: movies,
+            favoriteIDs: favIDs,
+            onToggleFavorite: { _ in },
+            loadMoreAction: { _ in }
+        )
     }
 }

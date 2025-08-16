@@ -9,10 +9,11 @@ import SwiftUI
 
 struct MovieDetailView: View {
     let movieId: Int
-    @ObservedObject var viewModel: MovieViewModel
+    @ObservedObject var movieViewModel: MovieViewModel
     @ObservedObject var castViewModel: CastViewModel
+    @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
-    private var movie: Movie? { viewModel.movie(by: movieId) }
+    private var movie: Movie? { movieViewModel.movie(by: movieId) }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -28,16 +29,12 @@ struct MovieDetailView: View {
                             height: 450
                         )
                         .overlay(alignment: .topTrailing) {
-                            FavoriteButton(
-                                isFavorite: viewModel.isFavorite(movie),
-                                toggleAction: { viewModel.toggleFavorite(for: movie) }
-                            )
-                            .padding()
+                            MovieFavoriteButtonView(movie: movie, favoriteViewModel: favoriteViewModel)
                         }
 
-                        MovieDetailInfoView(movie: movie, viewModel: viewModel)
+                        MovieDetailInfoView(movie: movie, viewModel: movieViewModel)
                         MovieDetailActionBarView(movie: movie)
-                    } else if viewModel.isLoadingDetail {
+                    } else if movieViewModel.isLoadingDetail {
                         LoadingView(title: "Loading movie…")
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .padding(.top, 80)
@@ -46,26 +43,27 @@ struct MovieDetailView: View {
                             title: "Failed to load movie",
                             message: "Something went wrong or no data was found.",
                             onRetry: {
-                                Task { await viewModel.loadMovieDetails(for: movieId) }
+                                Task { await movieViewModel.loadMovieDetails(for: movieId) }
                             }
                         )
                         .padding(.top, 80)
                     }
 
-                    if let credits = viewModel.movieCredits {
+                    if let credits = movieViewModel.movieCredits {
                         CreditsSection(credits: credits)
                     }
 
-                    if let recs = viewModel.recommendedMovies, !recs.isEmpty {
+                    if let recs = movieViewModel.recommendedMovies, !recs.isEmpty {
                         RelatedMoviesSection(
                             movies: recs,
-                            movieViewModel: viewModel,
+                            movieViewModel: movieViewModel,
                             castViewModel: castViewModel
                         )
                     }
                 }
                 .padding(.horizontal)
             }
+            .scrollIndicators(.hidden)
             .onAppear {
                 proxy.scrollTo("TOP", anchor: .top)
                 print("[MovieDetailView] appeared for id:", movieId)
@@ -73,12 +71,12 @@ struct MovieDetailView: View {
             .onChange(of: movieId) { proxy.scrollTo("TOP", anchor: .top) }
         }
         .task(id: movieId) {
-            await viewModel.loadMovieDetails(for: movieId)
+            await movieViewModel.loadMovieDetails(for: movieId)
         }
         .navigationTitle(movie?.title ?? "Loading…")
         .navigationBarTitleDisplayMode(.inline)
         .overlay {
-            if viewModel.isLoadingDetail && movie != nil {
+            if movieViewModel.isLoadingDetail && movie != nil {
                 LoadingView(title: "Loading details…")
                     .scaleEffect(1.2)
             }
@@ -86,18 +84,14 @@ struct MovieDetailView: View {
     }
 }
 
-// Reuse existing small component
 private struct CreditsSection: View {
     let credits: MovieCredits
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             MovieCreditsView(credits: credits)
-
             if let director = credits.crew.first(where: { $0.job == "Director" }) {
                 DirectorView(director: director)
             }
-
             CastCarouselView(cast: credits.cast)
         }
     }

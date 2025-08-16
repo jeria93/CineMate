@@ -7,37 +7,56 @@
 
 import SwiftUI
 
-/// Provides SwiftUI previews for all main SearchView states.
-/// Uses `PreviewFactory` for consistent mock data and layout testing.
+/// Provides SwiftUI previews for all primary `SearchView` states.
+/// Uses `PreviewFactory` to supply deterministic `SearchViewModel` and
+/// a mocked `FavoriteMoviesViewModel` for consistent layout and behavior.
 extension SearchView {
 
-    /// Preview showing a list of search results for a valid query.
+    /// Results state: valid query with a populated list.
     static var previewDefault: some View {
-        SearchView(viewModel: PreviewFactory.searchViewModel())
+        SearchView(
+            viewModel: PreviewFactory.searchViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 
-    /// Preview showing the empty state when no results are found.
+    /// Empty state: valid query that returns no results.
     static var previewEmpty: some View {
-        SearchView(viewModel: PreviewFactory.emptySearchViewModel())
+        SearchView(
+            viewModel: PreviewFactory.emptySearchViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 
-    /// Preview showing a loading spinner while searching.
+    /// Loading state: shows spinner while searching.
     static var previewLoading: some View {
-        SearchView(viewModel: PreviewFactory.loadingSearchViewModel())
+        SearchView(
+            viewModel: PreviewFactory.loadingSearchViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 
-    /// Preview showing an error message after a failed search.
+    /// Error state: shows an error message after a failed search.
     static var previewError: some View {
-        SearchView(viewModel: PreviewFactory.errorSearchViewModel())
+        SearchView(
+            viewModel: PreviewFactory.errorSearchViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 
-    /// Preview showing a prompt when the search field is empty.
+    /// Prompt state: empty input prompting the user to start typing.
     static var previewPrompt: some View {
-        SearchView(viewModel: PreviewFactory.promptSearchViewModel())
+        SearchView(
+            viewModel: PreviewFactory.promptSearchViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 
-    /// Preview showing a validation error for an invalid query.
+    /// Validation state: invalid query with a visible validation message.
     static var previewValidation: some View {
-        SearchView(viewModel: PreviewFactory.invalidSearchViewModel())
+        SearchView(
+            viewModel: PreviewFactory.invalidSearchViewModel(),
+            favoriteViewModel: PreviewFactory.favoritesViewModel()
+        )
     }
 }

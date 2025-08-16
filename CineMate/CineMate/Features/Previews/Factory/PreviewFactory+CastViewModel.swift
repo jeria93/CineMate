@@ -26,7 +26,8 @@ extension PreviewFactory {
         return NavigationStack {
             CastMemberDetailView(
                 member: CastMemberPreviewData.markHamill,
-                viewModel: .preview
+                personViewModel: .preview,
+                favoritePeopleVM: PreviewFactory.favoritePeopleDefaultVM()
             )
         }
         .environmentObject(nav)

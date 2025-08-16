@@ -39,25 +39,26 @@ struct RootView: View {
     let accountVM : AccountViewModel
     let discoverVM: DiscoverViewModel
     let personVM  : PersonViewModel
+    let favoritePeopleVM: FavoritePeopleViewModel
 
     var body: some View {
         NavigationStack(path: $navigator.path) {
 
             TabView(selection: $selectedTab) {
-                MovieListView(viewModel: movieVM, castViewModel: castVM)
+                MovieListView(viewModel: movieVM, favoriteViewModel: favVM, castViewModel: castVM)
                     .tabItem { Label("Movies", systemImage: "film") }
                     .tag(MainTab.movies)
 
 
-                FavoriteMoviesView(viewModel: favVM)
-                    .tabItem { Label("Favorites", systemImage: "heart.fill") }
-                    .tag(MainTab.favorites)
+                FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
+                     .tabItem { Label("Favorites", systemImage: "heart.fill") }
+                     .tag(MainTab.favorites)
 
                 DiscoverView(viewModel: discoverVM)
                     .tabItem { Label("Discover", systemImage: "safari") }
                     .tag(MainTab.discover)
 
-                SearchView(viewModel: searchVM)
+                SearchView(viewModel: searchVM, favoriteViewModel: favVM)
                     .tabItem { Label("Search", systemImage: "magnifyingglass") }
                     .tag(MainTab.search)
 
@@ -65,6 +66,9 @@ struct RootView: View {
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
                     .tag(MainTab.account)
             }
+            .task { await favVM.startFavoritesListenerIfNeeded() }
+            .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
+            //            .onDisappear { favVM.stopFavoritesListenerIfNeeded() } test if app crashes or has other unexpected behaviour
             .onChange(of: selectedTab) {
                 navigator.reset()
             }
@@ -86,13 +90,15 @@ private extension RootView {
         case .movie(let id):
             MovieDetailView(
                 movieId: id,
-                viewModel: movieVM,
-                castViewModel: castVM
+                movieViewModel: movieVM,
+                castViewModel: castVM,
+                favoriteViewModel: favVM
             )
 
         case .person(let id):
             CastMemberDetailView(member: member(for: id),
-                                 viewModel: personVM)
+                                 personViewModel: personVM,
+                                 favoritePeopleVM: favoritePeopleVM)
 
         case .genre(let name):
             GenreDetailView(genreName: name)

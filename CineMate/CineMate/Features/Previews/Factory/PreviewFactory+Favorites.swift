@@ -7,51 +7,57 @@
 
 import SwiftUI
 
-/// Preview factory helpers for `FavoriteMoviesViewModel`.
-///
-/// Simulates various preview states (default, empty, loading, error) for UI testing.
-/// These are injected into `FavoriteMoviesView` previews to avoid live Firestore or Auth.
+/// Factory helpers for building `FavoriteMoviesViewModel` preview states.
+/// Purely static – zero Firebase/Auth calls for fast, reliable previews.
 @MainActor
 extension PreviewFactory {
 
-    /// A default state view model containing 3 mock favorite movies.
-    ///
-    /// `PreviewID.reset()` ensures ID uniqueness across previews.
-    static func favoriteMoviesViewModel() -> FavoriteMoviesViewModel {
-        PreviewID.reset()
-        let vm = FavoriteMoviesViewModel()
-        vm.favoriteMovies = [
-            SharedPreviewMovies.starWars,
-            SharedPreviewMovies.inception,
-            SharedPreviewMovies.matrix
-        ]
+    /// Core builder that delegates to the VM's static preview initializer.
+    /// - Parameter movies: Movies to expose in the UI.
+    static func favoritesVM(with movies: [Movie]) -> FavoriteMoviesViewModel {
+        .preview(with: movies)
+    }
+
+    /// Default scenario: a reasonable list of favorites.
+    static func favoritesViewModel() -> FavoriteMoviesViewModel {
+        SharedPreviewMovies.resetIDs()
+        return favoritesVM(with: SharedPreviewMovies.moviesList)
+    }
+
+    /// Empty scenario: no favorites yet.
+    static func emptyFavoritesViewModel() -> FavoriteMoviesViewModel {
+        favoritesVM(with: [])
+    }
+
+    /// Many scenario: stress test layout/scrolling.
+    static func manyFavoritesViewModel() -> FavoriteMoviesViewModel {
+        SharedPreviewMovies.resetIDs()
+        let many = (1...20).map { i in
+            Movie(
+                id: PreviewID.next(),
+                title: "Sample \(i)",
+                overview: nil,
+                posterPath: nil,
+                backdropPath: nil,
+                releaseDate: nil,
+                voteAverage: nil,
+                genres: nil
+            )
+        }
+        return favoritesVM(with: many)
+    }
+
+    /// Loading scenario: spinner visible.
+    static func loadingFavoritesViewModel() -> FavoriteMoviesViewModel {
+        let vm = favoritesVM(with: [])
+        vm.isLoading = true
         return vm
     }
 
-    /// An empty favorites list to simulate the no-data state.
-    ///
-    /// Useful for testing empty views, onboarding, or fallback UI.
-    static func emptyFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
-        let vm = FavoriteMoviesViewModel()
-        vm.favoriteMovies = []
-        return vm
-    }
-
-    /// A simulated loading state.
-    ///
-    /// Can be customized later if `isLoading` is added to the view model.
-    static func loadingFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
-        let vm = FavoriteMoviesViewModel()
-        // Simulate loading state here in the future if needed
-        return vm
-    }
-
-    /// A simulated error state.
-    ///
-    /// Can be customized later if `errorMessage` or similar is added.
-    static func errorFavoriteMoviesViewModel() -> FavoriteMoviesViewModel {
-        let vm = FavoriteMoviesViewModel()
-        // Simulate error state here in the future if needed
+    /// Error scenario: simulated failure message.
+    static func errorFavoritesViewModel() -> FavoriteMoviesViewModel {
+        let vm = favoritesVM(with: [])
+        vm.errorMessage = "Network unreachable"
         return vm
     }
 }

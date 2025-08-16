@@ -31,7 +31,7 @@ extension MovieDetailInfoView {
 //    static var previewWithProviders: some View {
 //        MovieDetailInfoView(
 //            movie: SharedPreviewMovies.starWars,
-//            viewModel: PreviewFactory.movieViewModelWithProviders
+//            movieViewModel: PreviewFactory.movieViewModelWithProviders
 //        )
 //        .padding()
 //    }

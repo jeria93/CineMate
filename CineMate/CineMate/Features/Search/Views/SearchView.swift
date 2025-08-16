@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @ObservedObject var viewModel: SearchViewModel
+    @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
     var body: some View {
         VStack {
@@ -41,6 +42,10 @@ struct SearchView: View {
         } else {
             SearchResultsList(
                 movies: viewModel.results,
+                favoriteIDs: Set(favoriteViewModel.favoriteMovies.map { $0.id }),
+                onToggleFavorite: { movie in
+                    Task { await favoriteViewModel.toggleFavorite(movie: movie) }
+                },
                 loadMoreAction: { movie in
                     Task { await viewModel.loadNextPageIfNeeded(currentItem: movie) }
                 }

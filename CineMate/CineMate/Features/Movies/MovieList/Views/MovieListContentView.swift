@@ -10,35 +10,61 @@ import SwiftUI
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
     let castViewModel: CastViewModel
-    let onSelect: (Movie) -> Void
+    @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
     var body: some View {
-        Group {
-            switch (viewModel.isLoading, viewModel.errorMessage) {
-            case (true, _):
-                LoadingView(title: "Loading movies…")
-
-            case (false, let error?):
-                ErrorMessageView(title: "Failed", message: error) {
-                    Task { await viewModel.loadMovies() }
+        content
+            .listStyle(.plain)
+            .refreshable { await viewModel.loadMovies(page: 1) }
+            .task {
+                if viewModel.movies.isEmpty && !viewModel.isLoading {
+                    await viewModel.loadMovies(page: 1)
                 }
-
-            default:
-                List(viewModel.movies) { movie in
-                    MovieRowView(movie: movie)
-                        .contentShape(Rectangle())
-                        .onTapGesture { onSelect(movie) }
-                        .task {
-                            if viewModel.movies.last?.id == movie.id {
-                                await viewModel.loadNextPageIfNeeded(currentItem: movie)
-                            }
-                        }
-                }
-                .listStyle(.plain)
             }
+    }
+}
+
+private extension MovieListContentView {
+    @ViewBuilder
+    var content: some View {
+        if viewModel.isLoading && viewModel.movies.isEmpty {
+            LoadingView(title: "Loading movies...")
+
+        } else if let error = viewModel.errorMessage, viewModel.movies.isEmpty {
+            ErrorMessageView(title: "Failed", message: error) {
+                Task { await viewModel.loadMovies(page: 1) }
+            }
+
+        } else if viewModel.movies.isEmpty {
+            EmptyStateView(
+                systemImage: "film",
+                title: "No movies yet",
+                message: "Try another category or pull to refresh.",
+                actionTitle: "Reload",
+                onAction: { Task { await viewModel.loadMovies(page: 1) } }
+            )
+
+        } else {
+            List(viewModel.movies) { movie in
+                MovieRowView(
+                    movie: movie,
+                    isFavorite: favoriteViewModel.favoriteMovies.contains(where: { $0.id == movie.id }),
+                    onToggleFavorite: {
+                        Task { await favoriteViewModel.toggleFavorite(movie: movie)}
+                    }
+                )
+                .contentShape(Rectangle())
+                .task {
+                    if viewModel.movies.last?.id == movie.id {
+                        await viewModel.loadNextPageIfNeeded(currentItem: movie)
+                    }
+                }
+            }
+            .scrollIndicators(.hidden)
         }
     }
 }
+
 #Preview("List Preview") {
     MovieListContentView.previewList
 }
