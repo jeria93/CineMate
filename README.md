@@ -143,12 +143,11 @@ navigator.goTo(.movieDetail(id: movie.id), replace: false)
 
 ## Feature Demos
 
-> **Watch CineMate in Action**
-[![Full demo on Vimeo](Assets/popular_to_detail.gif)](https://vimeo.com/1110514808)
+> **Watch CineMate in Action** — [Full demo on Vimeo »](https://vimeo.com/1110514808)
 
-| Browse → Detail | Trailer + Share | Real-time Favorites | Search + Infinite Scroll |
-|---|---|---|---|
-| <img src="Assets/popular_to_detail.gif" width="360" alt="Browse list to movie detail" /> | <img src="Assets/extras_trailer_share.gif" width="360" alt="Open trailer and share" /> | <img src="Assets/favorites_realtime.gif" width="360" alt="Toggle favorites with real-time updates" /> | <img src="Assets/search_infinite_scroll.gif" width="360" alt="Search with infinite scroll" /> |
+| Browse → Detail | Real-time Favorites | Search + Infinite Scroll |
+|---|---|---|
+| <img src="Assets/popular_to_detail.gif" width="280" alt="Browse list to movie detail" /> | <img src="Assets/favorites_realtime.gif" width="280" alt="Toggle favorites with real-time updates" /> | <img src="Assets/search_infinite_scroll.gif" width="280" alt="Search with infinite scroll" /> |
 
 ---
 
