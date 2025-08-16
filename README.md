@@ -31,10 +31,9 @@ You need the following local configuration files before running the app:
 | File | Location | Purpose |
 |------|----------|---------|
 | `Secrets.plist` | `CineMate/Secrets.plist` | TMDB API keys and tokens |
-| `GoogleService-Info.plist` | `CineMate/GoogleService-Info.plist` | Firebase config for Anonymous Auth + Firestore |
+| `GoogleService-Info.plist` | Add to the Xcode project (app target) | Firebase config for Anonymous Auth + Firestore |
 
 > These are **excluded from version control**. Use `Secrets.example.plist` as a template.
-
 ---
 
 ## Secrets & Security
@@ -52,8 +51,8 @@ The sensitive files below are ignored in Git and enforced via repository config 
 
 1. Open the project in **Xcode 15.3** or later.  
 2. Add your `Secrets.plist`:
-   - Right-click **CineMate** → **New File… → Property List**  
-   - Name it `Secrets.plist`  
+   - Right-click **CineMate** → **New File… → Property List**
+   - Name it `Secrets.plist`
    - Add keys (example):
      ```xml
      <?xml version="1.0" encoding="UTF-8"?>
@@ -66,7 +65,7 @@ The sensitive files below are ignored in Git and enforced via repository config 
      </dict>
      </plist>
      ```
-3. Add `GoogleService-Info.plist` from **Firebase Console** (create iOS app).  
+3. Add `GoogleService-Info.plist` from **Firebase Console** (create iOS app) and **add it to the app target** in Xcode (Target Membership / Build Phases → Copy Bundle Resources).  
 4. In **Firebase Console**:
    - Enable **Authentication → Anonymous**
    - Enable **Firestore** and publish rules (see **Firebase Overview** below)
@@ -144,28 +143,12 @@ navigator.goTo(.movieDetail(id: movie.id), replace: false)
 
 ## Feature Demos
 
-> **Watch CineMate in Action**  
-> [Click here to view full demo on Vimeo »](https://vimeo.com/1098629918)
+> **Watch CineMate in Action**
+[![Full demo on Vimeo](Assets/popular_to_detail.gif)](https://vimeo.com/1110514808)
 
-### Popular Movie List  
-Scrollable list of popular movies with smooth loading and preview.
-
-<img src="Assets/popular_list.gif" width="350" alt="Popular List Demo" />
-
-### Genre Filtering  
-Toggle between genres with instant feedback, cancellation, and in-memory caching.
-
-<img src="Assets/genre_filtering.gif" width="350" alt="Genre Filtering Demo" />
-
-### Movie Detail + Share  
-View trailers, details and share movie info seamlessly.
-
-<img src="Assets/movie_detail_share.gif" width="350" alt="Movie Detail & Share Demo" />
-
-### List Scroll & Infinite Loading  
-Smooth infinite scroll and pagination for search and long collections.
-
-<img src="Assets/movie_list_scroll.gif" width="350" alt="Movie Scroll Demo" />
+| Browse → Detail | Trailer + Share | Real-time Favorites | Search + Infinite Scroll |
+|---|---|---|---|
+| <img src="Assets/popular_to_detail.gif" width="360" alt="Browse list to movie detail" /> | <img src="Assets/extras_trailer_share.gif" width="360" alt="Open trailer and share" /> | <img src="Assets/favorites_realtime.gif" width="360" alt="Toggle favorites with real-time updates" /> | <img src="Assets/search_infinite_scroll.gif" width="360" alt="Search with infinite scroll" /> |
 
 ---
 
@@ -241,6 +224,11 @@ Demonstrates:
 
 ```
 CineMate/
+├── Assets/
+│   ├── extras_trailer_share.gif
+│   ├── favorites_realtime.gif
+│   ├── popular_to_detail.gif
+│   └── search_infinite_scroll.gif
 ├── CineMateApp.swift
 ├── Info.plist
 ├── Core/
