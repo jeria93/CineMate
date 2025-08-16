@@ -1,18 +1,26 @@
 # CineMate
 
 **CineMate** is a SwiftUI iOS app for browsing, filtering, and saving movies powered by The Movie Database (**TMDB**) API.  
-It emphasizes clean architecture, responsive UI iteration, and secure secret handling — all built with modern Swift concurrency, enum-based navigation, and feature-first modularity.
+It emphasizes clean architecture, fast UI iteration (Previews + mocks), and safe persistence via Firebase **Anonymous Auth** + **Firestore**.
 
-**Key highlights:**  
-- MVVM with init-based dependency injection  
-- Enum-driven navigation (`AppRoute` / `AppNavigator`) with push/replace semantics for predictable routing  
-- Region-aware content & streaming availability  
-- Search with debounce, pagination, in-flight guard and caching  
-- Previews + mocks for offline UI development  
-- Secure API key management with sanitized history  
+**Key highlights**
+- MVVM with init-based dependency injection
+- Enum-driven navigation (`AppRoute` / `AppNavigator`) with push/replace semantics
+- Region-aware content & streaming availability
+- Search with debounce, pagination, in-flight guards and caching
+- Previews + mocks for offline UI development
+- Secure API key management with sanitized history
 
 > **Recommended setup:** Xcode **15.3+** and iOS **17.4** (deployment targets include 17.4 and 18.5)  
-> **Quick start:** clone → copy `Secrets.example.plist` to `Secrets.plist` → fill in TMDB credentials → Run in Xcode
+> **Quick start:** clone → copy `Secrets.example.plist` to `Secrets.plist` → add TMDB keys → add `GoogleService-Info.plist` → Run
+
+---
+
+## Features
+- Browse popular/top-rated movies and open details with credits & recommendations
+- Search with debounce + infinite scroll
+- Save/remove favorites for **movies** and **people** (actors/directors) with real-time updates
+- Region-specific watch providers
 
 ---
 
@@ -23,7 +31,7 @@ You need the following local configuration files before running the app:
 | File | Location | Purpose |
 |------|----------|---------|
 | `Secrets.plist` | `CineMate/Secrets.plist` | TMDB API keys and tokens |
-| `GoogleService-Info.plist` | `CineMate/GoogleService-Info.plist` | Firebase config for Google Sign-In *(planned)* |
+| `GoogleService-Info.plist` | `CineMate/GoogleService-Info.plist` | Firebase config for Anonymous Auth + Firestore |
 
 > These are **excluded from version control**. Use `Secrets.example.plist` as a template.
 
@@ -34,7 +42,7 @@ You need the following local configuration files before running the app:
 The sensitive files below are ignored in Git and enforced via repository config (`.gitignore`, `.github/CODEOWNERS`):
 
 - `Secrets.plist`  
-- `GoogleService-Info.plist` *(future Firebase integration)*  
+- `GoogleService-Info.plist`
 
 > **Historic note:** `Secrets.plist` was unintentionally committed early in development. In **June 2025** the Git history was rewritten/sanitized using `git-filter-repo` to purge any leaked secrets. Only `Secrets.example.plist` remains in history for safe reference.
 
@@ -44,22 +52,25 @@ The sensitive files below are ignored in Git and enforced via repository config 
 
 1. Open the project in **Xcode 15.3** or later.  
 2. Add your `Secrets.plist`:
-   - Right-click on the **CineMate** folder → **New File… → Property List**  
+   - Right-click **CineMate** → **New File… → Property List**  
    - Name it `Secrets.plist`  
-   - Open as source and add keys (example below):
+   - Add keys (example):
      ```xml
      <?xml version="1.0" encoding="UTF-8"?>
      <plist version="1.0">
      <dict>
-     <key>TMDB_API_KEY</key>
-     <string>PUT-YOUR-API-KEY-HERE</string>
-     <key>TMDB_BEARER_TOKEN</key>
-     <string>PUT-YOUR-BEARER-TOKEN-HERE</string>
+       <key>TMDB_API_KEY</key>
+       <string>PUT-YOUR-API-KEY-HERE</string>
+       <key>TMDB_BEARER_TOKEN</key>
+       <string>PUT-YOUR-BEARER-TOKEN-HERE</string>
      </dict>
      </plist>
      ```
-3. *(Optional)* Add `GoogleService-Info.plist` from Firebase for planned Google Sign-In.  
-4. Select device/simulator (iOS 17.4+) and run (Cmd+R).
+3. Add `GoogleService-Info.plist` from **Firebase Console** (create iOS app).  
+4. In **Firebase Console**:
+   - Enable **Authentication → Anonymous**
+   - Enable **Firestore** and publish rules (see **Firebase Overview** below)
+5. Select device/simulator (iOS 17.4+) and run (Cmd+R).
 
 ---
 
@@ -69,28 +80,34 @@ The sensitive files below are ignored in Git and enforced via repository config 
 - **Init-based dependency injection** for testability and simplicity.  
 - **Repository pattern** abstracts the TMDB service layer and enables mocking.  
 - **Enum-driven navigation** (`AppRoute` / `AppNavigator`) with push/replace semantics for deterministic routing and programmatic control.  
-- **PreviewFactory + mocks** allow fast UI iteration without network dependency.  
-- **Caching & in-flight protection** prevents duplicate API calls, reduces UI flicker, and improves perceived performance.  
-- **Pagination / Infinite scroll** with explicit state (current page, total pages, loading guard) for long result sets.  
+- **Preview-first**: `PreviewFactory`, shared mock data, and `ProcessInfo.processInfo.isPreview` guard for network-free previews.  
+- **Caching & in-flight guards** to prevent duplicates, reduce UI flicker, and improve perceived performance.  
+- **Pagination / Infinite scroll** with explicit state (current page, total pages, loading guard).  
 - **Region-awareness** using `Locale.current.region?.identifier` for localized content and streaming providers.  
-- **Principles:** Single Responsibility (SRP), Separation of Concerns (SoC), minimal over-engineering.
 
 ---
 
-## Caching & Network Efficiency
+## Caching & Performance
 
-Goals:
-- Avoid redundant network calls  
-- Prevent concurrent duplicate requests (in-flight guard)  
-- Provide instant responses for previously-searched queries  
-- Reduce UI blinking when reloading same data  
-- Bound memory usage via eviction/trimming  
+- **In-flight guards:** prevent duplicate requests per movie (`Set<Int>` + Task cancellation).
+- **PaginationManager:** safe infinite scroll; no overlapping next‑page fetches.
+- **Preview bypass:** `ProcessInfo.isPreview` skips network calls in SwiftUI Previews.
+- **Lightweight caches:** reuse previous results where it makes sense.
+- **Less UI flicker:** preserve state between views and inject quick “stubs”.
 
-Implementation highlights:
-- In-memory cache keyed by normalized queries  
-- `Set` tracks active in-flight queries  
-- Pagination state per search for incremental loading  
-- Preview shortcut bypasses real network calls (`ProcessInfo.processInfo.isPreview`)
+**Example (shortened):**
+```swift
+// Duplicate protection for detail fetch
+guard !detailInFlight.contains(movieId) else { return }
+detailInFlight.insert(movieId)
+defer { detailInFlight.remove(movieId) }
+
+// Pagination guard
+guard pagination.startFetchingNextPage() else { return }
+
+// Previews: avoid real network work
+guard !ProcessInfo.processInfo.isPreview else { return }
+```
 
 ---
 
@@ -102,7 +119,7 @@ Supports:
 - Decoupled programmatic flows  
 - Deterministic behavior useful in testing  
 
-Example usage:
+Example:
 ```swift
 navigator.goTo(.movieDetail(id: movie.id), replace: false)
 ```
@@ -120,7 +137,7 @@ navigator.goTo(.movieDetail(id: movie.id), replace: false)
 ## Running the App
 
 1. Open project in **Xcode 15.3**  
-2. Select **iOS 17.4** simulator or real device  
+2. Select **iOS 17.4** simulator or device  
 3. Press **Cmd+R**
 
 ---
@@ -176,20 +193,34 @@ Locale.current.region?.identifier ?? "US"
 
 ---
 
-## Planned / Roadmap
+## Firebase Overview
 
-- Firebase Authentication (Google Sign-In)  
-- Persistent or shared caching layer (beyond in-memory)  
-- Enhanced offline support  
-- Metrics / telemetry for cache hit/miss and latency analysis  
+**Data model (Firestore)**
+```
+users/{uid}/favorites/{movieId}
+users/{uid}/favorite_people/{personId}
+```
+
+**Rules (summary)**  
+Each user may only read/write their own `/users/{uid}/…` subtree. Configure in **Firebase Console → Firestore → Rules**.
+
+**Privacy**  
+No email is collected; favorites are keyed by anonymous `uid` only.
+
+---
+
+## Roadmap
+
+- **Email & Google sign-in** (Firebase Auth)
+- Persistent on-device cache for offline
+- Basic telemetry for latency/cache metrics
 
 ---
 
 ## External Resources
 
 - [TMDB – The Movie Database](https://www.themoviedb.org/)  
-- [Firebase](https://firebase.google.com/)  
-- [Simple Icons](https://simpleicons.org/)  
+- [Firebase](https://firebase.google.com/)
 
 ---
 
@@ -239,19 +270,9 @@ CineMate/
 
 ---
 
-## Google Sign-In Overview *(planned)*
-
-> Firebase Authentication integration example:
-
-```swift
-let credential = GoogleAuthProvider.credential(
-    withIDToken: idToken,
-    accessToken: accessToken
-)
-Auth.auth().signIn(with: credential) { result, error in
-    // Signed in to Firebase
-}
-```
+## LIA / Contact
+I’m seeking a **LIA (internship)**. Open to remote/hybrid — based in **Stockholm (Haninge)**.  
+**LinkedIn:** https://www.linkedin.com/in/nicholas-samuelsson-jeria-69778391
 
 ---
 
