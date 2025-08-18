@@ -21,13 +21,13 @@ import SwiftUI
 ///
 /// ### Usage
 /// ```swift
-/// @StateObject private var discoverVM = DiscoverViewModel()
+/// @StateObject private var discoverViewModel = DiscoverViewModel()
 ///
 /// // Load all sections (initial)
-/// Task { await discoverVM.fetchAllSections() }
+/// Task { await discoverViewModel.fetchAllSections() }
 ///
 /// // Change genre (auto-triggers filterSections)
-/// discoverVM.selectedGenreId = 28 // e.g., Action
+/// discoverViewModel.selectedGenreId = 28 // e.g., Action
 /// ```
 @MainActor
 final class DiscoverViewModel: ObservableObject {

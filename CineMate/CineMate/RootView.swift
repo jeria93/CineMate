@@ -24,7 +24,7 @@ private enum MainTab: Hashable {
     case favorites
     case discover
     case search
-    case account
+    case auth
 }
 
 struct RootView: View {
@@ -36,10 +36,10 @@ struct RootView: View {
     let castVM    : CastViewModel
     let favVM     : FavoriteMoviesViewModel
     let searchVM  : SearchViewModel
-    let accountVM : AccountViewModel
     let discoverVM: DiscoverViewModel
     let personVM  : PersonViewModel
     let favoritePeopleVM: FavoritePeopleViewModel
+    let authViewModel: AuthViewModel
 
     var body: some View {
         NavigationStack(path: $navigator.path) {
@@ -62,13 +62,13 @@ struct RootView: View {
                     .tabItem { Label("Search", systemImage: "magnifyingglass") }
                     .tag(MainTab.search)
 
-                AccountView(viewModel: accountVM)
+                AccountAuthSectionView(viewModel: authViewModel)
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
-                    .tag(MainTab.account)
+                    .tag(MainTab.auth)
             }
             .task { await favVM.startFavoritesListenerIfNeeded() }
             .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
-            //            .onDisappear { favVM.stopFavoritesListenerIfNeeded() } test if app crashes or has other unexpected behaviour
+            //            .onDisappear { favoriteMoviesViewModel.stopFavoritesListenerIfNeeded() } test if app crashes or has other unexpected behaviour
             .onChange(of: selectedTab) {
                 navigator.reset()
             }

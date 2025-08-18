@@ -18,9 +18,9 @@ import Foundation
 ///
 /// ### Usage
 /// ```swift
-/// let repo = MockMovieRepository()
+/// let repository = MockMovieRepository()
 /// Task {
-///     let movies = try await repo.fetchMovies(category: .popular, page: 1)
+///     let movies = try await repository.fetchMovies(category: .popular, page: 1)
 /// }
 /// ```
 final class MockMovieRepository: MovieProtocol {

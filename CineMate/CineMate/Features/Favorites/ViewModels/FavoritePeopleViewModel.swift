@@ -53,7 +53,7 @@ final class FavoritePeopleViewModel: ObservableObject {
     /// Designated initializer for production mode.
     /// - Parameters:
     ///   - auth: Auth service.
-    ///   - repo: Firestore repository.
+    ///   - repository: Firestore repository.
     init(auth: FirebaseAuthService, repo: FirestoreFavoritePeopleRepository) {
         self.auth = auth
         self.repo = repo
