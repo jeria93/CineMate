@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
-
-extension AccountView {
-    static var previewDefault: some View {
-        AccountView(viewModel: AccountViewModel())
-    }
-}
+//
+//extension AccountView {
+//    static var previewDefault: some View {
+////        AccountView(viewModel: AccountViewModel())
+//    }
+//}

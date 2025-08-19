@@ -51,8 +51,8 @@ struct RootView: View {
 
 
                 FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
-                     .tabItem { Label("Favorites", systemImage: "heart.fill") }
-                     .tag(MainTab.favorites)
+                    .tabItem { Label("Favorites", systemImage: "heart.fill") }
+                    .tag(MainTab.favorites)
 
                 DiscoverView(viewModel: discoverVM)
                     .tabItem { Label("Discover", systemImage: "safari") }
@@ -62,7 +62,7 @@ struct RootView: View {
                     .tabItem { Label("Search", systemImage: "magnifyingglass") }
                     .tag(MainTab.search)
 
-                AccountAuthSectionView(viewModel: authViewModel)
+                AccountView()
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
                     .tag(MainTab.auth)
             }

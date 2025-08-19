@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AccountView: View {
-    @ObservedObject var viewModel: AccountViewModel
 
     var body: some View {
         Text("AccountView")
@@ -16,5 +15,5 @@ struct AccountView: View {
 }
 
 #Preview {
-    AccountView.previewDefault
+    AccountView()
 }
