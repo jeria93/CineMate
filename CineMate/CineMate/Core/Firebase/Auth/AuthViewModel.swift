@@ -43,17 +43,17 @@ final class AuthViewModel: ObservableObject {
     /// Preview initializer.
     /// Pure static state: no SDK, no async, no delays.
     /// - Parameters:
-    ///   - previewUID: Pre-seeded UID (nil means “signed out”).
+    ///   - simulatedUID: Pre-seeded UID (nil means “signed out”).
     ///   - previewError: Optional error banner to show immediately.
-    ///   - previewBusy: If `true`, the UI starts in a loading state.
-    init(previewUID: String? = nil,
+    ///   - IsAuthenticating: If `true`, the UI starts in a loading state.
+    init(simulatedUID: String? = nil,
          previewError: String? = nil,
-         previewBusy: Bool = false)
+         IsAuthenticating: Bool = false)
     {
         self.service = nil
-        self.currentUID = previewUID
+        self.currentUID = simulatedUID
         self.errorMessage = previewError
-        self.isAuthenticating = previewBusy
+        self.isAuthenticating = IsAuthenticating
     }
 
     // MARK: - Actions

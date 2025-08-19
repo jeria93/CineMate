@@ -7,30 +7,29 @@
 
 import SwiftUI
 
+/// **PreviewFactory+Account**
+/// Ready-made `AuthViewModel` states for Account previews.
+/// Purely local scaffolding; never touches Firebase.
 @MainActor
 extension PreviewFactory {
-    
-    /// A default account view model (extend with user later)
-    static func accountViewModel() -> AccountViewModel {
-        AccountViewModel()
+
+    /// Signed-out state (no user logged in).
+    static func accountSignedOut() -> AuthViewModel {
+        AuthViewModel(simulatedUID: nil)
     }
-    
-    /// A logged-in user mock (future feature)
-    static func loggedInAccountViewModel() -> AccountViewModel {
-        let vm = AccountViewModel()
-        // vm.user = PreviewData.mockUser
-        return vm
+
+    /// Signed-in state with a demo UID.
+    static func accountSignedIn() -> AuthViewModel {
+        AuthViewModel(simulatedUID: AuthPreviewData.demoUID)
     }
-    
-    /// A logged-out user mock
-    static func loggedOutAccountViewModel() -> AccountViewModel {
-        AccountViewModel()
+
+    /// Error state (shows an auth error banner).
+    static func accountError() -> AuthViewModel {
+        AuthViewModel(simulatedUID: nil, previewError: AuthPreviewData.errorText)
     }
-    
-    /// An error state for account (if needed)
-    static func errorAccountViewModel() -> AccountViewModel {
-        let vm = AccountViewModel()
-        // vm.errorMessage = "Unable to load user data"
-        return vm
+
+    /// Busy/loading state (spinner visible, inputs disabled).
+    static func accountIsAuthenticating() -> AuthViewModel {
+        AuthViewModel(simulatedUID: nil, IsAuthenticating: true)
     }
 }

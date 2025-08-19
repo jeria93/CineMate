@@ -62,7 +62,7 @@ struct RootView: View {
                     .tabItem { Label("Search", systemImage: "magnifyingglass") }
                     .tag(MainTab.search)
 
-                AccountView()
+                AccountView(viewModel: authViewModel)
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
                     .tag(MainTab.auth)
             }
