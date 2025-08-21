@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject private var viewModel: LoginViewModel
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var navigator: AppNavigator
 
     @FocusState private var focusedField: Field?
     private enum Field { case email, password }
@@ -17,7 +17,6 @@ struct LoginView: View {
     private var isEmailValid: Bool {
         viewModel.email.contains("@") && viewModel.email.contains(".")
     }
-
     private var isPasswordValid: Bool { viewModel.password.count >= 6 }
     private var isFormValid: Bool { isEmailValid && isPasswordValid }
 
@@ -27,8 +26,9 @@ struct LoginView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Sign in")
-                .font(.title2).bold()
+            Text("CineMate")
+                .font(.title2)
+                .bold()
 
             TextField("Email", text: $viewModel.email)
                 .textContentType(.emailAddress)
@@ -39,6 +39,7 @@ struct LoginView: View {
                 .submitLabel(.next)
                 .focused($focusedField, equals: .email)
                 .onSubmit { focusedField = .password }
+                .disabled(viewModel.isAuthenticating)
 
             SecureField("Password", text: $viewModel.password)
                 .textContentType(.password)
@@ -46,21 +47,17 @@ struct LoginView: View {
                 .submitLabel(.go)
                 .focused($focusedField, equals: .password)
                 .onSubmit { Task { await signInTapped() } }
+                .disabled(viewModel.isAuthenticating)
 
-            HStack {
-                Button("Sign in") { Task { await signInTapped() } }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(viewModel.isAuthenticating || !isFormValid)
-
-                Button("Create account") { Task { await signUpTapped() } }
-                    .buttonStyle(.bordered)
-                    .disabled(viewModel.isAuthenticating || !isFormValid)
-            }
+            Button("Sign in") { Task { await signInTapped() } }
+                .buttonStyle(.borderedProminent)
+                .disabled(viewModel.isAuthenticating || !isFormValid)
 
             Button("Forgot password?") {
                 Task { await viewModel.resetPassword() }
             }
             .buttonStyle(.plain)
+            .disabled(viewModel.isAuthenticating)
 
             Button("Continue as guest") {
                 Task { await viewModel.continueAsGuest() }
@@ -75,7 +72,18 @@ struct LoginView: View {
                     .multilineTextAlignment(.center)
             }
 
-            Spacer(minLength: 0)
+            Spacer()
+
+            HStack(spacing: 6) {
+                Text("Don’t have an account?")
+                Button("Register") {
+                    navigator.goToCreateAccount()
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.tint)
+                .accessibilityAddTraits(.isLink)
+            }
+            .font(.footnote)
         }
         .padding()
         .overlay {
@@ -84,19 +92,13 @@ struct LoginView: View {
                     .transition(.opacity)
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
-            }
-        }
         .onAppear { focusedField = .email }
     }
 
-    // MARK: - Actions (View glue)
+    // MARK: - Actions
 
     private func signInTapped() async {
         await viewModel.login()
-
     }
 
     private func signUpTapped() async {
@@ -105,17 +107,17 @@ struct LoginView: View {
 }
 
 #Preview("Empty") {
-    LoginView.previewEmpty
+    LoginView.previewEmpty.withPreviewNavigation()
 }
 
 #Preview("Filled") {
-    LoginView.previewFilled
+    LoginView.previewFilled.withPreviewNavigation()
 }
 
 #Preview("Error") {
-    LoginView.previewError
+    LoginView.previewError.withPreviewNavigation()
 }
 
 #Preview("Is Authenticating") {
-    LoginView.previewIsAuthenticating
+    LoginView.previewIsAuthenticating.withPreviewNavigation()
 }

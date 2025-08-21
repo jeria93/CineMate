@@ -110,6 +110,16 @@ private extension RootView {
             )
 
 
+        case .createAccount:
+            CreateAccountView(
+                createViewModel: CreateAccountViewModel(
+                    service: FirebaseAuthService(),
+                    onSuccess: { uid in
+                        authViewModel.currentUID = uid
+                        navigator.goBack()
+                    }
+                )
+            )
         }
     }
 

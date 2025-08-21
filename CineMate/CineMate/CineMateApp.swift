@@ -54,21 +54,37 @@ struct CineMate: App {
 
     var body: some Scene {
         WindowGroup {
-            // **Auth gate:** If no UID is present, present the login flow first.
             if authViewModel.currentUID == nil {
-                LoginView(
-                    viewModel: LoginViewModel(
-                        service: FirebaseAuthService(),
-                        onSuccess: { uid in
-                            // Bridge login result back into the global auth VM.
-                            authViewModel.errorMessage = nil
-                            authViewModel.isAuthenticating = false
-                            authViewModel.currentUID = uid
-                        }
+                NavigationStack(path: $navigator.path) {
+                    LoginView(
+                        viewModel: LoginViewModel(
+                            service: FirebaseAuthService(),
+                            onSuccess: { uid in
+                                authViewModel.errorMessage = nil
+                                authViewModel.isAuthenticating = false
+                                authViewModel.currentUID = uid
+                            }
+                        )
                     )
-                )
+                    .navigationDestination(for: AppRoute.self) { route in
+                        switch route {
+                        case .createAccount:
+                            CreateAccountView(
+                                createViewModel: CreateAccountViewModel(
+                                    service: FirebaseAuthService(),
+                                    onSuccess: { _ in
+                                        navigator.goBack()
+                                    }
+                                )
+                            )
+
+                        default:
+                            EmptyView()
+                        }
+                    }
+                }
+                .environmentObject(navigator)
             } else {
-                // Main application once authenticated.
                 RootView(
                     movieVM:          movieViewModel,
                     castVM:           castViewModel,
@@ -79,7 +95,6 @@ struct CineMate: App {
                     favoritePeopleVM: favoritePeopleViewModel,
                     authViewModel:    authViewModel
                 )
-                // Make enum-navigation available to every child view.
                 .environmentObject(navigator)
             }
         }

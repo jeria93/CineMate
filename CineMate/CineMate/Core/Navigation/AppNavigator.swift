@@ -18,6 +18,12 @@ final class AppNavigator: ObservableObject {
 
     // MARK: - Public navigation helpers
 
+    /// Navigate to a view screen where user can create an account.
+    func goToCreateAccount() {
+        log("[Navigator] goToCreateAccount")
+        pushOrReplace(.createAccount)
+    }
+
     /// Navigate to a genre screen by name.
     func goToGenre(_ name: String) {
         log("[Navigator] goToGenre: \(name)")
