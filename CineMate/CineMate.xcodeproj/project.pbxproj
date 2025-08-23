@@ -205,6 +205,8 @@
 		03EE7E672E2AD26E00674B84 /* MovieCreditsPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EE7E662E2AD26E00674B84 /* MovieCreditsPreviewData.swift */; };
 		03EE7E692E2AD5CC00674B84 /* MovieDetailPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EE7E682E2AD5CC00674B84 /* MovieDetailPreviewData.swift */; };
 		03EE7E6B2E2AD7EF00674B84 /* PersonPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EE7E6A2E2AD7EF00674B84 /* PersonPreviewData.swift */; };
+		03F0A4BE2E5A42160071856D /* TrailingIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F0A4BD2E5A42160071856D /* TrailingIcon.swift */; };
+		03F0A4C02E5A42750071856D /* RoundedField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F0A4BF2E5A42750071856D /* RoundedField.swift */; };
 		03F3AD8D2E11C1FA00B63AA2 /* ShareLinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3AD8C2E11C1FA00B63AA2 /* ShareLinkButtonView.swift */; };
 		03F3AD8F2E11C7B300B63AA2 /* DirectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3AD8E2E11C7B300B63AA2 /* DirectorView.swift */; };
 		03F3AD912E11C8D300B63AA2 /* DirectorView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3AD902E11C8D300B63AA2 /* DirectorView+Preview.swift */; };
@@ -427,6 +429,8 @@
 		03EE7E662E2AD26E00674B84 /* MovieCreditsPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCreditsPreviewData.swift; sourceTree = "<group>"; };
 		03EE7E682E2AD5CC00674B84 /* MovieDetailPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailPreviewData.swift; sourceTree = "<group>"; };
 		03EE7E6A2E2AD7EF00674B84 /* PersonPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonPreviewData.swift; sourceTree = "<group>"; };
+		03F0A4BD2E5A42160071856D /* TrailingIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailingIcon.swift; sourceTree = "<group>"; };
+		03F0A4BF2E5A42750071856D /* RoundedField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedField.swift; sourceTree = "<group>"; };
 		03F3AD8C2E11C1FA00B63AA2 /* ShareLinkButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkButtonView.swift; sourceTree = "<group>"; };
 		03F3AD8E2E11C7B300B63AA2 /* DirectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorView.swift; sourceTree = "<group>"; };
 		03F3AD902E11C8D300B63AA2 /* DirectorView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DirectorView+Preview.swift"; sourceTree = "<group>"; };
@@ -496,8 +500,6 @@
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
 				0353E0072E46852800871BBB /* GoogleService-Info.plist */,
-				03B29F672E58AAD000A2B913 /* ToastBanner.swift */,
-				03E1BFEC2E58E92B00737B4A /* AuthError.swift */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -556,6 +558,7 @@
 		030612612DF4CD3F0013F7AF /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				03F0A4C42E5A46000071856D /* FormControls */,
 				039AF9AE2E2599BD00B90527 /* Poster */,
 				03CE4A482E0F2E7C00D70F70 /* Shared */,
 				0303C68E2E0ED79A00C3AF33 /* Expand */,
@@ -1108,6 +1111,8 @@
 			isa = PBXGroup;
 			children = (
 				03AAEC2F2E57AD1D001BF4C4 /* AuthValidator.swift */,
+				03AAEC312E57BADE001BF4C4 /* TermsContent.swift */,
+				03F926DC2E5129CC0062CA48 /* AuthPreviewData.swift */,
 			);
 			path = Validation;
 			sourceTree = "<group>";
@@ -1136,11 +1141,10 @@
 		03B5AB072E477D9C00A7A3B7 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				03F0A4C22E5A45330071856D /* Models */,
+				03F0A4C12E5A450B0071856D /* Services */,
 				03AAEC2E2E57AD08001BF4C4 /* Validation */,
-				03F926DC2E5129CC0062CA48 /* AuthPreviewData.swift */,
-				035CB2BF2E51CA6500892271 /* AuthViewModel.swift */,
-				030289C92E52768B00F8AF00 /* FirebaseAuthService.swift */,
-				03AAEC312E57BADE001BF4C4 /* TermsContent.swift */,
+				03F0A4C32E5A459E0071856D /* ViewModels */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -1360,6 +1364,48 @@
 			path = PreviewData;
 			sourceTree = "<group>";
 		};
+		03F0A4C12E5A450B0071856D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				030289C92E52768B00F8AF00 /* FirebaseAuthService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		03F0A4C22E5A45330071856D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				03E1BFEC2E58E92B00737B4A /* AuthError.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		03F0A4C32E5A459E0071856D /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				035CB2BF2E51CA6500892271 /* AuthViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		03F0A4C42E5A46000071856D /* FormControls */ = {
+			isa = PBXGroup;
+			children = (
+				03F0A4BD2E5A42160071856D /* TrailingIcon.swift */,
+				03F0A4BF2E5A42750071856D /* RoundedField.swift */,
+				03F0A4C52E5A461C0071856D /* Feedback */,
+			);
+			path = FormControls;
+			sourceTree = "<group>";
+		};
+		03F0A4C52E5A461C0071856D /* Feedback */ = {
+			isa = PBXGroup;
+			children = (
+				03B29F672E58AAD000A2B913 /* ToastBanner.swift */,
+			);
+			path = Feedback;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1452,6 +1498,7 @@
 				033EC7592E1D511A00B0BE08 /* SearchError.swift in Sources */,
 				032BAF842E53B6B4001077A8 /* LoginPreviewData.swift in Sources */,
 				0359A97D2E03488000818BD2 /* CastViewModel.swift in Sources */,
+				03F0A4C02E5A42750071856D /* RoundedField.swift in Sources */,
 				030BC54A2DFB6ECB00D1F96F /* TrailerHelper.swift in Sources */,
 				034846552E4BE09E0078E298 /* FavoritePeoplePreviewData.swift .swift in Sources */,
 				03DCB0622E5603A70071C3B2 /* CreateAccountPreviewData.swift in Sources */,
@@ -1478,6 +1525,7 @@
 				038C86E22E14190200247D61 /* WatchProviders.swift in Sources */,
 				03BCF9202E14697100ADD1BF /* WatchProvidersView+Previews.swift in Sources */,
 				03FBBEBC2E2442B400E35462 /* SectionMoviesPreviewData.swift in Sources */,
+				03F0A4BE2E5A42160071856D /* TrailingIcon.swift in Sources */,
 				0356785C2E17E259005BEE57 /* PersonMovieCardView+Previews.swift in Sources */,
 				030599782E1F051100626215 /* PreviewFactory+Discover.swift in Sources */,
 				03B24AB12E1FFC380063D42C /* PreviewSupport.swift in Sources */,

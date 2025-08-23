@@ -14,6 +14,8 @@ struct LoginView: View {
     @FocusState private var focusedField: Field?
     private enum Field { case email, password }
 
+    @State private var showPassword = false
+
     init(viewModel: LoginViewModel) {
         self._viewModel = ObservedObject(wrappedValue: viewModel)
     }
@@ -22,45 +24,97 @@ struct LoginView: View {
         VStack(spacing: 16) {
             Text("CineMate").font(.title2).bold()
 
-            TextField("Email", text: $viewModel.email)
-                .textContentType(.emailAddress)
-                .keyboardType(.emailAddress)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .textFieldStyle(.roundedBorder)
-                .submitLabel(.next)
-                .focused($focusedField, equals: .email)
-                .onSubmit { focusedField = .password }
-                .disabled(viewModel.isAuthenticating)
-                .onChange(of: viewModel.email) { _, new in
-                    let cleaned = AuthValidator.sanitizedEmail(from: new)
-                    if cleaned != new { viewModel.email = cleaned }
+            // MARK: Email
+            let emailIcons: [TrailingIcon] =
+            (!viewModel.email.isEmpty && !viewModel.isAuthenticating)
+            ? [
+                TrailingIcon(
+                    systemName: "xmark.circle.fill",
+                    isEnabled: true,
+                    accessibilityLabel: "Clear email"
+                ) {
+                    viewModel.email = ""
+                    focusedField = .email
                 }
+            ]
+            : []
+
+            RoundedField(icons: emailIcons) {
+                TextField("Email", text: $viewModel.email)
+                    .textContentType(.emailAddress)
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .email)
+                    .submitLabel(.next)
+                    .onSubmit { focusedField = .password }
+                    .onChange(of: viewModel.email) { _, new in
+                        let cleaned = AuthValidator.sanitizedEmail(from: new)
+                        if cleaned != new { viewModel.email = cleaned }
+                    }
+                    .disabled(viewModel.isAuthenticating)
+            }
 
             if let hint = viewModel.emailHelperText {
-                Text(hint).font(.footnote).foregroundStyle(.red)
+                Text(hint)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .transition(.opacity)
             }
 
-            SecureField("Password", text: $viewModel.password)
-                .textContentType(.password)
-                .textFieldStyle(.roundedBorder)
-                .submitLabel(.go)
+            // MARK: Password
+            let passwordHasText = !viewModel.password.isEmpty
+            let passwordIcons: [TrailingIcon] =
+            (passwordHasText && !viewModel.isAuthenticating)
+            ? [
+                TrailingIcon(
+                    systemName: "xmark.circle.fill",
+                    isEnabled: true,
+                    accessibilityLabel: "Clear password"
+                ) {
+                    viewModel.password = ""
+                    focusedField = .password
+                },
+                TrailingIcon(
+                    systemName: showPassword ? "eye.slash.fill" : "eye.fill",
+                    isEnabled: true,
+                    accessibilityLabel: showPassword ? "Hide password" : "Show password"
+                ) {
+                    showPassword.toggle()
+                }
+            ]
+            : []
+
+            RoundedField(icons: passwordIcons) {
+                Group {
+                    if showPassword {
+                        TextField("Password", text: $viewModel.password)
+                            .textContentType(.password)
+                    } else {
+                        SecureField("Password", text: $viewModel.password)
+                            .textContentType(.password)
+                    }
+                }
                 .focused($focusedField, equals: .password)
+                .submitLabel(.go)
                 .onSubmit { Task { await viewModel.login() } }
-                .disabled(viewModel.isAuthenticating)
                 .onChange(of: viewModel.password) { _, new in
                     let cleaned = AuthValidator.sanitizedPassword(from: new)
                     if cleaned != new { viewModel.password = cleaned }
                 }
+                .disabled(viewModel.isAuthenticating)
+            }
 
             if let hint = viewModel.passwordHelperText {
-                Text(hint).font(.footnote).foregroundStyle(.red)
+                Text(hint)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .transition(.opacity)
             }
 
+            // MARK: Actions
             Button("Sign in") { Task { await viewModel.login() } }
                 .buttonStyle(.borderedProminent)
                 .disabled(!viewModel.canSubmit)
@@ -113,6 +167,8 @@ struct LoginView: View {
         }
         .toast(toastCenter.message)
         .onAppear { focusedField = .email }
+        .animation(.default, value: !viewModel.email.isEmpty)
+        .animation(.default, value: !viewModel.password.isEmpty)
         .animation(.default, value: viewModel.isAuthenticating)
         .animation(.default, value: viewModel.errorMessage != nil)
     }

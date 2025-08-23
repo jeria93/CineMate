@@ -14,6 +14,9 @@ struct CreateAccountView: View {
     @FocusState private var focus: Field?
     @State private var showTerms = false
 
+    @State private var showPassword = false
+    @State private var showConfirmPassword = false
+
     init(createViewModel: CreateAccountViewModel) {
         self._createViewModel = ObservedObject(wrappedValue: createViewModel)
     }
@@ -21,20 +24,37 @@ struct CreateAccountView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 16) {
-                // Email
-                TextField("Email", text: $createViewModel.email)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .textFieldStyle(.roundedBorder)
-                    .focused($focus, equals: .email)
-                    .submitLabel(.next)
-                    .onSubmit { focus = .password }
-                    .onChange(of: createViewModel.email) { _, new in
-                        let cleaned = AuthValidator.sanitizedEmail(from: new)
-                        if cleaned != new { createViewModel.email = cleaned }
+
+                // MARK: Email
+                let emailIcons: [TrailingIcon] =
+                (!createViewModel.email.isEmpty && !createViewModel.isAuthenticating)
+                ? [
+                    TrailingIcon(
+                        systemName: "xmark.circle.fill",
+                        isEnabled: true,
+                        accessibilityLabel: "Clear email"
+                    ) {
+                        createViewModel.email = ""
+                        focus = .email
                     }
+                ]
+                : []
+
+                RoundedField(icons: emailIcons) {
+                    TextField("Email", text: $createViewModel.email)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .focused($focus, equals: .email)
+                        .submitLabel(.next)
+                        .onSubmit { focus = .password }
+                        .onChange(of: createViewModel.email) { _, new in
+                            let cleaned = AuthValidator.sanitizedEmail(from: new)
+                            if cleaned != new { createViewModel.email = cleaned }
+                        }
+                        .disabled(createViewModel.isAuthenticating)
+                }
 
                 if let text = createViewModel.emailHelperText, focus != .email {
                     Text(text)
@@ -44,10 +64,39 @@ struct CreateAccountView: View {
                         .transition(.opacity)
                 }
 
-                // Password (disable strong-password UI)
-                SecureField("Password", text: $createViewModel.password)
-                    .textContentType(nil)
-                    .textFieldStyle(.roundedBorder)
+                // MARK: Password
+                let passwordHasText = !createViewModel.password.isEmpty
+                let passwordIcons: [TrailingIcon] =
+                (passwordHasText && !createViewModel.isAuthenticating)
+                ? [
+                    TrailingIcon(
+                        systemName: "xmark.circle.fill",
+                        isEnabled: true,
+                        accessibilityLabel: "Clear password"
+                    ) {
+                        createViewModel.password = ""
+                        focus = .password
+                    },
+                    TrailingIcon(
+                        systemName: showPassword ? "eye.slash.fill" : "eye.fill",
+                        isEnabled: true,
+                        accessibilityLabel: showPassword ? "Hide password" : "Show password"
+                    ) {
+                        showPassword.toggle()
+                    }
+                ]
+                : []
+
+                RoundedField(icons: passwordIcons) {
+                    Group {
+                        if showPassword {
+                            TextField("Password", text: $createViewModel.password)
+                                .textContentType(.password)
+                        } else {
+                            SecureField("Password", text: $createViewModel.password)
+                                .textContentType(nil) // stänger starkt-lösenord-UI
+                        }
+                    }
                     .focused($focus, equals: .password)
                     .submitLabel(.next)
                     .onSubmit { focus = .confirm }
@@ -55,6 +104,8 @@ struct CreateAccountView: View {
                         let cleaned = AuthValidator.sanitizedPassword(from: new)
                         if cleaned != new { createViewModel.password = cleaned }
                     }
+                    .disabled(createViewModel.isAuthenticating)
+                }
 
                 if let text = createViewModel.passwordHelperText, focus != .password {
                     Text(text)
@@ -64,9 +115,39 @@ struct CreateAccountView: View {
                         .transition(.opacity)
                 }
 
-                SecureField("Confirm Password", text: $createViewModel.confirmPassword)
-                    .textContentType(nil)
-                    .textFieldStyle(.roundedBorder)
+                // MARK: Confirm Password
+                let confirmHasText = !createViewModel.confirmPassword.isEmpty
+                let confirmIcons: [TrailingIcon] =
+                (confirmHasText && !createViewModel.isAuthenticating)
+                ? [
+                    TrailingIcon(
+                        systemName: "xmark.circle.fill",
+                        isEnabled: true,
+                        accessibilityLabel: "Clear password confirmation"
+                    ) {
+                        createViewModel.confirmPassword = ""
+                        focus = .confirm
+                    },
+                    TrailingIcon(
+                        systemName: showConfirmPassword ? "eye.slash.fill" : "eye.fill",
+                        isEnabled: true,
+                        accessibilityLabel: showConfirmPassword ? "Hide password" : "Show password"
+                    ) {
+                        showConfirmPassword.toggle()
+                    }
+                ]
+                : []
+
+                RoundedField(icons: confirmIcons) {
+                    Group {
+                        if showConfirmPassword {
+                            TextField("Confirm Password", text: $createViewModel.confirmPassword)
+                                .textContentType(.password)
+                        } else {
+                            SecureField("Confirm Password", text: $createViewModel.confirmPassword)
+                                .textContentType(nil)
+                        }
+                    }
                     .focused($focus, equals: .confirm)
                     .submitLabel(.done)
                     .onSubmit { Task { await createViewModel.signUp() } }
@@ -74,6 +155,8 @@ struct CreateAccountView: View {
                         let cleaned = AuthValidator.sanitizedPassword(from: new)
                         if cleaned != new { createViewModel.confirmPassword = cleaned }
                     }
+                    .disabled(createViewModel.isAuthenticating)
+                }
 
                 if let text = createViewModel.confirmHelperText, focus != .confirm {
                     Text(text)
@@ -83,7 +166,7 @@ struct CreateAccountView: View {
                         .transition(.opacity)
                 }
 
-                // Terms
+                // MARK: Terms
                 Toggle("I accept the terms and conditions", isOn: $createViewModel.acceptedTerms)
 
                 Button("View terms") { showTerms = true }
@@ -98,12 +181,12 @@ struct CreateAccountView: View {
                         .transition(.opacity)
                 }
 
-                // Submit
+                // MARK: Submit
                 Button("Create Account") { Task { await createViewModel.signUp() } }
                     .buttonStyle(.borderedProminent)
                     .disabled(!createViewModel.canSubmit)
 
-                // Server error
+                // MARK: Server error
                 if let message = createViewModel.errorMessage {
                     Text(message)
                         .font(.footnote)
@@ -122,10 +205,10 @@ struct CreateAccountView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .allowsHitTesting(!createViewModel.isAuthenticating)
+        .animation(.default, value: !createViewModel.email.isEmpty)
+        .animation(.default, value: !createViewModel.password.isEmpty)
+        .animation(.default, value: !createViewModel.confirmPassword.isEmpty)
         .animation(.default, value: createViewModel.isAuthenticating)
-        .animation(.default, value: createViewModel.emailHelperText != nil)
-        .animation(.default, value: createViewModel.passwordHelperText != nil)
-        .animation(.default, value: createViewModel.confirmHelperText != nil)
         .animation(.default, value: createViewModel.errorMessage)
         .onAppear { focus = .email }
         .sheet(isPresented: $showTerms) {
