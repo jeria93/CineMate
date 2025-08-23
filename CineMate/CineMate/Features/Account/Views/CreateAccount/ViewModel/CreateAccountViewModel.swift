@@ -7,76 +7,101 @@
 
 import Foundation
 
+/// View model for the Create Account screen.
+/// Holds form state, runs client-side validation, and talks to the auth service.
 @MainActor
 final class CreateAccountViewModel: ObservableObject {
-
-    // Form States
+    // MARK: - Form state
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
     @Published var acceptedTerms: Bool = false
 
-    //    UI States
+    // MARK: - UI state
     @Published var isAuthenticating: Bool = false
-    @Published var errorMessage: String?
+    /// Set on first submit attempt; enables helper texts.
     @Published var hasTriedSubmit: Bool = false
+    /// App-friendly auth error for the screen (read-only to views).
+    @Published private(set) var appError: AuthAppError?
 
+    // MARK: - Dependencies
+    /// Auth backend (nil in previews).
     private let service: FirebaseAuthService?
-    private let onSuccess: (String) -> Void
+    /// Callback after verification email is sent.
+    private let onVerificationEmailSent: () -> Void
 
-    //    Simple validation for now(Extract to a Validator at later point?)
+    // MARK: - Derived UI & validation
+    var errorMessage: String? { appError?.errorDescription }
+    var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
+    var isPasswordValid: Bool { AuthValidator.isValidPassword(password) }
     var isPasswordMatch: Bool { !password.isEmpty && password == confirmPassword }
-    var isEmailValid: Bool { email.contains("@") && email.contains(".") }
-    var canSubmit: Bool { isEmailValid && isPasswordMatch && acceptedTerms && !isAuthenticating }
+    var canSubmit: Bool {
+        isEmailValid && isPasswordValid && isPasswordMatch && acceptedTerms && !isAuthenticating
+    }
 
+    // MARK: - Helper texts
+    var emailHelperText: String? {
+        hasTriedSubmit && !isEmailValid ? "Enter a valid email address" : nil
+    }
+    var passwordHelperText: String? {
+        hasTriedSubmit && !isPasswordValid
+        ? "Password must be \(AuthValidator.Policy.minLength)–\(AuthValidator.Policy.maxLength) chars and include A–Z, a–z, 0–9"
+        : nil
+    }
+    var confirmHelperText: String? {
+        (hasTriedSubmit || !confirmPassword.isEmpty) && !isPasswordMatch ? "Passwords don’t match" : nil
+    }
     var termsHelperText: String? {
         !acceptedTerms && hasTriedSubmit ? "You must accept the terms to continue" : nil
     }
 
-    //    Production
-    init(service: FirebaseAuthService, onSuccess: @escaping (String) -> Void) {
+    // MARK: - Init
+    init(service: FirebaseAuthService, onVerificationEmailSent: @escaping () -> Void) {
         self.service = service
-        self.onSuccess = onSuccess
+        self.onVerificationEmailSent = onVerificationEmailSent
     }
 
-    //    Preview
-    init (
-        previewEmail: String = "",
-        previewIsAuthenticating: Bool = false,
-        previewErrorMessage: String? = nil
-    ) {
+    /// Preview-only initializer (no network).
+    init(previewEmail: String = "", previewIsAuthenticating: Bool = false, previewErrorMessage: String? = nil) {
         self.service = nil
-        self.onSuccess = { _ in }
+        self.onVerificationEmailSent = {}
         self.email = previewEmail
         self.isAuthenticating = previewIsAuthenticating
-        self.errorMessage = previewErrorMessage
+        self.appError = previewErrorMessage.map { .unknown($0) }
     }
 
+    // MARK: - Actions
+    /// Create account and send verification email (sanitizes email, maps errors).
     func signUp() async {
         hasTriedSubmit = true
-        guard let service, canSubmit else { return }
-        isAuthenticating = true
-        defer { isAuthenticating = false } // Always end loading on exit (success or error)
-        do {
-            let uid = try await service.signUp(email: email, password: password)
-            errorMessage = nil
-            onSuccess(uid)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
+        email = AuthValidator.sanitizedEmail(from: email)
 
-    func upgradeAnonymousAccount() async {
-        guard let service, isEmailValid else { return }
+        guard let service, canSubmit else { return }
         isAuthenticating = true
         defer { isAuthenticating = false }
 
         do {
-            let uid = try await service.linkAnonymousAccount(email: email, password: password)
-            errorMessage = nil
-            onSuccess(uid)
+            try await service.signUpRequiringEmailVerification(email: email, password: password)
+            appError = nil
+            onVerificationEmailSent()
         } catch {
-            errorMessage = error.localizedDescription
+            appError = AuthAppError.mapToAppError(error)
+        }
+    }
+
+    /// Link an anonymous account to email/password (upgrade guest).
+    func upgradeAnonymousAccount() async {
+        email = AuthValidator.sanitizedEmail(from: email)
+        guard let service, isEmailValid else { return }
+
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+        do {
+            _ = try await service.linkAnonymousAccount(email: email, password: password)
+            appError = nil
+            onVerificationEmailSent()
+        } catch {
+            appError = AuthAppError.mapToAppError(error)
         }
     }
 }

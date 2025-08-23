@@ -13,12 +13,14 @@ import SwiftUI
 /// * Displays a five-tab `TabView` (Movies, Favorites, Discover, Search, Account).
 /// * Navigation is driven by calling `navigator.goTo…`, which pushes an `AppRoute`.
 /// * `navigationDestination(for:)` resolves each route to its corresponding view.
+/// * Requires a `ToastCenter` environment object to display lightweight, global toasts
+///   (e.g. after account creation / email verification prompt).
 ///
 /// Design principles:
 /// * Enum-based routing centralized here.
 /// * ID-based routes for lightweight, stable hashing.
 /// * ViewModels remain free of navigation logic; this view orchestrates destinations.
-
+/// * Side-effects like toasts are delegated to environment services (e.g. `ToastCenter`).
 private enum MainTab: Hashable {
     case movies
     case favorites
@@ -29,6 +31,7 @@ private enum MainTab: Hashable {
 
 struct RootView: View {
     @EnvironmentObject private var navigator: AppNavigator
+    @EnvironmentObject private var toastCenter: ToastCenter   // Injected by App entry
     @State private var selectedTab : MainTab = .movies
 
     // View-models injected from the App entry
@@ -43,12 +46,10 @@ struct RootView: View {
 
     var body: some View {
         NavigationStack(path: $navigator.path) {
-
             TabView(selection: $selectedTab) {
                 MovieListView(viewModel: movieVM, favoriteViewModel: favVM, castViewModel: castVM)
                     .tabItem { Label("Movies", systemImage: "film") }
                     .tag(MainTab.movies)
-
 
                 FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
                     .tabItem { Label("Favorites", systemImage: "heart.fill") }
@@ -68,25 +69,20 @@ struct RootView: View {
             }
             .task { await favVM.startFavoritesListenerIfNeeded() }
             .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
-            //            .onDisappear { favoriteMoviesViewModel.stopFavoritesListenerIfNeeded() } test if app crashes or has other unexpected behaviour
-            .onChange(of: selectedTab) {
-                navigator.reset()
-            }
+            .onChange(of: selectedTab) { navigator.reset() }
             .navigationDestination(for: AppRoute.self) { route in
                 destination(for: debugRoute(route))
             }
         }
-
-
+        // Uses ToastCenter.message to overlay a global toast on this screen tree
+        .toast(toastCenter.message)
     }
 }
 
 private extension RootView {
-
     @ViewBuilder
     func destination(for route: AppRoute) -> some View {
         switch route {
-
         case .movie(let id):
             MovieDetailView(
                 movieId: id,
@@ -96,26 +92,30 @@ private extension RootView {
             )
 
         case .person(let id):
-            CastMemberDetailView(member: member(for: id),
-                                 personViewModel: personVM,
-                                 favoritePeopleVM: favoritePeopleVM)
+            CastMemberDetailView(
+                member: member(for: id),
+                personViewModel: personVM,
+                favoritePeopleVM: favoritePeopleVM
+            )
 
         case .genre(let name):
             GenreDetailView(genreName: name)
 
         case .seeAllMovies(title: let title, filter: let filter):
             SeeAllMoviesView(
-                viewModel: SeeAllMoviesViewModel(repository: movieVM.underlyingRepository, filter: filter),
+                viewModel: SeeAllMoviesViewModel(
+                    repository: movieVM.underlyingRepository, filter: filter
+                ),
                 title: title
             )
 
-
         case .createAccount:
+            // After sending verification email, show toast and pop back.
             CreateAccountView(
                 createViewModel: CreateAccountViewModel(
                     service: FirebaseAuthService(),
-                    onSuccess: { uid in
-                        authViewModel.currentUID = uid
+                    onVerificationEmailSent: {
+                        toastCenter.show("Check your inbox to verify your email")
                         navigator.goBack()
                     }
                 )
@@ -140,7 +140,6 @@ private extension RootView {
 
 extension CastMember {
     init(from crew: CrewMember) {
-        self.init(id: crew.id, name: crew.name,
-                  character: nil, profilePath: crew.profilePath)
+        self.init(id: crew.id, name: crew.name, character: nil, profilePath: crew.profilePath)
     }
 }

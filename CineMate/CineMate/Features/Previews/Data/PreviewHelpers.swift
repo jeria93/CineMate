@@ -27,4 +27,10 @@ extension View {
         return NavigationStack { self }   // 2. optional stack for gestures
             .environmentObject(nav)       // 3. inject into the environment
     }
+
+    /// Injects a fresh `ToastCenter` for preview use.
+    func withPreviewToasts() -> some View {
+        let toast = ToastCenter()
+        return self.environmentObject(toast)
+    }
 }

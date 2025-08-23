@@ -9,18 +9,10 @@ import SwiftUI
 
 struct CreateAccountView: View {
     @ObservedObject private var createViewModel: CreateAccountViewModel
+
     private enum Field { case email, password, confirm }
     @FocusState private var focus: Field?
     @State private var showTerms = false
-
-    private var showEmailError: Bool {
-        !createViewModel.isEmailValid &&
-        (createViewModel.hasTriedSubmit || (!createViewModel.email.isEmpty && focus != .email))
-    }
-    private var showPasswordMismatchError: Bool {
-        !createViewModel.isPasswordMatch &&
-        (createViewModel.hasTriedSubmit || !createViewModel.confirmPassword.isEmpty)
-    }
 
     init(createViewModel: CreateAccountViewModel) {
         self._createViewModel = ObservedObject(wrappedValue: createViewModel)
@@ -35,38 +27,60 @@ struct CreateAccountView: View {
                     .keyboardType(.emailAddress)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .textFieldStyle(.roundedBorder)
                     .focused($focus, equals: .email)
                     .submitLabel(.next)
                     .onSubmit { focus = .password }
+                    .onChange(of: createViewModel.email) { _, new in
+                        let cleaned = AuthValidator.sanitizedEmail(from: new)
+                        if cleaned != new { createViewModel.email = cleaned }
+                    }
 
-                if showEmailError {
-                    Text("Enter a valid email address")
+                if let text = createViewModel.emailHelperText, focus != .email {
+                    Text(text)
                         .font(.footnote)
                         .foregroundStyle(.red)
-                        .transition(.opacity)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
                 }
 
-                // Password
+                // Password (disable strong-password UI)
                 SecureField("Password", text: $createViewModel.password)
                     .textContentType(nil)
+                    .textFieldStyle(.roundedBorder)
                     .focused($focus, equals: .password)
                     .submitLabel(.next)
                     .onSubmit { focus = .confirm }
+                    .onChange(of: createViewModel.password) { _, new in
+                        let cleaned = AuthValidator.sanitizedPassword(from: new)
+                        if cleaned != new { createViewModel.password = cleaned }
+                    }
 
-                // Confirm
-                SecureField("Confirm Password", text: $createViewModel.confirmPassword)
-                    .textContentType(nil)
-                    .focused($focus, equals: .confirm)
-                    .submitLabel(.done)
-                    .onSubmit { Task { await createTapped() } }
-
-                if showPasswordMismatchError {
-                    Text("Passwords don’t match")
+                if let text = createViewModel.passwordHelperText, focus != .password {
+                    Text(text)
                         .font(.footnote)
                         .foregroundStyle(.red)
-                        .transition(.opacity)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
+                }
+
+                SecureField("Confirm Password", text: $createViewModel.confirmPassword)
+                    .textContentType(nil)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focus, equals: .confirm)
+                    .submitLabel(.done)
+                    .onSubmit { Task { await createViewModel.signUp() } }
+                    .onChange(of: createViewModel.confirmPassword) { _, new in
+                        let cleaned = AuthValidator.sanitizedPassword(from: new)
+                        if cleaned != new { createViewModel.confirmPassword = cleaned }
+                    }
+
+                if let text = createViewModel.confirmHelperText, focus != .confirm {
+                    Text(text)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
                 }
 
                 // Terms
@@ -76,29 +90,26 @@ struct CreateAccountView: View {
                     .buttonStyle(.plain)
                     .font(.footnote)
 
-                if let termsHint = createViewModel.termsHelperText {
-                    Text(termsHint)
+                if let text = createViewModel.termsHelperText {
+                    Text(text)
                         .font(.footnote)
                         .foregroundStyle(.red)
-                        .transition(.opacity)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
                 }
 
                 // Submit
-                Button {
-                    Task { await createTapped() }
-                } label: {
-                    Text("Create Account")
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(!createViewModel.canSubmit)
+                Button("Create Account") { Task { await createViewModel.signUp() } }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!createViewModel.canSubmit)
 
+                // Server error
                 if let message = createViewModel.errorMessage {
                     Text(message)
                         .font(.footnote)
                         .foregroundStyle(.red)
-                        .transition(.opacity)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
                 }
             }
             .padding()
@@ -112,38 +123,24 @@ struct CreateAccountView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .allowsHitTesting(!createViewModel.isAuthenticating)
         .animation(.default, value: createViewModel.isAuthenticating)
-        .animation(.default, value: showEmailError)
-        .animation(.default, value: showPasswordMismatchError)
+        .animation(.default, value: createViewModel.emailHelperText != nil)
+        .animation(.default, value: createViewModel.passwordHelperText != nil)
+        .animation(.default, value: createViewModel.confirmHelperText != nil)
         .animation(.default, value: createViewModel.errorMessage)
         .onAppear { focus = .email }
         .sheet(isPresented: $showTerms) {
             ScrollView {
-                Text(TermsContent.previewMarkdown)
+                Text(TermsContent.termsMarkdown)
                     .padding()
                     .textSelection(.enabled)
             }
         }
     }
-
-    private func createTapped() async {
-        await createViewModel.signUp()
-    }
 }
 
-#Preview("Empty") { CreateAccountView.previewEmpty.withPreviewNavigation() }
-#Preview("Filled Valid") { CreateAccountView.previewFilledValid.withPreviewNavigation() }
-#Preview("PassWord Mismatch") { CreateAccountView.previewPasswordMismatch.withPreviewNavigation() }
-#Preview("Invalid Email") { CreateAccountView.previewInvalidEmail.withPreviewNavigation() }
-#Preview("Is Authenticating") { CreateAccountView.previewIsAuthenticating.withPreviewNavigation() }
-#Preview("Server Error") { CreateAccountView.previewServerError.withPreviewNavigation() }
-enum TermsContent {
-    static let previewMarkdown = """
-    # Terms of Service (Preview)
-
-    1. You must be 13+
-    2. We store minimal data
-    3. You can delete your account anytime
-
-    This is preview text only
-    """
-}
+#Preview("Empty") { CreateAccountView.previewEmpty }
+#Preview("Filled Valid") { CreateAccountView.previewFilledValid }
+#Preview("Password Mismatch") { CreateAccountView.previewPasswordMismatch }
+#Preview("Invalid Email") { CreateAccountView.previewInvalidEmail }
+#Preview("Is Authenticating") { CreateAccountView.previewIsAuthenticating }
+#Preview("Server Error") { CreateAccountView.previewServerError }

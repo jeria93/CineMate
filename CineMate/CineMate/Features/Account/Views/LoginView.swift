@@ -10,15 +10,9 @@ import SwiftUI
 struct LoginView: View {
     @ObservedObject private var viewModel: LoginViewModel
     @EnvironmentObject private var navigator: AppNavigator
-
+    @EnvironmentObject private var toastCenter: ToastCenter
     @FocusState private var focusedField: Field?
     private enum Field { case email, password }
-
-    private var isEmailValid: Bool {
-        viewModel.email.contains("@") && viewModel.email.contains(".")
-    }
-    private var isPasswordValid: Bool { viewModel.password.count >= 6 }
-    private var isFormValid: Bool { isEmailValid && isPasswordValid }
 
     init(viewModel: LoginViewModel) {
         self._viewModel = ObservedObject(wrappedValue: viewModel)
@@ -26,9 +20,7 @@ struct LoginView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("CineMate")
-                .font(.title2)
-                .bold()
+            Text("CineMate").font(.title2).bold()
 
             TextField("Email", text: $viewModel.email)
                 .textContentType(.emailAddress)
@@ -40,84 +32,92 @@ struct LoginView: View {
                 .focused($focusedField, equals: .email)
                 .onSubmit { focusedField = .password }
                 .disabled(viewModel.isAuthenticating)
+                .onChange(of: viewModel.email) { _, new in
+                    let cleaned = AuthValidator.sanitizedEmail(from: new)
+                    if cleaned != new { viewModel.email = cleaned }
+                }
+
+            if let hint = viewModel.emailHelperText {
+                Text(hint).font(.footnote).foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .transition(.opacity)
+            }
 
             SecureField("Password", text: $viewModel.password)
                 .textContentType(.password)
                 .textFieldStyle(.roundedBorder)
                 .submitLabel(.go)
                 .focused($focusedField, equals: .password)
-                .onSubmit { Task { await signInTapped() } }
+                .onSubmit { Task { await viewModel.login() } }
+                .disabled(viewModel.isAuthenticating)
+                .onChange(of: viewModel.password) { _, new in
+                    let cleaned = AuthValidator.sanitizedPassword(from: new)
+                    if cleaned != new { viewModel.password = cleaned }
+                }
+
+            if let hint = viewModel.passwordHelperText {
+                Text(hint).font(.footnote).foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .transition(.opacity)
+            }
+
+            Button("Sign in") { Task { await viewModel.login() } }
+                .buttonStyle(.borderedProminent)
+                .disabled(!viewModel.canSubmit)
+
+            Button("Forgot password?") { Task { await viewModel.resetPassword() } }
+                .buttonStyle(.plain)
                 .disabled(viewModel.isAuthenticating)
 
-            Button("Sign in") { Task { await signInTapped() } }
-                .buttonStyle(.borderedProminent)
-                .disabled(viewModel.isAuthenticating || !isFormValid)
-
-            Button("Forgot password?") {
-                Task { await viewModel.resetPassword() }
-            }
-            .buttonStyle(.plain)
-            .disabled(viewModel.isAuthenticating)
-
-            Button("Continue as guest") {
-                Task { await viewModel.continueAsGuest() }
-            }
-            .buttonStyle(.bordered)
-            .disabled(viewModel.isAuthenticating)
+            Button("Continue as guest") { Task { await viewModel.continueAsGuest() } }
+                .buttonStyle(.bordered)
+                .disabled(viewModel.isAuthenticating)
 
             if let message = viewModel.errorMessage {
-                Text(message)
-                    .font(.footnote)
-                    .foregroundStyle(.red)
-                    .multilineTextAlignment(.center)
+                VStack(spacing: 8) {
+                    Text(message)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
+
+                    if viewModel.shouldOfferResendVerification {
+                        Button("Resend verification email") {
+                            Task {
+                                await viewModel.resendVerification()
+                                toastCenter.show("Verification email sent. Check your inbox")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+                .transition(.opacity)
             }
 
             Spacer()
 
             HStack(spacing: 6) {
                 Text("Don’t have an account?")
-                Button("Register") {
-                    navigator.goToCreateAccount()
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.tint)
-                .accessibilityAddTraits(.isLink)
+                Button("Register") { navigator.goToCreateAccount() }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.tint)
+                    .accessibilityAddTraits(.isLink)
+                    .disabled(viewModel.isAuthenticating)
             }
             .font(.footnote)
         }
         .padding()
         .overlay {
             if viewModel.isAuthenticating {
-                LoadingView(title: "Signing in…")
-                    .transition(.opacity)
+                LoadingView(title: "Signing in…").transition(.opacity)
             }
         }
+        .toast(toastCenter.message)
         .onAppear { focusedField = .email }
-    }
-
-    // MARK: - Actions
-
-    private func signInTapped() async {
-        await viewModel.login()
-    }
-
-    private func signUpTapped() async {
-        await viewModel.signUp()
+        .animation(.default, value: viewModel.isAuthenticating)
+        .animation(.default, value: viewModel.errorMessage != nil)
     }
 }
 
-#Preview("Empty") {
-    LoginView.previewEmpty.withPreviewNavigation()
-}
-
-#Preview("Filled") {
-    LoginView.previewFilled.withPreviewNavigation()
-}
-
-#Preview("Error") {
-    LoginView.previewError.withPreviewNavigation()
-}
-
-#Preview("Is Authenticating") {
-    LoginView.previewIsAuthenticating.withPreviewNavigation()
-}
+#Preview("Empty") { LoginView.previewEmpty }
+#Preview("Error") { LoginView.previewError }
+#Preview("Authenticating") { LoginView.previewIsAuthenticating }

@@ -52,18 +52,48 @@ final class FirebaseAuthService {
         try Auth.auth().signOut()
     }
 
+    // MARK: Email/Password
+
     /// Email/password sign-in.
     /// - Parameters:
     ///   - email: Account email.
     ///   - password: Account password.
     /// - Returns: The signed-in user's UID.
     /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors (e.g. wrong password, user not found) in production.
+    /// - Note: Also enforces email verification and signs out if unverified.
     func signIn(email: String, password: String) async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         let result = try await Auth.auth().signIn(withEmail: email, password: password)
+
+        try await result.user.reload()
+        if !result.user.isEmailVerified {
+            try Auth.auth().signOut()
+            throw EmailNotVerifiedError()
+        }
         return result.user.uid
     }
 
+    /// Create account, send verification email, then sign out.
+    /// Use this instead of plain `signUp` if you require email verification first.
+    /// - Parameters:
+    ///   - email: New account email.
+    ///   - password: New account password.
+    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors in production.
+    /// - Note: Wraps Firebase's callback API with `withCheckedThrowingContinuation`.
+    func signUpRequiringEmailVerification(email: String, password: String) async throws {
+        guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
+        let result = try await Auth.auth().createUser(withEmail: email, password: password)
+
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+            result.user.sendEmailVerification { error in
+                if let error { cont.resume(throwing: error) } else { cont.resume() }
+            }
+        }
+
+        try Auth.auth().signOut()
+    }
+
+    /// (Optional)
     /// Creates a new account with email/password and signs the user in.
     /// - Parameters:
     ///   - email: New account email.
@@ -74,6 +104,19 @@ final class FirebaseAuthService {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         let result = try await Auth.auth().createUser(withEmail: email, password: password)
         return result.user.uid
+    }
+
+    /// Re-sends a verification email to the currently signed-in user.
+    /// - Throws: `PreviewAuthError` in previews; `AuthServiceError.noCurrentUser` if nobody is signed in; Firebase Auth errors in production.
+    /// - Note: Uses `withCheckedThrowingContinuation` to await Firebase's callback API.
+    func resendVerificationEmail() async throws {
+        guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
+        guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+            user.sendEmailVerification { error in
+                if let error { cont.resume(throwing: error) } else { cont.resume() }
+            }
+        }
     }
 
     /// Sends a password reset email.
@@ -105,11 +148,4 @@ final class FirebaseAuthService {
         let linkResult = try await currentUser.link(with: emailCredential)
         return linkResult.user.uid
     }
-
-}
-
-/// Error thrown in preview mode to indicate that Auth is intentionally unavailable.
-/// Keeps Xcode Previews deterministic and avoids starting the Firebase SDK.
-struct PreviewAuthError: LocalizedError {
-    var errorDescription: String? { "Auth is unavailable in Xcode Previews." }
 }

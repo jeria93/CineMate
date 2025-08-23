@@ -18,6 +18,7 @@ import SwiftUI
 struct CineMate: App {
     /// Global enum-navigation stack (`NavigationStack` binding lives in `RootView`).
     @StateObject private var navigator = AppNavigator()
+    @StateObject private var toastCenter = ToastCenter()
 
     /// One shared repository instance (network + cache) kept by the app for reuse.
     private let repository: MovieRepository
@@ -72,7 +73,8 @@ struct CineMate: App {
                             CreateAccountView(
                                 createViewModel: CreateAccountViewModel(
                                     service: FirebaseAuthService(),
-                                    onSuccess: { _ in
+                                    onVerificationEmailSent: {
+                                        toastCenter.show("Check your inbox to verify your email")
                                         navigator.goBack()
                                     }
                                 )
@@ -84,6 +86,7 @@ struct CineMate: App {
                     }
                 }
                 .environmentObject(navigator)
+                .environmentObject(toastCenter)
             } else {
                 RootView(
                     movieVM:          movieViewModel,
@@ -96,6 +99,7 @@ struct CineMate: App {
                     authViewModel:    authViewModel
                 )
                 .environmentObject(navigator)
+                .environmentObject(toastCenter)
             }
         }
     }
