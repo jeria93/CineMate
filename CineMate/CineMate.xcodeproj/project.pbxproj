@@ -116,11 +116,19 @@
 		0368AFC32DF61FA3009B1F56 /* MovieCategoryPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */; };
 		0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC42DF62312009B1F56 /* MovieListContentView.swift */; };
 		0368AFC72DF62A7A009B1F56 /* MockMovieRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */; };
+		036E06AA2E5B5286006BBA92 /* ResetPasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06A92E5B5286006BBA92 /* ResetPasswordViewModel.swift */; };
+		036E06AC2E5B97B6006BBA92 /* ResetPasswordSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06AB2E5B97B6006BBA92 /* ResetPasswordSheet.swift */; };
+		036E06B02E5B9B45006BBA92 /* ResetPasswordPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */; };
+		036E06B22E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */; };
+		036E06B42E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */; };
 		0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */; };
 		0384BD6D2E11318D00790AA5 /* PersonLinksView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */; };
 		0384BD6F2E1177ED00790AA5 /* SocialLinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6E2E1177ED00790AA5 /* SocialLinkButtonView.swift */; };
 		038807D92DFCB4C2009DED36 /* MovieDetailActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038807D82DFCB4C2009DED36 /* MovieDetailActionBarView.swift */; };
 		038C86E22E14190200247D61 /* WatchProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C86E12E14190200247D61 /* WatchProviders.swift */; };
+		0390F7DF2E5DE78200E89B82 /* AuthEmailField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0390F7DE2E5DE78200E89B82 /* AuthEmailField.swift */; };
+		0390F7E12E5DE79300E89B82 /* AuthPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0390F7E02E5DE79300E89B82 /* AuthPasswordField.swift */; };
+		0390F7E32E5DE7AA00E89B82 /* AuthErrorBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0390F7E22E5DE7AA00E89B82 /* AuthErrorBlock.swift */; };
 		03920A692E24F15B00804B06 /* SeeAllMoviesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03920A682E24F15B00804B06 /* SeeAllMoviesViewModel.swift */; };
 		03920A6B2E24F70300804B06 /* PreviewFactory+SeeAllMovies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03920A6A2E24F70300804B06 /* PreviewFactory+SeeAllMovies.swift */; };
 		0397B3702E5517E400065408 /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0397B36F2E5517E400065408 /* CreateAccountView.swift */; };
@@ -164,6 +172,7 @@
 		03CB4AAE2E1876500080EE84 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB4AAD2E1876500080EE84 /* AccountView.swift */; };
 		03CC7E242E22F3070045E678 /* DiscoverHorrorPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC7E232E22F3070045E678 /* DiscoverHorrorPreviewData.swift */; };
 		03CC7E262E22F4F30045E678 /* DiscoverContentView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC7E252E22F4F30045E678 /* DiscoverContentView+Previews.swift */; };
+		03CCDE882E5E4136004F3848 /* View+Focus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CCDE872E5E4136004F3848 /* View+Focus.swift */; };
 		03CD89D32E225C39004862AE /* DiscoverContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CD89D22E225C39004862AE /* DiscoverContentView.swift */; };
 		03CE4A422E0F214F00D70F70 /* PersonMetaInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */; };
 		03CE4A442E0F246500D70F70 /* DateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE4A432E0F246500D70F70 /* DateHelper.swift */; };
@@ -340,11 +349,19 @@
 		0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCategoryPicker.swift; sourceTree = "<group>"; };
 		0368AFC42DF62312009B1F56 /* MovieListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListContentView.swift; sourceTree = "<group>"; };
 		0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMovieRepository.swift; sourceTree = "<group>"; };
+		036E06A92E5B5286006BBA92 /* ResetPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewModel.swift; sourceTree = "<group>"; };
+		036E06AB2E5B97B6006BBA92 /* ResetPasswordSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordSheet.swift; sourceTree = "<group>"; };
+		036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordPreviewData.swift; sourceTree = "<group>"; };
+		036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+ResetPassword.swift"; sourceTree = "<group>"; };
+		036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ResetPasswordSheet+Previews.swift"; sourceTree = "<group>"; };
 		0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGenresView.swift; sourceTree = "<group>"; };
 		0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonLinksView+Previews.swift"; sourceTree = "<group>"; };
 		0384BD6E2E1177ED00790AA5 /* SocialLinkButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLinkButtonView.swift; sourceTree = "<group>"; };
 		038807D82DFCB4C2009DED36 /* MovieDetailActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailActionBarView.swift; sourceTree = "<group>"; };
 		038C86E12E14190200247D61 /* WatchProviders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProviders.swift; sourceTree = "<group>"; };
+		0390F7DE2E5DE78200E89B82 /* AuthEmailField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthEmailField.swift; sourceTree = "<group>"; };
+		0390F7E02E5DE79300E89B82 /* AuthPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPasswordField.swift; sourceTree = "<group>"; };
+		0390F7E22E5DE7AA00E89B82 /* AuthErrorBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthErrorBlock.swift; sourceTree = "<group>"; };
 		03920A682E24F15B00804B06 /* SeeAllMoviesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeeAllMoviesViewModel.swift; sourceTree = "<group>"; };
 		03920A6A2E24F70300804B06 /* PreviewFactory+SeeAllMovies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+SeeAllMovies.swift"; sourceTree = "<group>"; };
 		0397B36F2E5517E400065408 /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
@@ -388,6 +405,7 @@
 		03CB4AAD2E1876500080EE84 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		03CC7E232E22F3070045E678 /* DiscoverHorrorPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverHorrorPreviewData.swift; sourceTree = "<group>"; };
 		03CC7E252E22F4F30045E678 /* DiscoverContentView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverContentView+Previews.swift"; sourceTree = "<group>"; };
+		03CCDE872E5E4136004F3848 /* View+Focus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Focus.swift"; sourceTree = "<group>"; };
 		03CD89D22E225C39004862AE /* DiscoverContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverContentView.swift; sourceTree = "<group>"; };
 		03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMetaInfoView.swift; sourceTree = "<group>"; };
 		03CE4A432E0F246500D70F70 /* DateHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
@@ -679,8 +697,6 @@
 				03D8D2A52E09DD08006A117D /* PreviewFactory.swift */,
 				031E9AA12E19C34E0027BC31 /* PreviewFactory+Favorites.swift */,
 				031392022E1AAA0F0047ED6B /* PreviewFactory+Search.swift */,
-				031392042E1AAA310047ED6B /* PreviewFactory+Account.swift */,
-				032BAF852E53B6F5001077A8 /* PreviewFactory+Login.swift */,
 				030599772E1F051100626215 /* PreviewFactory+Discover.swift */,
 				03920A6A2E24F70300804B06 /* PreviewFactory+SeeAllMovies.swift */,
 				03EA54B72E29353C0037BE9B /* PreviewFactory+Reset.swift */,
@@ -689,7 +705,6 @@
 				03EE7E642E2ACD9100674B84 /* PreviewFactory+MovieViewModel.swift */,
 				034014FC2E31838800089026 /* PreviewFactory+MovieDetailInfo.swift */,
 				034846522E4BDADC0078E298 /* PreviewFactory+FavoritePeople.swift */,
-				03DCB0632E5604890071C3B2 /* PreviewFactory+CreateAccount.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -796,7 +811,6 @@
 				03B4C99E2E283188002697B0 /* SearchResultsList+Previews.swift */,
 				0313920C2E1B12A90047ED6B /* EmptyResultsView.swift */,
 				031392062E1B11CA0047ED6B /* SearchBarView.swift */,
-				03DE96DF2E1BD818005D71A8 /* ValidationMessageView.swift */,
 				03C1CC502E1DA4170021ECC2 /* SearchPromptView.swift */,
 			);
 			path = Views;
@@ -805,8 +819,7 @@
 		031E9A9A2E19B7B20027BC31 /* Account */ = {
 			isa = PBXGroup;
 			children = (
-				031E9A9B2E19B7CB0027BC31 /* Views */,
-				031E9A9C2E19B7D20027BC31 /* ViewModels */,
+				0390F7DA2E5DE34E00E89B82 /* Auth */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -814,21 +827,12 @@
 		031E9A9B2E19B7CB0027BC31 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				03DCB05E2E56034C0071C3B2 /* CreateAccount */,
-				03CB4AAD2E1876500080EE84 /* AccountView.swift */,
-				031E9AA92E19D1550027BC31 /* AccountView+Previews.swift */,
 				032BAF812E53AFC7001077A8 /* LoginView.swift */,
-				032BAF872E53B8D2001077A8 /* LoginView+Previews.swift */,
+				0397B36F2E5517E400065408 /* CreateAccountView.swift */,
+				03CB4AAD2E1876500080EE84 /* AccountView.swift */,
+				036E06AB2E5B97B6006BBA92 /* ResetPasswordSheet.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		031E9A9C2E19B7D20027BC31 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				032BAF7F2E53AAFC001077A8 /* LoginViewModel.swift */,
-			);
-			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		033277FA2E15DBB000E5A226 /* WatchProviders */ = {
@@ -936,7 +940,6 @@
 		036A61AE2E0013FF00DB7BF0 /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				032BAF832E53B6B4001077A8 /* LoginPreviewData.swift */,
 				030612642DF4CDAD0013F7AF /* PreviewData.swift */,
 				0359A9792E02F17400818BD2 /* PreviewStyle.swift */,
 				03046E492E1315A40024AD46 /* Genre+Preview.swift */,
@@ -1014,6 +1017,38 @@
 			path = PreviewData;
 			sourceTree = "<group>";
 		};
+		0390F7DA2E5DE34E00E89B82 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				031E9A9B2E19B7CB0027BC31 /* Views */,
+				0390F7DB2E5DE36400E89B82 /* ViewModels */,
+				0390F7DC2E5DE36F00E89B82 /* Components */,
+				03DCB0602E5603910071C3B2 /* PreviewData */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		0390F7DB2E5DE36400E89B82 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				0397B3712E55193800065408 /* CreateAccountViewModel.swift */,
+				036E06A92E5B5286006BBA92 /* ResetPasswordViewModel.swift */,
+				032BAF7F2E53AAFC001077A8 /* LoginViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		0390F7DC2E5DE36F00E89B82 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				0390F7DE2E5DE78200E89B82 /* AuthEmailField.swift */,
+				0390F7E02E5DE79300E89B82 /* AuthPasswordField.swift */,
+				0390F7E22E5DE7AA00E89B82 /* AuthErrorBlock.swift */,
+				03DE96DF2E1BD818005D71A8 /* ValidationMessageView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		0397B36E2E55146D00065408 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1072,10 +1107,10 @@
 		03A620C02DF774CA00C075E8 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				031E9A9A2E19B7B20027BC31 /* Account */,
 				0382BDEE2E26EAAE00B5B74D /* Genre */,
 				039AF9AB2E25997600B90527 /* SeeAllMovies */,
 				03C50CCF2E1EAA7C00106CCF /* Discover */,
-				031E9A9A2E19B7B20027BC31 /* Account */,
 				031E9A972E19B7940027BC31 /* Search */,
 				031E9A942E19B6F60027BC31 /* Favorites */,
 				033277FA2E15DBB000E5A226 /* WatchProviders */,
@@ -1267,6 +1302,7 @@
 				03CE4A432E0F246500D70F70 /* DateHelper.swift */,
 				039AF9A22E2588C700B90527 /* Movie+Helpers.swift */,
 				039AF9A42E2589F600B90527 /* MovieLoaderHelper.swift */,
+				03CCDE872E5E4136004F3848 /* View+Focus.swift */,
 			);
 			path = Utilites;
 			sourceTree = "<group>";
@@ -1320,29 +1356,20 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		03DCB05E2E56034C0071C3B2 /* CreateAccount */ = {
-			isa = PBXGroup;
-			children = (
-				0397B36F2E5517E400065408 /* CreateAccountView.swift */,
-				03DCB05F2E56035C0071C3B2 /* ViewModel */,
-				03DCB0602E5603910071C3B2 /* PreviewData */,
-			);
-			path = CreateAccount;
-			sourceTree = "<group>";
-		};
-		03DCB05F2E56035C0071C3B2 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				0397B3712E55193800065408 /* CreateAccountViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		03DCB0602E5603910071C3B2 /* PreviewData */ = {
 			isa = PBXGroup;
 			children = (
-				03DCB0612E5603A70071C3B2 /* CreateAccountPreviewData.swift */,
+				032BAF872E53B8D2001077A8 /* LoginView+Previews.swift */,
+				032BAF832E53B6B4001077A8 /* LoginPreviewData.swift */,
+				032BAF852E53B6F5001077A8 /* PreviewFactory+Login.swift */,
 				03DCB0652E5608E30071C3B2 /* CreateAccountView+Previews.swift */,
+				03DCB0612E5603A70071C3B2 /* CreateAccountPreviewData.swift */,
+				03DCB0632E5604890071C3B2 /* PreviewFactory+CreateAccount.swift */,
+				031E9AA92E19D1550027BC31 /* AccountView+Previews.swift */,
+				031392042E1AAA310047ED6B /* PreviewFactory+Account.swift */,
+				036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */,
+				036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */,
+				036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */,
 			);
 			path = PreviewData;
 			sourceTree = "<group>";
@@ -1518,6 +1545,7 @@
 				030612672DF4E5800013F7AF /* MovieListView.swift in Sources */,
 				031392052E1AAA310047ED6B /* PreviewFactory+Account.swift in Sources */,
 				03FE32342E07394C00C9B356 /* PersonDetail.swift in Sources */,
+				036E06AC2E5B97B6006BBA92 /* ResetPasswordSheet.swift in Sources */,
 				03BAD6A02E2989380035F1F5 /* PersonLinksPreviewData.swift in Sources */,
 				0359A9742E02EB1D00818BD2 /* CastMemberView+Previews.swift in Sources */,
 				03ABC8DF2E21A90F001A950D /* DiscoverMovieRow+Preview.swift in Sources */,
@@ -1528,12 +1556,14 @@
 				03F0A4BE2E5A42160071856D /* TrailingIcon.swift in Sources */,
 				0356785C2E17E259005BEE57 /* PersonMovieCardView+Previews.swift in Sources */,
 				030599782E1F051100626215 /* PreviewFactory+Discover.swift in Sources */,
+				0390F7E12E5DE79300E89B82 /* AuthPasswordField.swift in Sources */,
 				03B24AB12E1FFC380063D42C /* PreviewSupport.swift in Sources */,
 				03CE4A462E0F283800D70F70 /* SectionHeader.swift in Sources */,
 				03F46FEE2E1DC237004C01F1 /* DiscoverFilter.swift in Sources */,
 				0366237C2E2065FC008FDE2E /* DiscoverSectionView.swift in Sources */,
 				03FBBEBE2E24440300E35462 /* MoviePosterPreviewData.swift in Sources */,
 				032BAF862E53B6F5001077A8 /* PreviewFactory+Login.swift in Sources */,
+				036E06B02E5B9B45006BBA92 /* ResetPasswordPreviewData.swift in Sources */,
 				030599842E1F0C5000626215 /* SortOption.swift in Sources */,
 				03E090D52E25A17800ECBF5F /* GenreChipView.swift in Sources */,
 				034014FB2E31781200089026 /* MovieGenresView+Previews.swift in Sources */,
@@ -1551,6 +1581,7 @@
 				03CE4A422E0F214F00D70F70 /* PersonMetaInfoView.swift in Sources */,
 				030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */,
 				039AF9A32E2588C700B90527 /* Movie+Helpers.swift in Sources */,
+				036E06AA2E5B5286006BBA92 /* ResetPasswordViewModel.swift in Sources */,
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
 				033277F52E15C15800E5A226 /* WatchProviderCategory.swift in Sources */,
 				03EE7E612E2AC68700674B84 /* PreviewFactory+CastViewModel.swift in Sources */,
@@ -1595,6 +1626,7 @@
 				03BAD6A32E2989DC0035F1F5 /* PersonMovieCardPreviewData.swift in Sources */,
 				031E9AA42E19D0B60027BC31 /* SearchViewModel.swift in Sources */,
 				03F3AD8F2E11C7B300B63AA2 /* DirectorView.swift in Sources */,
+				03CCDE882E5E4136004F3848 /* View+Focus.swift in Sources */,
 				03D8D2AE2E09ECC0006A117D /* RelatedMovieCardView+Previews.swift in Sources */,
 				03C4570D2E0C8E8A00A48D2C /* HorizontalMoviesScrollView.swift in Sources */,
 				031F2E302E0DD2DF001E41B8 /* PersonMovieCardView.swift in Sources */,
@@ -1612,6 +1644,7 @@
 				03E090DB2E25A2AE00ECBF5F /* GenreChipView+Previews.swift in Sources */,
 				03F3AD8D2E11C1FA00B63AA2 /* ShareLinkButtonView.swift in Sources */,
 				03E683C72E41362400F0BAFD /* PaginationState.swift in Sources */,
+				036E06B42E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift in Sources */,
 				03FBBEB42E24388500E35462 /* SeeAllMoviesView.swift in Sources */,
 				030BC5452DFB604A00D1F96F /* MovieVideo.swift in Sources */,
 				0384BD6D2E11318D00790AA5 /* PersonLinksView+Previews.swift in Sources */,
@@ -1645,12 +1678,14 @@
 				03CB4AAC2E1876390080EE84 /* SearchView.swift in Sources */,
 				031392092E1B127E0047ED6B /* LoadingView.swift in Sources */,
 				033277ED2E15BD3500E5A226 /* WatchProviderItemView.swift in Sources */,
+				036E06B22E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift in Sources */,
 				03B29F682E58AAD000A2B913 /* ToastBanner.swift in Sources */,
 				03FC25D82E06161100AACB5E /* MovieListContentView+Previews.swift in Sources */,
 				03D8D2A62E09DD08006A117D /* PreviewFactory.swift in Sources */,
 				03CD89D32E225C39004862AE /* DiscoverContentView.swift in Sources */,
 				03920A692E24F15B00804B06 /* SeeAllMoviesViewModel.swift in Sources */,
 				035CB2C02E51CA6500892271 /* AuthViewModel.swift in Sources */,
+				0390F7DF2E5DE78200E89B82 /* AuthEmailField.swift in Sources */,
 				03DCB0642E5604890071C3B2 /* PreviewFactory+CreateAccount.swift in Sources */,
 				03BAD69D2E2984700035F1F5 /* PersonInfoPreviewData.swift in Sources */,
 				03FBBEB82E243B0B00E35462 /* SectionMoviesView+Previews.swift in Sources */,
@@ -1683,6 +1718,7 @@
 				0319D5692E47D09200A906B9 /* FirestorePaths.swift in Sources */,
 				030612472DF4C05C0013F7AF /* SecretManager.swift in Sources */,
 				03E090DD2E25A2F600ECBF5F /* GenreSelectorView+Previews.swift in Sources */,
+				0390F7E32E5DE7AA00E89B82 /* AuthErrorBlock.swift in Sources */,
 				033277F12E15BFBD00E5A226 /* WatchProviderItemView+Previews.swift in Sources */,
 				03F3AD952E11DF9A00B63AA2 /* DirectorUnavailableView.swift in Sources */,
 				030599742E1F04DA00626215 /* DiscoverView.swift in Sources */,
