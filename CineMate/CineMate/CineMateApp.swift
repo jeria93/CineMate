@@ -9,61 +9,98 @@ import SwiftUI
 
 /// **App-entry (root DI-container)**
 ///
-/// * Creates **one** shared `MovieRepository`
-/// * Bootstraps all view-models with that repo (or empty in-memory impl.)
-/// * Holds a single `AppNavigator` that powers enum-based navigation
-/// * Injects everything into `RootView` and leaves the scene graph to SwiftUI
+/// * Creates **one** shared `MovieRepository`.
+/// * Bootstraps all long-living view models once and keeps them in `@StateObject`.
+/// * Configures Firebase once via `FirebaseBootstrap.ensureConfigured()`.
+/// * **Auth gate:** shows `LoginView` until a UID exists; then loads `RootView`.
+/// * Provides a single `AppNavigator` (via `.environmentObject`) for enum-based navigation.
 @main
 struct CineMate: App {
-    /// Global enum-navigation stack (`NavigationStack` binding lives in `RootView`)
+    /// Global enum-navigation stack (`NavigationStack` binding lives in `RootView`).
     @StateObject private var navigator = AppNavigator()
+    @StateObject private var toastCenter = ToastCenter()
 
-    /// One shared repository instance (network + cache).
-    /// Keeps strong ref so we can reuse - e.g. when adding new view-models later.
-    private let repo: MovieRepository
+    /// One shared repository instance (network + cache) kept by the app for reuse.
+    private let repository: MovieRepository
 
     /// All long-living view-models are *owned* by the App struct.
-    /// They’re created once and reused throughout the entire app life-cycle.
-    @StateObject private var movieVM    : MovieViewModel
-    @StateObject private var castVM     : CastViewModel
-    @StateObject private var favVM      = FavoriteMoviesViewModel()
-    @StateObject private var searchVM   = SearchViewModel()
-    @StateObject private var accountVM  = AccountViewModel()
-    @StateObject private var discoverVM : DiscoverViewModel
-    @StateObject private var personVM   : PersonViewModel
-    @StateObject private var favPeopleVM: FavoritePeopleViewModel
-    /// Build DI-graph: repo -> view-models.
-    /// `StateObject` wrapper ensures each VM gets reference-counted and survives
-    /// view redraws (e.g. when switching dark-mode, dynamic-type, etc.).
+    /// Created once in `init()` to survive view redraws and app-wide state changes.
+    @StateObject private var movieViewModel            : MovieViewModel
+    @StateObject private var castViewModel             : CastViewModel
+    @StateObject private var searchViewModel           : SearchViewModel
+    @StateObject private var favoriteMoviesViewModel   : FavoriteMoviesViewModel
+    @StateObject private var discoverViewModel         : DiscoverViewModel
+    @StateObject private var personViewModel           : PersonViewModel
+    @StateObject private var favoritePeopleViewModel   : FavoritePeopleViewModel
+    @StateObject private var authViewModel             : AuthViewModel
+
+    /// Build DI-graph: repository -> view-models.
+    /// `@StateObject` ensures identity/stability across lifecycle; VMs are constructed here.
     init() {
+        FirebaseBootstrap.ensureConfigured() // Idempotent; no-op in Xcode Previews.
 
-        FirebaseBootstrap.ensureConfigured() // Bootstrap Firebase
+        let repo = MovieRepository()         // Single source of truth for movie data.
+        self.repository = repo
 
-        let repo = MovieRepository()      // single source of data / network
-        self.repo = repo                  // keep for future injections
-
-        // initialise view-models that depend on the repo
-        _movieVM    = StateObject(wrappedValue: MovieViewModel(repository: repo))
-        _castVM     = StateObject(wrappedValue: CastViewModel(repository: repo))
-        _discoverVM = StateObject(wrappedValue: DiscoverViewModel(repository: repo))
-        _personVM   = StateObject(wrappedValue: PersonViewModel(repository: repo))
-        _favPeopleVM = StateObject(wrappedValue: FavoritePeopleViewModel())
+        // Initialize view models that depend on the shared repository.
+        _movieViewModel          = StateObject(wrappedValue: MovieViewModel(repository: repo))
+        _castViewModel           = StateObject(wrappedValue: CastViewModel(repository: repo))
+        _discoverViewModel       = StateObject(wrappedValue: DiscoverViewModel(repository: repo))
+        _personViewModel         = StateObject(wrappedValue: PersonViewModel(repository: repo))
+        _favoritePeopleViewModel = StateObject(wrappedValue: FavoritePeopleViewModel())
+        _authViewModel           = StateObject(wrappedValue: AuthViewModel(service: FirebaseAuthService()))
+        _searchViewModel         = StateObject(wrappedValue: SearchViewModel(repository: repo))
+        _favoriteMoviesViewModel = StateObject(wrappedValue: FavoriteMoviesViewModel())
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView(
-                movieVM:          movieVM,
-                castVM:           castVM,
-                favVM:              favVM,
-                searchVM:         searchVM,
-                accountVM:        accountVM,
-                discoverVM:       discoverVM,
-                personVM:         personVM,
-                favoritePeopleVM: favPeopleVM
-            )
-            // Make enum-navigation available to every child view.
-            .environmentObject(navigator)
+            if authViewModel.currentUID == nil {
+                NavigationStack(path: $navigator.path) {
+                    LoginView(
+                        viewModel: LoginViewModel(
+                            service: FirebaseAuthService(),
+                            onSuccess: { uid in
+                                authViewModel.errorMessage = nil
+                                authViewModel.isAuthenticating = false
+                                authViewModel.currentUID = uid
+                            }
+                        )
+                    )
+                    .navigationDestination(for: AppRoute.self) { route in
+                        switch route {
+                        case .createAccount:
+                            CreateAccountView(
+                                createViewModel: CreateAccountViewModel(
+                                    service: FirebaseAuthService(),
+                                    onVerificationEmailSent: {
+                                        toastCenter.show("Check your inbox to verify your email")
+                                        navigator.goBack()
+                                    }
+                                )
+                            )
+
+                        default:
+                            EmptyView()
+                        }
+                    }
+                }
+                .environmentObject(navigator)
+                .environmentObject(toastCenter)
+            } else {
+                RootView(
+                    movieVM:          movieViewModel,
+                    castVM:           castViewModel,
+                    favVM:            favoriteMoviesViewModel,
+                    searchVM:         searchViewModel,
+                    discoverVM:       discoverViewModel,
+                    personVM:         personViewModel,
+                    favoritePeopleVM: favoritePeopleViewModel,
+                    authViewModel:    authViewModel
+                )
+                .environmentObject(navigator)
+                .environmentObject(toastCenter)
+            }
         }
     }
 }

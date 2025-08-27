@@ -21,16 +21,16 @@ import SwiftUI
 ///
 /// ### Usage
 /// ```swift
-/// @StateObject private var movieVM = MovieViewModel()
+/// @StateObject private var movieViewModel = MovieViewModel()
 ///
 /// // Load first page
-/// Task { await movieVM.loadMovies() }
+/// Task { await movieViewModel.loadMovies() }
 ///
 /// // Load next page when user scrolls to bottom
-/// Task { await movieVM.loadNextPageIfNeeded(currentItem: lastMovie) }
+/// Task { await movieViewModel.loadNextPageIfNeeded(currentItem: lastMovie) }
 ///
 /// // Load detailed info for a selected movie
-/// Task { await movieVM.loadMovieDetails(for: movie.id) }
+/// Task { await movieViewModel.loadMovieDetails(for: movie.id) }
 /// ```
 @MainActor
 final class MovieViewModel: ObservableObject {

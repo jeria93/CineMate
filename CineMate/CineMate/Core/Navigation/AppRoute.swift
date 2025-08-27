@@ -16,15 +16,17 @@ enum AppRoute: Hashable {
     case person(id: Int)
     case genre(name: String)
     case seeAllMovies(title: String, filter: DiscoverFilter)
+    case createAccount
 }
 
 extension AppRoute {
     var caseName: String {
         switch self {
-        case .movie:  return "movie"
-        case .person: return "person"
-        case .genre:  return "genre"
-        case .seeAllMovies: return "seeAllMovies"
+        case .movie: "movie"
+        case .person: "person"
+        case .genre: "genre"
+        case .seeAllMovies: "seeAllMovies"
+        case .createAccount: "createAccount"
         }
     }
 }
