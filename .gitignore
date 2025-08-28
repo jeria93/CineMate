@@ -1,20 +1,28 @@
 # macOS
-*.DS_Store
+**/.DS_Store
 
 # Xcode
 DerivedData/
-xcuserdata/
-*.xcuserstate
 *.xcworkspace
+*.xcuserstate
 *.xcscmblueprint
-*.xcodeproj/project.xcworkspace/xcuserdata
+*.xcresult
 *.playground
+xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata
+
+# Build artifacts
+build/
+Build/
+*.ipa
+*.dSYM
+*.dSYM.zip
 
 # Swift Package Manager
 .build/
+.swiftpm/
 Packages/
 Package.resolved
-.swiftpm/xcode/package.xcworkspace/
 
 # CocoaPods
 Pods/
@@ -30,10 +38,15 @@ fastlane/Preview.html
 fastlane/screenshots/
 
 # Firebase (secrets)
-**/GoogleService-Info.plist
+**/GoogleService-Info*.plist
+!**/GoogleService-Info.example.plist
 
 # API keys / secrets
 **/Secrets.plist
+!**/Secrets.example.plist
 
 # User-specific config
 *.personal.xcconfig
+
+# Misc
+*.moved-aside
