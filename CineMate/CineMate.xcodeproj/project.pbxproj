@@ -31,7 +31,6 @@
 		030BC5482DFB6E9F00D1F96F /* Movie+TrailerURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5472DFB6E9F00D1F96F /* Movie+TrailerURL.swift */; };
 		030BC54A2DFB6ECB00D1F96F /* TrailerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030BC5492DFB6ECB00D1F96F /* TrailerHelper.swift */; };
 		030CA7A72DF8CADA00771212 /* MovieDetailInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030CA7A62DF8CADA00771212 /* MovieDetailInfoView.swift */; };
-		030E469E2DFDA7DD00285FE7 /* Secrets.example.plist in Resources */ = {isa = PBXBuildFile; fileRef = 030E469D2DFDA7DD00285FE7 /* Secrets.example.plist */; };
 		031392032E1AAA0F0047ED6B /* PreviewFactory+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031392022E1AAA0F0047ED6B /* PreviewFactory+Search.swift */; };
 		031392052E1AAA310047ED6B /* PreviewFactory+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031392042E1AAA310047ED6B /* PreviewFactory+Account.swift */; };
 		031392072E1B11CA0047ED6B /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031392062E1B11CA0047ED6B /* SearchBarView.swift */; };
@@ -81,7 +80,6 @@
 		034846592E4BEC490078E298 /* FavoritePeopleGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034846582E4BEC490078E298 /* FavoritePeopleGrid.swift */; };
 		034AAEED2E00BA6600099259 /* TMDBEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */; };
 		034AAEEF2E00BCD000099259 /* TMDBError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEE2E00BCD000099259 /* TMDBError.swift */; };
-		0353E0082E46852800871BBB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0353E0072E46852800871BBB /* GoogleService-Info.plist */; };
 		0353E00B2E46900A00871BBB /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0353E00A2E46900A00871BBB /* FirebaseAuth */; };
 		0353E00D2E46900A00871BBB /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0353E00C2E46900A00871BBB /* FirebaseFirestore */; };
 		0353E0112E46962B00871BBB /* FirebaseBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0353E0102E46962B00871BBB /* FirebaseBootstrap.swift */; };
@@ -121,6 +119,7 @@
 		036E06B02E5B9B45006BBA92 /* ResetPasswordPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */; };
 		036E06B22E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */; };
 		036E06B42E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */; };
+		03757F132E60F2A800C5C2C1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */; };
 		0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */; };
 		0384BD6D2E11318D00790AA5 /* PersonLinksView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */; };
 		0384BD6F2E1177ED00790AA5 /* SocialLinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6E2E1177ED00790AA5 /* SocialLinkButtonView.swift */; };
@@ -177,6 +176,8 @@
 		03CE4A422E0F214F00D70F70 /* PersonMetaInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */; };
 		03CE4A442E0F246500D70F70 /* DateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE4A432E0F246500D70F70 /* DateHelper.swift */; };
 		03CE4A462E0F283800D70F70 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE4A452E0F283800D70F70 /* SectionHeader.swift */; };
+		03D0734D2E60F605003EBED8 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 03D0734C2E60F605003EBED8 /* GoogleSignIn */; };
+		03D0734F2E60F605003EBED8 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03D0734E2E60F605003EBED8 /* GoogleSignInSwift */; };
 		03D5E2322E4C915100AAB2D3 /* FavoritePeopleGrid+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D5E2312E4C915100AAB2D3 /* FavoritePeopleGrid+Previews.swift */; };
 		03D5E2362E4CCC0000AAB2D3 /* PersonCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D5E2352E4CCC0000AAB2D3 /* PersonCardView.swift */; };
 		03D8D29C2E08836F006A117D /* CastMemberImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D8D29B2E08836E006A117D /* CastMemberImageView.swift */; };
@@ -316,7 +317,6 @@
 		034846582E4BEC490078E298 /* FavoritePeopleGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePeopleGrid.swift; sourceTree = "<group>"; };
 		034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBEndpoint.swift; sourceTree = "<group>"; };
 		034AAEEE2E00BCD000099259 /* TMDBError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBError.swift; sourceTree = "<group>"; };
-		0353E0072E46852800871BBB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0353E0102E46962B00871BBB /* FirebaseBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseBootstrap.swift; sourceTree = "<group>"; };
 		0355530F2E2A4D51008064ED /* DirectorPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorPreviewData.swift; sourceTree = "<group>"; };
 		0355ABCD2E107E11002E6F77 /* KnownForScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownForScrollView.swift; sourceTree = "<group>"; };
@@ -354,6 +354,7 @@
 		036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordPreviewData.swift; sourceTree = "<group>"; };
 		036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+ResetPassword.swift"; sourceTree = "<group>"; };
 		036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ResetPasswordSheet+Previews.swift"; sourceTree = "<group>"; };
+		03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGenresView.swift; sourceTree = "<group>"; };
 		0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonLinksView+Previews.swift"; sourceTree = "<group>"; };
 		0384BD6E2E1177ED00790AA5 /* SocialLinkButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLinkButtonView.swift; sourceTree = "<group>"; };
@@ -410,6 +411,7 @@
 		03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMetaInfoView.swift; sourceTree = "<group>"; };
 		03CE4A432E0F246500D70F70 /* DateHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
 		03CE4A452E0F283800D70F70 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
+		03D073502E60FCFC003EBED8 /* GoogleService-Info.example.plist..plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.example.plist..plist"; sourceTree = "<group>"; };
 		03D5E2312E4C915100AAB2D3 /* FavoritePeopleGrid+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoritePeopleGrid+Previews.swift"; sourceTree = "<group>"; };
 		03D5E2352E4CCC0000AAB2D3 /* PersonCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCardView.swift; sourceTree = "<group>"; };
 		03D8D29B2E08836E006A117D /* CastMemberImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastMemberImageView.swift; sourceTree = "<group>"; };
@@ -479,6 +481,8 @@
 			files = (
 				0353E00B2E46900A00871BBB /* FirebaseAuth in Frameworks */,
 				0353E00D2E46900A00871BBB /* FirebaseFirestore in Frameworks */,
+				03D0734D2E60F605003EBED8 /* GoogleSignIn in Frameworks */,
+				03D0734F2E60F605003EBED8 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -516,8 +520,9 @@
 				036A61AC2E00130500DB7BF0 /* Core */,
 				03A620C02DF774CA00C075E8 /* Features */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
+				030E469D2DFDA7DD00285FE7 /* Secrets.example.plist */,
+				03D073502E60FCFC003EBED8 /* GoogleService-Info.example.plist..plist */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
-				0353E0072E46852800871BBB /* GoogleService-Info.plist */,
 			);
 			path = CineMate;
 			sourceTree = "<group>";
@@ -720,8 +725,8 @@
 		030E03842E0B486C007BB609 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				030E469D2DFDA7DD00285FE7 /* Secrets.example.plist */,
 				030612462DF4C05C0013F7AF /* SecretManager.swift */,
+				03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -926,6 +931,7 @@
 		036A61AC2E00130500DB7BF0 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				03757F142E60F2DA00C5C2C1 /* Google */,
 				0397B36E2E55146D00065408 /* Navigation */,
 				03B5AB062E477D9500A7A3B7 /* Firebase */,
 				030E03842E0B486C007BB609 /* Config */,
@@ -969,6 +975,13 @@
 				03C4570C2E0C8E8A00A48D2C /* HorizontalMoviesScrollView.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		03757F142E60F2DA00C5C2C1 /* Google */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Google;
 			sourceTree = "<group>";
 		};
 		0382BDEE2E26EAAE00B5B74D /* Genre */ = {
@@ -1452,6 +1465,8 @@
 			packageProductDependencies = (
 				0353E00A2E46900A00871BBB /* FirebaseAuth */,
 				0353E00C2E46900A00871BBB /* FirebaseFirestore */,
+				03D0734C2E60F605003EBED8 /* GoogleSignIn */,
+				03D0734E2E60F605003EBED8 /* GoogleSignInSwift */,
 			);
 			productName = CineMate;
 			productReference = 030612032DF4BA4B0013F7AF /* CineMate.app */;
@@ -1484,6 +1499,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				0353E0092E46900A00871BBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				03D0734B2E60F605003EBED8 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = 030612042DF4BA4B0013F7AF /* Products */;
 			projectDirPath = "";
@@ -1499,8 +1515,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				030E469E2DFDA7DD00285FE7 /* Secrets.example.plist in Resources */,
-				0353E0082E46852800871BBB /* GoogleService-Info.plist in Resources */,
+				03757F132E60F2A800C5C2C1 /* GoogleService-Info.plist in Resources */,
 				033DE9762E0144B4009FB949 /* Secrets.plist in Resources */,
 				030612292DF4BEB40013F7AF /* Assets.xcassets in Resources */,
 			);
@@ -1954,6 +1969,14 @@
 				minimumVersion = 12.1.0;
 			};
 		};
+		03D0734B2E60F605003EBED8 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1966,6 +1989,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0353E0092E46900A00871BBB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		03D0734C2E60F605003EBED8 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D0734B2E60F605003EBED8 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		03D0734E2E60F605003EBED8 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D0734B2E60F605003EBED8 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
