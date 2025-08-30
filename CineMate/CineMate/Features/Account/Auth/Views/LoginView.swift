@@ -72,6 +72,18 @@ struct LoginView: View {
                 .buttonStyle(.bordered)
                 .disabled(viewModel.isAuthenticating)
 
+            Button {
+                Task { await viewModel.signInWithGoogle() }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "g.circle") // byt till riktig Google-ikon om du vill
+                    Text("Continue with Google")
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)               // håll samma UI-ton som “guest”
+            .disabled(viewModel.isAuthenticating)
+
             if let message = viewModel.errorMessage {
                 AuthErrorBlock(
                     message: message,

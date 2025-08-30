@@ -8,23 +8,26 @@
 import Foundation
 import FirebaseAuth
 
-/// **AuthAppError**
-/// Small, UI-friendly error type for authentication flows.
-/// Maps Firebase and custom errors to a compact set of app errors.
-/// Keeps Firebase error codes hidden from the UI layer.
+/// A small, UI-friendly error type for the app’s auth flows.
+/// Converts Firebase/Google errors into simple cases the UI can show.
+/// Keeps SDK-specific error codes out of the view layer.
 enum AuthAppError: LocalizedError, Equatable {
 
-    // Core error cases we show in the UI
+    // Core error cases we present in the UI
     case emailNotVerified
     case invalidEmail
     case invalidCredentials      // wrong password OR user not found
     case emailInUse
     case weakPassword
     case network
+    case accountDisabled         // disabled in backend
+    case tooManyRequests         // throttled/abuse protection
+    case providerMismatch        // account exists with a different sign-in method
+    case cancelled               // user cancelled a web/Google sign-in flow
     case preview
     case unknown(String)
 
-    /// Human-readable text for alerts/toasts.
+    /// Short, user-facing text for alerts/toasts.
     var errorDescription: String? {
         switch self {
         case .emailNotVerified: "Please verify your email before signing in"
@@ -33,67 +36,87 @@ enum AuthAppError: LocalizedError, Equatable {
         case .emailInUse: "Email is already in use"
         case .weakPassword: "Password is too weak"
         case .network: "Network error. Check your connection"
+        case .accountDisabled: "This account has been disabled"
+        case .tooManyRequests: "Too many attempts. Try again later"
+        case .providerMismatch: "Account exists with a different sign-in method"
+        case .cancelled: "Sign-in was cancelled"
         case .preview: "Auth is unavailable in Xcode Previews"
         case .unknown(let message): message
         }
     }
 
-    /// Maps any thrown `Error` (Firebase or custom) into `AuthAppError`.
+    /// Returns true for benign, user-initiated cancellation (usually no toast).
+    var isUserCancellation: Bool {
+        if case .cancelled = self { return true } else { return false }
+    }
+
+    /// Maps any thrown `Error` into an `AuthAppError`.
     ///
-    /// Steps:
-    /// 1) Handle our own sentinel errors (`PreviewAuthError`, `EmailNotVerifiedError`).
-    /// 2) Bridge to `NSError` to read `domain` and error code.
-    /// 3) Ensure it is a Firebase Auth error (`AuthErrorDomain`).
-    /// 4) Bridge to `AuthErrorCode` and switch on `.code`.
-    /// 5) Return a compact, app-level case; fall back to `.unknown`.
+    /// Mapping order:
+    /// 1) App sentinel errors (preview, email not verified, user cancelled, Google tokens missing)
+    /// 2) Generic network errors
+    /// 3) Firebase Auth errors by `AuthErrorCode`
+    /// 4) Fallback to `.unknown` with the original message
     static func mapToAppError(_ error: Error) -> AuthAppError {
-        // 1) Our own sentinel errors
+        // 1) Our sentinels
         if error is PreviewAuthError { return .preview }
         if error is EmailNotVerifiedError { return .emailNotVerified }
+        if error is UserCancelledSignInError { return .cancelled }
+        if error is GoogleSignInFailure { return .unknown("Google sign-in failed. Please try again.") }
 
-        // 2) Bridge to NSError to inspect domain/message
+        // 2) Generic network
         let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain {
+            return .network
+        }
 
-        // 3) Only map Firebase Auth errors here
+        // 3) Firebase Auth mapping
         guard nsError.domain == AuthErrorDomain,
-              // 4) Version-safe bridge to AuthErrorCode (FirebaseAuth 12.x)
               let authErrorCode = AuthErrorCode(_bridgedNSError: nsError) else {
+            // 4) Fallback
             return .unknown(nsError.localizedDescription)
         }
 
-        // 5) Compact mapping to our app errors
         switch authErrorCode.code {
         case .invalidEmail:
             return .invalidEmail
         case .wrongPassword, .userNotFound:
             return .invalidCredentials
-        case .emailAlreadyInUse:
+        case .emailAlreadyInUse, .credentialAlreadyInUse:
             return .emailInUse
         case .weakPassword:
             return .weakPassword
         case .networkError:
             return .network
+        case .userDisabled:
+            return .accountDisabled
+        case .tooManyRequests:
+            return .tooManyRequests
+        case .accountExistsWithDifferentCredential:
+            return .providerMismatch
         default:
             return .unknown(authErrorCode.localizedDescription)
         }
     }
 }
 
-/// **PreviewAuthError**
 /// Thrown in Xcode Previews to keep the Firebase SDK offline/dormant.
 struct PreviewAuthError: LocalizedError {
     var errorDescription: String? { "Auth is unavailable in Xcode Previews." }
 }
 
-/// **EmailNotVerifiedError**
 /// Thrown when sign-in is blocked until the user verifies their email.
 struct EmailNotVerifiedError: LocalizedError {
     var errorDescription: String? { "Please verify your email before signing in." }
 }
 
-/// **AuthServiceError**
-/// Internal service errors from `FirebaseAuthService`.
+/// Thrown when the user cancels a third-party flow (e.g., Google web/SFAuth flow).
+struct UserCancelledSignInError: LocalizedError {
+    var errorDescription: String? { "Sign-in was cancelled." }
+}
+
+/// Internal service errors used by `FirebaseAuthService`.
 enum AuthServiceError: Error {
-    /// No current user is available when one is required.
+    /// No current user exists when one is required.
     case noCurrentUser
 }
