@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import GoogleSignInSwift
 
 struct LoginView: View {
     // MARK: - Dependencies
     @ObservedObject private var viewModel: LoginViewModel
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
+
+    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - UI State
     @State private var showResetSheet = false
@@ -72,17 +75,12 @@ struct LoginView: View {
                 .buttonStyle(.bordered)
                 .disabled(viewModel.isAuthenticating)
 
-            Button {
-                Task { await viewModel.signInWithGoogle() }
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "g.circle") // byt till riktig Google-ikon om du vill
-                    Text("Continue with Google")
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)               // håll samma UI-ton som “guest”
-            .disabled(viewModel.isAuthenticating)
+                GoogleSignInButton(
+                    scheme: colorScheme == .dark ? .dark : .light,
+                    style: .icon,
+                    state: viewModel.isAuthenticating ? .disabled : .normal
+                ) { Task { await viewModel.signInWithGoogle() } }
+                .frame(width: 48, height: 48)
 
             if let message = viewModel.errorMessage {
                 AuthErrorBlock(

@@ -3,10 +3,10 @@
 **CineMate** is a SwiftUI iOS app for browsing, filtering, and saving movies powered by The Movie Database (**TMDB**) API.  
 It emphasizes clean architecture, fast UI iteration (Previews + mocks), and safe persistence via Firebase **Auth** + **Firestore**.
 
-> **Now includes authentication:** Email/Password sign‑in, account creation with email verification, password reset, and Anonymous guest mode. Reusable auth UI components and validators are included.
+> **Authentication included:** Email/Password, password reset, **Google Sign‑In (Firebase)**, and Anonymous guest mode. Reusable auth UI components and validators are included.
 
 > **Recommended setup:** Xcode **15.3+** and iOS **17.4** (deployment targets include 17.4 and 18.5)  
-> **Quick start:** clone → copy `Secrets.example.plist` to `Secrets.plist` -> add TMDB keys -> add `GoogleService-Info.plist` -> Run
+> **Quick start:** clone -> copy `Secrets.example.plist` to `Secrets.plist` -> add TMDB keys -> add `GoogleService-Info.plist` -> Run
 
 ---
 
@@ -32,7 +32,8 @@ It emphasizes clean architecture, fast UI iteration (Previews + mocks), and safe
 - **Create Account** (Email/Password) — sends **verification email** on signup
 - **Sign In** (Email/Password) — UI offers **Resend verification** if needed
 - **Forgot Password** — email reset link
-- **Anonymous (Guest)** — one‑tap; can later **link** to email/password (**WIP UI**)
+- **Anonymous (Guest)** — one‑tap; can later **link** to email/password
+- **Google Sign‑In** — official Google SwiftUI button + Firebase credential exchange
 - **Sign Out** — from Account tab
 
 **UI building blocks**
@@ -45,7 +46,7 @@ It emphasizes clean architecture, fast UI iteration (Previews + mocks), and safe
 
 **Validation & errors**
 - `AuthValidator` — trims whitespace, lowercases email; pragmatic email regex; password policy (min/max length, requires lower/upper/digit)
-- `AuthAppError` — maps Firebase errors → compact, user‑friendly cases
+- `AuthAppError` — maps Firebase/Google errors → compact, user‑friendly cases
 
 ---
 
@@ -56,28 +57,70 @@ You need the following local configuration files before running the app:
 | File | Location | Purpose |
 |------|----------|---------|
 | `Secrets.plist` | `CineMate/Secrets.plist` | TMDB API keys and tokens |
-| `GoogleService-Info.plist` | Add to the Xcode project (app target) | Firebase config for Auth + Firestore |
+| `GoogleService-Info.plist` | Add to the Xcode project (app target) | Firebase config for Auth + Firestore + Google client ID |
 
 > These are **excluded from version control**. Use `Secrets.example.plist` as a template.
 
 ### Firebase Console configuration
 - **Authentication → Sign‑in method**
-  - Enable **Anonymous**
-  - Enable **Email/Password**
+- Enable **Anonymous**
+- Enable **Email/Password**
+- Enable **Google**
 - **Firestore**
-  - Create database
-  - Publish security rules (see **Firebase Overview** below)
+- Create database
+- Publish security rules (see **Firebase Overview** below)
 
 ---
 
-## Secrets & Security
+## Google Sign‑In (Quick Setup)
 
-The sensitive files below are ignored in Git and enforced via repository config (`.gitignore`, `.github/CODEOWNERS`):
+1) **Add packages (SPM):**  
+- `GoogleSignIn`  
+- `GoogleSignInSwift` (official SwiftUI button)
 
-- `Secrets.plist`  
-- `GoogleService-Info.plist`
+2) **Info.plist:**  
+- **URL Types** → add your `REVERSED_CLIENT_ID` (found in `GoogleService-Info.plist`).  
+- (Optional) **LSApplicationQueriesSchemes** → include `google` if you plan to check `canOpenURL` for Google apps.
 
-> **Historic note:** `Secrets.plist` was unintentionally committed early in development. In **June 2025** the Git history was rewritten/sanitized using `git-filter-repo` to purge any leaked secrets. Only `Secrets.example.plist` remains in history for safe reference.
+3) **Bootstrap at launch:**  
+Call these once inside `CineMate.init()`:
+```swift
+FirebaseBootstrap.ensureConfigured()
+GoogleSignInBootstrap.ensureConfigured()
+```
+
+4) **Handle the OAuth redirect:**  
+Add to the root view (e.g., in `CineMateApp` body):
+```swift
+.handleGoogleSignInURL()
+```
+
+5) **Use the official SwiftUI button:**  
+```swift
+import GoogleSignInSwift
+
+GoogleSignInButton(
+scheme: colorScheme == .dark ? .dark : .light,
+style: .standard, // .standard, .wide, .icon
+state: viewModel.isAuthenticating ? .disabled : .normal
+) {
+Task { await viewModel.signInWithGoogle() }
+}
+.frame(height: 48)
+.frame(maxWidth: .infinity)
+```
+
+6) **Exchange tokens with Firebase:**  
+The sign-in flow returns `idToken` + `accessToken` which are exchanged for a Firebase credential:
+```swift
+let credential = GoogleAuthProvider.credential(
+withIDToken: tokens.idToken,
+accessToken: tokens.accessToken
+)
+let result = try await Auth.auth().signIn(with: credential)
+```
+
+> **Previews:** All Google/Firebase code paths are guarded by `ProcessInfo.processInfo.isPreview` so Xcode Previews stay offline.
 
 ---
 
@@ -85,22 +128,22 @@ The sensitive files below are ignored in Git and enforced via repository config 
 
 1. Open the project in **Xcode 15.3** or later.  
 2. Add your `Secrets.plist`:
-   - Right‑click **CineMate** → **New File… → Property List**
-   - Name it `Secrets.plist`
-   - Add keys (example):
-     ```xml
-     <?xml version="1.0" encoding="UTF-8"?>
-     <plist version="1.0">
-     <dict>
-       <key>TMDB_API_KEY</key>
-       <string>PUT-YOUR-API-KEY-HERE</string>
-       <key>TMDB_BEARER_TOKEN</key>
-       <string>PUT-YOUR-BEARER-TOKEN-HERE</string>
-     </dict>
-     </plist>
-     ```
+- Right‑click **CineMate** → **New File… → Property List**
+- Name it `Secrets.plist`
+- Add keys (example):
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+<key>TMDB_API_KEY</key>
+<string>PUT-YOUR-API-KEY-HERE</string>
+<key>TMDB_BEARER_TOKEN</key>
+<string>PUT-YOUR-BEARER-TOKEN-HERE</string>
+</dict>
+</plist>
+```
 3. Add `GoogleService-Info.plist` from **Firebase Console** (create iOS app) and **add it to the app target** in Xcode (Target Membership / Build Phases → Copy Bundle Resources).  
-4. In **Firebase Console**: enable **Anonymous** and **Email/Password** sign‑in, enable **Firestore**, publish rules.  
+4. In **Firebase Console**: enable **Anonymous**, **Email/Password**, **Google** sign‑in; enable **Firestore**, publish rules.  
 5. Select device/simulator (iOS 17.4+) and run (Cmd+R).
 
 ---
@@ -131,7 +174,7 @@ The sensitive files below are ignored in Git and enforced via repository config 
 ## Caching & Performance (highlights)
 
 - **In‑flight guards:** prevent duplicate requests per movie (`Set<Int>` + Task cancellation)
-- **Pagination manager:** prevents overlapping next‑page fetches
+- **Pagination guard:** prevents overlapping next‑page fetches
 - **Preview bypass:** `ProcessInfo.isPreview` skips network calls in SwiftUI Previews
 - **Lightweight caches:** reuse previous results where it makes sense
 
@@ -176,14 +219,6 @@ Locale.current.region?.identifier ?? "US"
 
 ---
 
-## Debug & Limitations
-
-- **Simulator caveat:** `Locale.current.region` in Simulator follows macOS settings; real device gives more accurate region results  
-- **Streaming deep links:** Provider links are web URLs; direct deep links like `netflix://` are not reliably exposed by TMDB  
-- **Google / Apple Sign‑In:** Planned (Apple Sign‑In requires Apple Developer Program)
-
----
-
 ## Firebase Overview
 
 **Firestore data model (simplified)**
@@ -197,12 +232,6 @@ Each user may only read/write their own `/users/{uid}/…` subtree. Configure in
 
 **Privacy**  
 Anonymous mode stores favorites keyed only by a generated `uid`. Email is only collected when the user opts in to register/sign‑in.
-
----
-
-## TMDB Attribution
-
-This product uses the **TMDB API** but is **not endorsed or certified** by TMDB.
 
 ---
 
@@ -273,16 +302,16 @@ CineMate/
 
 ## Roadmap
 
-- Google Sign‑In (Firebase)
 - Profile management (change email / password)
-- Persistent on‑device cache for offline
 
 ---
 
 ## External Resources
 
 - [TMDB – The Movie Database](https://www.themoviedb.org/)  
-- [Firebase](https://firebase.google.com/)
+- [Firebase](https://firebase.google.com/)  
+- [Google Sign-In for iOS](https://developers.google.com/identity/sign-in/ios)  
+- [GoogleSignInSwift (SwiftUI button)](https://github.com/google/GoogleSignIn-iOS)
 
 ---
 
