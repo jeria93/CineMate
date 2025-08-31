@@ -119,6 +119,7 @@
 		0368AFC32DF61FA3009B1F56 /* MovieCategoryPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */; };
 		0368AFC52DF62312009B1F56 /* MovieListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC42DF62312009B1F56 /* MovieListContentView.swift */; };
 		0368AFC72DF62A7A009B1F56 /* MockMovieRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */; };
+		036CB2FD2E64C7BA0031FB34 /* LockedFeatureOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036CB2FC2E64C7BA0031FB34 /* LockedFeatureOverlay.swift */; };
 		036E06AA2E5B5286006BBA92 /* ResetPasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06A92E5B5286006BBA92 /* ResetPasswordViewModel.swift */; };
 		036E06AC2E5B97B6006BBA92 /* ResetPasswordSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06AB2E5B97B6006BBA92 /* ResetPasswordSheet.swift */; };
 		036E06B02E5B9B45006BBA92 /* ResetPasswordPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */; };
@@ -359,6 +360,7 @@
 		0368AFC22DF61FA3009B1F56 /* MovieCategoryPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCategoryPicker.swift; sourceTree = "<group>"; };
 		0368AFC42DF62312009B1F56 /* MovieListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListContentView.swift; sourceTree = "<group>"; };
 		0368AFC62DF62A7A009B1F56 /* MockMovieRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMovieRepository.swift; sourceTree = "<group>"; };
+		036CB2FC2E64C7BA0031FB34 /* LockedFeatureOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockedFeatureOverlay.swift; sourceTree = "<group>"; };
 		036E06A92E5B5286006BBA92 /* ResetPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewModel.swift; sourceTree = "<group>"; };
 		036E06AB2E5B97B6006BBA92 /* ResetPasswordSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordSheet.swift; sourceTree = "<group>"; };
 		036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordPreviewData.swift; sourceTree = "<group>"; };
@@ -591,6 +593,7 @@
 		030612612DF4CD3F0013F7AF /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				036CB2FB2E64C7AC0031FB34 /* Overlay */,
 				03F0A4C42E5A46000071856D /* FormControls */,
 				039AF9AE2E2599BD00B90527 /* Poster */,
 				03CE4A482E0F2E7C00D70F70 /* Shared */,
@@ -985,6 +988,14 @@
 				03C4570C2E0C8E8A00A48D2C /* HorizontalMoviesScrollView.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		036CB2FB2E64C7AC0031FB34 /* Overlay */ = {
+			isa = PBXGroup;
+			children = (
+				036CB2FC2E64C7BA0031FB34 /* LockedFeatureOverlay.swift */,
+			);
+			path = Overlay;
 			sourceTree = "<group>";
 		};
 		03757F142E60F2DA00C5C2C1 /* Google */ = {
@@ -1744,6 +1755,7 @@
 				0313920F2E1B12CB0047ED6B /* SearchResultsList.swift in Sources */,
 				034531B42E4A92FB003A44AC /* FirestoreFavoritePeopleRepository.swift in Sources */,
 				0366237E2E206665008FDE2E /* DiscoverMovieRow.swift in Sources */,
+				036CB2FD2E64C7BA0031FB34 /* LockedFeatureOverlay.swift in Sources */,
 				039AF9A52E2589F600B90527 /* MovieLoaderHelper.swift in Sources */,
 				03D8D2B22E09EE1D006A117D /* RelatedMoviesSection+Previews.swift in Sources */,
 				030612342DF4BF4E0013F7AF /* Movie.swift in Sources */,

@@ -11,30 +11,10 @@ struct SearchView: View {
     @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
-    /// Injected behaviors (keeps this view dumb + testable)
-    let isGuest: () -> Bool
-    let showToast: (String) -> Void
-
-    init(
-        viewModel: SearchViewModel,
-        favoriteViewModel: FavoriteMoviesViewModel,
-        isGuest: @escaping () -> Bool = { false },
-        showToast: @escaping (String) -> Void = { _ in }
-    ) {
-        self.searchViewModel = viewModel
-        self.favoriteViewModel = favoriteViewModel
-        self.isGuest = isGuest
-        self.showToast = showToast
-    }
-
     var body: some View {
         VStack {
             SearchBarView(text: $searchViewModel.query)
                 .onSubmit {
-                    guard !isGuest() else {
-                        showToast("Create a free account to use Search")
-                        return
-                    }
                     Task { await searchViewModel.search(searchViewModel.query) }
                 }
 
@@ -45,7 +25,6 @@ struct SearchView: View {
             contentView
         }
         .navigationTitle("Search")
-        .task(id: isGuest()) { searchViewModel.isAutoSearchEnabled = !isGuest() }
     }
 
     @ViewBuilder
@@ -67,10 +46,6 @@ struct SearchView: View {
                 movies: searchViewModel.results,
                 favoriteIDs: Set(favoriteViewModel.favoriteMovies.map { $0.id }),
                 onToggleFavorite: { movie in
-                    guard !isGuest() else {
-                        showToast("Create a free account to save favorites")
-                        return
-                    }
                     Task { await favoriteViewModel.toggleFavorite(movie: movie) }
                 },
                 loadMoreAction: { movie in
