@@ -47,21 +47,33 @@ struct RootView: View {
     var body: some View {
         NavigationStack(path: $navigator.path) {
             TabView(selection: $selectedTab) {
-                MovieListView(viewModel: movieVM, favoriteViewModel: favVM, castViewModel: castVM)
-                    .tabItem { Label("Movies", systemImage: "film") }
-                    .tag(MainTab.movies)
+                MovieListView(
+                    viewModel: movieVM,
+                    favoriteViewModel: favVM,
+                    castViewModel: castVM
+                )
+                .tabItem { Label("Movies", systemImage: "film") }
+                .tag(MainTab.movies)
 
-                FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
-                    .tabItem { Label("Favorites", systemImage: "heart.fill") }
-                    .tag(MainTab.favorites)
+                FavoritesView(
+                    moviesVM: favVM,
+                    peopleVM: favoritePeopleVM
+                )
+                .tabItem { Label("Favorites", systemImage: "heart.fill") }
+                .tag(MainTab.favorites)
 
                 DiscoverView(viewModel: discoverVM)
                     .tabItem { Label("Discover", systemImage: "safari") }
                     .tag(MainTab.discover)
 
-                SearchView(viewModel: searchVM, favoriteViewModel: favVM)
-                    .tabItem { Label("Search", systemImage: "magnifyingglass") }
-                    .tag(MainTab.search)
+                SearchView(
+                    viewModel: searchVM,
+                    favoriteViewModel: favVM,
+                    isGuest: { authViewModel.isGuest },
+                    showToast: { message in toastCenter.show(message) }
+                )
+                .tabItem { Label("Search", systemImage: "magnifyingglass") }
+                .tag(MainTab.search)
 
                 AccountView(viewModel: authViewModel)
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
@@ -104,7 +116,8 @@ private extension RootView {
         case .seeAllMovies(title: let title, filter: let filter):
             SeeAllMoviesView(
                 viewModel: SeeAllMoviesViewModel(
-                    repository: movieVM.underlyingRepository, filter: filter
+                    repository: movieVM.underlyingRepository,
+                    filter: filter
                 ),
                 title: title
             )
@@ -124,9 +137,7 @@ private extension RootView {
     }
 
     private func debugRoute(_ route: AppRoute) -> AppRoute {
-#if DEBUG
         print("[RootView] resolving route: \(route); current path: \(navigator.path)")
-#endif
         return route
     }
 

@@ -8,46 +8,73 @@
 import SwiftUI
 
 struct SearchView: View {
-    @ObservedObject var viewModel: SearchViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
+
+    /// Injected behaviors (keeps this view dumb + testable)
+    let isGuest: () -> Bool
+    let showToast: (String) -> Void
+
+    init(
+        viewModel: SearchViewModel,
+        favoriteViewModel: FavoriteMoviesViewModel,
+        isGuest: @escaping () -> Bool = { false },
+        showToast: @escaping (String) -> Void = { _ in }
+    ) {
+        self.searchViewModel = viewModel
+        self.favoriteViewModel = favoriteViewModel
+        self.isGuest = isGuest
+        self.showToast = showToast
+    }
 
     var body: some View {
         VStack {
-            SearchBarView(text: $viewModel.query)
+            SearchBarView(text: $searchViewModel.query)
+                .onSubmit {
+                    guard !isGuest() else {
+                        showToast("Create a free account to use Search")
+                        return
+                    }
+                    Task { await searchViewModel.search(searchViewModel.query) }
+                }
 
-            if let message = viewModel.validationMessage {
+            if let message = searchViewModel.validationMessage {
                 ValidationMessageView(message: message)
             }
 
             contentView
         }
         .navigationTitle("Search")
+        .task(id: isGuest()) { searchViewModel.isAutoSearchEnabled = !isGuest() }
     }
 
-    // MARK: - State-driven UI
     @ViewBuilder
     private var contentView: some View {
-        if viewModel.query.isEmpty {
+        if searchViewModel.query.isEmpty {
             SearchPromptView()
-        } else if viewModel.isLoading {
+        } else if searchViewModel.isLoading {
             LoadingView(title: "Searching movies...")
-        } else if let error = viewModel.error {
+        } else if let error = searchViewModel.error {
             ErrorMessageView(
                 title: "Error",
                 message: error.localizedDescription,
-                onRetry: { Task { await viewModel.search(viewModel.query) } }
+                onRetry: { Task { await searchViewModel.search(searchViewModel.query) } }
             )
-        } else if viewModel.results.isEmpty && !viewModel.trimmedQuery.isEmpty {
-            EmptyResultsView(query: viewModel.trimmedQuery)
+        } else if searchViewModel.results.isEmpty && !searchViewModel.trimmedQuery.isEmpty {
+            EmptyResultsView(query: searchViewModel.trimmedQuery)
         } else {
             SearchResultsList(
-                movies: viewModel.results,
+                movies: searchViewModel.results,
                 favoriteIDs: Set(favoriteViewModel.favoriteMovies.map { $0.id }),
                 onToggleFavorite: { movie in
+                    guard !isGuest() else {
+                        showToast("Create a free account to save favorites")
+                        return
+                    }
                     Task { await favoriteViewModel.toggleFavorite(movie: movie) }
                 },
                 loadMoreAction: { movie in
-                    Task { await viewModel.loadNextPageIfNeeded(currentItem: movie) }
+                    Task { await searchViewModel.loadNextPageIfNeeded(currentItem: movie) }
                 }
             )
         }

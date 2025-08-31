@@ -11,6 +11,7 @@
 		03046E482E1311AD0024AD46 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E472E1311AD0024AD46 /* Genre.swift */; };
 		03046E4A2E1315A40024AD46 /* Genre+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E492E1315A40024AD46 /* Genre+Preview.swift */; };
 		03046E4C2E13202D0024AD46 /* GenreDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E4B2E13202D0024AD46 /* GenreDetailView.swift */; };
+		030552682E64502400DE475F /* FeatureGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030552672E64502400DE475F /* FeatureGate.swift */; };
 		030599722E1EF9AC00626215 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030599712E1EF9AC00626215 /* DiscoverViewModel.swift */; };
 		030599742E1F04DA00626215 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030599732E1F04DA00626215 /* DiscoverView.swift */; };
 		030599782E1F051100626215 /* PreviewFactory+Discover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030599772E1F051100626215 /* PreviewFactory+Discover.swift */; };
@@ -249,6 +250,7 @@
 		03046E472E1311AD0024AD46 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		03046E492E1315A40024AD46 /* Genre+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Genre+Preview.swift"; sourceTree = "<group>"; };
 		03046E4B2E13202D0024AD46 /* GenreDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDetailView.swift; sourceTree = "<group>"; };
+		030552672E64502400DE475F /* FeatureGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureGate.swift; sourceTree = "<group>"; };
 		030599712E1EF9AC00626215 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		030599732E1F04DA00626215 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		030599772E1F051100626215 /* PreviewFactory+Discover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+Discover.swift"; sourceTree = "<group>"; };
@@ -1328,6 +1330,7 @@
 				039AF9A42E2589F600B90527 /* MovieLoaderHelper.swift */,
 				03CCDE872E5E4136004F3848 /* View+Focus.swift */,
 				033CAA072E624B0C009514D0 /* UIKit+TopMost.swift */,
+				030552672E64502400DE475F /* FeatureGate.swift */,
 			);
 			path = Utilites;
 			sourceTree = "<group>";
@@ -1611,6 +1614,7 @@
 				039AF9A32E2588C700B90527 /* Movie+Helpers.swift in Sources */,
 				036E06AA2E5B5286006BBA92 /* ResetPasswordViewModel.swift in Sources */,
 				030612632DF4CD5F0013F7AF /* MovieRowView.swift in Sources */,
+				030552682E64502400DE475F /* FeatureGate.swift in Sources */,
 				033277F52E15C15800E5A226 /* WatchProviderCategory.swift in Sources */,
 				03EE7E612E2AC68700674B84 /* PreviewFactory+CastViewModel.swift in Sources */,
 				0356785A2E17E123005BEE57 /* CastMemberImageView+Previews.swift in Sources */,
