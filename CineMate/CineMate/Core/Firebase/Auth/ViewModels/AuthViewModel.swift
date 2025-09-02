@@ -7,30 +7,36 @@
 
 import Foundation
 
-/// **AuthViewModel**
-/// Minimal auth view-model aligned with “Simple DI”.
-/// - **Production:** Inject a `FirebaseAuthService` to read UID, anonymous sign-in, and sign-out.
-/// - **Previews:** Use the static init to set deterministic state (no SDK calls, no delays).
-/// Keeps the surface tiny, avoids `@EnvironmentObject`, and makes previews trivial.
+/// # AuthViewModel
+/// Minimal auth view-model aligned with **Simple DI**.
+/// - **Production:** Inject a `FirebaseAuthService` to read UID, sign in anonymously, and sign out.
+/// - **Previews:** Static, deterministic state — no SDK calls or delays.
+/// Keeps the surface tiny and testable (no `@EnvironmentObject` required).
 @MainActor
 final class AuthViewModel: ObservableObject {
 
-    /// Currently signed-in user id (or `nil` when signed out / preview state).
+    // MARK: - UI State (observable & writable)
+    /// Currently signed-in user id (or `nil` when signed out / preview).
     @Published var currentUID: String?
-
-    /// `true` while an auth action is in flight (drives spinners / disabled buttons).
+    /// `true` while an auth action runs (drives spinners / disables inputs).
     @Published var isAuthenticating = false
-
-    /// User-facing error text (shown in UI when an operation fails).
+    /// User-facing error text shown by the UI.
     @Published var errorMessage: String?
 
-    /// Injected production service. `nil` in previews (so we never touch the SDK there).
+    // MARK: - Dependencies (prod only)
+    /// Real Firebase wrapper in production; `nil` in previews.
     private let service: FirebaseAuthService?
 
-    // MARK: - Init (production)
+    // MARK: - Derived
+    /// `true` if the current Firebase user is anonymous.
+    /// Always `false` in previews (we never boot the SDK there).
+    var isGuest: Bool {
+        if ProcessInfo.processInfo.isPreview { return false }
+        return service?.isAnonymous ?? false
+    }
 
-    /// Production initializer.
-    /// Inject a real `FirebaseAuthService`. Seeds `currentUID` if not running in previews.
+    // MARK: - Init (production)
+    /// Inject a real `FirebaseAuthService`. Seeds `currentUID` if not in previews.
     init(service: FirebaseAuthService) {
         self.service = service
         if !ProcessInfo.processInfo.isPreview {
@@ -39,37 +45,36 @@ final class AuthViewModel: ObservableObject {
     }
 
     // MARK: - Init (preview)
-
-    /// Preview initializer.
-    /// Pure static state: no SDK, no async, no delays.
+    /// Preview-only initializer (no SDK, no async, no delays).
     /// - Parameters:
-    ///   - simulatedUID: Pre-seeded UID (nil means “signed out”).
+    ///   - simulatedUID: Pre-seeded UID (`nil` means “signed out”).
     ///   - previewError: Optional error banner to show immediately.
-    ///   - IsAuthenticating: If `true`, the UI starts in a loading state.
-    init(simulatedUID: String? = nil,
-         previewError: String? = nil,
-         IsAuthenticating: Bool = false)
-    {
+    ///   - previewIsAuthenticating: Start in loading state if `true`.
+    init(
+        simulatedUID: String? = nil,
+        previewError: String? = nil,
+        previewIsAuthenticating: Bool = false
+    ) {
         self.service = nil
         self.currentUID = simulatedUID
         self.errorMessage = previewError
-        self.isAuthenticating = IsAuthenticating
+        self.isAuthenticating = previewIsAuthenticating
     }
 
     // MARK: - Actions
 
     /// Ensure a signed-in user exists (anonymous if needed).
-    /// - **Preview:** Just sets a static UID (unless an error is already shown).
-    /// - **Production:** Calls `service.isLoggedIn()`, shows spinner and errors as needed.
+    /// - **Preview:** Sets a static UID (unless an error is already shown).
+    /// - **Production:** Calls `service.isLoggedIn()`, with loading + error mapping.
     func signInAsGuest() async {
-        // Preview-path: static, deterministic behavior
+        // Preview: static, deterministic behavior
         if ProcessInfo.processInfo.isPreview {
             guard errorMessage == nil else { return } // keep the “Error” preview intact
             currentUID = currentUID ?? AuthPreviewData.demoUID
             return
         }
 
-        // Production-path: real SDK call wrapped with UI state
+        // Production: real SDK call wrapped with UI state
         guard let service else { return }
         isAuthenticating = true
         defer { isAuthenticating = false }
@@ -83,17 +88,17 @@ final class AuthViewModel: ObservableObject {
     }
 
     /// Sign out the current user.
-    /// - **Preview:** Resets static state only.
+    /// - **Preview:** Resets local state only.
     /// - **Production:** Delegates to `service.signOut()` and clears local state.
     func signOut() {
-        // Preview-path: local reset
+        // Preview: local reset
         if ProcessInfo.processInfo.isPreview {
             currentUID = nil
             errorMessage = nil
             return
         }
 
-        // Production-path: real sign-out
+        // Production: real sign-out
         do {
             try service?.signOut()
             currentUID = nil

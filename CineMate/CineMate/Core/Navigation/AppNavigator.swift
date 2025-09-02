@@ -108,6 +108,6 @@ final class AppNavigator: ObservableObject {
             .map { index, route in
                 "[\(index)] \(type(of: route)) \(route)"
             }
-            .joined(separator: " → ")
+            .joined(separator: " -> ")
     }
 }

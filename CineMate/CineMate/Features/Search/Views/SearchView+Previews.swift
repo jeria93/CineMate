@@ -15,7 +15,7 @@ extension SearchView {
     /// Results state: valid query with a populated list.
     static var previewDefault: some View {
         SearchView(
-            viewModel: PreviewFactory.searchViewModel(),
+            searchViewModel: PreviewFactory.searchViewModel(),
             favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
@@ -23,7 +23,7 @@ extension SearchView {
     /// Empty state: valid query that returns no results.
     static var previewEmpty: some View {
         SearchView(
-            viewModel: PreviewFactory.emptySearchViewModel(),
+            searchViewModel: PreviewFactory.emptySearchViewModel(),
             favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
@@ -31,7 +31,7 @@ extension SearchView {
     /// Loading state: shows spinner while searching.
     static var previewLoading: some View {
         SearchView(
-            viewModel: PreviewFactory.loadingSearchViewModel(),
+            searchViewModel: PreviewFactory.loadingSearchViewModel(),
             favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
@@ -39,7 +39,7 @@ extension SearchView {
     /// Error state: shows an error message after a failed search.
     static var previewError: some View {
         SearchView(
-            viewModel: PreviewFactory.errorSearchViewModel(),
+            searchViewModel: PreviewFactory.errorSearchViewModel(),
             favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
@@ -47,7 +47,7 @@ extension SearchView {
     /// Prompt state: empty input prompting the user to start typing.
     static var previewPrompt: some View {
         SearchView(
-            viewModel: PreviewFactory.promptSearchViewModel(),
+            searchViewModel: PreviewFactory.promptSearchViewModel(),
             favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }
@@ -55,7 +55,7 @@ extension SearchView {
     /// Validation state: invalid query with a visible validation message.
     static var previewValidation: some View {
         SearchView(
-            viewModel: PreviewFactory.invalidSearchViewModel(),
+            searchViewModel: PreviewFactory.invalidSearchViewModel(),
             favoriteViewModel: PreviewFactory.favoritesViewModel()
         )
     }

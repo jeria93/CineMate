@@ -8,13 +8,9 @@
 import SwiftUI
 
 struct CreateAccountView: View {
-    // MARK: - Dependencies
     @ObservedObject private var createViewModel: CreateAccountViewModel
 
-    // MARK: - UI State
     @State private var showTerms = false
-
-    // MARK: - Focus
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
     @FocusState private var confirmFocused: Bool
@@ -26,7 +22,6 @@ struct CreateAccountView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 16) {
-
                 // Email
                 AuthEmailField(
                     text: $createViewModel.email,
@@ -68,7 +63,7 @@ struct CreateAccountView: View {
                     isDisabled: createViewModel.isAuthenticating,
                     mode: .create,
                     submitLabel: .done,
-                    onSubmit: { Task { await createViewModel.signUp() } },
+                    onSubmit: { Task { await createViewModel.submit() } },
                     isFocused: $confirmFocused
                 )
                 if let text = createViewModel.confirmHelperText {
@@ -90,8 +85,8 @@ struct CreateAccountView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                // Submit
-                Button("Create Account") { Task { await createViewModel.signUp() } }
+                // Submit (smart)
+                Button("Create Account") { Task { await createViewModel.submit() } }
                     .buttonStyle(.borderedProminent)
                     .disabled(!createViewModel.canSubmit)
 

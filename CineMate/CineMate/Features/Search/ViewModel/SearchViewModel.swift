@@ -7,67 +7,83 @@
 
 import Foundation
 
-/// ViewModel powering the **Search** screen.
-/// Handles debounced input, validation, pagination, caching and
-/// in-flight protection. Designed for SwiftUI + async/await with
-/// clear loading/error states and preview-friendly behavior.
+/// # SearchViewModel
+/// Drives the **Search** screen.
+/// - Debounce on text changes
+/// - Validate input
+/// - Page & cache results
+/// - Prevent duplicate requests
+///
+/// ## Previews
+/// In Xcode Previews, network work is skipped and stable mock data is used.
+///
+/// ## Guest mode
+/// Set `isAutoSearchEnabled = false` to turn off auto-search (e.g. for guest accounts).
+/// Manual `search(_:)` still works when you decide to allow it.
 @MainActor
 final class SearchViewModel: ObservableObject {
 
-    // MARK: - Published (UI)
+    // MARK: - Published (UI state exposed to the view)
 
-    /// Raw text bound to the search bar. Debounced on change.
+    /// Raw text from the search bar. Debounced on change.
     @Published var query: String = "" { didSet { debounceSearch() } }
 
-    /// Current search results shown by the UI.
+    /// Current results to render.
     @Published private(set) var results: [Movie] = []
 
-    /// Indicates that a request for page 1 is in progress.
+    /// `true` while page 1 is loading.
     @Published private(set) var isLoading = false
 
-    /// User-visible error (e.g. network failure, no results).
+    /// User-facing error (e.g. network failure, no results).
     @Published var error: SearchError?
 
-    /// Validation feedback for the current query (e.g. invalid chars).
+    /// Validation feedback for `query` (e.g. invalid characters).
     @Published var validationMessage: String?
 
-    /// Last query that passed validation and triggered a real search.
+    /// Controls whether typing should auto-trigger searches.
+    /// Set to `false` to disable auto-search (e.g. for guest users).
+    @Published var isAutoSearchEnabled: Bool = true
+
+    /// Last normalized query that triggered a real search.
     @Published private(set) var lastValidQuery: String?
 
-    /// `query` trimmed of whitespace (kept for UI and logic).
+    /// `query` trimmed of whitespace (kept for UI/logic).
     @Published private(set) var trimmedQuery: String = ""
 
-    // MARK: - Deps
+    // MARK: - Dependencies
 
     /// Abstraction for fetching movies (real or mocked).
     let repository: MovieProtocol
 
-    // MARK: - Internal runtime
+    // MARK: - Runtime (internal)
 
     /// Debounce worker for keystrokes.
     private var debounceTask: Task<Void, Never>?
 
-    /// Simple in-memory cache: query → results.
+    /// Simple in-memory cache: `query → results`.
     private var cache: [String: [Movie]] = [:]
 
     /// Tracks queries currently being fetched to avoid duplicates.
     private var inFlight: Set<String> = []
 
-    /// Maximum number of cached queries kept in memory.
+    /// Max number of cached queries kept in memory.
     private let maxCacheSize = 20
 
     /// Manages current/total pages and fetch state.
     private var pagination = PaginationManager()
 
-    /// Init with a concrete repository (defaults to production).
+    // MARK: - Init
+
+    /// Creates a new view model.
+    /// - Parameter repository: Movie data source (defaults to production).
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
     }
 
     // MARK: - Public API
 
-    /// Manually trigger a search (e.g. retry button).
-    /// - Parameter query: The raw user text.
+    /// Manually trigger a search (e.g. from a submit button or retry).
+    /// - Parameter query: Raw user text.
     func search(_ query: String) async {
         let result = SearchValidator.validate(query)
         guard result.isValid, let trimmed = result.trimmed else { return }
@@ -75,8 +91,8 @@ final class SearchViewModel: ObservableObject {
         await executeSearch(for: trimmed)
     }
 
-    /// Ask for next page when the given item approaches the end.
-    /// - Parameter currentItem: The row appearing near the bottom.
+    /// Ask for the next page when the given item gets close to the bottom.
+    /// - Parameter currentItem: The row about to reach the end.
     func loadNextPageIfNeeded(currentItem: Movie?) async {
         guard let currentItem = currentItem else { return }
         let thresholdIndex = results.index(results.endIndex, offsetBy: -5, limitedBy: results.startIndex) ?? results.startIndex
@@ -84,12 +100,8 @@ final class SearchViewModel: ObservableObject {
             await fetchNextPage()
         }
     }
-}
 
-// MARK: - Private
-private extension SearchViewModel {
-
-    /// Debounce keystrokes to avoid spamming the API.
+    /// Debounce keystrokes so we don't spam the API.
     /// Skips entirely in Xcode Previews.
     func debounceSearch() {
         guard !ProcessInfo.processInfo.isPreview else { return }
@@ -99,11 +111,17 @@ private extension SearchViewModel {
             await self?.handleQuery()
         }
     }
+}
 
-    /// Validate and normalize the current query, then search if valid.
+// MARK: - Private helpers
+private extension SearchViewModel {
+
+    /// Validate and normalize the current `query`, then search if valid.
+    /// Respects `isAutoSearchEnabled`.
     /// Skips entirely in Xcode Previews.
     func handleQuery() async {
         guard !ProcessInfo.processInfo.isPreview else { return }
+        guard isAutoSearchEnabled else { return }
 
         let result = SearchValidator.validate(query)
         trimmedQuery = result.trimmed ?? ""
@@ -119,11 +137,15 @@ private extension SearchViewModel {
     }
 
     /// Execute page-1 search with cache and in-flight protection.
-    /// - Uses cached results when available.
-    /// - Updates pagination on success.
-    /// - Emits `.networkFailure` on error.
+    ///
+    /// Behavior:
+    /// - In **Previews**: returns stable mock data immediately.
+    /// - On new query: resets pagination.
+    /// - Uses cached results if available.
+    /// - Avoids duplicated calls for the same query.
+    /// - Updates loading/error state.
     func executeSearch(for trimmed: String) async {
-        // Preview path: inject stable mock results.
+        // Preview path: static mock results.
         if ProcessInfo.processInfo.isPreview {
             results = SharedPreviewMovies.moviesList
             error = nil
@@ -160,7 +182,7 @@ private extension SearchViewModel {
         setLoading(false)
     }
 
-    /// Fetch the next page if available; updates pagination state.
+    /// Fetch next page when available; updates pagination state.
     func fetchNextPage() async {
         guard pagination.startFetchingNextPage(),
               let q = lastValidQuery else { return }

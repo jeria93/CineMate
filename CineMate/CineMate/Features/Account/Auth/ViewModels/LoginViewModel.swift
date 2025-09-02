@@ -6,32 +6,34 @@
 //
 
 import Foundation
+import UIKit
 
 /// View model for the Login screen.
-/// Holds form state, runs validation, and calls FirebaseAuthService.
-/// UI-only logic, no navigation.
+/// - Holds form state and simple validation
+/// - Calls FirebaseAuthService for auth actions
+/// - Updates UI state (`isAuthenticating`, `appError`) on the main actor
 @MainActor
 final class LoginViewModel: ObservableObject {
 
-    // MARK: - Form state
-    @Published var email = ""          // user email input
-    @Published var password = ""       // user password input
+    // MARK: - Form state (bound to UI)
+    @Published var email = ""
+    @Published var password = ""
 
-    // MARK: - UI state
-    @Published var isAuthenticating = false   // show spinner / disable inputs
-    @Published private(set) var appError: AuthAppError?   // last error
-    @Published var hasTriedSubmit = false    // used to show helper texts
+    // MARK: - UI state (loading/errors)
+    @Published var isAuthenticating = false
+    @Published private(set) var appError: AuthAppError?
+    @Published var hasTriedSubmit = false
 
     // MARK: - Dependencies
-    private let service: FirebaseAuthService?    // nil in previews
-    private let onSuccess: (String) -> Void      // callback with UID
+    private let service: FirebaseAuthService?          // nil in previews
+    private let googleClient: GoogleAuthClient         // defaults to live
+    private let onSuccess: (String) -> Void            // returns Firebase UID
 
-    // MARK: - Derived UI
+    // MARK: - Derived UI (helpers for the view)
     var errorMessage: String? { appError?.errorDescription }
     var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
     var isPasswordValid: Bool { AuthValidator.isValidPassword(password) }
     var canSubmit: Bool { isEmailValid && isPasswordValid && !isAuthenticating }
-
     var emailHelperText: String? {
         hasTriedSubmit && !isEmailValid ? "Enter a valid email address" : nil
     }
@@ -43,23 +45,28 @@ final class LoginViewModel: ObservableObject {
     var shouldOfferResendVerification: Bool { appError == .emailNotVerified }
 
     // MARK: - Init
-    init(service: FirebaseAuthService, onSuccess: @escaping (String) -> Void) {
+    init(
+        service: FirebaseAuthService,
+        googleClient: GoogleAuthClient? = nil,
+        onSuccess: @escaping (String) -> Void
+    ) {
         self.service = service
-               self.onSuccess = onSuccess
+        self.googleClient = googleClient ?? LiveGoogleAuthClient()
+        self.onSuccess = onSuccess
     }
 
-    /// Preview-only init (no network).
+    /// Preview-only (never touches network/SDKs).
     init(previewEmail: String = "", previewIsAuthenticating: Bool = false, previewError: String? = nil) {
         self.service = nil
+        self.googleClient = PreviewGoogleAuthClient()
         self.onSuccess = { _ in }
         self.email = previewEmail
         self.isAuthenticating = previewIsAuthenticating
         self.appError = previewError.map { .unknown($0) }
     }
 
-    // MARK: - Actions
+    // MARK: - Actions (Email/Password)
 
-    /// Try login with email/password.
     func login() async {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
@@ -76,7 +83,6 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
-    /// Try create account (immediate sign-in).
     func signUp() async {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
@@ -93,7 +99,6 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
-    /// Send reset password email.
     func resetPassword() async {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
@@ -109,7 +114,6 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
-    /// Re-send email verification.
     func resendVerification() async {
         guard let service else { return }
         isAuthenticating = true
@@ -122,7 +126,6 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
-    /// Sign in anonymously as guest.
     func continueAsGuest() async {
         guard let service else { return }
         isAuthenticating = true
@@ -133,6 +136,33 @@ final class LoginViewModel: ObservableObject {
             onSuccess(uid)
         } catch {
             appError = AuthAppError.mapToAppError(error)
+        }
+    }
+}
+
+// MARK: - Google login
+
+extension LoginViewModel {
+
+    /// Starts Google Sign-In and completes Firebase sign-in.
+    /// - Note: Ignores pure user-cancel (no error banner).
+    func signInWithGoogle() async {
+        guard let service else { return }
+        guard let presenter = UIViewController.topMostViewController else {
+            appError = .unknown("Unable to present sign-in UI.")
+            return
+        }
+
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+
+        do {
+            let uid = try await service.signInWithGoogle(from: presenter, using: googleClient)
+            appError = nil
+            onSuccess(uid)
+        } catch {
+            let mapped = AuthAppError.mapToAppError(error)
+            if !mapped.isUserCancellation { appError = mapped }
         }
     }
 }

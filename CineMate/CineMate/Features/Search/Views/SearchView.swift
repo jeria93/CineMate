@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct SearchView: View {
-    @ObservedObject var viewModel: SearchViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
     var body: some View {
         VStack {
-            SearchBarView(text: $viewModel.query)
+            SearchBarView(text: $searchViewModel.query)
+                .onSubmit {
+                    Task { await searchViewModel.search(searchViewModel.query) }
+                }
 
-            if let message = viewModel.validationMessage {
+            if let message = searchViewModel.validationMessage {
                 ValidationMessageView(message: message)
             }
 
@@ -24,30 +27,29 @@ struct SearchView: View {
         .navigationTitle("Search")
     }
 
-    // MARK: - State-driven UI
     @ViewBuilder
     private var contentView: some View {
-        if viewModel.query.isEmpty {
+        if searchViewModel.query.isEmpty {
             SearchPromptView()
-        } else if viewModel.isLoading {
+        } else if searchViewModel.isLoading {
             LoadingView(title: "Searching movies...")
-        } else if let error = viewModel.error {
+        } else if let error = searchViewModel.error {
             ErrorMessageView(
                 title: "Error",
                 message: error.localizedDescription,
-                onRetry: { Task { await viewModel.search(viewModel.query) } }
+                onRetry: { Task { await searchViewModel.search(searchViewModel.query) } }
             )
-        } else if viewModel.results.isEmpty && !viewModel.trimmedQuery.isEmpty {
-            EmptyResultsView(query: viewModel.trimmedQuery)
+        } else if searchViewModel.results.isEmpty && !searchViewModel.trimmedQuery.isEmpty {
+            EmptyResultsView(query: searchViewModel.trimmedQuery)
         } else {
             SearchResultsList(
-                movies: viewModel.results,
+                movies: searchViewModel.results,
                 favoriteIDs: Set(favoriteViewModel.favoriteMovies.map { $0.id }),
                 onToggleFavorite: { movie in
                     Task { await favoriteViewModel.toggleFavorite(movie: movie) }
                 },
                 loadMoreAction: { movie in
-                    Task { await viewModel.loadNextPageIfNeeded(currentItem: movie) }
+                    Task { await searchViewModel.loadNextPageIfNeeded(currentItem: movie) }
                 }
             )
         }

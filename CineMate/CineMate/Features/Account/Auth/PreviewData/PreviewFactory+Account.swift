@@ -30,6 +30,6 @@ extension PreviewFactory {
 
     /// Busy/loading state (spinner visible, inputs disabled).
     static func accountIsAuthenticating() -> AuthViewModel {
-        AuthViewModel(simulatedUID: nil, IsAuthenticating: true)
+        AuthViewModel(simulatedUID: nil, previewIsAuthenticating: true)
     }
 }

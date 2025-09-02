@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import GoogleSignInSwift
 
 struct LoginView: View {
     // MARK: - Dependencies
     @ObservedObject private var viewModel: LoginViewModel
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
+
+    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - UI State
     @State private var showResetSheet = false
@@ -71,6 +74,13 @@ struct LoginView: View {
             Button("Continue as guest") { Task { await viewModel.continueAsGuest() } }
                 .buttonStyle(.bordered)
                 .disabled(viewModel.isAuthenticating)
+
+                GoogleSignInButton(
+                    scheme: colorScheme == .dark ? .dark : .light,
+                    style: .icon,
+                    state: viewModel.isAuthenticating ? .disabled : .normal
+                ) { Task { await viewModel.signInWithGoogle() } }
+                .frame(width: 48, height: 48)
 
             if let message = viewModel.errorMessage {
                 AuthErrorBlock(
