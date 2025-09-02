@@ -7,43 +7,49 @@
 
 import SwiftUI
 
-/// **CineMateApp – DI root & bootstrap**
+/// CineMateApp — DI root & bootstrap
 ///
-/// What this does:
-/// - Starts SDKs **once** per app run (skips Xcode Previews)
+/// What this app struct is responsible for:
+/// - Configure SDKs **once** on launch (skips Xcode Previews).
 ///   1) `FirebaseBootstrap.ensureConfigured()`
-///   2) `GoogleSignInBootstrap.ensureConfigured()` (reads `clientID` from Firebase)
-/// - Builds shared services as `let` (`MovieRepository`, `FirebaseAuthService`)
-/// - Owns long-lived view models as `@StateObject` (created in `init()` from those services)
-/// - Auth gate: **signed out** → `LoginView`, **signed in** → `RootView`
-/// - Shares global env objects: `AppNavigator`, `ToastCenter`
-/// - Handles Google redirect app-wide via `.handleGoogleSignInURL()` on `WindowGroup`
+///   2) `GoogleSignInBootstrap.ensureConfigured()` (uses Firebase clientID)
+/// - Build shared services as `let` (e.g. `MovieRepository`, `FirebaseAuthService`)
+/// - Create and own long-lived view models as `@StateObject`
+/// - Switch UI:
+///   • **Signed out** -> `LoginView` flow
+///   • **Signed in**  -> `RootView` (tab bar)
+/// - Provide global environment objects: `AppNavigator`, `ToastCenter`
+/// - Handle Google sign-in callback via `.handleGoogleSignInURL()`
+///
+/// Notes:
+/// - View models are created in `init()` so they keep identity across view reloads.
+/// - Services are injected into view models (Simple DI).
 @main
 struct CineMate: App {
-    /// Global enum-navigation stack (`NavigationStack` binding lives in `RootView`).
+    // Global enum-based navigation (bound to `NavigationStack` in RootView)
     @StateObject private var navigator = AppNavigator()
+
+    // Lightweight global toast service
     @StateObject private var toastCenter = ToastCenter()
 
-    /// One shared repository instance (network + cache) kept by the app for reuse.
+    // Shared services (network/auth)
     private let repository: MovieRepository
     private let authService: FirebaseAuthService
 
-    /// All long-living view-models are *owned* by the App struct.
-    /// Created once in `init()` to survive view redraws and app-wide state changes.
-    @StateObject private var movieViewModel            : MovieViewModel
-    @StateObject private var castViewModel             : CastViewModel
-    @StateObject private var searchViewModel           : SearchViewModel
-    @StateObject private var favoriteMoviesViewModel   : FavoriteMoviesViewModel
-    @StateObject private var discoverViewModel         : DiscoverViewModel
-    @StateObject private var personViewModel           : PersonViewModel
-    @StateObject private var favoritePeopleViewModel   : FavoritePeopleViewModel
-    @StateObject private var authViewModel             : AuthViewModel
+    // Long-lived view models (owned by the App)
+    @StateObject private var movieViewModel          : MovieViewModel
+    @StateObject private var castViewModel           : CastViewModel
+    @StateObject private var searchViewModel         : SearchViewModel
+    @StateObject private var favoriteMoviesViewModel : FavoriteMoviesViewModel
+    @StateObject private var discoverViewModel       : DiscoverViewModel
+    @StateObject private var personViewModel         : PersonViewModel
+    @StateObject private var favoritePeopleViewModel : FavoritePeopleViewModel
+    @StateObject private var authViewModel           : AuthViewModel
 
-    /// Build DI-graph: repository -> view-models.
-    /// `@StateObject` ensures identity/stability across lifecycle; VMs are constructed here.
+    /// Build the DI graph (services -> view models).
+    /// `@StateObject` ensures each VM is created once and reused.
     init() {
-        // Order matters: configure Firebase first
-        // GoogleSignInBootstrap reads clientID from FirebaseApp.options
+        // Order matters: Firebase first, Google next (reads Firebase clientID)
         FirebaseBootstrap.ensureConfigured()
         GoogleSignInBootstrap.ensureConfigured()
 
@@ -52,7 +58,7 @@ struct CineMate: App {
         self.repository  = repo
         self.authService = auth
 
-        // Initialize view models that depend on the shared repository.
+        // Create VMs that depend on the shared services
         _movieViewModel          = StateObject(wrappedValue: MovieViewModel(repository: repo))
         _castViewModel           = StateObject(wrappedValue: CastViewModel(repository: repo))
         _discoverViewModel       = StateObject(wrappedValue: DiscoverViewModel(repository: repo))
@@ -66,12 +72,15 @@ struct CineMate: App {
     var body: some Scene {
         WindowGroup {
             Group {
+                // Simple auth gate
                 if authViewModel.currentUID == nil {
+                    // LOGIN / SIGN-UP FLOW
                     NavigationStack(path: $navigator.path) {
                         LoginView(
                             viewModel: LoginViewModel(
                                 service: authService,
                                 onSuccess: { uid in
+                                    // Bubble up the new session to the app-owned auth VM
                                     authViewModel.errorMessage = nil
                                     authViewModel.isAuthenticating = false
                                     authViewModel.currentUID = uid
@@ -81,11 +90,22 @@ struct CineMate: App {
                         .navigationDestination(for: AppRoute.self) { route in
                             switch route {
                             case .createAccount:
+                                // Create Account inside the login flow
                                 CreateAccountView(
                                     createViewModel: CreateAccountViewModel(
                                         service: authService,
                                         onVerificationEmailSent: {
                                             toastCenter.show("Check your inbox to verify your email")
+                                            navigator.goBack()
+                                        },
+                                        onUpgraded: {
+                                            // If the user was anonymous -> now linked and signed in
+                                            if let uid = authService.currentUserID {
+                                                authViewModel.currentUID = uid
+                                                authViewModel.errorMessage = nil
+                                                authViewModel.isAuthenticating = false
+                                            }
+                                            toastCenter.show("Account created! You’re all set.")
                                             navigator.goBack()
                                         }
                                     )
@@ -96,6 +116,7 @@ struct CineMate: App {
                         }
                     }
                 } else {
+                    // MAIN APP
                     RootView(
                         movieVM:          movieViewModel,
                         castVM:           castViewModel,
@@ -108,8 +129,10 @@ struct CineMate: App {
                     )
                 }
             }
+            // Global environment
             .environmentObject(navigator)
             .environmentObject(toastCenter)
+            // App-wide Google sign-in redirect handler
             .handleGoogleSignInURL()
         }
     }

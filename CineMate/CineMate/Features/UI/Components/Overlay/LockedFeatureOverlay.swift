@@ -9,8 +9,14 @@ import SwiftUI
 
 struct LockedFeatureOverlay: View {
     let title: String = "Create a free account to continue"
-    let message: String? = nil
-    let onCTA: @MainActor () -> Void = {}
+    let message: String?
+    let onCTA: () -> Void
+
+    init(message: String? = nil,
+         onCTA: @escaping () -> Void = {}) {
+        self.message = message
+        self.onCTA = onCTA
+    }
 
     var body: some View {
         ZStack {
@@ -51,10 +57,13 @@ struct LockedFeatureOverlay: View {
         .contentShape(Rectangle())
         .allowsHitTesting(true)
         .transition(.opacity)
-        .accessibilityAddTraits(.isModal)
     }
 }
 
-#Preview {
+#Preview("Default") {
     LockedFeatureOverlay()
+}
+
+#Preview("With message") {
+    LockedFeatureOverlay(message: "Sign up to search and save favorites.")
 }

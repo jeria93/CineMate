@@ -9,17 +9,23 @@ import SwiftUI
 
 /// RootView
 /// --------
-/// • Hosts a single shared `NavigationStack` via `AppNavigator`.
-/// • Five tabs: Movies, Favorites, Discover, Search, Account.
-/// • Navigation via `AppRoute` resolved in `navigationDestination`.
-/// • Shows global toasts via `ToastCenter`.
+/// What this view does:
+/// • Hosts a single shared `NavigationStack` using `AppNavigator`.
+/// • Shows a `TabView` with five tabs: Movies, Favorites, Discover, Search, Account.
+/// • Handles navigation by pushing `AppRoute` values and resolving them in `navigationDestination`.
+/// • Shows lightweight, global toasts via `ToastCenter`.
 ///
 /// Guest gating:
-/// • When `authViewModel.isGuest`, **Discover** and **Search** are disabled
-///   and covered by `LockedFeatureOverlay` (fixed title, only `onCTA:` passed).
-private enum MainTab: Hashable {
-    case movies, favorites, discover, search, auth
-}
+/// • If `authViewModel.isGuest` is true, **Discover** and **Search** are blocked.
+/// • We keep rendering those screens, but disable interaction and place
+///   a `LockedFeatureOverlay` on top.
+/// • The overlay’s CTA sends the user to the Create Account flow with `navigator.goToCreateAccount()`.
+///
+/// Design notes:
+/// • Simple DI: long-lived view models are injected from the App root.
+/// • View models do not perform navigation; routing is centralized here.
+/// • One place controls guest gating, so feature views stay clean.
+private enum MainTab: Hashable { case movies, favorites, discover, search, auth }
 
 struct RootView: View {
     @EnvironmentObject private var navigator: AppNavigator
@@ -52,12 +58,10 @@ struct RootView: View {
                 // Discover — locked for guests
                 ZStack {
                     let isLocked = authViewModel.isGuest
-
                     DiscoverView(viewModel: discoverVM)
                         .allowsHitTesting(!isLocked)
-
                     if isLocked {
-                        LockedFeatureOverlay()
+                        LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .ignoresSafeArea()
                             .zIndex(1)
@@ -69,15 +73,10 @@ struct RootView: View {
                 // Search — locked for guests
                 ZStack {
                     let isLocked = authViewModel.isGuest
-
-                    SearchView(
-                        searchViewModel: searchVM,
-                        favoriteViewModel: favVM
-                    )
-                    .allowsHitTesting(!isLocked)
-
+                    SearchView(searchViewModel: searchVM, favoriteViewModel: favVM)
+                        .allowsHitTesting(!isLocked)
                     if isLocked {
-                        LockedFeatureOverlay()
+                        LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .ignoresSafeArea()
                             .zIndex(1)
@@ -85,18 +84,25 @@ struct RootView: View {
                 }
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
                 .tag(MainTab.search)
+
                 // Account
                 AccountView(viewModel: authViewModel)
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
                     .tag(MainTab.auth)
             }
+            // Start Firestore listeners when Root appears
             .task { await favVM.startFavoritesListenerIfNeeded() }
             .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
+
+            // Reset the navigation stack on tab change (predictable back behavior)
             .onChange(of: selectedTab) { _,_ in navigator.reset() }
+
+            // Route -> destination
             .navigationDestination(for: AppRoute.self) { route in
                 destination(for: debugRoute(route))
             }
         }
+        // Global toast layer
         .toast(toastCenter.message)
     }
 }
@@ -133,12 +139,16 @@ private extension RootView {
             )
 
         case .createAccount:
-            // After sending verification email, show toast and pop back.
+            // In-app (user is already signed-in, possibly anonymous -> can be upgraded)
             CreateAccountView(
                 createViewModel: CreateAccountViewModel(
                     service: FirebaseAuthService(),
                     onVerificationEmailSent: {
                         toastCenter.show("Check your inbox to verify your email")
+                        navigator.goBack()
+                    },
+                    onUpgraded: {
+                        toastCenter.show("Account created! You’re all set.")
                         navigator.goBack()
                     }
                 )
@@ -151,7 +161,6 @@ private extension RootView {
         return route
     }
 
-    /// Resolves a cast/crew member by id, falling back to a minimal placeholder.
     func member(for id: Int) -> CastMember {
         castVM.cast.first(where: { $0.id == id })
         ?? castVM.crew.first(where: { $0.id == id }).map(CastMember.init(from:))
