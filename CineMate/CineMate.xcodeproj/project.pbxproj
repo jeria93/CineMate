@@ -188,6 +188,7 @@
 		03D0734F2E60F605003EBED8 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03D0734E2E60F605003EBED8 /* GoogleSignInSwift */; };
 		03D5E2322E4C915100AAB2D3 /* FavoritePeopleGrid+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D5E2312E4C915100AAB2D3 /* FavoritePeopleGrid+Previews.swift */; };
 		03D5E2362E4CCC0000AAB2D3 /* PersonCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D5E2352E4CCC0000AAB2D3 /* PersonCardView.swift */; };
+		03D6636E2E698CF800BBC0E8 /* FirebaseAuthService+ProviderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D6636D2E698CF800BBC0E8 /* FirebaseAuthService+ProviderInfo.swift */; };
 		03D8D29C2E08836F006A117D /* CastMemberImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D8D29B2E08836E006A117D /* CastMemberImageView.swift */; };
 		03D8D29E2E088509006A117D /* PersonInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D8D29D2E088509006A117D /* PersonInfoView.swift */; };
 		03D8D2A02E088594006A117D /* PersonLinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D8D29F2E088594006A117D /* PersonLinksView.swift */; };
@@ -430,6 +431,7 @@
 		03D073502E60FCFC003EBED8 /* GoogleService-Info.example.plist..plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.example.plist..plist"; sourceTree = "<group>"; };
 		03D5E2312E4C915100AAB2D3 /* FavoritePeopleGrid+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoritePeopleGrid+Previews.swift"; sourceTree = "<group>"; };
 		03D5E2352E4CCC0000AAB2D3 /* PersonCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCardView.swift; sourceTree = "<group>"; };
+		03D6636D2E698CF800BBC0E8 /* FirebaseAuthService+ProviderInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseAuthService+ProviderInfo.swift"; sourceTree = "<group>"; };
 		03D8D29B2E08836E006A117D /* CastMemberImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastMemberImageView.swift; sourceTree = "<group>"; };
 		03D8D29D2E088509006A117D /* PersonInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonInfoView.swift; sourceTree = "<group>"; };
 		03D8D29F2E088594006A117D /* PersonLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonLinksView.swift; sourceTree = "<group>"; };
@@ -1440,6 +1442,7 @@
 			children = (
 				030289C92E52768B00F8AF00 /* FirebaseAuthService.swift */,
 				03618C2E2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift */,
+				03D6636D2E698CF800BBC0E8 /* FirebaseAuthService+ProviderInfo.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1720,6 +1723,7 @@
 				0306124D2DF4C3DF0013F7AF /* MovieRepository.swift in Sources */,
 				035553102E2A4D51008064ED /* DirectorPreviewData.swift in Sources */,
 				03668ABB2DFBB01400132847 /* RelatedMovieCardView.swift in Sources */,
+				03D6636E2E698CF800BBC0E8 /* FirebaseAuthService+ProviderInfo.swift in Sources */,
 				03E5BE8B2E09FF4300D3C46B /* MovieRowDetails+Previews.swift in Sources */,
 				03BAD6992E297F5B0035F1F5 /* CastMemberPreviewData.swift in Sources */,
 				03D8D2B42E09F1FF006A117D /* MovieListView+Previews.swift in Sources */,

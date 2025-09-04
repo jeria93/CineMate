@@ -17,11 +17,9 @@ struct AccountView: View {
 
     var body: some View {
         ZStack {
-            Color.clear
-                .ignoresSafeArea()
-
             Form {
                 if let uid = authViewModel.currentUID {
+                    // Signed-in section
                     Section {
                         VStack(alignment: .leading, spacing: 8) {
                             Label("Account", systemImage: "person.crop.circle")
@@ -30,14 +28,24 @@ struct AccountView: View {
                             Text("Signed in as \(uid.prefix(6))")
                                 .foregroundStyle(.secondary)
 
-                            Button("Sign out") { authViewModel.signOut() }
-                                .buttonStyle(.borderedProminent)
-                                .disabled(authViewModel.isAuthenticating)
+                            HStack {
+                                Text("Sign-in method")
+                                Spacer()
+                                Text(authViewModel.authProviderDescription)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.trailing)
+                            }
+
+                            Button("Sign out") {
+                                authViewModel.signOut()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(authViewModel.isAuthenticating)
                         }
                         .padding(.vertical, 4)
                     }
 
-                    // Danger Zone (delete)
+                    // Danger Zone (delete account)
                     AccountDangerZoneView(
                         authViewModel: authViewModel,
                         onReauthenticationRequired: {
@@ -56,14 +64,6 @@ struct AccountView: View {
             .navigationTitle("Account")
             .disabled(authViewModel.isAuthenticating)
 
-            // FULLSKÄRMS-LOADING (täcker allt vid radering/inloggning)
-            if authViewModel.isAuthenticating {
-                LoadingView(title: "Working…")
-                    .transition(.opacity)
-                    .zIndex(2)
-            }
-
-            // FULLSKÄRMS-FEL (täcker allt)
             if let error = authViewModel.errorMessage {
                 ErrorMessageView(
                     title: "Authentication Error",
@@ -71,10 +71,9 @@ struct AccountView: View {
                     onRetry: { authViewModel.errorMessage = nil }
                 )
                 .transition(.opacity)
-                .zIndex(3)
+                .zIndex(1)
             }
         }
-        .animation(.default, value: authViewModel.isAuthenticating)
         .animation(.default, value: authViewModel.errorMessage != nil)
     }
 }

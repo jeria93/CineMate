@@ -10,21 +10,20 @@ import SwiftUI
 /// RootView
 /// --------
 /// What this view does:
-/// • Hosts a single shared `NavigationStack` using `AppNavigator`.
-/// • Shows a `TabView` with five tabs: Movies, Favorites, Discover, Search, Account.
-/// • Handles navigation by pushing `AppRoute` values and resolving them in `navigationDestination`.
-/// • Shows lightweight, global toasts via `ToastCenter`.
+/// - Hosts one shared `NavigationStack` via `AppNavigator`.
+/// - Shows a `TabView` with five tabs: Movies, Favorites, Discover, Search, Account.
+/// - Resolves navigation by pushing `AppRoute` values in `.navigationDestination`.
+/// - Shows lightweight global toasts via `ToastCenter`.
 ///
 /// Guest gating:
-/// • If `authViewModel.isGuest` is true, **Discover** and **Search** are blocked.
-/// • We keep rendering those screens, but disable interaction and place
-///   a `LockedFeatureOverlay` on top.
-/// • The overlay’s CTA sends the user to the Create Account flow with `navigator.goToCreateAccount()`.
+/// - If `authViewModel.isGuest` is true, **Discover** and **Search** are locked.
+/// - We still render those screens but disable interaction and show a `LockedFeatureOverlay`.
+/// - The overlay’s CTA routes to Create Account via `navigator.goToCreateAccount()`.
 ///
 /// Design notes:
-/// • Simple DI: long-lived view models are injected from the App root.
-/// • View models do not perform navigation; routing is centralized here.
-/// • One place controls guest gating, so feature views stay clean.
+/// - Simple DI: long-lived view models are injected from the App root.
+/// - View models do not perform navigation; routing is centralized here.
+/// - One place controls guest gating so feature views stay clean.
 private enum MainTab: Hashable { case movies, favorites, discover, search, auth }
 
 struct RootView: View {
@@ -139,16 +138,12 @@ private extension RootView {
             )
 
         case .createAccount:
-            // In-app (user is already signed-in, possibly anonymous -> can be upgraded)
+            // In-app (user is signed in, possibly anonymous → can upgrade)
             CreateAccountView(
                 createViewModel: CreateAccountViewModel(
                     service: FirebaseAuthService(),
                     onVerificationEmailSent: {
                         toastCenter.show("Check your inbox to verify your email")
-                        navigator.goBack()
-                    },
-                    onUpgraded: {
-                        toastCenter.show("Account created! You’re all set.")
                         navigator.goBack()
                     }
                 )
