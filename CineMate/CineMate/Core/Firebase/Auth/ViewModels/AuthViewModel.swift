@@ -6,12 +6,17 @@
 //
 
 import Foundation
+import SwiftUI
 
-/// # AuthViewModel
-/// Minimal auth view-model aligned with **Simple DI**.
-/// - **Production:** Inject a `FirebaseAuthService` to read UID, sign in anonymously, and sign out.
-/// - **Previews:** Static, deterministic state — no SDK calls or delays.
-/// Keeps the surface tiny and testable (no `@EnvironmentObject` required).
+/// AuthViewModel
+/// -------------
+/// Small, preview-safe view model that holds **auth state** and exposes a few
+/// actions (guest sign-in, sign-out, delete account).
+///
+/// Goals:
+/// - **Simple DI:** Inject a `FirebaseAuthService` in production.
+/// - **Preview friendly:** Never touches SDKs in previews; uses static values.
+/// - **Tiny surface:** No `@EnvironmentObject` requirement; easy to test.
 @MainActor
 final class AuthViewModel: ObservableObject {
 
@@ -105,6 +110,61 @@ final class AuthViewModel: ObservableObject {
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+}
+
+// MARK: - Deletion API
+
+extension AuthViewModel {
+
+    /// Result of a delete-account attempt.
+    enum DeleteAccountResult {
+        case success
+        case needsRecentLogin
+        case failure(String)
+    }
+
+
+    /// Delete the **current user** (both Firestore data and the Firebase Auth account).
+    ///
+    /// Flow:
+    /// 1. Delete `/users/{uid}` subtree in Firestore (known subcollections first, then user doc).
+    /// 2. Delete the Firebase Auth account.
+    /// 3. Clear local state (`currentUID`, `errorMessage`).
+    ///
+    /// Returns:
+    /// - `.needsRecentLogin` when Firebase requires re-auth (non-anonymous users).
+    /// - `.success` if everything deleted (anonymous recent-login errors are tolerated).
+    func deleteCurrentAccount() async -> DeleteAccountResult {
+        if ProcessInfo.processInfo.isPreview { return .failure("Unavailable in previews") }
+        guard let service = self.service, let uid = self.currentUID else {
+            return .failure("No current user")
+        }
+
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+
+        do {
+            try await service.deleteUserData(uid: uid)
+
+            try await service.deleteAccountTolerantForAnonymous()
+
+            try? service.signOut()
+
+            await MainActor.run {
+                self.currentUID = nil
+                self.errorMessage = nil
+            }
+            return .success
+
+        } catch {
+            if service.isRecentLoginRequired(error) && !(service.isAnonymous) {
+                return .needsRecentLogin
+            }
+            let message = error.localizedDescription
+            await MainActor.run { self.errorMessage = message }
+            return .failure(message)
         }
     }
 }

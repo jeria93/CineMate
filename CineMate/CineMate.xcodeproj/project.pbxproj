@@ -103,6 +103,8 @@
 		0359A97A2E02F17400818BD2 /* PreviewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359A9792E02F17400818BD2 /* PreviewStyle.swift */; };
 		0359A97D2E03488000818BD2 /* CastViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359A97C2E03488000818BD2 /* CastViewModel.swift */; };
 		035CB2C02E51CA6500892271 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035CB2BF2E51CA6500892271 /* AuthViewModel.swift */; };
+		03618C2F2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C2E2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift */; };
+		03618C312E68E79D00D75D10 /* AccountDangerZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C302E68E79D00D75D10 /* AccountDangerZoneView.swift */; };
 		03623F232E2D6E6E00066528 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03623F222E2D6E6E00066528 /* PreviewHelpers.swift */; };
 		03652CE52DFC56830031DCAD /* MovieDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03652CE42DFC56830031DCAD /* MovieDetail.swift */; };
 		036623782E2065CD008FDE2E /* DiscoverPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036623772E2065CD008FDE2E /* DiscoverPreviewData.swift */; };
@@ -344,6 +346,8 @@
 		0359A9792E02F17400818BD2 /* PreviewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStyle.swift; sourceTree = "<group>"; };
 		0359A97C2E03488000818BD2 /* CastViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastViewModel.swift; sourceTree = "<group>"; };
 		035CB2BF2E51CA6500892271 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		03618C2E2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseAuthService+Deletion.swift"; sourceTree = "<group>"; };
+		03618C302E68E79D00D75D10 /* AccountDangerZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDangerZoneView.swift; sourceTree = "<group>"; };
 		03623F222E2D6E6E00066528 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 		03652CE42DFC56830031DCAD /* MovieDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetail.swift; sourceTree = "<group>"; };
 		036623772E2065CD008FDE2E /* DiscoverPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPreviewData.swift; sourceTree = "<group>"; };
@@ -1082,6 +1086,7 @@
 				0390F7E02E5DE79300E89B82 /* AuthPasswordField.swift */,
 				0390F7E22E5DE7AA00E89B82 /* AuthErrorBlock.swift */,
 				03DE96DF2E1BD818005D71A8 /* ValidationMessageView.swift */,
+				03618C302E68E79D00D75D10 /* AccountDangerZoneView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1434,6 +1439,7 @@
 			isa = PBXGroup;
 			children = (
 				030289C92E52768B00F8AF00 /* FirebaseAuthService.swift */,
+				03618C2E2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1658,6 +1664,7 @@
 				0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */,
 				03F3AD912E11C8D300B63AA2 /* DirectorView+Preview.swift in Sources */,
 				0313920B2E1B12960047ED6B /* ErrorMessageView.swift in Sources */,
+				03618C2F2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift in Sources */,
 				03E1BFED2E58E92B00737B4A /* AuthError.swift in Sources */,
 				033277EB2E15BD1A00E5A226 /* WatchProviderListView.swift in Sources */,
 				03BAD6972E297D130035F1F5 /* CastCarouselViewPreviewData.swift in Sources */,
@@ -1732,6 +1739,7 @@
 				03920A692E24F15B00804B06 /* SeeAllMoviesViewModel.swift in Sources */,
 				035CB2C02E51CA6500892271 /* AuthViewModel.swift in Sources */,
 				0390F7DF2E5DE78200E89B82 /* AuthEmailField.swift in Sources */,
+				03618C312E68E79D00D75D10 /* AccountDangerZoneView.swift in Sources */,
 				03DCB0642E5604890071C3B2 /* PreviewFactory+CreateAccount.swift in Sources */,
 				03BAD69D2E2984700035F1F5 /* PersonInfoPreviewData.swift in Sources */,
 				03FBBEB82E243B0B00E35462 /* SectionMoviesView+Previews.swift in Sources */,

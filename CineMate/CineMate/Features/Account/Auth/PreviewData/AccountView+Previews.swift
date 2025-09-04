@@ -12,21 +12,21 @@ import SwiftUI
 extension AccountView {
     /// Preview: user signed out.
     static var previewSignedOut: some View {
-        AccountView(viewModel: PreviewFactory.accountSignedOut())
+        AccountView(viewModel: PreviewFactory.accountSignedOut()).withPreviewToasts()
     }
 
     /// Preview: user signed in (shows short UID).
     static var previewSignedIn: some View {
-        AccountView(viewModel: PreviewFactory.accountSignedIn())
+        AccountView(viewModel: PreviewFactory.accountSignedIn()).withPreviewToasts()
     }
 
     /// Preview: error state (auth failure message).
     static var previewError: some View {
-        AccountView(viewModel: PreviewFactory.accountError())
+        AccountView(viewModel: PreviewFactory.accountError()).withPreviewToasts()
     }
 
     /// Preview: authenticating (inline loading UI).
     static var previewIsAuthenticating: some View {
-        AccountView(viewModel: PreviewFactory.accountIsAuthenticating())
+        AccountView(viewModel: PreviewFactory.accountIsAuthenticating()).withPreviewToasts()
     }
 }
