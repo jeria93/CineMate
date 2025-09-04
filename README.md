@@ -1,10 +1,10 @@
 # CineMate
 
-**CineMate** is a SwiftUI iOS app for browsing, filtering, and saving movies powered by The Movie Database (**TMDB**) API.  
+**CineMate** is a SwiftUI iOS app for browsing, filtering, and saving movies powered by **TMDB**.  
 It emphasizes clean architecture, fast UI iteration (Previews + mocks), and safe persistence via Firebase **Auth** + **Firestore**.
 
-> **Authentication included:** Email/Password, password reset, **Google Sign‑In (Firebase)**, and Anonymous guest mode. Reusable auth UI components and validators are included.
-
+> **Authentication included:** Email/Password (verification email on signup + auto sign‑out), **Google Sign‑In (Firebase)**, and **Anonymous guest** mode. Reusable auth UI components and validators are included.
+>
 > **Recommended setup:** Xcode **15.3+** and iOS **17.4** (deployment targets include 17.4 and 18.5)  
 > **Quick start:** clone -> copy `Secrets.example.plist` to `Secrets.plist` -> add TMDB keys -> add `GoogleService-Info.plist` -> Run
 
@@ -29,24 +29,31 @@ It emphasizes clean architecture, fast UI iteration (Previews + mocks), and safe
 - Region‑specific watch providers
 
 ### Authentication (Firebase)
-- **Create Account** (Email/Password) — sends **verification email** on signup
-- **Sign In** (Email/Password) — UI can **resend verification**
-- **Forgot Password** — email reset link
-- **Anonymous (Guest)** — one‑tap; can later **link** to email/password
+- **Create Account (Email/Password)** — sends **verification email** on signup and then **signs out**. Users verify via email and sign in again. No “unverified” in‑app state.
+- **Sign In (Email/Password)**
+- **Anonymous (Guest)** — one‑tap. Anonymous users can later **link** to email/password during sign‑up; we still **send verification** and **sign out** afterward (same policy as above).
 - **Google Sign‑In** — official Google SwiftUI button + Firebase credential exchange
 - **Sign Out** — from Account tab
 
-### Guest Gating (new)
+### Guest Gating
 - **Discover** and **Search** tabs are **locked for anonymous users**.
-- We draw a reusable `LockedFeatureOverlay` and **block hit‑testing** so the UI stays visible but disabled.
-- Tap **Create Account** to open the in‑app sign up screen.
+- Content remains visible but is non‑interactive (`.allowsHitTesting(false)`).
+- A reusable `LockedFeatureOverlay` explains why and offers **Create Account**.
+
+### Account
+- Shows **how you’re signed in**: `Google`, `Email (a@b.com)`, or `Guest` (via `authProviderDescription`).  
+- Shows short **UID** preview.
+- **Sign Out** button.
+- **Danger Zone**: delete account + data. Includes inline loading overlay while deleting.
+- Full‑screen **Error overlay** (`ErrorMessageView`) for auth errors; ephemeral **toasts** for transient events (e.g. delete failure/success).
+
+> Deleting account removes `/users/{uid}` data in Firestore first, then deletes the Firebase Auth user. For anonymous users, “requires recent login” is tolerated so deletion still succeeds. Deleting a Firebase user **does not** delete your external Google/Apple account.
 
 **UI building blocks**
 - `RoundedField`, `TrailingIcon`
 - `AuthEmailField`, `AuthPasswordField`
-- `AuthErrorBlock`
-- `ValidationMessageView`
-- `ToastCenter` (transient feedback)
+- `ValidationMessageView`, `ToastCenter`
+- `LockedFeatureOverlay`, `LoadingView`, `ErrorMessageView`
 - `View+Focus.applyFocus(_:)`
 
 **Validation & errors**
@@ -77,116 +84,86 @@ You need the following local configuration files before running the app:
 
 ---
 
+## Firestore Security Rules (essentials)
+
+Allow each authenticated user to manage their own `/users/{uid}` subtree, including deletes of documents and subcollections:
+
+```js
+rules_version = '2';
+
+service cloud.firestore {
+match /databases/{database}/documents {
+
+// Owner-only access to the entire /users/{uid} subtree
+match /users/{uid}/{document=**} {
+allow read, write: if request.auth != null && request.auth.uid == uid;
+}
+}
+}
+```
+
+> If you prefer more granular collections, the rule above still covers deletes and bulk operations (e.g., removing the user doc and subcollections).
+
+---
+
 ## Google Sign‑In (Quick Setup)
 
-1) **Add packages (SPM):**  
-`GoogleSignIn` and `GoogleSignInSwift` (official SwiftUI button)
-
-2) **Info.plist:**  
-- **URL Types** -> add your `REVERSED_CLIENT_ID` (from `GoogleService-Info.plist`).  
-- (Optional) **LSApplicationQueriesSchemes** -> include `google` if you check `canOpenURL`.
-
-3) **Bootstrap at launch:** call once in `CineMate.init()`
+1) **Add packages (SPM):** `GoogleSignIn` and `GoogleSignInSwift`  
+2) **Info.plist:** add `REVERSED_CLIENT_ID` (from `GoogleService-Info.plist`) as a **URL Type**  
+3) **Bootstrap at launch** in `CineMate.init()`:
 ```swift
 FirebaseBootstrap.ensureConfigured()
 GoogleSignInBootstrap.ensureConfigured()
 ```
-
-4) **Handle OAuth redirect** in the app scene tree:
+4) **Handle OAuth redirect** in your scene tree:
 ```swift
 .handleGoogleSignInURL()
 ```
+5) **Use the official SwiftUI button** and exchange tokens with Firebase (see code in project).
 
-5) **Use the official SwiftUI button** (example):
-```swift
-import GoogleSignInSwift
-
-GoogleSignInButton(
-scheme: colorScheme == .dark ? .dark : .light,
-style: .standard,
-state: viewModel.isAuthenticating ? .disabled : .normal
-) {
-Task { await viewModel.signInWithGoogle() }
-}
-.frame(height: 48)
-.frame(maxWidth: .infinity)
-```
-
-6) **Exchange tokens with Firebase**:
-```swift
-let credential = GoogleAuthProvider.credential(
-withIDToken: tokens.idToken,
-accessToken: tokens.accessToken
-)
-let result = try await Auth.auth().signIn(with: credential)
-```
-
-> **Previews:** All Google/Firebase paths are guarded by `ProcessInfo.processInfo.isPreview` so Xcode Previews stay offline.
+> Previews: All Google/Firebase paths are guarded by `ProcessInfo.processInfo.isPreview` so Xcode Previews stay offline.
 
 ---
 
 ## Project Setup (Xcode)
 
-1. Open the project in **Xcode 15.3** or later.  
-2. Add your `Secrets.plist`:
-- Right‑click **CineMate** -> **New File… -> Property List**
-- Name it `Secrets.plist`
-- Add keys (example):
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<plist version="1.0">
-<dict>
-<key>TMDB_API_KEY</key>
-<string>PUT-YOUR-API-KEY-HERE</string>
-<key>TMDB_BEARER_TOKEN</key>
-<string>PUT-YOUR-BEARER-TOKEN-HERE</string>
-</dict>
-</plist>
-```
-3. Add `GoogleService-Info.plist` from **Firebase Console** (create iOS app) and **add it to the app target** in Xcode (Target Membership / Build Phases -> Copy Bundle Resources).  
-4. In **Firebase Console**: enable **Anonymous**, **Email/Password**, **Google** sign‑in; enable **Firestore**, publish rules.  
-5. Select device/simulator (iOS 17.4+) and run (Cmd+R).
+1. Open project in **Xcode 15.3** or later  
+2. Add `Secrets.plist` (see template in `Resources/Secrets/Secrets.example.plist`)  
+3. Add `GoogleService-Info.plist` to the app target  
+4. In **Firebase Console**: enable Anonymous, Email/Password, Google; enable Firestore; publish rules  
+5. Select iOS **17.4+** device/simulator and run (**Cmd+R**)
 
 ---
 
 ## Architecture & Design
 
 - **MVVM** with focused ViewModels driving SwiftUI views  
-- **Init‑based dependency injection** (Simple DI) for testability  
+- **Init‑based DI** (Simple DI) for testability (no `@EnvironmentObject` required)  
 - **Repository pattern** for TMDB + mocks  
 - **Enum‑driven navigation** (`AppRoute` / `AppNavigator`) with push/replace semantics  
 - **Preview‑first**: `PreviewFactory`, shared mock data, and `ProcessInfo.isPreview` guards  
 - **Caching & in‑flight guards** to prevent duplicates and UI flicker  
 - **Pagination / Infinite scroll** with explicit state  
-- **Region‑awareness** via `Locale.current.region?.identifier`  
+- **Region‑awareness** via `Locale.current.region?.identifier`
 
 ### Guest Gating flow (Discover & Search)
 - Root decides if guest: `authViewModel.isGuest`
-- Content is still rendered but `.allowsHitTesting(false)` stops interaction
-- `LockedFeatureOverlay` is shown over the content
-- CTA routes to `CreateAccountView`
+- Content rendered but `.allowsHitTesting(false)` stops interaction
+- `LockedFeatureOverlay` on top with CTA to Create Account
 - When the user signs up:
-  - If **anonymous** -> we **link** the anon account (no email verification step)
-  - If not anonymous -> we **create** an account and **send a verification email**
+- If **anonymous**: we **link** anon -> email/password, **send verification**, then **sign out**
+- If **not anonymous**: normal sign‑up, **send verification**, then **sign out**
 
 ---
 
-## Previews & Mocks
+## Account Deletion (implementation notes)
 
-- `PreviewFactory` supplies deterministic states (loading/error/empty/populated).  
-- Helpers:
-  - `.withPreviewNavigation()` — injects `AppNavigator` in a `NavigationStack`  
-  - `.withPreviewToasts()` — injects `ToastCenter`  
-- All Firebase/Google calls are bypassed in Previews.
-
----
-
-## Caching & Performance (highlights)
-
-- **In‑flight guards**: prevent duplicate requests for the same id/query  
-- **Pagination guard**: no overlapping next‑page fetches  
-- **Preview bypass**: avoids real network work in Previews  
-- **Lightweight caches** where it makes sense
+- `AuthViewModel.deleteCurrentAccount()` orchestrates:
+1. Delete Firestore data under `/users/{uid}` (subcollections first)  
+2. Delete Firebase Auth user (`deleteAccountTolerantForAnonymous()` handles anon recent‑login)  
+3. `signOut()` and clear local state
+- UI: `AccountDangerZoneView` shows inline `LoadingView`; success/failure signaled via `ToastCenter`.
+- External identity (Google/Apple) is **not** deleted — only the Firebase user and Firestore data for this app.
 
 ---
 
@@ -197,44 +174,6 @@ Supports push/replace, decoupled programmatic flows, and deterministic behavior 
 
 ```swift
 navigator.goToCreateAccount()
-```
-
----
-
-## Firebase Overview
-
-**Firestore structure (simplified)**
-```
-users/{uid}/favorites/{movieId}
-users/{uid}/favorite_people/{personId}
-```
-
-**Rules (summary)**  
-Each user may only read/write their own `/users/{uid}/…` subtree.
-
-**Privacy**  
-Anonymous mode stores favorites keyed only by a generated `uid`. Email is only collected if the user registers.
-
----
-
-## Running the App
-
-1. Open project in **Xcode 15.3**  
-2. Select **iOS 17.4** simulator or device  
-3. Press **Cmd+R**
-
----
-
-## Region‑Based Streaming Support
-
-CineMate detects the user’s **current country** and adjusts:
-
-- **Movie content** (Popular, Top Rated, Trending, Upcoming) per region (🇸🇪 🇮🇳 🇨🇱, etc.)  
-- **Streaming providers** (Netflix, HBO Max, Apple TV, etc.) available in that region
-
-Handled automatically via:
-```swift
-Locale.current.region?.identifier ?? "US"
 ```
 
 ---
@@ -269,8 +208,10 @@ CineMate/
 │   │       └── Components/
 │   │           ├── AuthEmailField.swift
 │   │           ├── AuthPasswordField.swift
-│   │           ├── AuthErrorBlock.swift
-│   │           └── ValidationMessageView.swift
+│   │           ├── ValidationMessageView.swift
+│   │           ├── LockedFeatureOverlay.swift
+│   │           ├── LoadingView.swift
+│   │           └── ErrorMessageView.swift
 │   └── Genre/
 ├── UI/
 │   ├── Components/
@@ -297,16 +238,14 @@ CineMate/
 ---
 
 ## Roadmap
-
 - Profile management (change email/password)
 
 ---
 
 ## External Resources
-
-- TMDB — https://www.themoviedb.org/  
-- Firebase — https://firebase.google.com/  
-- Google Sign‑In for iOS — https://developers.google.com/identity/sign-in/ios  
+- TMDB — https://www.themoviedb.org/
+- Firebase — https://firebase.google.com/
+- Google Sign‑In for iOS — https://developers.google.com/identity/sign-in/ios
 - GoogleSignInSwift (SwiftUI button) — https://github.com/google/GoogleSignIn-iOS
 
 ---
@@ -318,6 +257,6 @@ I’m seeking a **LIA (internship)**. Open to remote/hybrid — based in **Stock
 
 ---
 
-Enjoy exploring **CineMate**
+Enjoy exploring **CineMate**!
 
 > *“Do. Or do not. There is no try.”* — Yoda

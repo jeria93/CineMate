@@ -16,8 +16,8 @@ import SwiftUI
 /// - Build shared services as `let` (e.g. `MovieRepository`, `FirebaseAuthService`)
 /// - Create and own long-lived view models as `@StateObject`
 /// - Switch UI:
-///   • **Signed out** -> `LoginView` flow
-///   • **Signed in**  -> `RootView` (tab bar)
+///   • **Signed out** --> `LoginView` flow
+///   • **Signed in**  --> `RootView` (tab bar)
 /// - Provide global environment objects: `AppNavigator`, `ToastCenter`
 /// - Handle Google sign-in callback via `.handleGoogleSignInURL()`
 ///
@@ -90,22 +90,11 @@ struct CineMate: App {
                         .navigationDestination(for: AppRoute.self) { route in
                             switch route {
                             case .createAccount:
-                                // Create Account inside the login flow
                                 CreateAccountView(
                                     createViewModel: CreateAccountViewModel(
                                         service: authService,
                                         onVerificationEmailSent: {
                                             toastCenter.show("Check your inbox to verify your email")
-                                            navigator.goBack()
-                                        },
-                                        onUpgraded: {
-                                            // If the user was anonymous -> now linked and signed in
-                                            if let uid = authService.currentUserID {
-                                                authViewModel.currentUID = uid
-                                                authViewModel.errorMessage = nil
-                                                authViewModel.isAuthenticating = false
-                                            }
-                                            toastCenter.show("Account created! You’re all set.")
                                             navigator.goBack()
                                         }
                                     )

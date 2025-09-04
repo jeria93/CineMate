@@ -8,42 +8,73 @@
 import SwiftUI
 
 struct AccountView: View {
-    @ObservedObject private var viewModel: AuthViewModel
+    @ObservedObject private var authViewModel: AuthViewModel
+    @EnvironmentObject private var toastCenter: ToastCenter
 
     init(viewModel: AuthViewModel) {
-        self._viewModel = ObservedObject(wrappedValue: viewModel)
+        self._authViewModel = ObservedObject(wrappedValue: viewModel)
     }
 
     var body: some View {
+        ZStack {
+            Form {
+                if let uid = authViewModel.currentUID {
+                    // Signed-in section
+                    Section {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label("Account", systemImage: "person.crop.circle")
+                                .font(.headline)
 
-        VStack(spacing: 12) {
-            Label("Account", systemImage: "person.crop.circle")
-                .font(.headline)
+                            Text("Signed in as \(uid.prefix(6))")
+                                .foregroundStyle(.secondary)
 
-            if let uid = viewModel.currentUID {
-                Text("Signed in as: \(uid.prefix(6))")
-                    .foregroundStyle(.secondary)
+                            HStack {
+                                Text("Sign-in method")
+                                Spacer()
+                                Text(authViewModel.authProviderDescription)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.trailing)
+                            }
 
-                Button("Sign Out") {
-                    viewModel.signOut()
+                            Button("Sign out") {
+                                authViewModel.signOut()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(authViewModel.isAuthenticating)
+                        }
+                        .padding(.vertical, 4)
+                    }
+
+                    // Danger Zone (delete account)
+                    AccountDangerZoneView(
+                        authViewModel: authViewModel,
+                        onReauthenticationRequired: {
+                            toastCenter.show("Please sign in again to delete your account")
+                            authViewModel.signOut()
+                        },
+                        onDeleteSuccess: {
+                            toastCenter.show("Account deleted successfully")
+                        },
+                        onDeleteFailure: { message in
+                            toastCenter.show(message)
+                        }
+                    )
                 }
-                .buttonStyle(.borderedProminent)
             }
-            contentStates
-        }
-    }
+            .navigationTitle("Account")
+            .disabled(authViewModel.isAuthenticating)
 
-    @ViewBuilder
-    private var contentStates: some View {
-        if let errorMessage = viewModel.errorMessage {
-            ErrorMessageView(
-                title: "Error signing in",
-                message: errorMessage
-            )
-        } else if viewModel.isAuthenticating {
-            LoadingView(title: "Signing in...")
+            if let error = authViewModel.errorMessage {
+                ErrorMessageView(
+                    title: "Authentication Error",
+                    message: error,
+                    onRetry: { authViewModel.errorMessage = nil }
+                )
                 .transition(.opacity)
+                .zIndex(1)
+            }
         }
+        .animation(.default, value: authViewModel.errorMessage != nil)
     }
 }
 
