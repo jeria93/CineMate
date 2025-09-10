@@ -104,6 +104,7 @@ struct CineMate: App {
                             }
                         }
                     }
+                    .toast(toastCenter.message)
                 } else {
                     // MAIN APP
                     RootView(

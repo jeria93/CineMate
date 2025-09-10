@@ -9,124 +9,141 @@ import SwiftUI
 import GoogleSignInSwift
 
 struct LoginView: View {
-    // MARK: - Dependencies
     @ObservedObject private var viewModel: LoginViewModel
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
-
     @Environment(\.colorScheme) private var colorScheme
 
-    // MARK: - UI State
     @State private var showResetSheet = false
-
-    // MARK: - Focus
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
 
-    init(viewModel: LoginViewModel) {
-        self._viewModel = ObservedObject(wrappedValue: viewModel)
-    }
+    init(viewModel: LoginViewModel) { _viewModel = .init(wrappedValue: viewModel) }
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("CineMate").font(.title2).bold()
+        ZStack {
+            LinearGradient(colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
+                           startPoint: .top, endPoint: .bottom)
+            .ignoresSafeArea()
 
-            // Email
-            AuthEmailField(
-                text: $viewModel.email,
-                isDisabled: viewModel.isAuthenticating,
-                submitLabel: .next,
-                onSubmit: { passwordFocused = true },
-                isFocused: $emailFocused
-            )
+            VStack(spacing: 22) {
+                AuthHeader()
 
-            if let hint = viewModel.emailHelperText {
-                ValidationMessageView(message: hint)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+                VStack(alignment: .leading, spacing: 16) {
+                    AuthEmailField(
+                        text: $viewModel.email,
+                        isDisabled: viewModel.isAuthenticating,
+                        submitLabel: .next,
+                        onSubmit: { passwordFocused = true },
+                        isFocused: $emailFocused
+                    )
+                    if let hint = viewModel.emailHelperText {
+                        ValidationMessageView(message: hint)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
-            AuthPasswordField(
-                text: $viewModel.password,
-                isDisabled: viewModel.isAuthenticating,
-                mode: .login,
-                submitLabel: .go,
-                onSubmit: { Task { await viewModel.login() } },
-                isFocused: $passwordFocused
-            )
+                    AuthPasswordField(
+                        text: $viewModel.password,
+                        isDisabled: viewModel.isAuthenticating,
+                        mode: .login,
+                        submitLabel: .go,
+                        onSubmit: { Task { await viewModel.login() } },
+                        isFocused: $passwordFocused
+                    )
+                    if let hint = viewModel.passwordHelperText {
+                        ValidationMessageView(message: hint)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
-            if let hint = viewModel.passwordHelperText {
-                ValidationMessageView(message: hint)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+                    HStack {
+                        Spacer()
+                        Button("Forgot password?") { showResetSheet = true }
+                            .buttonStyle(.plain)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(AuthTheme.popcorn)
+                            .disabled(viewModel.isAuthenticating)
+                    }
 
-            // Actions
-            HStack {
-                Spacer()
-                Button("Forgot password?") { showResetSheet = true }
-                    .buttonStyle(.plain)
+                    Button { Task { await viewModel.login() } } label: {
+                        Text("Sign in").fontWeight(.semibold).frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.pillWhite)
+                    .controlSize(.large)
+                    .frame(height: 48)
                     .disabled(viewModel.isAuthenticating)
-            }
 
-            Button("Sign in") { Task { await viewModel.login() } }
-                .buttonStyle(.borderedProminent)
-                .disabled(viewModel.isAuthenticating)
+                    OrDivider(text: "or continue with")
 
-            Button("Continue as guest") { Task { await viewModel.continueAsGuest() } }
-                .buttonStyle(.bordered)
-                .disabled(viewModel.isAuthenticating)
+                    GoogleSignInButton(
+                        scheme: colorScheme == .dark ? .dark : .light,
+                        style: .standard,
+                        state: viewModel.isAuthenticating ? .disabled : .normal
+                    ) { Task { await viewModel.signInWithGoogle() } }
+                        .frame(height: 48)
+                        .frame(maxWidth: .infinity)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
 
-                GoogleSignInButton(
-                    scheme: colorScheme == .dark ? .dark : .light,
-                    style: .icon,
-                    state: viewModel.isAuthenticating ? .disabled : .normal
-                ) { Task { await viewModel.signInWithGoogle() } }
-                .frame(width: 48, height: 48)
+                    Button {
+                        Task { await viewModel.continueAsGuest() }
+                    } label: {
+                        Label("Continue as guest", systemImage: "person.crop.circle.badge.questionmark")
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(AuthTheme.popcorn)
+                    .controlSize(.large)
+                    .frame(height: 48)
+                    .disabled(viewModel.isAuthenticating)
 
-            if let message = viewModel.errorMessage {
-                AuthErrorBlock(
-                    message: message,
-                    showResend: viewModel.shouldOfferResendVerification
-                ) {
-                    Task {
-                        await viewModel.resendVerification()
-                        toastCenter.show("Verification email sent. Check your inbox")
+                    if let message = viewModel.errorMessage {
+                        AuthErrorBlock(
+                            message: message,
+                            showResend: viewModel.shouldOfferResendVerification
+                        ) {
+                            Task {
+                                await viewModel.resendVerification()
+                                toastCenter.show("Verification email sent. Check your inbox")
+                            }
+                        }
                     }
                 }
-            }
+                .padding(.horizontal, 20)
 
-            Spacer()
+                Spacer(minLength: 8)
 
-            HStack(spacing: 6) {
-                Text("Don’t have an account?")
-                Button("Register") { navigator.goToCreateAccount() }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.tint)
-                    .accessibilityAddTraits(.isLink)
-                    .disabled(viewModel.isAuthenticating)
+                HStack(spacing: 6) {
+                    Text("Don’t have an account?").foregroundStyle(.white.opacity(0.85))
+                    Button("Register") { navigator.goToCreateAccount() }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(AuthTheme.popcorn)
+                        .accessibilityAddTraits(.isLink)
+                        .disabled(viewModel.isAuthenticating)
+                }
+                .font(.footnote)
             }
-            .font(.footnote)
+            .padding(.top, 28)
+            .padding(.bottom, 16)
         }
-        .padding()
         .task {
             try? await Task.sleep(nanoseconds: 120_000_000)
-            if viewModel.email.isEmpty {
-                emailFocused = true
-            } else if viewModel.password.isEmpty {
-                passwordFocused = true
-            }
+            if viewModel.email.isEmpty { emailFocused = true }
+            else if viewModel.password.isEmpty { passwordFocused = true }
         }
         .overlay {
             if viewModel.isAuthenticating {
                 LoadingView(title: "Signing in…").transition(.opacity)
             }
         }
-        .toast(toastCenter.message)
         .sheet(isPresented: $showResetSheet) {
-            ResetPasswordSheet()
-                .environmentObject(toastCenter)
+            ResetPasswordSheet().environmentObject(toastCenter)
         }
+        .tint(AuthTheme.popcorn)
     }
 }
+
+// MARK: - Previews
 
 #Preview("Empty") { LoginView.previewEmpty }
 #Preview("Error") { LoginView.previewError }

@@ -101,7 +101,6 @@ struct RootView: View {
                 destination(for: debugRoute(route))
             }
         }
-        // Global toast layer
         .toast(toastCenter.message)
     }
 }
