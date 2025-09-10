@@ -127,6 +127,7 @@
 		036E06B02E5B9B45006BBA92 /* ResetPasswordPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */; };
 		036E06B22E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */; };
 		036E06B42E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */; };
+		0371433A2E7200F200A35E04 /* TermSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037143392E7200F200A35E04 /* TermSheet.swift */; };
 		03757F132E60F2A800C5C2C1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */; };
 		0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */; };
 		0384BD6D2E11318D00790AA5 /* PersonLinksView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */; };
@@ -375,6 +376,7 @@
 		036E06AF2E5B9B45006BBA92 /* ResetPasswordPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordPreviewData.swift; sourceTree = "<group>"; };
 		036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+ResetPassword.swift"; sourceTree = "<group>"; };
 		036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ResetPasswordSheet+Previews.swift"; sourceTree = "<group>"; };
+		037143392E7200F200A35E04 /* TermSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermSheet.swift; sourceTree = "<group>"; };
 		03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGenresView.swift; sourceTree = "<group>"; };
 		0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonLinksView+Previews.swift"; sourceTree = "<group>"; };
@@ -608,6 +610,7 @@
 		030612612DF4CD3F0013F7AF /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				037143382E7200E900A35E04 /* Sheets */,
 				036CB2FB2E64C7AC0031FB34 /* Overlay */,
 				03F0A4C42E5A46000071856D /* FormControls */,
 				039AF9AE2E2599BD00B90527 /* Poster */,
@@ -1022,6 +1025,14 @@
 				036CB2FC2E64C7BA0031FB34 /* LockedFeatureOverlay.swift */,
 			);
 			path = Overlay;
+			sourceTree = "<group>";
+		};
+		037143382E7200E900A35E04 /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				037143392E7200F200A35E04 /* TermSheet.swift */,
+			);
+			path = Sheets;
 			sourceTree = "<group>";
 		};
 		03757F142E60F2DA00C5C2C1 /* Google */ = {
@@ -1750,6 +1761,7 @@
 				03E5BE8B2E09FF4300D3C46B /* MovieRowDetails+Previews.swift in Sources */,
 				03BAD6992E297F5B0035F1F5 /* CastMemberPreviewData.swift in Sources */,
 				03D8D2B42E09F1FF006A117D /* MovieListView+Previews.swift in Sources */,
+				0371433A2E7200F200A35E04 /* TermSheet.swift in Sources */,
 				033CAA0A2E6251D6009514D0 /* GoogleSignInBootstrap.swift in Sources */,
 				03E3557E2DF9C060001F1001 /* MovieCredits.swift in Sources */,
 				031F2E362E0DDFDE001E41B8 /* TMDBImageHelper.swift in Sources */,

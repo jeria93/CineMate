@@ -31,41 +31,81 @@ struct ResetPasswordSheet: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Reset password")
-                .font(.title3).bold()
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            AuthEmailField(
-                text: $viewModel.email,
-                isDisabled: viewModel.isSending,
-                submitLabel: .send,
-                onSubmit: { Task { await handleSend() } },
-                isFocused: $emailFocused
+        ZStack {
+            LinearGradient(
+                colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
+                startPoint: .top, endPoint: .bottom
             )
+            .ignoresSafeArea()
 
-            if let helper = viewModel.emailHelperText {
-                ValidationMessageView(message: helper)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(spacing: 22) {
+                VStack(spacing: 10) {
+                    ZStack {
+                        Circle()
+                            .fill(.ultraThinMaterial)
+                            .frame(width: 64, height: 64)
+                            .overlay(Circle().strokeBorder(AuthTheme.cardStroke))
+
+                        Image(systemName: "lock.rotation")
+                            .font(.system(size: 24, weight: .semibold))
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(AuthTheme.iconOnCurtain)
+                    }
+
+                    Text("Reset password")
+                        .font(.title3.bold())
+                        .foregroundStyle(.white)
+
+                    Text("Enter your email to get a reset link")
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.9))
+                }
+                .padding(.top, 15)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    AuthEmailField(
+                        text: $viewModel.email,
+                        isDisabled: viewModel.isSending,
+                        submitLabel: .send,
+                        onSubmit: { Task { await handleSend() } },
+                        isFocused: $emailFocused
+                    )
+
+                    if let helper = viewModel.emailHelperText {
+                        ValidationMessageView(message: helper)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    if let errorText = viewModel.appError?.errorDescription {
+                        ValidationMessageView(message: errorText)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
+                    Button {
+                        Task { await handleSend() }
+                    } label: {
+                        Text("Send reset link")
+                            .frame(maxWidth: .infinity)
+                            .fontWeight(.semibold)
+                    }
+                    .buttonStyle(.pillWhite)
+                    .controlSize(.large)
+                    .frame(height: 48)
+                    .disabled(viewModel.isSending)
+
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.white.opacity(0.85))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .padding(.horizontal, 20)
+
+                Spacer(minLength: 8)
             }
-            if let errorText = viewModel.appError?.errorDescription {
-                ValidationMessageView(message: errorText)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            Button { Task { await handleSend() } } label: {
-                Text("Send reset link").frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(viewModel.isSending)
-
-            Button("Cancel") { dismiss() }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-
-            Spacer()
+            .padding(.bottom, 16)
         }
-        .padding()
+        .tint(AuthTheme.popcorn)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .task {

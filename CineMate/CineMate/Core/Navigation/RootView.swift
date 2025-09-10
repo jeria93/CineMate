@@ -167,16 +167,3 @@ extension CastMember {
         self.init(id: crew.id, name: crew.name, character: nil, profilePath: crew.profilePath)
     }
 }
-
-/*
-- Extract reusable UI:
-  - Design/AuthTheme (color tokens)
-  - Design/PillWhiteButtonStyle (white capsule button)
-  - Design/AuthHeader (icon + title + subtitle)
-  - Design/OrDivider (+ DividerLine)
-- Update LoginView:
-  - Replace card with flat layout,  gradient background
-  - Move guest sign-in under Google,  equal 48pt buttons
-  - Use new components,  drop inline helpers
-  - a11y: hide decorative header icon
- */
