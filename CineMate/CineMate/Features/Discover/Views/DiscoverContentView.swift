@@ -13,6 +13,7 @@ import SwiftUI
 /// - Scrolls to top automatically when genre changes.
 struct DiscoverContentView: View {
     @ObservedObject var viewModel: DiscoverViewModel
+    @EnvironmentObject private var navigator: AppNavigator
     @State private var lastSelectedGenreId: Int?
 
     var body: some View {
@@ -29,11 +30,18 @@ struct DiscoverContentView: View {
                     .id("genreSelector") // For scroll-to-top
 
                     // Sections
-                    sectionView(title: "Top Rated", movies: viewModel.topRatedMovies)
-                    sectionView(title: "Trending", movies: viewModel.trendingMovies)
-                    sectionView(title: "Now Playing", movies: viewModel.nowPlayingMovies)
-                    sectionView(title: "Upcoming", movies: viewModel.upcomingMovies)
-                    sectionView(title: "Horror", movies: viewModel.horrorMovies)
+                    ForEach(viewModel.visibleSections) { section in
+                        DiscoverSectionView(
+                            title: section.title,
+                            movies: section.movies,
+                            onSeeAllTap: {
+                                navigator.goToSeeAllMovies(
+                                    title: section.title,
+                                    filter: viewModel.seeAllFilter(for: section.kind)
+                                )
+                            }
+                        )
+                    }
                 }
                 .padding(.vertical)
             }
@@ -50,14 +58,6 @@ struct DiscoverContentView: View {
     private func scrollToTop(proxy: ScrollViewProxy) {
         withAnimation(.easeInOut(duration: 0.3)) {
             proxy.scrollTo("genreSelector", anchor: .top)
-        }
-    }
-
-    /// Generates a DiscoverSectionView only if movies are available
-    @ViewBuilder
-    private func sectionView(title: String, movies: [Movie]) -> some View {
-        if !movies.isEmpty {
-            DiscoverSectionView(title: title, movies: movies)
         }
     }
 }

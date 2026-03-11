@@ -14,25 +14,30 @@ extension DiscoverView {
     /// Preview showing all content sections.
     static var previewDefault: some View {
         DiscoverView(viewModel: PreviewFactory.discoverViewModel())
+            .withPreviewNavigation()
     }
 
     /// Preview simulating a loading spinner.
     static var previewLoading: some View {
         DiscoverView(viewModel: PreviewFactory.loadingDiscoverViewModel())
+            .withPreviewNavigation()
     }
 
     /// Preview with no content (all sections empty).
     static var previewEmpty: some View {
         DiscoverView(viewModel: PreviewFactory.emptyDiscoverViewModel())
+            .withPreviewNavigation()
     }
     
     /// Preview showing an error message.
     static var previewError: some View {
         DiscoverView(viewModel: PreviewFactory.errorDiscoverViewModel())
+            .withPreviewNavigation()
     }
 
     /// Preview showing only a single section (e.g., "Top Rated").
     static var previewOneSection: some View {
         DiscoverView(viewModel: PreviewFactory.oneSectionOnlyDiscoverViewModel())
+            .withPreviewNavigation()
     }
 }

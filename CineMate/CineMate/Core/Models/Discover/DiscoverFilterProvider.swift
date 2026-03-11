@@ -5,101 +5,139 @@
 
 import Foundation
 
-/// Provides preconfigured `DiscoverFilter` instances for each Discover section.
-///
-/// This helper centralizes filter logic for consistency across the app.
-/// Using these methods ensures that Discover sections like Popular, Upcoming,
-/// and Horror always apply the same sorting and filtering rules.
-///
-/// **Examples:**
-/// ```swift
-/// let filter = DiscoverFilterProvider.filter(for: "Upcoming")
-/// let movies = await repository.discoverMovies(filters: filter.queryItems)
-/// ```
-enum DiscoverFilterProvider {
+/// Typed section identifiers for Discover.
+enum DiscoverSectionKind: String, CaseIterable, Identifiable {
+    case topRated
+    case popular
+    case nowPlaying
+    case trending
+    case upcoming
+    case horror
 
-    /// Returns a `DiscoverFilter` configured for the given section.
-    ///
-    /// - Parameter section: The Discover section name (e.g., `"Popular"`, `"Upcoming"`).
-    /// - Returns: A `DiscoverFilter` with appropriate configuration.
-    ///
-    /// **Note:** Unknown section names fall back to a default empty filter.
-    static func filter(for section: String) -> DiscoverFilter {
-        switch section {
-        case "Popular":
-            return makePopularFilter()
-        case "Top Rated":
-            return makeTopRatedFilter()
-        case "Trending":
-            return makeTrendingFilter()
-        case "Upcoming":
-            return makeUpcomingFilter()
-        case "Now Playing":
-            return makeNowPlayingFilter()
-        case "Horror":
-            return makeHorrorFilter()
-        default:
-            return DiscoverFilter()
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .topRated:
+            return "Top Rated"
+        case .popular:
+            return "Popular"
+        case .nowPlaying:
+            return "Now Playing"
+        case .trending:
+            return "Trending"
+        case .upcoming:
+            return "Upcoming"
+        case .horror:
+            return "Horror"
         }
-    }
-
-    // MARK: - Private Builders
-
-    /// Returns a filter for the "Popular" section, sorted by descending popularity.
-    private static func makePopularFilter() -> DiscoverFilter {
-        DiscoverFilter(sortOption: .popularityDesc)
-    }
-
-    /// Returns a filter for the "Top Rated" section.
-    /// - Sorted by highest vote average.
-    /// - Limited to the current year and movies rated ≥ 7.0.
-    private static func makeTopRatedFilter() -> DiscoverFilter {
-        DiscoverFilter(
-            sortOption: .voteAverageDesc,
-            releaseYear: DateHelper.currentYearString(),
-            minVoteAverage: 7.0
-        )
-    }
-
-    /// Returns a filter for the "Trending" section, using popularity descending.
-    private static func makeTrendingFilter() -> DiscoverFilter {
-        DiscoverFilter(sortOption: .popularityDesc)
-    }
-
-    /// Returns a filter for the "Upcoming" section.
-    /// - Sorted by popularity descending.
-    /// - Limited to the current year for relevance.
-    private static func makeUpcomingFilter() -> DiscoverFilter {
-        DiscoverFilter(
-            sortOption: .popularityDesc,
-            releaseYear: DateHelper.currentYearString()
-        )
-    }
-
-    /// Returns a filter for the "Now Playing" section.
-    /// - Sorted by popularity descending.
-    /// - Limited to the current year and movies rated ≥ 5.0.
-    /// - Excludes adult content.
-    private static func makeNowPlayingFilter() -> DiscoverFilter {
-        DiscoverFilter(
-            sortOption: .popularityDesc,
-            releaseYear: DateHelper.currentYearString(),
-            minVoteAverage: 5.0,
-            includeAdult: false
-        )
-    }
-
-    /// Returns a filter for the "Horror" section, using the Horror genre (ID 27).
-    private static func makeHorrorFilter() -> DiscoverFilter {
-        DiscoverFilter(
-            sortOption: .popularityDesc,
-            withGenres: GenreIDs.horror
-        )
     }
 }
 
-/// Contains genre ID groups for easy reuse in filters.
-enum GenreIDs {
-    static let horror = [27]
-    // Add more genre groups here as needed
+/// View-ready section model to keep Discover view rendering simple.
+struct DiscoverSectionState: Identifiable, Equatable {
+    let kind: DiscoverSectionKind
+    let movies: [Movie]
+
+    var id: DiscoverSectionKind { kind }
+    var title: String { kind.title }
+}
+
+/// Provides preconfigured Discover filters per section.
+enum DiscoverFilterProvider {
+    static func filter(
+        for section: DiscoverSectionKind,
+        selectedGenreId: Int? = nil,
+        referenceDate: Date = Date()
+    ) -> DiscoverFilter {
+        let today = dateString(from: referenceDate)
+        let genres = mergedGenres(for: section, selectedGenreId: selectedGenreId)
+
+        switch section {
+        case .topRated:
+            return DiscoverFilter(
+                sortOption: .voteAverageDesc,
+                withGenres: genres,
+                minVoteAverage: 7.0,
+                includeAdult: false
+            )
+        case .popular:
+            return DiscoverFilter(
+                sortOption: .popularityDesc,
+                withGenres: genres,
+                includeAdult: false
+            )
+        case .nowPlaying:
+            return DiscoverFilter(
+                sortOption: .releaseDateDesc,
+                withGenres: genres,
+                primaryReleaseDateGTE: dateString(daysOffset: -90, from: referenceDate),
+                primaryReleaseDateLTE: today,
+                minVoteAverage: 5.0,
+                includeAdult: false
+            )
+        case .trending:
+            return DiscoverFilter(
+                sortOption: .popularityDesc,
+                withGenres: genres,
+                primaryReleaseDateGTE: dateString(yearsOffset: -5, from: referenceDate),
+                minVoteAverage: 5.0,
+                includeAdult: false
+            )
+        case .upcoming:
+            return DiscoverFilter(
+                sortOption: .releaseDateAsc,
+                withGenres: genres,
+                primaryReleaseDateGTE: today,
+                includeAdult: false
+            )
+        case .horror:
+            return DiscoverFilter(
+                sortOption: .popularityDesc,
+                withGenres: genres,
+                includeAdult: false
+            )
+        }
+    }
+
+    static func section(for title: String) -> DiscoverSectionKind? {
+        DiscoverSectionKind.allCases.first { $0.title == title }
+    }
+}
+
+private extension DiscoverFilterProvider {
+    enum GenreIDs {
+        static let horror = 27
+    }
+
+    static func mergedGenres(for section: DiscoverSectionKind, selectedGenreId: Int?) -> [Int] {
+        var genres = [Int]()
+
+        if section == .horror {
+            genres.append(GenreIDs.horror)
+        }
+
+        if let selectedGenreId, !genres.contains(selectedGenreId) {
+            genres.append(selectedGenreId)
+        }
+
+        return genres
+    }
+
+    static func dateString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter.string(from: date)
+    }
+
+    static func dateString(daysOffset: Int, from referenceDate: Date) -> String {
+        let date = Calendar.current.date(byAdding: .day, value: daysOffset, to: referenceDate) ?? referenceDate
+        return dateString(from: date)
+    }
+
+    static func dateString(yearsOffset: Int, from referenceDate: Date) -> String {
+        let date = Calendar.current.date(byAdding: .year, value: yearsOffset, to: referenceDate) ?? referenceDate
+        return dateString(from: date)
+    }
 }
