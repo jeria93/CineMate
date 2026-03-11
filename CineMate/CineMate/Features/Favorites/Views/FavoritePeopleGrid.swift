@@ -25,8 +25,7 @@ struct FavoritePeopleGrid: View {
                             AsyncImage(url: person.profileSmallURL) { phase in
                                 if let image = phase.image {
                                     image.resizable().scaledToFill()
-                                }
-                                else {
+                                } else {
                                     Color.gray
                                         .opacity(0.2)
                                         .overlay(

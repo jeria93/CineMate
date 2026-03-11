@@ -185,10 +185,10 @@ private extension SearchViewModel {
     /// Fetch next page when available; updates pagination state.
     func fetchNextPage() async {
         guard pagination.startFetchingNextPage(),
-              let q = lastValidQuery else { return }
+              let query = lastValidQuery else { return }
         do {
             let next = pagination.state.currentPage + 1
-            let response = try await repository.searchMovies(query: q, page: next)
+            let response = try await repository.searchMovies(query: query, page: next)
             results.append(contentsOf: response.results)
             pagination.finishFetching(page: next, totalPages: response.totalPages)
         } catch {

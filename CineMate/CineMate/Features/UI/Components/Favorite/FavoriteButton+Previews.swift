@@ -19,8 +19,8 @@ extension MovieFavoriteButtonView {
         let vmOff = PreviewFactory.favoritesVM(with: [])
 
         return VStack(spacing: 20) {
-            MovieFavoriteButtonView(movie: favoriteMovie,     favoriteViewModel: vmOn)   // ON
-            MovieFavoriteButtonView(movie: nonFavoriteMovie,  favoriteViewModel: vmOff)  // OFF
+            MovieFavoriteButtonView(movie: favoriteMovie, favoriteViewModel: vmOn)   // ON
+            MovieFavoriteButtonView(movie: nonFavoriteMovie, favoriteViewModel: vmOff)  // OFF
         }
         .padding()
         .background(Color(.systemBackground))

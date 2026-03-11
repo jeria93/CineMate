@@ -138,8 +138,7 @@ struct LoginView: View {
         }
         .task {
             try? await Task.sleep(nanoseconds: 120_000_000)
-            if viewModel.email.isEmpty { emailFocused = true }
-            else if viewModel.password.isEmpty { passwordFocused = true }
+            if viewModel.email.isEmpty { emailFocused = true } else if viewModel.password.isEmpty { passwordFocused = true }
         }
         .overlay {
             if viewModel.isAuthenticating {

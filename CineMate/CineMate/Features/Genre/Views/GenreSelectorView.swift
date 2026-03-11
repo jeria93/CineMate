@@ -16,7 +16,7 @@ struct GenreSelectorView: View {
     let selectedGenreId: Int?
     let onSelect: (Int?) -> Void
 
-    @State private var lastSelectedId: Int? = nil
+    @State private var lastSelectedId: Int?
 
     var body: some View {
         ScrollViewReader { proxy in

@@ -84,31 +84,7 @@ enum AuthAppError: LocalizedError, Equatable {
             // 4) Fallback
             return .unknown(nsError.localizedDescription)
         }
-
-        switch authErrorCode.code {
-        case .invalidEmail:
-            return .invalidEmail
-        case .wrongPassword, .userNotFound, .invalidCredential:
-            return .invalidCredentials
-        case .emailAlreadyInUse, .credentialAlreadyInUse:
-            return .emailInUse
-        case .weakPassword:
-            return .weakPassword
-        case .networkError:
-            return .network
-        case .userDisabled:
-            return .accountDisabled
-        case .tooManyRequests:
-            return .tooManyRequests
-        case .accountExistsWithDifferentCredential:
-            return .providerMismatch
-        case .requiresRecentLogin, .userTokenExpired:
-            return .reauthenticationRequired
-        case .operationNotAllowed:
-            return .providerUnavailable
-        default:
-            return .unknown(authErrorCode.localizedDescription)
-        }
+        return mapFirebaseAuthError(authErrorCode)
     }
 
     static func userMessage(for error: Error) -> String {
@@ -122,6 +98,27 @@ enum AuthAppError: LocalizedError, Equatable {
         case .unexpectedSignedInUser:
             return .unknown("Sign out before creating a new account")
         }
+    }
+
+    private static let firebaseCodeMap: [Int: AuthAppError] = [
+        AuthErrorCode.invalidEmail.rawValue: .invalidEmail,
+        AuthErrorCode.wrongPassword.rawValue: .invalidCredentials,
+        AuthErrorCode.userNotFound.rawValue: .invalidCredentials,
+        AuthErrorCode.invalidCredential.rawValue: .invalidCredentials,
+        AuthErrorCode.emailAlreadyInUse.rawValue: .emailInUse,
+        AuthErrorCode.credentialAlreadyInUse.rawValue: .emailInUse,
+        AuthErrorCode.weakPassword.rawValue: .weakPassword,
+        AuthErrorCode.networkError.rawValue: .network,
+        AuthErrorCode.userDisabled.rawValue: .accountDisabled,
+        AuthErrorCode.tooManyRequests.rawValue: .tooManyRequests,
+        AuthErrorCode.accountExistsWithDifferentCredential.rawValue: .providerMismatch,
+        AuthErrorCode.requiresRecentLogin.rawValue: .reauthenticationRequired,
+        AuthErrorCode.userTokenExpired.rawValue: .reauthenticationRequired,
+        AuthErrorCode.operationNotAllowed.rawValue: .providerUnavailable
+    ]
+
+    private static func mapFirebaseAuthError(_ authErrorCode: AuthErrorCode) -> AuthAppError {
+        firebaseCodeMap[authErrorCode.code.rawValue] ?? .unknown(authErrorCode.localizedDescription)
     }
 }
 

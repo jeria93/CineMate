@@ -24,15 +24,15 @@ enum AuthPreviewData {
         /// ~150ms – instant UI feedback.
         static let veryShort: UInt64 = 150_000_000
         /// ~200ms – lightweight actions.
-        static let short    : UInt64 = 200_000_000
+        static let short: UInt64 = 200_000_000
         /// ~300ms – standard async operation.
-        static let medium   : UInt64 = 300_000_000
+        static let medium: UInt64 = 300_000_000
     }
 
     /// Small set of knobs to configure a preview scenario.
     struct Config {
         /// Start state: `nil` = signed out, value = signed in.
-        var initialUID: String? = nil
+        var initialUID: String?
         /// If `true`, guest sign-in intentionally fails.
         var willFailOnSignIn = false
         /// Artificial latency used by previews (nanoseconds).

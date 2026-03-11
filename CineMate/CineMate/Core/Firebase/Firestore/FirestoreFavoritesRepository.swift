@@ -82,17 +82,17 @@ final class FirestoreFavoritesRepository {
     /// - Parameter doc: Firestore document.
     /// - Returns: Movie or `nil` if required fields are missing.
     private static func mapToMovie(doc: DocumentSnapshot) -> Movie? {
-        let d = doc.data() ?? [:]
-        guard let id = d["id"] as? Int, let title = d["title"] as? String else { return nil }
+        let data = doc.data() ?? [:]
+        guard let id = data["id"] as? Int, let title = data["title"] as? String else { return nil }
         return Movie(
             id: id,
             title: title,
-            overview: d["overview"] as? String,
-            posterPath: d["posterPath"] as? String,
+            overview: data["overview"] as? String,
+            posterPath: data["posterPath"] as? String,
             backdropPath: nil,
-            releaseDate: d["releaseDate"] as? String,
-            voteAverage: d["voteAverage"] as? Double,
-            genres: d["genres"] as? [String]
+            releaseDate: data["releaseDate"] as? String,
+            voteAverage: data["voteAverage"] as? Double,
+            genres: data["genres"] as? [String]
         )
     }
 }

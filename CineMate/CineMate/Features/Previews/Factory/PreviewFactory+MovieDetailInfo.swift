@@ -31,7 +31,7 @@ extension PreviewFactory {
         return vm
     }
 
-    /// ViewModel with watch provider region set.
+    // ViewModel with watch provider region set.
 //    static var movieViewModelWithProviders: MovieViewModel {
 //        let vm = MovieViewModel(repository: MockMovieRepository())
 //        vm.watchProviderRegion = WatchProviderPreviewData.defaultRegion

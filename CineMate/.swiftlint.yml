@@ -1,0 +1,43 @@
+included:
+  - CineMate
+
+excluded:
+  - CineMate.xcodeproj
+  - CineMate/Features/Resources
+
+reporter: xcode
+
+line_length:
+  warning: 140
+  error: 180
+  ignores_urls: true
+  ignores_comments: true
+
+file_length:
+  warning: 800
+  error: 1200
+
+type_body_length:
+  warning: 400
+  error: 600
+
+function_body_length:
+  warning: 80
+  error: 120
+
+identifier_name:
+  min_length: 2
+  max_length: 60
+  validates_start_with_lowercase: false
+  allowed_symbols:
+    - _
+  excluded:
+    - id
+    - vm
+    - db
+
+disabled_rules:
+  - todo
+  - trailing_whitespace
+  - force_try
+  - force_cast

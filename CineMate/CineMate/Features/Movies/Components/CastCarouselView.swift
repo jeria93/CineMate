@@ -41,7 +41,6 @@ struct CastCarouselView: View {
     }
 }
 
-
 #Preview("Standard Cast") {
     CastCarouselView.preview
 }

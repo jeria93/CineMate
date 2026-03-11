@@ -111,12 +111,12 @@ final class PersonViewModel: ObservableObject {
             do {
                 async let detail   = repository.fetchPersonDetail(for: personId)
                 async let external = repository.fetchPersonExternalIDs(for: personId)
-                let d  = try await detail
-                let ex = try await external
+                let detailResult = try await detail
+                let externalIDs = try await external
 
-                detailCache[personId] = (d, ex)
-                personDetail          = d
-                personExternalIDs     = ex
+                detailCache[personId] = (detailResult, externalIDs)
+                personDetail          = detailResult
+                personExternalIDs     = externalIDs
                 errorMessage          = nil
             } catch is CancellationError {
                 // silently cancelled
@@ -199,12 +199,12 @@ final class PersonViewModel: ObservableObject {
             async let detail   = repository.fetchPersonDetail(for: personId)
             async let external = repository.fetchPersonExternalIDs(for: personId)
 
-            let d  = try await detail
-            let ex = try await external
+            let detailResult = try await detail
+            let externalIDs = try await external
 
-            detailCache[personId] = (d, ex)
-            personDetail          = d
-            personExternalIDs     = ex
+            detailCache[personId] = (detailResult, externalIDs)
+            personDetail          = detailResult
+            personExternalIDs     = externalIDs
             errorMessage          = nil
         } catch is CancellationError {
             // silently cancelled

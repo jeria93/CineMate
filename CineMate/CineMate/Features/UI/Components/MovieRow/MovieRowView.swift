@@ -52,22 +52,22 @@ struct MovieRowView: View {
     }
 }
 
-//#Preview("Default") {
+// #Preview("Default") {
 //    MovieRowView.previewDefault.withPreviewNavigation()
-//}
+// }
 //
-//#Preview("No poster") {
+// #Preview("No poster") {
 //    MovieRowView.previewNoPoster.withPreviewNavigation()
-//}
+// }
 //
-//#Preview("No overview") {
+// #Preview("No overview") {
 //    MovieRowView.previewNoOverview.withPreviewNavigation()
-//}
+// }
 //
-//#Preview("Long overview") {
+// #Preview("Long overview") {
 //    MovieRowView.previewLongOverview.withPreviewNavigation()
-//}
+// }
 //
-//#Preview("Minimal data") {
+// #Preview("Minimal data") {
 //    MovieRowView.previewMinimalData.withPreviewNavigation()
-//}
+// }

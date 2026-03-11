@@ -39,14 +39,14 @@ struct CineMate: App {
     private let authService: FirebaseAuthService
 
     // Long-lived view models (owned by the App)
-    @StateObject private var movieViewModel          : MovieViewModel
-    @StateObject private var castViewModel           : CastViewModel
-    @StateObject private var searchViewModel         : SearchViewModel
-    @StateObject private var favoriteMoviesViewModel : FavoriteMoviesViewModel
-    @StateObject private var discoverViewModel       : DiscoverViewModel
-    @StateObject private var personViewModel         : PersonViewModel
-    @StateObject private var favoritePeopleViewModel : FavoritePeopleViewModel
-    @StateObject private var authViewModel           : AuthViewModel
+    @StateObject private var movieViewModel: MovieViewModel
+    @StateObject private var castViewModel: CastViewModel
+    @StateObject private var searchViewModel: SearchViewModel
+    @StateObject private var favoriteMoviesViewModel: FavoriteMoviesViewModel
+    @StateObject private var discoverViewModel: DiscoverViewModel
+    @StateObject private var personViewModel: PersonViewModel
+    @StateObject private var favoritePeopleViewModel: FavoritePeopleViewModel
+    @StateObject private var authViewModel: AuthViewModel
 
     /// Build the DI graph (services -> view models).
     /// `@StateObject` ensures each VM is created once and reused.
@@ -106,15 +106,15 @@ struct CineMate: App {
 
     private var signedInRoot: some View {
         RootView(
-            movieVM:          movieViewModel,
-            castVM:           castViewModel,
-            favVM:            favoriteMoviesViewModel,
-            searchVM:         searchViewModel,
-            discoverVM:       discoverViewModel,
-            personVM:         personViewModel,
+            movieVM: movieViewModel,
+            castVM: castViewModel,
+            favVM: favoriteMoviesViewModel,
+            searchVM: searchViewModel,
+            discoverVM: discoverViewModel,
+            personVM: personViewModel,
             favoritePeopleVM: favoritePeopleViewModel,
-            authViewModel:    authViewModel,
-            authService:      authService
+            authViewModel: authViewModel,
+            authService: authService
         )
     }
 

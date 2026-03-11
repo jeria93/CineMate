@@ -39,7 +39,7 @@ struct MoviePosterView: View {
                         isImageLoaded = true
                     }
 
-            case .failure(_):
+            case .failure:
                 placeholder
 
             case .empty:

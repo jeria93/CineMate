@@ -19,9 +19,9 @@ enum FavoritePeoplePreviewData {
     static func few() -> [PersonRef] {
         PreviewID.reset()
         return [
-            .init(id: PreviewID.next(), name: "Emma Stone",        profilePath: nil),
+            .init(id: PreviewID.next(), name: "Emma Stone", profilePath: nil),
             .init(id: PreviewID.next(), name: "Leonardo DiCaprio", profilePath: nil),
-            .init(id: PreviewID.next(), name: "Greta Gerwig",      profilePath: nil)
+            .init(id: PreviewID.next(), name: "Greta Gerwig", profilePath: nil)
         ]
     }
 
@@ -29,8 +29,8 @@ enum FavoritePeoplePreviewData {
     /// - Returns: 20 placeholder people with unique IDs.
     static func many() -> [PersonRef] {
         PreviewID.reset()
-        return (1...20).map { i in
-            .init(id: PreviewID.next(), name: "Person \(i)", profilePath: nil)
+        return (1...20).map { index in
+            .init(id: PreviewID.next(), name: "Person \(index)", profilePath: nil)
         }
     }
 }

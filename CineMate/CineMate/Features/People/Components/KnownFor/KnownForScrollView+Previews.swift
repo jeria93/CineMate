@@ -64,12 +64,12 @@ extension KnownForScrollView {
     }
 
     static var previewOverflow: some View {
-        let manyMovies = (1...25).map { i in
+        let manyMovies = (1...25).map { index in
             PersonMovieCredit(
                 id: PreviewID.next(),
-                title: "Movie \(i)",
+                title: "Movie \(index)",
                 character: nil,
-                releaseDate: "20\(10 + i)-01-01",
+                releaseDate: "20\(10 + index)-01-01",
                 posterPath: nil,
                 popularity: Double.random(in: 10...100)
             )

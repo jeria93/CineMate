@@ -69,7 +69,7 @@ final class DiscoverViewModel: ObservableObject {
 
     /// Currently selected genre ID. `nil` = All genres.
     /// Setting this triggers an async `filterSections()` call.
-    @Published var selectedGenreId: Int? = nil {
+    @Published var selectedGenreId: Int? {
         didSet {
             Task { await filterSections() }
         }
@@ -160,12 +160,12 @@ final class DiscoverViewModel: ObservableObject {
 
                 // Combine into section container
                 let sections = MovieSections(
-                    topRated:   try await topRated,
-                    popular:    try await popular,
+                    topRated: try await topRated,
+                    popular: try await popular,
                     nowPlaying: try await nowPlaying,
-                    trending:   trendingFiltered,
-                    upcoming:   upcomingFiltered,
-                    horror:     []
+                    trending: trendingFiltered,
+                    upcoming: upcomingFiltered,
+                    horror: []
                 )
 
                 // Cache & apply if not cancelled
@@ -242,12 +242,12 @@ final class DiscoverViewModel: ObservableObject {
                 }
 
                 let sections = MovieSections(
-                    topRated:   try await topRated,
-                    popular:    try await popular,
+                    topRated: try await topRated,
+                    popular: try await popular,
                     nowPlaying: try await nowPlaying,
-                    trending:   trendingFiltered,
-                    upcoming:   upcomingFiltered,
-                    horror:     try await horror
+                    trending: trendingFiltered,
+                    upcoming: upcomingFiltered,
+                    horror: try await horror
                 )
 
                 // Cache and apply
@@ -275,22 +275,22 @@ final class DiscoverViewModel: ObservableObject {
     }
 
     /// Applies a `MovieSections` container to all published properties.
-    private func apply(_ s: MovieSections) {
-        topRatedMovies   = s.topRated
-        popularMovies    = s.popular
-        nowPlayingMovies = s.nowPlaying
-        trendingMovies   = s.trending
-        upcomingMovies   = s.upcoming
-        horrorMovies     = s.horror
+    private func apply(_ sections: MovieSections) {
+        topRatedMovies   = sections.topRated
+        popularMovies    = sections.popular
+        nowPlayingMovies = sections.nowPlaying
+        trendingMovies   = sections.trending
+        upcomingMovies   = sections.upcoming
+        horrorMovies     = sections.horror
     }
 }
 
 /// A container for all discover movie sections.
 private struct MovieSections {
-    let topRated:   [Movie]
-    let popular:    [Movie]
+    let topRated: [Movie]
+    let popular: [Movie]
     let nowPlaying: [Movie]
-    let trending:   [Movie]
-    let upcoming:   [Movie]
-    let horror:     [Movie]
+    let trending: [Movie]
+    let upcoming: [Movie]
+    let horror: [Movie]
 }

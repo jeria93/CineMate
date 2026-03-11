@@ -40,7 +40,7 @@ struct DiscoverMovieRow: View {
                             isImageLoaded = true
                         }
 
-                case .failure(_):
+                case .failure:
                     placeholderView
 
                 case .empty:

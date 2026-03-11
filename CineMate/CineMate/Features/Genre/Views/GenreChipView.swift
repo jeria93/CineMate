@@ -5,7 +5,6 @@
 //  Created by Nicholas Samuelsson Jeria on 2025-07-14.
 //
 
-
 import SwiftUI
 
 /// A single genre chip with selection state and animation.
