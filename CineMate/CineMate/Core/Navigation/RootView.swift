@@ -24,13 +24,19 @@ import SwiftUI
 /// - Simple DI: long-lived view models are injected from the App root.
 /// - View models do not perform navigation; routing is centralized here.
 /// - One place controls guest gating so feature views stay clean.
-private enum MainTab: Hashable { case movies, favorites, discover, search, auth }
+private enum MainTab: String, Hashable {
+    case movies
+    case favorites
+    case discover
+    case search
+    case auth
+}
 
 struct RootView: View {
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
     @State private var selectedTab: MainTab = .movies
-
+    
     // Simple DI — long-lived VMs injected by the App
     let movieVM: MovieViewModel
     let castVM: CastViewModel
@@ -40,7 +46,8 @@ struct RootView: View {
     let personVM: PersonViewModel
     let favoritePeopleVM: FavoritePeopleViewModel
     let authViewModel: AuthViewModel
-
+    let authService: FirebaseAuthService
+    
     var body: some View {
         NavigationStack(path: $navigator.path) {
             TabView(selection: $selectedTab) {
@@ -48,12 +55,12 @@ struct RootView: View {
                 MovieListView(viewModel: movieVM, favoriteViewModel: favVM, castViewModel: castVM)
                     .tabItem { Label("Movies", systemImage: "film") }
                     .tag(MainTab.movies)
-
+                
                 // Favorites
                 FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
                     .tabItem { Label("Favorites", systemImage: "heart.fill") }
                     .tag(MainTab.favorites)
-
+                
                 // Discover — locked for guests
                 ZStack {
                     let isLocked = authViewModel.isGuest
@@ -68,7 +75,7 @@ struct RootView: View {
                 }
                 .tabItem { Label("Discover", systemImage: "safari") }
                 .tag(MainTab.discover)
-
+                
                 // Search — locked for guests
                 ZStack {
                     let isLocked = authViewModel.isGuest
@@ -83,7 +90,7 @@ struct RootView: View {
                 }
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
                 .tag(MainTab.search)
-
+                
                 // Account
                 AccountView(viewModel: authViewModel)
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
@@ -92,13 +99,16 @@ struct RootView: View {
             // Start Firestore listeners when Root appears
             .task { await favVM.startFavoritesListenerIfNeeded() }
             .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
-
+            
             // Reset the navigation stack on tab change (predictable back behavior)
-            .onChange(of: selectedTab) { _,_ in navigator.reset() }
-
+            .onChange(of: selectedTab) { oldTab, newTab in
+                guard oldTab != newTab else { return }
+                navigator.reset(reason: "tab change \(oldTab.rawValue) -> \(newTab.rawValue)")
+            }
+            
             // Route -> destination
             .navigationDestination(for: AppRoute.self) { route in
-                destination(for: debugRoute(route))
+                destination(for: route)
             }
         }
         .toast(toastCenter.message)
@@ -116,17 +126,17 @@ private extension RootView {
                 castViewModel: castVM,
                 favoriteViewModel: favVM
             )
-
+            
         case .person(let id):
             CastMemberDetailView(
                 member: member(for: id),
                 personViewModel: personVM,
                 favoritePeopleVM: favoritePeopleVM
             )
-
+            
         case .genre(let name):
             GenreDetailView(genreName: name)
-
+            
         case .seeAllMovies(title: let title, filter: let filter):
             SeeAllMoviesView(
                 viewModel: SeeAllMoviesViewModel(
@@ -135,12 +145,12 @@ private extension RootView {
                 ),
                 title: title
             )
-
+            
         case .createAccount:
             // In-app (user is signed in, possibly anonymous → can upgrade)
             CreateAccountView(
                 createViewModel: CreateAccountViewModel(
-                    service: FirebaseAuthService(),
+                    service: authService,
                     onVerificationEmailSent: {
                         toastCenter.show("Check your inbox to verify your email")
                         navigator.goBack()
@@ -149,12 +159,7 @@ private extension RootView {
             )
         }
     }
-
-    private func debugRoute(_ route: AppRoute) -> AppRoute {
-        print("[RootView] resolving route: \(route); current path: \(navigator.path)")
-        return route
-    }
-
+    
     func member(for id: Int) -> CastMember {
         castVM.cast.first(where: { $0.id == id })
         ?? castVM.crew.first(where: { $0.id == id }).map(CastMember.init(from:))

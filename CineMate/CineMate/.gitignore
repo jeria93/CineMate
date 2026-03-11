@@ -1,0 +1,34 @@
+# Xcode
+DerivedData/
+build/
+*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+*.xcuserdatad/
+*.xcscmblueprint
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Archives
+*.xcarchive
+
+# User-specific
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.DS_Store
+
+# Secrets (do not commit real secrets)
+CineMate/CineMate/Features/Resources/Secrets.plist

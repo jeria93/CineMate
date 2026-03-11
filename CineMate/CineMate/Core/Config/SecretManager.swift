@@ -29,7 +29,7 @@ enum SecretManager {
         else {
             throw TMDBError.missingSecrets
         }
-
+        
         return value
     }
 
