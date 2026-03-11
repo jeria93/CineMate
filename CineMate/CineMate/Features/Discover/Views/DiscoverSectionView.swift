@@ -10,24 +10,33 @@ import SwiftUI
 struct DiscoverSectionView: View {
     let title: String
     let movies: [Movie]
-    @EnvironmentObject private var navigator: AppNavigator
+    let onSeeAllTap: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.title2.bold())
-                .padding(.horizontal)
-                .onTapGesture {
-                    navigator.goToSeeAllMovies(title: title, filter: DiscoverFilterProvider.filter(for: title))
-                }
+            HStack(spacing: 12) {
+                Text(title)
+                    .font(.title2.bold())
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 16) {
-                    ForEach(movies) { movie in
-                        DiscoverMovieRow(movie: movie)
-                    }
-                }
+                Spacer()
+
+                Button("See all", action: onSeeAllTap)
+                    .font(.subheadline.weight(.semibold))
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal)
+
+            if !movies.isEmpty {
+                SectionMoviesView(movies: movies)
+            } else {
+                EmptyStateView(
+                    systemImage: "film",
+                    title: "No movies",
+                    message: "This section is empty right now."
+                )
                 .padding(.horizontal)
+                .padding(.bottom, 8)
             }
         }
         .padding(.top)

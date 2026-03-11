@@ -12,6 +12,8 @@ struct DiscoverFilter: Equatable, Hashable {
     var sortOption: SortOption = .popularityDesc
     var withGenres: [Int] = []
     var releaseYear: String?
+    var primaryReleaseDateGTE: String?
+    var primaryReleaseDateLTE: String?
     var minVoteAverage: Double?
     var language: String?
     var includeAdult: Bool = false
@@ -33,11 +35,6 @@ struct DiscoverFilter: Equatable, Hashable {
         updated.page = max(1, page)
         return updated
     }
-
-    /// Reusable helper for `primary_release_date.gte` query item construction.
-    static func primaryReleaseDateGTE(_ date: String) -> URLQueryItem {
-        URLQueryItem(name: DiscoverQueryKey.primaryReleaseDateGTE, value: date)
-    }
 }
 
 private extension DiscoverFilter {
@@ -53,6 +50,14 @@ private extension DiscoverFilter {
 
         if let releaseYear {
             items.append(.init(name: DiscoverQueryKey.releaseYear, value: releaseYear))
+        }
+
+        if let primaryReleaseDateGTE {
+            items.append(.init(name: DiscoverQueryKey.primaryReleaseDateGTE, value: primaryReleaseDateGTE))
+        }
+
+        if let primaryReleaseDateLTE {
+            items.append(.init(name: DiscoverQueryKey.primaryReleaseDateLTE, value: primaryReleaseDateLTE))
         }
 
         if let minVoteAverage {
@@ -95,6 +100,7 @@ enum DiscoverQueryKey {
     static let withGenres = "with_genres"
     static let releaseYear = "primary_release_year"
     static let primaryReleaseDateGTE = "primary_release_date.gte"
+    static let primaryReleaseDateLTE = "primary_release_date.lte"
     static let minVoteAverage = "vote_average.gte"
     static let language = "language"
     static let includeAdult = "include_adult"

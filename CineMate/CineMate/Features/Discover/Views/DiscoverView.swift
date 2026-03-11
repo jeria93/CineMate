@@ -17,22 +17,23 @@ struct DiscoverView: View {
         content
             .navigationTitle("Discover")
             .task {
-                await viewModel.fetchAllSections()
+                await viewModel.refreshCurrentSelection()
             }
             .refreshable {
-                await viewModel.fetchAllSections()
+                await viewModel.refreshCurrentSelection(forceReload: true)
             }
     }
 
     /// Conditionally renders the correct view based on the current state.
     @ViewBuilder
     private var content: some View {
-        if viewModel.isLoading {
+        if viewModel.isLoading && viewModel.allSectionsAreEmpty {
             LoadingView(title: "Loading…")
-        } else if let err = viewModel.error {
+        } else if let err = viewModel.error, viewModel.allSectionsAreEmpty {
             ErrorMessageView(
                 title: "Something went wrong",
-                message: err.localizedDescription
+                message: err.localizedDescription,
+                onRetry: { Task { await viewModel.refreshCurrentSelection(forceReload: true) } }
             )
         } else if viewModel.allSectionsAreEmpty {
             EmptyStateView(
@@ -42,6 +43,25 @@ struct DiscoverView: View {
             )
         } else {
             DiscoverContentView(viewModel: viewModel)
+                .overlay(alignment: .top) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .padding(10)
+                            .background(.thinMaterial, in: Capsule())
+                            .padding(.top, 8)
+                    }
+                }
+                .overlay(alignment: .bottom) {
+                    if let err = viewModel.error, !viewModel.isLoading {
+                        Text(err.localizedDescription)
+                            .font(.footnote)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(.ultraThinMaterial, in: Capsule())
+                            .padding(.bottom, 12)
+                    }
+                }
         }
     }
 }
