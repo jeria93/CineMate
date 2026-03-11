@@ -70,6 +70,7 @@ struct SearchView: View {
     }
 }
 
+#if DEBUG
 #Preview("Prompt") {
     SearchView.previewPrompt.withPreviewNavigation()
 }
@@ -93,3 +94,4 @@ struct SearchView: View {
 #Preview("Validation Error") {
     SearchView.previewValidation.withPreviewNavigation()
 }
+#endif

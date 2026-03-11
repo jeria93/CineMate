@@ -69,7 +69,7 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Runtime
 
     private let isPreviewEnvironment: Bool
-    private let debounceDelayNanos: UInt64 = 400_000_000
+    private let debounceDelayNanos: UInt64
 
     private var debounceTask: Task<Void, Never>?
     private var currentSearchTask: Task<MovieResult, Error>?
@@ -90,10 +90,12 @@ final class SearchViewModel: ObservableObject {
 
     init(
         repository: MovieProtocol = MovieRepository(),
-        isPreviewEnvironment: Bool = ProcessInfo.processInfo.isPreview
+        isPreviewEnvironment: Bool = ProcessInfo.processInfo.isPreview,
+        debounceDelayNanos: UInt64 = 400_000_000
     ) {
         self.repository = repository
         self.isPreviewEnvironment = isPreviewEnvironment
+        self.debounceDelayNanos = debounceDelayNanos
     }
 
     // MARK: - Public API

@@ -14,11 +14,11 @@ struct LoginView: View {
     @EnvironmentObject private var toastCenter: ToastCenter
     @Environment(\.colorScheme) private var colorScheme
     private let onRegister: () -> Void
-    
+
     @State private var showResetSheet = false
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
-    
+
     init(
         viewModel: LoginViewModel,
         onRegister: @escaping () -> Void = {}
@@ -26,16 +26,16 @@ struct LoginView: View {
         _viewModel = .init(wrappedValue: viewModel)
         self.onRegister = onRegister
     }
-    
+
     var body: some View {
         ZStack {
             LinearGradient(colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
                            startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
-            
+
             VStack(spacing: 22) {
-                AuthHeader()
-                
+                loginHeader
+
                 VStack(alignment: .leading, spacing: 16) {
                     AuthEmailField(
                         text: $viewModel.email,
@@ -48,7 +48,7 @@ struct LoginView: View {
                         ValidationMessageView(message: hint)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
+
                     AuthPasswordField(
                         text: $viewModel.password,
                         isDisabled: viewModel.isAuthenticating,
@@ -61,7 +61,7 @@ struct LoginView: View {
                         ValidationMessageView(message: hint)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
+
                     HStack {
                         Spacer()
                         Button("Forgot password?") { showResetSheet = true }
@@ -70,7 +70,7 @@ struct LoginView: View {
                             .foregroundStyle(AuthTheme.popcorn)
                             .disabled(viewModel.isAuthenticating)
                     }
-                    
+
                     Button { Task { await viewModel.login() } } label: {
                         Text("Sign in").fontWeight(.semibold).frame(maxWidth: .infinity)
                     }
@@ -78,9 +78,9 @@ struct LoginView: View {
                     .controlSize(.large)
                     .frame(height: 48)
                     .disabled(viewModel.isAuthenticating)
-                    
+
                     OrDivider(text: "or continue with")
-                    
+
                     GoogleSignInButton(
                         scheme: colorScheme == .dark ? .dark : .light,
                         style: .standard,
@@ -90,7 +90,7 @@ struct LoginView: View {
                         .frame(maxWidth: .infinity)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
-                    
+
                     Button {
                         Task { await viewModel.continueAsGuest() }
                     } label: {
@@ -103,7 +103,7 @@ struct LoginView: View {
                     .controlSize(.large)
                     .frame(height: 48)
                     .disabled(viewModel.isAuthenticating)
-                    
+
                     if let message = viewModel.errorMessage {
                         AuthErrorBlock(
                             message: message,
@@ -120,9 +120,9 @@ struct LoginView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                
+
                 Spacer(minLength: 8)
-                
+
                 HStack(spacing: 6) {
                     Text("Don’t have an account?").foregroundStyle(.white.opacity(0.85))
                     Button("Register") { onRegister() }
@@ -156,6 +156,32 @@ struct LoginView: View {
         }
         .tint(AuthTheme.popcorn)
     }
+
+    @ViewBuilder
+    private var loginHeader: some View {
+#if DEBUG
+        AuthHeader(onIconLongPress: applyDebugCredentials)
+#else
+        AuthHeader()
+#endif
+    }
+
+#if DEBUG
+    private func applyDebugCredentials() {
+        guard let email = DebugLoginCredentials.email,
+              let password = DebugLoginCredentials.password else {
+            toastCenter.show("Set DEBUG_LOGIN_EMAIL and DEBUG_LOGIN_PASSWORD in Run scheme")
+            return
+        }
+        viewModel.email = email
+        viewModel.password = password
+        viewModel.hasTriedSubmit = false
+        viewModel.clearError()
+        emailFocused = false
+        passwordFocused = false
+        toastCenter.show("Debug credentials applied")
+    }
+#endif
 }
 
 // MARK: - Previews
@@ -163,3 +189,18 @@ struct LoginView: View {
 #Preview("Empty") { LoginView.previewEmpty }
 #Preview("Error") { LoginView.previewError }
 #Preview("Authenticating") { LoginView.previewIsAuthenticating }
+
+#if DEBUG
+private enum DebugLoginCredentials {
+    private static let environment = ProcessInfo.processInfo.environment
+
+    static var email: String? { sanitize(environment["DEBUG_LOGIN_EMAIL"]) }
+    static var password: String? { sanitize(environment["DEBUG_LOGIN_PASSWORD"]) }
+
+    private static func sanitize(_ value: String?) -> String? {
+        guard let value else { return nil }
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+}
+#endif

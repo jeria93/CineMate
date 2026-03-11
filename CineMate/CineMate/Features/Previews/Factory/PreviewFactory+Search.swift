@@ -12,6 +12,7 @@ import SwiftUI
 /// These helpers simulate various search states without triggering
 /// network requests or debounce logic. Each method returns a configured
 /// instance of `SearchViewModel` using `_previewInject` for safe state setup.
+#if DEBUG
 @MainActor
 extension PreviewFactory {
 
@@ -95,3 +96,4 @@ extension PreviewFactory {
             )
     }
 }
+#endif
