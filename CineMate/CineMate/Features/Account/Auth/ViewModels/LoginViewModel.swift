@@ -8,12 +8,26 @@
 import Foundation
 import UIKit
 
-/// View model for the Login screen.
-/// - Holds form state and simple validation
-/// - Calls FirebaseAuthService for auth actions
-/// - Updates UI state (`isAuthenticating`, `appError`) on the main actor
+/// View model for LoginView.
+/// Handles login form state, loading, and errors.
 @MainActor
 final class LoginViewModel: ObservableObject {
+
+    enum Action {
+        case emailPassword
+        case google
+        case guest
+        case resendVerification
+
+        var loadingTitle: String {
+            switch self {
+            case .emailPassword: "Signing in..."
+            case .google: "Signing in with Google..."
+            case .guest: "Starting guest session..."
+            case .resendVerification: "Sending verification email..."
+            }
+        }
+    }
 
     // MARK: - Form state (bound to UI)
     @Published var email = ""
@@ -23,6 +37,7 @@ final class LoginViewModel: ObservableObject {
     @Published var isAuthenticating = false
     @Published private(set) var appError: AuthAppError?
     @Published var hasTriedSubmit = false
+    @Published private(set) var activeAction: Action?
 
     // MARK: - Dependencies
     private let service: FirebaseAuthService?          // nil in previews
@@ -34,15 +49,10 @@ final class LoginViewModel: ObservableObject {
     var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
     var isPasswordValid: Bool { AuthValidator.isValidPassword(password) }
     var canSubmit: Bool { isEmailValid && isPasswordValid && !isAuthenticating }
-    var emailHelperText: String? {
-        hasTriedSubmit && !isEmailValid ? "Enter a valid email address" : nil
-    }
-    var passwordHelperText: String? {
-        hasTriedSubmit && !isPasswordValid
-        ? "Password must be \(AuthValidator.Policy.minLength)–\(AuthValidator.Policy.maxLength) chars and include A–Z, a–z, 0–9"
-        : nil
-    }
+    var emailHelperText: String? { AuthValidator.emailHelperText(email: email, hasTriedSubmit: hasTriedSubmit) }
+    var passwordHelperText: String? { AuthValidator.passwordHelperText(password: password, hasTriedSubmit: hasTriedSubmit) }
     var shouldOfferResendVerification: Bool { appError == .emailNotVerified }
+    var loadingTitle: String { activeAction?.loadingTitle ?? "Authenticating..." }
 
     // MARK: - Init
     init(
@@ -55,7 +65,8 @@ final class LoginViewModel: ObservableObject {
         self.onSuccess = onSuccess
     }
 
-    /// Preview-only (never touches network/SDKs).
+    /// Preview init.
+    /// Uses preview client and no live service.
     init(previewEmail: String = "", previewIsAuthenticating: Bool = false, previewError: String? = nil) {
         self.service = nil
         self.googleClient = PreviewGoogleAuthClient()
@@ -72,8 +83,8 @@ final class LoginViewModel: ObservableObject {
         email = AuthValidator.sanitizedEmail(from: email)
         guard canSubmit, let service else { return }
 
-        isAuthenticating = true
-        defer { isAuthenticating = false }
+        startAction(.emailPassword)
+        defer { finishAction() }
         do {
             let uid = try await service.signIn(email: email, password: password)
             appError = nil
@@ -83,53 +94,25 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
-    func signUp() async {
-        hasTriedSubmit = true
-        email = AuthValidator.sanitizedEmail(from: email)
-        guard canSubmit, let service else { return }
-
-        isAuthenticating = true
-        defer { isAuthenticating = false }
-        do {
-            let uid = try await service.signUp(email: email, password: password)
-            appError = nil
-            onSuccess(uid)
-        } catch {
-            appError = AuthAppError.mapToAppError(error)
-        }
-    }
-
-    func resetPassword() async {
-        hasTriedSubmit = true
-        email = AuthValidator.sanitizedEmail(from: email)
-        guard isEmailValid, let service else { return }
-
-        isAuthenticating = true
-        defer { isAuthenticating = false }
-        do {
-            try await service.sendPasswordReset(email: email)
-            appError = nil
-        } catch {
-            appError = AuthAppError.mapToAppError(error)
-        }
-    }
-
-    func resendVerification() async {
-        guard let service else { return }
-        isAuthenticating = true
-        defer { isAuthenticating = false }
+    @discardableResult
+    func resendVerification() async -> Bool {
+        guard let service else { return false }
+        startAction(.resendVerification)
+        defer { finishAction() }
         do {
             try await service.resendVerificationEmail()
             appError = nil
+            return true
         } catch {
             appError = AuthAppError.mapToAppError(error)
+            return false
         }
     }
 
     func continueAsGuest() async {
         guard let service else { return }
-        isAuthenticating = true
-        defer { isAuthenticating = false }
+        startAction(.guest)
+        defer { finishAction() }
         do {
             let uid = try await service.signInAnonymously()
             appError = nil
@@ -138,14 +121,28 @@ final class LoginViewModel: ObservableObject {
             appError = AuthAppError.mapToAppError(error)
         }
     }
+
+    func clearError() {
+        appError = nil
+    }
+
+    private func startAction(_ action: Action) {
+        activeAction = action
+        isAuthenticating = true
+    }
+
+    private func finishAction() {
+        activeAction = nil
+        isAuthenticating = false
+    }
 }
 
 // MARK: - Google login
 
 extension LoginViewModel {
 
-    /// Starts Google Sign-In and completes Firebase sign-in.
-    /// - Note: Ignores pure user-cancel (no error banner).
+    /// Runs Google sign in flow.
+    /// User cancel does not show an error.
     func signInWithGoogle() async {
         guard let service else { return }
         guard let presenter = UIViewController.topMostViewController else {
@@ -153,8 +150,8 @@ extension LoginViewModel {
             return
         }
 
-        isAuthenticating = true
-        defer { isAuthenticating = false }
+        startAction(.google)
+        defer { finishAction() }
 
         do {
             let uid = try await service.signInWithGoogle(from: presenter, using: googleClient)

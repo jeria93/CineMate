@@ -7,15 +7,9 @@
 
 import Foundation
 
-/// CreateAccountViewModel
-/// ----------------------
-/// Holds the **Create Account** form state, validates input, and talks to the auth service.
-///
-/// Policy (simple & consistent):
-/// - For any email flow (new account or anonymous --> email link), we:
-///   1) send a **verification email**
-///   2) **sign out immediately**
-/// The user verifies via email and signs in again. No in-app “unverified” state.
+/// View model for CreateAccountView.
+/// Uses one policy for new account and guest upgrade.
+/// It sends verification email and signs out.
 @MainActor
 final class CreateAccountViewModel: ObservableObject {
     // MARK: - Form state
@@ -37,26 +31,26 @@ final class CreateAccountViewModel: ObservableObject {
     var errorMessage: String? { appError?.errorDescription }
     var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
     var isPasswordValid: Bool { AuthValidator.isValidPassword(password) }
-    var isPasswordMatch: Bool { !password.isEmpty && password == confirmPassword }
-    var canSubmit: Bool {
-        isEmailValid && isPasswordValid && isPasswordMatch && acceptedTerms && !isAuthenticating
+    var isPasswordMatch: Bool {
+        let sanitized = AuthValidator.sanitizedPasswordPair(password: password, confirmPassword: confirmPassword)
+        return !sanitized.password.isEmpty && sanitized.password == sanitized.confirmPassword
+    }
+    var canSubmit: Bool { !isAuthenticating }
+    private var isFormValid: Bool {
+        isEmailValid && isPasswordValid && isPasswordMatch && acceptedTerms
     }
 
     // MARK: - Helper texts
-    var emailHelperText: String? {
-        hasTriedSubmit && !isEmailValid ? "Enter a valid email address" : nil
-    }
-    var passwordHelperText: String? {
-        hasTriedSubmit && !isPasswordValid
-        ? "Password must be \(AuthValidator.Policy.minLength)–\(AuthValidator.Policy.maxLength) chars and include A–Z, a–z, 0–9"
-        : nil
-    }
+    var emailHelperText: String? { AuthValidator.emailHelperText(email: email, hasTriedSubmit: hasTriedSubmit) }
+    var passwordHelperText: String? { AuthValidator.passwordHelperText(password: password, hasTriedSubmit: hasTriedSubmit) }
     var confirmHelperText: String? {
-        (hasTriedSubmit || !confirmPassword.isEmpty) && !isPasswordMatch ? "Passwords don’t match" : nil
+        AuthValidator.confirmPasswordHelperText(
+            password: password,
+            confirmPassword: confirmPassword,
+            hasTriedSubmit: hasTriedSubmit
+        )
     }
-    var termsHelperText: String? {
-        !acceptedTerms && hasTriedSubmit ? "You must accept the terms to continue" : nil
-    }
+    var termsHelperText: String? { AuthValidator.termsHelperText(acceptedTerms: acceptedTerms, hasTriedSubmit: hasTriedSubmit) }
 
     // MARK: - Init
     init(
@@ -67,7 +61,7 @@ final class CreateAccountViewModel: ObservableObject {
         self.onVerificationEmailSent = onVerificationEmailSent
     }
 
-    /// Preview-only initializer (no network, static state).
+    /// Preview init with static values.
     init(
         previewEmail: String = "",
         previewIsAuthenticating: Bool = false,
@@ -82,33 +76,34 @@ final class CreateAccountViewModel: ObservableObject {
 
     // MARK: - Actions
 
-    /// Submit the form.
-    ///
-    /// - If current user is **anonymous**: link to email/password,
-    ///   then **send verification email** and **sign out**.
-    /// - Else: create a new account, **send verification email**, then **sign out**.
+    /// Validates and submits the form.
     func submit() async {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
-        guard let service, canSubmit else { return }
+        let sanitized = AuthValidator.sanitizedPasswordPair(password: password, confirmPassword: confirmPassword)
+        password = sanitized.password
+        confirmPassword = sanitized.confirmPassword
+
+        guard let service else { return }
+        guard isFormValid else { return }
 
         isAuthenticating = true
+        appError = nil
         defer { isAuthenticating = false }
 
         do {
-            if service.isAnonymous {
-                _ = try await service.linkAnonymousAccount(email: email, password: password)
-                try await service.resendVerificationEmail()
-                try? service.signOut()
-                appError = nil
-                onVerificationEmailSent()
-            } else {
-                try await service.signUpRequiringEmailVerification(email: email, password: password)
-                appError = nil
-                onVerificationEmailSent()
-            }
+            try await service.createOrUpgradeEmailAccountRequiringVerification(
+                email: email,
+                password: password
+            )
+            appError = nil
+            onVerificationEmailSent()
         } catch {
             appError = AuthAppError.mapToAppError(error)
         }
+    }
+
+    func clearError() {
+        appError = nil
     }
 }
