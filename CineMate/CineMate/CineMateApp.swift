@@ -20,8 +20,8 @@ import Foundation
 ///   • **Signed out** --> `LoginView` flow
 ///   • **Signed in**  --> `RootView` (tab bar)
 /// - Inject environment objects intentionally:
-///   • signed-in root gets `AppNavigator` + `ToastCenter`
-///   • signed-out root gets `ToastCenter` only
+///   • both auth branches receive `ToastCenter`
+///   • `AppNavigator` is shared app-wide (used by signed-in flow)
 /// - Handle Google sign-in callback via `.handleGoogleSignInURL()`
 ///
 /// Notes:
@@ -79,23 +79,29 @@ struct CineMate: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                // Auth gate: signed-out and signed-in roots are intentionally separate.
-                if authViewModel.currentUID != nil {
-                    signedInRoot
-                        .environmentObject(navigator)
-                        .environmentObject(toastCenter)
-                } else {
-                    SignedOutRootView(authService: authService, onSignedIn: handleSignIn)
-                        .environmentObject(toastCenter)
+            appRoot
+                .environmentObject(navigator)
+                .environmentObject(toastCenter)
+                .onChange(of: authViewModel.currentUID) { oldUID, newUID in
+                    handleSessionTransition(from: oldUID, to: newUID)
                 }
-            }
-            .onChange(of: authViewModel.currentUID) { oldUID, newUID in
-                handleSessionTransition(from: oldUID, to: newUID)
-            }
             // App-wide Google sign-in redirect handler
-            .handleGoogleSignInURL()
+                .handleGoogleSignInURL()
         }
+    }
+
+    @ViewBuilder
+    private var appRoot: some View {
+        switch authGateState {
+        case .signedIn:
+            signedInRoot
+        case .signedOut:
+            SignedOutRootView(authService: authService, onSignedIn: handleSignIn)
+        }
+    }
+
+    private var authGateState: AuthGateState {
+        authViewModel.currentUID == nil ? .signedOut : .signedIn
     }
 
     private var signedInRoot: some View {
@@ -115,7 +121,9 @@ struct CineMate: App {
     private func handleSignIn(_ uid: String) {
         authViewModel.errorMessage = nil
         authViewModel.isAuthenticating = false
-        authViewModel.currentUID = uid
+        if authViewModel.currentUID != uid {
+            authViewModel.currentUID = uid
+        }
     }
 
     private func handleSessionTransition(from oldUID: String?, to newUID: String?) {
@@ -131,9 +139,14 @@ struct CineMate: App {
 
     private func log(_ message: String) {
 #if DEBUG
-        print("[Navigation][AuthGate] \(message)")
+        print("[App][Nav][AuthGate] \(message)")
 #endif
     }
+}
+
+private enum AuthGateState {
+    case signedOut
+    case signedIn
 }
 
 private enum SignedOutRoute: Hashable {
@@ -205,7 +218,7 @@ private enum AppBootstrap {
 
     private static func log(_ message: String) {
 #if DEBUG
-        print("[Bootstrap][App] \(message)")
+        print("[App][Bootstrap] \(message)")
 #endif
     }
 }

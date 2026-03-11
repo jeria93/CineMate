@@ -36,6 +36,7 @@ struct RootView: View {
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
     @State private var selectedTab: MainTab = .movies
+    @State private var tabPaths: [MainTab: [AppRoute]] = [:]
     
     // Simple DI — long-lived VMs injected by the App
     let movieVM: MovieViewModel
@@ -100,16 +101,29 @@ struct RootView: View {
             .task { await favVM.startFavoritesListenerIfNeeded() }
             .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
             
-            // Reset the navigation stack on tab change (predictable back behavior)
+            // Keep an up-to-date snapshot for the currently active tab.
+            .onChange(of: navigator.path) { _, newPath in
+                tabPaths[selectedTab] = newPath
+            }
+            
+            // Restore the destination stack for the selected tab.
             .onChange(of: selectedTab) { oldTab, newTab in
                 guard oldTab != newTab else { return }
-                navigator.reset(reason: "tab change \(oldTab.rawValue) -> \(newTab.rawValue)")
+                tabPaths[oldTab] = navigator.path
+                let restored = tabPaths[newTab] ?? []
+                navigator.replacePath(
+                    with: restored,
+                    reason: "tab change \(oldTab.rawValue) -> \(newTab.rawValue)"
+                )
             }
             
             // Route -> destination
             .navigationDestination(for: AppRoute.self) { route in
                 destination(for: route)
             }
+        }
+        .onAppear {
+            tabPaths[selectedTab] = navigator.path
         }
         .toast(toastCenter.message)
     }
@@ -163,6 +177,7 @@ private extension RootView {
     func member(for id: Int) -> CastMember {
         castVM.cast.first(where: { $0.id == id })
         ?? castVM.crew.first(where: { $0.id == id }).map(CastMember.init(from:))
+        ?? favoritePeopleVM.favorites.first(where: { $0.id == id }).map(CastMember.init(from:))
         ?? CastMember(id: id, name: "", character: nil, profilePath: nil)
     }
 }
@@ -170,5 +185,9 @@ private extension RootView {
 extension CastMember {
     init(from crew: CrewMember) {
         self.init(id: crew.id, name: crew.name, character: nil, profilePath: crew.profilePath)
+    }
+    
+    init(from person: PersonRef) {
+        self.init(id: person.id, name: person.name, character: nil, profilePath: person.profilePath)
     }
 }
