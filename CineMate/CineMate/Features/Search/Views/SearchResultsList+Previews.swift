@@ -19,6 +19,7 @@ extension SearchResultsList {
         return SearchResultsList(
             movies: movies,
             favoriteIDs: favIDs,
+            isLoadingNextPage: false,
             onToggleFavorite: { _ in },
             loadMoreAction: { _ in }
         )

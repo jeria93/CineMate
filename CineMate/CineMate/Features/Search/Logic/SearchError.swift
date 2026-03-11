@@ -12,17 +12,14 @@ enum SearchError: LocalizedError, Equatable {
 
     case networkFailure
     case invalidResponse
-    case noResults
     case custom(String)
 
     var errorDescription: String? {
         switch self {
         case .networkFailure:
-            return "Could not load search results. Try again."
+            return "Could not load search results. Check your connection and try again."
         case .invalidResponse:
-            return "The server returned invalid data."
-        case .noResults:
-            return "No movies found for your search."
+            return "Received an unexpected response. Please try again."
         case .custom(let message):
             return message
         }

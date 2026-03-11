@@ -76,7 +76,7 @@ extension PreviewFactory {
                 results: [],
                 isLoading: false,
                 error: nil,
-                validationMessage: "Only letters and numbers are allowed.",
+                validationMessage: "Use letters, numbers, spaces, and basic punctuation.",
                 lastValidQuery: nil,
                 trimmedQuery: ""
             )

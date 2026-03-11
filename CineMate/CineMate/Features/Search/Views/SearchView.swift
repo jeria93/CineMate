@@ -10,10 +10,14 @@ import SwiftUI
 struct SearchView: View {
     @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
+    var isGuestMode: Bool = false
 
     var body: some View {
         VStack {
-            SearchBarView(text: $searchViewModel.query)
+            SearchBarView(
+                text: $searchViewModel.query,
+                isDisabled: isGuestMode
+            )
                 .onSubmit {
                     Task { await searchViewModel.search(searchViewModel.query) }
                 }
@@ -25,26 +29,36 @@ struct SearchView: View {
             contentView
         }
         .navigationTitle("Search")
+        .onAppear {
+            searchViewModel.configureGuestMode(isGuest: isGuestMode)
+        }
+        .onChange(of: isGuestMode) { _, isGuest in
+            searchViewModel.configureGuestMode(isGuest: isGuest)
+        }
     }
 
     @ViewBuilder
     private var contentView: some View {
-        if searchViewModel.query.isEmpty {
+        switch searchViewModel.state {
+        case .prompt:
             SearchPromptView()
-        } else if searchViewModel.isLoading {
+        case .loading:
             LoadingView(title: "Searching movies...")
-        } else if let error = searchViewModel.error {
+        case .validationError:
+            SearchPromptView()
+        case .networkError:
             ErrorMessageView(
-                title: "Error",
-                message: error.localizedDescription,
-                onRetry: { Task { await searchViewModel.search(searchViewModel.query) } }
+                title: "Search failed",
+                message: searchViewModel.error?.localizedDescription ?? "Try again.",
+                onRetry: { Task { await searchViewModel.retryLastSearch() } }
             )
-        } else if searchViewModel.results.isEmpty && !searchViewModel.trimmedQuery.isEmpty {
+        case .empty:
             EmptyResultsView(query: searchViewModel.trimmedQuery)
-        } else {
+        case .results:
             SearchResultsList(
                 movies: searchViewModel.results,
                 favoriteIDs: Set(favoriteViewModel.favoriteMovies.map { $0.id }),
+                isLoadingNextPage: searchViewModel.isLoadingNextPage,
                 onToggleFavorite: { movie in
                     Task { await favoriteViewModel.toggleFavorite(movie: movie) }
                 },

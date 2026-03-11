@@ -44,4 +44,12 @@ struct PaginationState {
         totalPages = 1
         isFetchingNextPage = false
     }
+
+    /// Applies a successful fetch result with safe bounds.
+    mutating func apply(page: Int, totalPages: Int) {
+        let safePage = max(1, page)
+        currentPage = safePage
+        self.totalPages = max(safePage, totalPages)
+        isFetchingNextPage = false
+    }
 }
