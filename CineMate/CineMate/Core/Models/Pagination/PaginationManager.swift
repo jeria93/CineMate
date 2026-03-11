@@ -36,9 +36,7 @@ final class PaginationManager {
     ///   - page: The current page number after fetching.
     ///   - totalPages: The total number of pages available.
     func finishFetching(page: Int, totalPages: Int) {
-        state.isFetchingNextPage = false
-        state.currentPage = page
-        state.totalPages = totalPages
+        state.apply(page: page, totalPages: totalPages)
     }
 
     /// Cancels an in-progress page fetch (sets `isFetchingNextPage` to false).

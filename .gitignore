@@ -46,16 +46,19 @@ fastlane/screenshots/
 **/Secrets.plist
 **/Secrets*.plist
 !**/Secrets.example.plist
+**/DebugLoginCredentials.local.swift
 
 # Env files
 .env
 .env.*
+.envrc
 !.env.example
 !.env.sample
 !.env.template
 
 # Certificates / signing / private keys
 *.pem
+*.key
 *.p8
 *.p12
 *.mobileprovision
@@ -64,6 +67,7 @@ fastlane/screenshots/
 
 # User-specific config
 *.personal.xcconfig
+*.local.xcconfig
 
 # Misc
 *.moved-aside
