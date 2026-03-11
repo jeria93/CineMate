@@ -48,7 +48,11 @@ enum SecretManager {
 
     /// `true` when a non-empty bearer token can be resolved.
     static var hasBearerToken: Bool {
-        (try? valueIfPresent(for: Key.bearerToken) != nil) ?? false
+        do {
+            return try valueIfPresent(for: Key.bearerToken) != nil
+        } catch {
+            return false
+        }
     }
 }
 

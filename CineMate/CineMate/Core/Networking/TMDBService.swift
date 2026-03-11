@@ -92,7 +92,7 @@ final class TMDBService {
     }
 
     func fetchWatchProviderRegion(for movieId: Int) async throws -> WatchProviderRegion {
-        let response: WatchProvidersResponse = try await request(endpoint: .watchProviders(movieId))
+        let response = try await fetchWatchProviders(for: movieId)
         let regionCode = Locale.current.region?.identifier ?? "US"
         return response.results[regionCode] ?? .empty
     }
