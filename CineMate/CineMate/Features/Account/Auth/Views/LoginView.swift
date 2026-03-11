@@ -10,15 +10,21 @@ import GoogleSignInSwift
 
 struct LoginView: View {
     @ObservedObject private var viewModel: LoginViewModel
-    @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
     @Environment(\.colorScheme) private var colorScheme
+    private let onRegister: () -> Void
 
     @State private var showResetSheet = false
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
 
-    init(viewModel: LoginViewModel) { _viewModel = .init(wrappedValue: viewModel) }
+    init(
+        viewModel: LoginViewModel,
+        onRegister: @escaping () -> Void = {}
+    ) {
+        _viewModel = .init(wrappedValue: viewModel)
+        self.onRegister = onRegister
+    }
 
     var body: some View {
         ZStack {
@@ -115,7 +121,7 @@ struct LoginView: View {
 
                 HStack(spacing: 6) {
                     Text("Don’t have an account?").foregroundStyle(.white.opacity(0.85))
-                    Button("Register") { navigator.goToCreateAccount() }
+                    Button("Register") { onRegister() }
                         .buttonStyle(.plain)
                         .foregroundStyle(AuthTheme.popcorn)
                         .accessibilityAddTraits(.isLink)

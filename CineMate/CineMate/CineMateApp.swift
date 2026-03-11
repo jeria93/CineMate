@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 /// CineMateApp — DI root & bootstrap
 ///
@@ -18,7 +19,9 @@ import SwiftUI
 /// - Switch UI:
 ///   • **Signed out** --> `LoginView` flow
 ///   • **Signed in**  --> `RootView` (tab bar)
-/// - Provide global environment objects: `AppNavigator`, `ToastCenter`
+/// - Inject environment objects intentionally:
+///   • signed-in root gets `AppNavigator` + `ToastCenter`
+///   • signed-out root gets `ToastCenter` only
 /// - Handle Google sign-in callback via `.handleGoogleSignInURL()`
 ///
 /// Notes:
@@ -33,7 +36,6 @@ struct CineMate: App {
     @StateObject private var toastCenter = ToastCenter()
 
     // Shared services (network/auth)
-    private let repository: MovieRepository
     private let authService: FirebaseAuthService
 
     // Long-lived view models (owned by the App)
@@ -49,13 +51,12 @@ struct CineMate: App {
     /// Build the DI graph (services -> view models).
     /// `@StateObject` ensures each VM is created once and reused.
     init() {
-        // Order matters: Firebase first, Google next (reads Firebase clientID)
-        FirebaseBootstrap.ensureConfigured()
-        GoogleSignInBootstrap.ensureConfigured()
+        // Order is enforced once at app-level bootstrap.
+        AppBootstrap.ensureConfigured()
 
         let repo = MovieRepository()
         let auth = FirebaseAuthService()
-        self.repository  = repo
+        let authVM = AuthViewModel(service: auth)
         self.authService = auth
 
         // Create VMs that depend on the shared services
@@ -63,67 +64,148 @@ struct CineMate: App {
         _castViewModel           = StateObject(wrappedValue: CastViewModel(repository: repo))
         _discoverViewModel       = StateObject(wrappedValue: DiscoverViewModel(repository: repo))
         _personViewModel         = StateObject(wrappedValue: PersonViewModel(repository: repo))
-        _favoritePeopleViewModel = StateObject(wrappedValue: FavoritePeopleViewModel())
-        _authViewModel           = StateObject(wrappedValue: AuthViewModel(service: auth))
+        _favoritePeopleViewModel = StateObject(
+            wrappedValue: FavoritePeopleViewModel(
+                auth: auth,
+                repo: FirestoreFavoritePeopleRepository()
+            )
+        )
+        _authViewModel           = StateObject(wrappedValue: authVM)
         _searchViewModel         = StateObject(wrappedValue: SearchViewModel(repository: repo))
-        _favoriteMoviesViewModel = StateObject(wrappedValue: FavoriteMoviesViewModel())
+        _favoriteMoviesViewModel = StateObject(
+            wrappedValue: FavoriteMoviesViewModel(authService: auth)
+        )
     }
 
     var body: some Scene {
         WindowGroup {
             Group {
-                // Simple auth gate
-                if authViewModel.currentUID == nil {
-                    // LOGIN / SIGN-UP FLOW
-                    NavigationStack(path: $navigator.path) {
-                        LoginView(
-                            viewModel: LoginViewModel(
-                                service: authService,
-                                onSuccess: { uid in
-                                    // Bubble up the new session to the app-owned auth VM
-                                    authViewModel.errorMessage = nil
-                                    authViewModel.isAuthenticating = false
-                                    authViewModel.currentUID = uid
-                                }
-                            )
-                        )
-                        .navigationDestination(for: AppRoute.self) { route in
-                            switch route {
-                            case .createAccount:
-                                CreateAccountView(
-                                    createViewModel: CreateAccountViewModel(
-                                        service: authService,
-                                        onVerificationEmailSent: {
-                                            toastCenter.show("Check your inbox to verify your email")
-                                            navigator.goBack()
-                                        }
-                                    )
-                                )
-                            default:
-                                EmptyView()
-                            }
-                        }
-                    }
-                    .toast(toastCenter.message)
+                // Auth gate: signed-out and signed-in roots are intentionally separate.
+                if authViewModel.currentUID != nil {
+                    signedInRoot
+                        .environmentObject(navigator)
+                        .environmentObject(toastCenter)
                 } else {
-                    // MAIN APP
-                    RootView(
-                        movieVM:          movieViewModel,
-                        castVM:           castViewModel,
-                        favVM:            favoriteMoviesViewModel,
-                        searchVM:         searchViewModel,
-                        discoverVM:       discoverViewModel,
-                        personVM:         personViewModel,
-                        favoritePeopleVM: favoritePeopleViewModel,
-                        authViewModel:    authViewModel
-                    )
+                    SignedOutRootView(authService: authService, onSignedIn: handleSignIn)
+                        .environmentObject(toastCenter)
                 }
             }
-            // Global environment
-            .environmentObject(navigator)
-            .environmentObject(toastCenter)
+            .onChange(of: authViewModel.currentUID) { oldUID, newUID in
+                handleSessionTransition(from: oldUID, to: newUID)
+            }
             // App-wide Google sign-in redirect handler
             .handleGoogleSignInURL()
         }
+    }
+
+    private var signedInRoot: some View {
+        RootView(
+            movieVM:          movieViewModel,
+            castVM:           castViewModel,
+            favVM:            favoriteMoviesViewModel,
+            searchVM:         searchViewModel,
+            discoverVM:       discoverViewModel,
+            personVM:         personViewModel,
+            favoritePeopleVM: favoritePeopleViewModel,
+            authViewModel:    authViewModel,
+            authService:      authService
+        )
+    }
+
+    private func handleSignIn(_ uid: String) {
+        authViewModel.errorMessage = nil
+        authViewModel.isAuthenticating = false
+        authViewModel.currentUID = uid
+    }
+
+    private func handleSessionTransition(from oldUID: String?, to newUID: String?) {
+        let fromSignedIn = oldUID != nil
+        let toSignedIn = newUID != nil
+        guard fromSignedIn != toSignedIn else { return }
+
+        let fromState = fromSignedIn ? "signedIn" : "signedOut"
+        let toState = toSignedIn ? "signedIn" : "signedOut"
+        log("auth gate transition \(fromState) -> \(toState)")
+        navigator.reset(reason: "auth gate transition \(fromState) -> \(toState)")
+    }
+
+    private func log(_ message: String) {
+#if DEBUG
+        print("[Navigation][AuthGate] \(message)")
+#endif
+    }
+}
+
+private enum SignedOutRoute: Hashable {
+    case createAccount
+}
+
+private struct SignedOutRootView: View {
+    @EnvironmentObject private var toastCenter: ToastCenter
+    @State private var path: [SignedOutRoute] = []
+    @StateObject private var loginViewModel: LoginViewModel
+
+    private let authService: FirebaseAuthService
+
+    init(authService: FirebaseAuthService, onSignedIn: @escaping (String) -> Void) {
+        self.authService = authService
+        _loginViewModel = StateObject(
+            wrappedValue: LoginViewModel(service: authService, onSuccess: onSignedIn)
+        )
+    }
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            LoginView(
+                viewModel: loginViewModel,
+                onRegister: { path.append(.createAccount) }
+            )
+            .navigationDestination(for: SignedOutRoute.self) { route in
+                switch route {
+                case .createAccount:
+                    CreateAccountView(
+                        createViewModel: CreateAccountViewModel(
+                            service: authService,
+                            onVerificationEmailSent: {
+                                toastCenter.show("Check your inbox to verify your email")
+                                path.removeAll()
+                            }
+                        )
+                    )
+                }
+            }
+        }
+        .toast(toastCenter.message)
+    }
+}
+
+/// App-level bootstrap coordinator. Guarantees launch SDK order exactly once:
+/// Firebase first, Google Sign-In second.
+private enum AppBootstrap {
+    private static let lock = NSLock()
+    private static var didRun = false
+
+    static func ensureConfigured() {
+        guard !ProcessInfo.processInfo.isPreview else { return }
+
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !didRun else {
+            log("bootstrap skipped (already completed)")
+            return
+        }
+
+        log("bootstrap start")
+        FirebaseBootstrap.ensureConfigured()
+        GoogleSignInBootstrap.ensureConfigured()
+        didRun = true
+        log("bootstrap complete")
+    }
+
+    private static func log(_ message: String) {
+#if DEBUG
+        print("[Bootstrap][App] \(message)")
+#endif
     }
 }

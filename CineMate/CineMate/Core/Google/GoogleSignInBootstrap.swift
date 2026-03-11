@@ -16,6 +16,7 @@ import GoogleSignIn
 /// Call this early (e.g., in `CineMate.init()`), before you start a sign-in flow.
 enum GoogleSignInBootstrap {
     private static var isConfigured = false
+    private static let lock = NSLock()
 
     /// Idempotent setup for Google Sign-In.
     ///
@@ -24,14 +25,31 @@ enum GoogleSignInBootstrap {
     /// (which usually means the real `GoogleService-Info.plist` is not in the target).
     static func ensureConfigured() {
         guard !ProcessInfo.processInfo.isPreview else { return }
-        guard !isConfigured else { return }
 
-        guard let clientID = FirebaseApp.app()?.options.clientID else {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !isConfigured else {
+            log("skipped (already configured)")
+            return
+        }
+
+        FirebaseBootstrap.ensureConfigured()
+
+        guard let clientID = FirebaseApp.app()?.options.clientID, !clientID.isEmpty else {
             assertionFailure("Missing Firebase clientID. Add GoogleService-Info.plist to target.")
+            log("failed (missing Firebase clientID)")
             return
         }
 
         GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
         isConfigured = true
+        log("configured")
+    }
+
+    private static func log(_ message: String) {
+#if DEBUG
+        print("[Bootstrap][GoogleSignIn] \(message)")
+#endif
     }
 }

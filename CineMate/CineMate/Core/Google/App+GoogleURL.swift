@@ -13,13 +13,23 @@ import GoogleSignIn
 ///
 /// Usage:
 /// ```swift
-/// WindowGroup { RootView().handleGoogleSignInURL() }
+/// WindowGroup { AppRootView().handleGoogleSignInURL() }
 /// ```
 extension View {
     /// Forwards incoming URLs to GoogleSignIn.
     func handleGoogleSignInURL() -> some View {
         onOpenURL { url in
-            _ = GIDSignIn.sharedInstance.handle(url)
+            let handled = GIDSignIn.sharedInstance.handle(url)
+            logGoogleURL(url, handled: handled)
         }
+    }
+
+    private func logGoogleURL(_ url: URL, handled: Bool) {
+#if DEBUG
+        let summary = [url.scheme, url.host]
+            .compactMap { $0 }
+            .joined(separator: "://")
+        print("[Navigation][GoogleURL] handled=\(handled) source=\(summary)")
+#endif
     }
 }

@@ -20,13 +20,38 @@ enum AppRoute: Hashable {
 }
 
 extension AppRoute {
-    var caseName: String {
+    enum Kind: String {
+        case movie
+        case person
+        case genre
+        case seeAllMovies
+        case createAccount
+    }
+
+    var kind: Kind {
         switch self {
-        case .movie: "movie"
-        case .person: "person"
-        case .genre: "genre"
-        case .seeAllMovies: "seeAllMovies"
-        case .createAccount: "createAccount"
+        case .movie: .movie
+        case .person: .person
+        case .genre: .genre
+        case .seeAllMovies: .seeAllMovies
+        case .createAccount: .createAccount
+        }
+    }
+}
+
+extension AppRoute: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .movie(let id):
+            return "movie(id: \(id))"
+        case .person(let id):
+            return "person(id: \(id))"
+        case .genre(let name):
+            return "genre(name: \(name))"
+        case .seeAllMovies(let title, _):
+            return "seeAllMovies(title: \(title))"
+        case .createAccount:
+            return "createAccount"
         }
     }
 }
