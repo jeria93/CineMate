@@ -11,7 +11,6 @@ struct MovieFavoriteButtonView: View {
     let movie: Movie
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
-
     private var isFavorite: Bool {
         favoriteViewModel.favoriteMovies.contains { $0.id == movie.id }
     }

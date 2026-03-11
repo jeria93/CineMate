@@ -1523,6 +1523,7 @@
 			buildPhases = (
 				030611FF2DF4BA4B0013F7AF /* Sources */,
 				030612002DF4BA4B0013F7AF /* Frameworks */,
+				03F7D0A92E73A00100A1B2C3 /* SwiftLint */,
 				030612012DF4BA4B0013F7AF /* Resources */,
 			);
 			buildRules = (
@@ -1590,6 +1591,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		03F7D0A92E73A00100A1B2C3 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:${PATH}\"\n\nSWIFTLINT=\"\"\nif command -v swiftlint > /dev/null 2>&1\nthen\n  SWIFTLINT=\"$(command -v swiftlint)\"\nelif [ -x \"/opt/homebrew/bin/swiftlint\" ]\nthen\n  SWIFTLINT=\"/opt/homebrew/bin/swiftlint\"\nelif [ -x \"/usr/local/bin/swiftlint\" ]\nthen\n  SWIFTLINT=\"/usr/local/bin/swiftlint\"\nfi\n\nif [ -n \"${SWIFTLINT}\" ]\nthen\n  if ! \"${SWIFTLINT}\" lint --no-cache --config \"${SRCROOT}/.swiftlint.yml\"\n  then\n    echo \"warning: SwiftLint found violations. Build is not blocked\"\n  fi\nelse\n  echo \"warning: SwiftLint is not installed. Install with Homebrew using brew install swiftlint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		030611FF2DF4BA4B0013F7AF /* Sources */ = {
@@ -1971,6 +1994,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N693GNQH6J;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CineMate/Info.plist;
@@ -2000,6 +2024,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N693GNQH6J;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CineMate/Info.plist;

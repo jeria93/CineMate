@@ -41,7 +41,7 @@ enum FirebaseBootstrap {
     
     private static func log(_ message: String) {
 #if DEBUG
-        print("[Bootstrap][Firebase] \(message)")
+        print("[App][Bootstrap][Firebase] \(message)")
 #endif
     }
 }

@@ -171,12 +171,12 @@ final class MovieViewModel: ObservableObject {
         async let videos      = repository.fetchMovieVideos(for: movieId)
 
         do {
-            let d = try await details
-            movieDetail = d
+            let detail = try await details
+            movieDetail = detail
 
             // Cache a lightweight stub for immediate UI usage
-            if !movies.contains(where: { $0.id == d.id }) {
-                movies.append(makeStub(from: d))
+            if !movies.contains(where: { $0.id == detail.id }) {
+                movies.append(makeStub(from: detail))
             }
 
             movieCredits        = try await credits

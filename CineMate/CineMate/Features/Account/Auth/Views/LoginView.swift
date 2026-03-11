@@ -8,16 +8,17 @@
 import SwiftUI
 import GoogleSignInSwift
 
+/// Login screen for email password, Google, and guest sign in.
 struct LoginView: View {
     @ObservedObject private var viewModel: LoginViewModel
     @EnvironmentObject private var toastCenter: ToastCenter
     @Environment(\.colorScheme) private var colorScheme
     private let onRegister: () -> Void
-
+    
     @State private var showResetSheet = false
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
-
+    
     init(
         viewModel: LoginViewModel,
         onRegister: @escaping () -> Void = {}
@@ -25,16 +26,16 @@ struct LoginView: View {
         _viewModel = .init(wrappedValue: viewModel)
         self.onRegister = onRegister
     }
-
+    
     var body: some View {
         ZStack {
             LinearGradient(colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
                            startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
-
+            
             VStack(spacing: 22) {
                 AuthHeader()
-
+                
                 VStack(alignment: .leading, spacing: 16) {
                     AuthEmailField(
                         text: $viewModel.email,
@@ -47,7 +48,7 @@ struct LoginView: View {
                         ValidationMessageView(message: hint)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     AuthPasswordField(
                         text: $viewModel.password,
                         isDisabled: viewModel.isAuthenticating,
@@ -60,7 +61,7 @@ struct LoginView: View {
                         ValidationMessageView(message: hint)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     HStack {
                         Spacer()
                         Button("Forgot password?") { showResetSheet = true }
@@ -69,7 +70,7 @@ struct LoginView: View {
                             .foregroundStyle(AuthTheme.popcorn)
                             .disabled(viewModel.isAuthenticating)
                     }
-
+                    
                     Button { Task { await viewModel.login() } } label: {
                         Text("Sign in").fontWeight(.semibold).frame(maxWidth: .infinity)
                     }
@@ -77,9 +78,9 @@ struct LoginView: View {
                     .controlSize(.large)
                     .frame(height: 48)
                     .disabled(viewModel.isAuthenticating)
-
+                    
                     OrDivider(text: "or continue with")
-
+                    
                     GoogleSignInButton(
                         scheme: colorScheme == .dark ? .dark : .light,
                         style: .standard,
@@ -89,7 +90,7 @@ struct LoginView: View {
                         .frame(maxWidth: .infinity)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
-
+                    
                     Button {
                         Task { await viewModel.continueAsGuest() }
                     } label: {
@@ -102,23 +103,26 @@ struct LoginView: View {
                     .controlSize(.large)
                     .frame(height: 48)
                     .disabled(viewModel.isAuthenticating)
-
+                    
                     if let message = viewModel.errorMessage {
                         AuthErrorBlock(
                             message: message,
                             showResend: viewModel.shouldOfferResendVerification
                         ) {
                             Task {
-                                await viewModel.resendVerification()
-                                toastCenter.show("Verification email sent. Check your inbox")
+                                if await viewModel.resendVerification() {
+                                    toastCenter.show("Verification email sent. Check your inbox")
+                                } else if let error = viewModel.errorMessage {
+                                    toastCenter.show(error)
+                                }
                             }
                         }
                     }
                 }
                 .padding(.horizontal, 20)
-
+                
                 Spacer(minLength: 8)
-
+                
                 HStack(spacing: 6) {
                     Text("Don’t have an account?").foregroundStyle(.white.opacity(0.85))
                     Button("Register") { onRegister() }
@@ -134,16 +138,21 @@ struct LoginView: View {
         }
         .task {
             try? await Task.sleep(nanoseconds: 120_000_000)
-            if viewModel.email.isEmpty { emailFocused = true }
-            else if viewModel.password.isEmpty { passwordFocused = true }
+            if viewModel.email.isEmpty { emailFocused = true } else if viewModel.password.isEmpty { passwordFocused = true }
         }
         .overlay {
             if viewModel.isAuthenticating {
-                LoadingView(title: "Signing in…").transition(.opacity)
+                LoadingView(title: viewModel.loadingTitle).transition(.opacity)
             }
         }
         .sheet(isPresented: $showResetSheet) {
             ResetPasswordSheet().environmentObject(toastCenter)
+        }
+        .onChange(of: viewModel.email) { _, _ in
+            viewModel.clearError()
+        }
+        .onChange(of: viewModel.password) { _, _ in
+            viewModel.clearError()
         }
         .tint(AuthTheme.popcorn)
     }

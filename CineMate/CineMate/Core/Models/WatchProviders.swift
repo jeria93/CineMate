@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /// Represents the full response from TMDB's `/movie/{movie_id}/watch/providers` endpoint.
 /// This response contains all available watch providers grouped by country code (e.g., "SE", "US").
 ///

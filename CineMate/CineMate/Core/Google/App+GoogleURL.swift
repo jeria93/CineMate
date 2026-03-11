@@ -23,13 +23,13 @@ extension View {
             logGoogleURL(url, handled: handled)
         }
     }
-
+    
     private func logGoogleURL(_ url: URL, handled: Bool) {
 #if DEBUG
         let summary = [url.scheme, url.host]
             .compactMap { $0 }
             .joined(separator: "://")
-        print("[Navigation][GoogleURL] handled=\(handled) source=\(summary)")
+        print("[App][Nav][GoogleURL] handled=\(handled) source=\(summary)")
 #endif
     }
 }

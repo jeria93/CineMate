@@ -7,35 +7,18 @@
 
 import SwiftUI
 
-/// Small error block for auth flows.
-/// Displays a red error message and (optionally) a **Resend verification email** action.
-///
-/// - Requires: A `ToastCenter` in the environment **iff** `showResend == true`
-///   (used to show a success toast after `onResend()`).
-///
-/// ### Example
-/// ```swift
-/// AuthErrorBlock(
-///     message: "Please verify your email",
-///     showResend: true
-/// ) {
-///     await authVM.resendVerification()
-/// }
-/// .environmentObject(ToastCenter())
-/// ```
+/// Small error view for auth screens.
+/// It can also show a resend verification action.
 struct AuthErrorBlock: View {
 
-    /// Error text shown to the user.
+    /// Error text.
     let message: String
 
-    /// If `true`, renders the "Resend verification email" button.
+    /// Shows resend button when true.
     var showResend: Bool = false
 
-    /// Called when the user taps **Resend**.
-    /// Your handler should trigger the resend operation.
+    /// Called when user taps resend.
     var onResend: () -> Void = {}
-
-    @EnvironmentObject private var toastCenter: ToastCenter
 
     var body: some View {
         VStack(spacing: 8) {
@@ -43,11 +26,10 @@ struct AuthErrorBlock: View {
                 .font(.footnote)
                 .foregroundStyle(.red)
                 .multilineTextAlignment(.center)
-
+            
             if showResend {
                 Button("Resend verification email") {
                     onResend()
-                    toastCenter.show("Verification email sent. Check your inbox")
                 }
                 .buttonStyle(.bordered)
             }
@@ -68,5 +50,4 @@ struct AuthErrorBlock: View {
         }
     }
     .padding()
-    .withPreviewToasts() // injects ToastCenter for the preview
 }

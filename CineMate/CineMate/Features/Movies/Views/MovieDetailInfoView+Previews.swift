@@ -27,7 +27,7 @@ extension MovieDetailInfoView {
         .padding()
     }
 
-    /// Preview showing streaming providers (e.g. Netflix)
+    // Preview showing streaming providers (e.g. Netflix)
 //    static var previewWithProviders: some View {
 //        MovieDetailInfoView(
 //            movie: SharedPreviewMovies.starWars,

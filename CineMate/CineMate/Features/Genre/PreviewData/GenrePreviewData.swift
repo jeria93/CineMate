@@ -13,6 +13,6 @@ struct GenrePreviewData {
         Genre(id: 35, name: "Comedy"),
         Genre(id: 18, name: "Drama"),
         Genre(id: 27, name: "Horror"),
-        Genre(id: 10749, name: "Romance"),
+        Genre(id: 10749, name: "Romance")
     ]
 }

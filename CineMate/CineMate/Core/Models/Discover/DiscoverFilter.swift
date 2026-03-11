@@ -11,9 +11,9 @@ import Foundation
 struct DiscoverFilter: Equatable, Hashable {
     var sortOption: SortOption = .popularityDesc
     var withGenres: [Int] = []
-    var releaseYear: String? = nil
-    var minVoteAverage: Double? = nil
-    var language: String? = nil
+    var releaseYear: String?
+    var minVoteAverage: Double?
+    var language: String?
     var includeAdult: Bool = false
     var page: Int = 1
 

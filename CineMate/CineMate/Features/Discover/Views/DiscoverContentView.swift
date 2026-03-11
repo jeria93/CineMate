@@ -13,7 +13,7 @@ import SwiftUI
 /// - Scrolls to top automatically when genre changes.
 struct DiscoverContentView: View {
     @ObservedObject var viewModel: DiscoverViewModel
-    @State private var lastSelectedGenreId: Int? = nil
+    @State private var lastSelectedGenreId: Int?
 
     var body: some View {
         ScrollViewReader { proxy in

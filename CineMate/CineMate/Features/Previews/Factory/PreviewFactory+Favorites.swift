@@ -32,10 +32,10 @@ extension PreviewFactory {
     /// Many scenario: stress test layout/scrolling.
     static func manyFavoritesViewModel() -> FavoriteMoviesViewModel {
         SharedPreviewMovies.resetIDs()
-        let many = (1...20).map { i in
+        let many = (1...20).map { index in
             Movie(
                 id: PreviewID.next(),
-                title: "Sample \(i)",
+                title: "Sample \(index)",
                 overview: nil,
                 posterPath: nil,
                 backdropPath: nil,
