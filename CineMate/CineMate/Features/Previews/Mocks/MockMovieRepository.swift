@@ -24,18 +24,38 @@ import Foundation
 /// }
 /// ```
 final class MockMovieRepository: MovieProtocol {
-    
+
     func searchMovies(query: String, page: Int) async throws -> MovieResult {
         try await Task.sleep(nanoseconds: Delay.short)
 
-        // Always return the same movies regardless of query or page
-        let mockResults = SharedPreviewMovies.moviesList
+        let normalizedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let allMovies: [Movie]
+        if normalizedQuery.isEmpty {
+            allMovies = SharedPreviewMovies.moviesList
+        } else {
+            allMovies = SharedPreviewMovies.moviesList.filter {
+                $0.title.lowercased().contains(normalizedQuery)
+            }
+        }
+
+        let pageSize = 6
+        let safePage = max(1, page)
+        let startIndex = (safePage - 1) * pageSize
+        let pageResults: [Movie]
+        if startIndex < allMovies.count {
+            let endIndex = min(startIndex + pageSize, allMovies.count)
+            pageResults = Array(allMovies[startIndex..<endIndex])
+        } else {
+            pageResults = []
+        }
+
+        let totalPages = max(1, Int(ceil(Double(allMovies.count) / Double(pageSize))))
 
         return MovieResult(
-            page: page,
-            results: mockResults,
-            totalPages: 1,
-            totalResults: mockResults.count
+            page: safePage,
+            results: pageResults,
+            totalPages: totalPages,
+            totalResults: allMovies.count
         )
     }
 
@@ -55,14 +75,23 @@ final class MockMovieRepository: MovieProtocol {
 
         let allMovies = SharedPreviewMovies.moviesList
         let pageSize = 3
-        let startIndex = (page - 1) * pageSize
-        let endIndex = min(startIndex + pageSize, allMovies.count)
-        let pageResults = Array(allMovies[startIndex..<endIndex])
+        let safePage = max(1, page)
+        let startIndex = (safePage - 1) * pageSize
+
+        let pageResults: [Movie]
+        if startIndex < allMovies.count {
+            let endIndex = min(startIndex + pageSize, allMovies.count)
+            pageResults = Array(allMovies[startIndex..<endIndex])
+        } else {
+            pageResults = []
+        }
+
+        let totalPages = max(1, Int(ceil(Double(allMovies.count) / Double(pageSize))))
 
         return MovieResult(
-            page: page,
+            page: safePage,
             results: pageResults,
-            totalPages: Int(ceil(Double(allMovies.count) / Double(pageSize))),
+            totalPages: totalPages,
             totalResults: allMovies.count
         )
     }
@@ -109,17 +138,13 @@ final class MockMovieRepository: MovieProtocol {
         return PersonLinksPreviewData.markHamill
     }
 
-    // MARK: - Search & Discover
-    func searchMovies(query: String) async throws -> [Movie] {
-        try await Task.sleep(nanoseconds: Delay.long)
-        return SharedPreviewMovies.moviesList.filter {
-            $0.title.lowercased().contains(query.lowercased())
-        }
-    }
-
+    // MARK: - Discover
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
         try await Task.sleep(nanoseconds: Delay.long)
-        if filters.contains(where: { $0.name == "with_genres" && $0.value == "27" }) {
+
+        if filters.contains(
+            where: { $0.name == DiscoverQueryKey.withGenres && $0.value == "27" }
+        ) {
             return DiscoverHorrorPreviewData.horrorMovies
         }
         return SharedPreviewMovies.moviesList

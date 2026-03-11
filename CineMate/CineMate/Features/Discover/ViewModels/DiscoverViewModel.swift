@@ -93,7 +93,9 @@ final class DiscoverViewModel: ObservableObject {
 
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
-        Task { await fetchGenres() }
+        if !ProcessInfo.processInfo.isPreview {
+            Task { await fetchGenres() }
+        }
     }
 
     // MARK: - Public API
@@ -143,8 +145,12 @@ final class DiscoverViewModel: ObservableObject {
                     filters: DiscoverFilter(sortOption: .popularityDesc, withGenres: [genreId], minVoteAverage: 5.0).queryItems
                 )
                 async let upcomingRaw = self.repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .releaseDateAsc, withGenres: [genreId]).queryItems
-                    + [URLQueryItem(name: "primary_release_date.gte", value: DateHelper.todayString())]
+                    filters: DiscoverFilter(
+                        sortOption: .releaseDateAsc,
+                        withGenres: [genreId]
+                    ).queryItems(
+                        adding: [DiscoverFilter.primaryReleaseDateGTE(DateHelper.todayString())]
+                    )
                 )
 
                 // Local filtering for relevance
@@ -205,7 +211,7 @@ final class DiscoverViewModel: ObservableObject {
             defer { fetchAllTask = nil }
 
             guard !ProcessInfo.processInfo.isPreview else { return }
-            guard !SecretManager.bearerToken.isEmpty else {
+            guard SecretManager.hasBearerToken else {
                 self.error = .custom("Missing API token.")
                 return
             }
@@ -221,8 +227,9 @@ final class DiscoverViewModel: ObservableObject {
                 async let trendingRaw = repository.fetchMovies(category: .trending, page: 1).results
 
                 async let upcomingRaw = repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .releaseDateAsc).queryItems
-                    + [URLQueryItem(name: "primary_release_date.gte", value: DateHelper.todayString())]
+                    filters: DiscoverFilter(sortOption: .releaseDateAsc).queryItems(
+                        adding: [DiscoverFilter.primaryReleaseDateGTE(DateHelper.todayString())]
+                    )
                 )
 
                 async let horror = repository.discoverMovies(

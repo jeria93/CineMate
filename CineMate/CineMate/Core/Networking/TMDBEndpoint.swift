@@ -21,7 +21,7 @@ enum TMDBEndpoint {
     case personMovieCredits(Int)
     case personExternalIDs(Int)
     case watchProviders(Int)
-    case search(String)
+    case search
     case discover
     case nowPlaying
     case movieGenres
@@ -44,6 +44,57 @@ enum TMDBEndpoint {
         case .discover: return "/discover/movie"
         case .nowPlaying: return "/movie/now_playing"
         case .movieGenres: return "/genre/movie/list"
+        }
+    }
+
+    func url(baseURL: URL, queryItems: [URLQueryItem] = []) throws -> URL {
+        guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+            throw TMDBError.badURL
+        }
+
+        let normalizedBasePath = components.path.hasSuffix("/")
+            ? String(components.path.dropLast())
+            : components.path
+        components.path = normalizedBasePath + path
+
+        let cleanedQueryItems = sanitize(queryItems: queryItems)
+        if !cleanedQueryItems.isEmpty {
+            components.queryItems = cleanedQueryItems
+        }
+
+        guard let url = components.url else {
+            throw TMDBError.badURL
+        }
+        return url
+    }
+
+    func makeRequest(
+        baseURL: URL,
+        queryItems: [URLQueryItem] = [],
+        bearerToken: String
+    ) throws -> URLRequest {
+        let url = try url(baseURL: baseURL, queryItems: queryItems)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
+        return request
+    }
+}
+
+private extension TMDBEndpoint {
+    func sanitize(queryItems: [URLQueryItem]) -> [URLQueryItem] {
+        queryItems.compactMap { item in
+            let name = item.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !name.isEmpty else { return nil }
+
+            guard let rawValue = item.value else {
+                return URLQueryItem(name: name, value: nil)
+            }
+
+            let value = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !value.isEmpty else { return nil }
+            return URLQueryItem(name: name, value: value)
         }
     }
 }

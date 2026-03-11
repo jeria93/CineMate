@@ -136,9 +136,9 @@ struct LoginView: View {
             .padding(.top, 28)
             .padding(.bottom, 16)
         }
-        .task {
-            try? await Task.sleep(nanoseconds: 120_000_000)
-            if viewModel.email.isEmpty { emailFocused = true } else if viewModel.password.isEmpty { passwordFocused = true }
+        .onAppear {
+            emailFocused = false
+            passwordFocused = false
         }
         .overlay {
             if viewModel.isAuthenticating {

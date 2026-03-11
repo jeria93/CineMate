@@ -11,11 +11,36 @@ import Foundation
 /// Used by `MovieRepository` as the network layer.
 final class TMDBService {
 
-    private let baseURL = "https://api.themoviedb.org/3"
-    private let session = URLSession.shared
+    private enum QueryName {
+        static let page = "page"
+        static let region = "region"
+        static let query = "query"
+    }
+
+    private enum SecretKey {
+        static let bearerToken = "TMDB_BEARER_TOKEN"
+    }
+
+    private let baseURL: URL
+    private let session: URLSession
+    private let decoderFactory: () -> JSONDecoder
+
+    init(
+        baseURL: URL = URL(string: "https://api.themoviedb.org/3")!,
+        session: URLSession = .shared,
+        decoderFactory: @escaping () -> JSONDecoder = TMDBService.makeDecoder
+    ) {
+        self.baseURL = baseURL
+        self.session = session
+        self.decoderFactory = decoderFactory
+    }
 
     private var userRegion: String {
         Locale.current.region?.identifier ?? "US"
+    }
+
+    private var isPreviewEnvironment: Bool {
+        ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
     }
 
     // MARK: - Movie Lists with Paging
@@ -37,9 +62,8 @@ final class TMDBService {
 
     // MARK: - Helper for paged endpoints
     private func pagedRequest(endpoint: TMDBEndpoint, page: Int, region: String?) async throws -> MovieResult {
-        var query = regionQueryItems(region)
-        query.append(URLQueryItem(name: "page", value: "\(page)"))
-        return try await request(endpoint: endpoint, queryItems: query)
+        let queryItems = regionQueryItems(region) + [pageQueryItem(page)]
+        return try await request(endpoint: endpoint, queryItems: queryItems)
     }
 
     // MARK: - Movie Details
@@ -56,9 +80,11 @@ final class TMDBService {
         return result.results
     }
 
-    func fetchRecommendedMovies(for movieId: Int, page: Int = 1) async throws -> MovieResult {
-        let query = [URLQueryItem(name: "page", value: "\(page)")]
-        return try await request(endpoint: .recommendations(movieId), queryItems: query)
+    func fetchRecommendedMovies(for movieId: Int, page: Int = 1) async throws -> [Movie] {
+        try await requestMovieList(
+            endpoint: .recommendations(movieId),
+            queryItems: [pageQueryItem(page)]
+        )
     }
 
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProvidersResponse {
@@ -87,22 +113,20 @@ final class TMDBService {
 
     // MARK: - Search & Discover
     func searchMovies(query: String, page: Int = 1) async throws -> MovieResult {
-        let queryItems = [
-            URLQueryItem(name: "query", value: query),
-            URLQueryItem(name: "page", value: "\(page)")
+        let queryItems: [URLQueryItem] = [
+            URLQueryItem(name: QueryName.query, value: query),
+            pageQueryItem(page)
         ]
-        return try await request(endpoint: .search(query), queryItems: queryItems)
+        return try await request(endpoint: .search, queryItems: queryItems)
     }
 
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
-        let result: MovieResult = try await request(endpoint: .discover, queryItems: filters)
-        return result.results
+        try await requestMovieList(endpoint: .discover, queryItems: filters)
     }
 
     // MARK: - Misc
     func fetchNowPlayingMovies() async throws -> [Movie] {
-        let result: MovieResult = try await request(endpoint: .nowPlaying)
-        return result.results
+        try await requestMovieList(endpoint: .nowPlaying)
     }
 
     func fetchGenres() async throws -> [Genre] {
@@ -113,36 +137,92 @@ final class TMDBService {
     // MARK: - Helpers
     private func regionQueryItems(_ region: String?) -> [URLQueryItem] {
         let resolvedRegion = region ?? userRegion
-#if DEBUG
-        print("Using region: \(resolvedRegion)")
-#endif
-        return [URLQueryItem(name: "region", value: resolvedRegion)]
+        return [URLQueryItem(name: QueryName.region, value: resolvedRegion)]
+    }
+
+    private func pageQueryItem(_ page: Int) -> URLQueryItem {
+        URLQueryItem(name: QueryName.page, value: "\(max(1, page))")
     }
 
     // MARK: - Generic Request
     func request<Model: Decodable>(endpoint: TMDBEndpoint, queryItems: [URLQueryItem] = []) async throws -> Model {
-        guard var components = URLComponents(string: "\(baseURL)\(endpoint.path)") else {
-            throw TMDBError.badURL
+        let data = try await performRequest(endpoint: endpoint, queryItems: queryItems)
+        return try decode(Model.self, from: data)
+    }
+
+    private func requestMovieList(
+        endpoint: TMDBEndpoint,
+        queryItems: [URLQueryItem] = []
+    ) async throws -> [Movie] {
+        let result: MovieResult = try await request(endpoint: endpoint, queryItems: queryItems)
+        return result.results
+    }
+
+    private func performRequest(
+        endpoint: TMDBEndpoint,
+        queryItems: [URLQueryItem]
+    ) async throws -> Data {
+        guard !isPreviewEnvironment else {
+            throw TMDBError.previewRequestBlocked
         }
-        if !queryItems.isEmpty { components.queryItems = queryItems }
 
-        guard let url = components.url else { throw TMDBError.badURL }
+        let bearerToken = try SecretManager.load(SecretKey.bearerToken)
+        let request = try endpoint.makeRequest(
+            baseURL: baseURL,
+            queryItems: queryItems,
+            bearerToken: bearerToken
+        )
 
-        var req = URLRequest(url: url)
-        req.httpMethod = "GET"
-        req.allHTTPHeaderFields = [
-            "accept": "application/json",
-            "Authorization": "Bearer \(SecretManager.bearerToken)"
-        ]
+        do {
+            let (data, response) = try await session.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw TMDBError.invalidResponse
+            }
 
-        let (data, response) = try await session.data(for: req)
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
-            throw TMDBError.invalidResponse
+            guard (200...299).contains(httpResponse.statusCode) else {
+                throw mapServerError(statusCode: httpResponse.statusCode, data: data)
+            }
+
+            guard !data.isEmpty else {
+                throw TMDBError.emptyResponse
+            }
+            return data
+        } catch let error as TMDBError {
+            throw error
+        } catch let error as URLError {
+            throw TMDBError.networkFailure(error)
+        } catch {
+            throw TMDBError.unknown
         }
+    }
 
+    private func decode<Model: Decodable>(_ type: Model.Type, from data: Data) throws -> Model {
+        do {
+            return try decoderFactory().decode(type, from: data)
+        } catch {
+            throw TMDBError.decodingFailed
+        }
+    }
+
+    private func mapServerError(statusCode: Int, data: Data) -> TMDBError {
+        if let payload = try? decoderFactory().decode(TMDBErrorPayload.self, from: data),
+           payload.statusMessage != nil || payload.statusCode != nil {
+            return .tmdbError(
+                statusCode: payload.statusCode ?? statusCode,
+                message: payload.statusMessage
+            )
+        }
+        return .serverError(statusCode)
+    }
+
+    private static func makeDecoder() -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return try decoder.decode(Model.self, from: data)
+        return decoder
     }
+}
+
+private struct TMDBErrorPayload: Decodable {
+    let statusCode: Int?
+    let statusMessage: String?
 }

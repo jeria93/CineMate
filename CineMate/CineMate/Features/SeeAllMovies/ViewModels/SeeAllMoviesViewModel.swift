@@ -207,14 +207,3 @@ final class SeeAllMoviesViewModel: ObservableObject {
         }
     }
 }
-
-// MARK: - DiscoverFilter extension
-
-private extension DiscoverFilter {
-    /// Return a copy with the specified page number set.
-    func withPage(_ page: Int) -> DiscoverFilter {
-        var updated = self
-        updated.page = page
-        return updated
-    }
-}
