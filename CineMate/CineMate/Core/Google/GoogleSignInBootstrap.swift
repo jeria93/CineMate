@@ -34,7 +34,11 @@ enum GoogleSignInBootstrap {
             return
         }
 
-        FirebaseBootstrap.ensureConfigured()
+        guard FirebaseApp.app() != nil else {
+            assertionFailure("Firebase must be configured before Google Sign-In.")
+            log("failed (Firebase not configured)")
+            return
+        }
 
         guard let clientID = FirebaseApp.app()?.options.clientID, !clientID.isEmpty else {
             assertionFailure("Missing Firebase clientID. Add GoogleService-Info.plist to target.")
@@ -49,7 +53,7 @@ enum GoogleSignInBootstrap {
 
     private static func log(_ message: String) {
 #if DEBUG
-        print("[Bootstrap][GoogleSignIn] \(message)")
+        print("[App][Bootstrap][Google] \(message)")
 #endif
     }
 }

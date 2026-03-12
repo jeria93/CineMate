@@ -28,11 +28,13 @@ struct SearchValidator {
             return .empty
         }
 
-        guard trimmed.count >= 2 else {
+        let normalized = normalizeWhitespaces(in: trimmed)
+
+        guard normalized.count >= 2 else {
             return .tooShort(minLength: 2)
         }
 
-        guard trimmed.count <= 50 else {
+        guard normalized.count <= 50 else {
             return .tooLong(maxLength: 50)
         }
 
@@ -41,10 +43,18 @@ struct SearchValidator {
             .union(.whitespaces)
             .union(CharacterSet(charactersIn: "-':&!?,."))
 
-        if trimmed.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
+        if normalized.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
             return .invalidCharacters
         }
 
-        return .valid(trimmed: trimmed)
+        return .valid(trimmed: normalized)
+    }
+
+    private static func normalizeWhitespaces(in input: String) -> String {
+        input.replacingOccurrences(
+            of: "\\s+",
+            with: " ",
+            options: .regularExpression
+        )
     }
 }

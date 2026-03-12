@@ -9,22 +9,27 @@ import SwiftUI
 
 struct SearchBarView: View {
     @Binding var text: String
+    var isDisabled: Bool = false
 
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
 
-            TextField("Search movies...", text: $text)
+            TextField(
+                isDisabled ? "Search is locked for guests" : "Search movies...",
+                text: $text
+            )
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
+                .disabled(isDisabled)
                 .onChange(of: text) {
                     if text.hasPrefix(" ") {
                         text = text.trimmingCharacters(in: .whitespacesAndNewlines)
                     }
                 }
 
-            if !text.isEmpty {
+            if !text.isEmpty && !isDisabled {
                 Button {
                     withAnimation { text = "" }
                 } label: {
@@ -38,6 +43,7 @@ struct SearchBarView: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
+        .opacity(isDisabled ? 0.8 : 1)
     }
 }
 

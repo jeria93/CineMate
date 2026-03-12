@@ -5,7 +5,7 @@
 ////  Created by Nicholas Samuelsson Jeria on 2025-06-08.
 ////
 //
-//import SwiftUI
+// import SwiftUI
 //
 ///// Preview variants for `MovieRowView`.
 /////
@@ -15,7 +15,7 @@
 ///// - Missing overview
 ///// - Extremely long overview
 ///// - Minimal data (e.g. only title)
-//extension MovieRowView {
+// extension MovieRowView {
 //
 //    /// Preview with full movie data.
 //    ///
@@ -95,4 +95,4 @@
 //            .padding()
 //            .background(Color(.systemGroupedBackground))
 //    }
-//}
+// }

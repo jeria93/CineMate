@@ -59,6 +59,37 @@ struct SeeAllMoviesView: View {
     }
 }
 
+extension SeeAllMoviesView {
+    static var previewDefault: some View {
+        PreviewFactory.resetAllPreviewData()
+        return SeeAllMoviesView(
+            viewModel: .preview,
+            title: "Popular Movies"
+        )
+    }
+
+    static var previewLoading: some View {
+        SeeAllMoviesView(
+            viewModel: .loading,
+            title: ""
+        )
+    }
+
+    static var previewError: some View {
+        SeeAllMoviesView(
+            viewModel: .error,
+            title: "Error"
+        )
+    }
+
+    static var previewEmpty: some View {
+        SeeAllMoviesView(
+            viewModel: .empty,
+            title: "Empty"
+        )
+    }
+}
+
 #Preview("Default") {
     SeeAllMoviesView.previewDefault.withPreviewNavigation()
 }

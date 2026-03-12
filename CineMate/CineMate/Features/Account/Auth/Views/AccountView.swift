@@ -7,8 +7,10 @@
 
 import SwiftUI
 
+/// Account screen with session info, provider info, actions, and danger zone.
 struct AccountView: View {
     @ObservedObject private var authViewModel: AuthViewModel
+    @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
 
     init(viewModel: AuthViewModel) {
@@ -18,39 +20,61 @@ struct AccountView: View {
     var body: some View {
         ZStack {
             Form {
-                if let uid = authViewModel.currentUID {
-                    // Signed-in section
-                    Section {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Label("Account", systemImage: "person.crop.circle")
+                Section("Session") {
+                    if let uid = authViewModel.currentUID {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label("Signed in", systemImage: "person.crop.circle.fill")
                                 .font(.headline)
+                            Text("User ID: \(uid.prefix(10))")
+                                .foregroundStyle(.secondary)
+                                .font(.footnote.monospaced())
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label("Signed out", systemImage: "person.crop.circle.badge.xmark")
+                                .font(.headline)
+                            Text("Sign in to manage your account.")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
 
-                            Text("Signed in as \(uid.prefix(6))")
+                if authViewModel.isSignedIn {
+                    Section("Provider") {
+                        HStack {
+                            Text("Sign-in method")
+                            Spacer()
+                            Text(authViewModel.authProviderDescription)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
+
+                    if authViewModel.isGuest {
+                        Section("Guest account") {
+                            Text("Create an account to unlock Discover and Search.")
                                 .foregroundStyle(.secondary)
 
-                            HStack {
-                                Text("Sign-in method")
-                                Spacer()
-                                Text(authViewModel.authProviderDescription)
-                                    .foregroundStyle(.secondary)
-                                    .multilineTextAlignment(.trailing)
-                            }
-
-                            Button("Sign out") {
-                                authViewModel.signOut()
+                            Button("Create Account") {
+                                navigator.goToCreateAccount()
                             }
                             .buttonStyle(.borderedProminent)
                             .disabled(authViewModel.isAuthenticating)
                         }
-                        .padding(.vertical, 4)
                     }
 
-                    // Danger Zone (delete account)
+                    Section("Actions") {
+                        Button("Sign out") {
+                            authViewModel.signOut()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(authViewModel.isAuthenticating)
+                    }
+
                     AccountDangerZoneView(
                         authViewModel: authViewModel,
                         onReauthenticationRequired: {
                             toastCenter.show("Please sign in again to delete your account")
-                            authViewModel.signOut()
                         },
                         onDeleteSuccess: {
                             toastCenter.show("Account deleted successfully")

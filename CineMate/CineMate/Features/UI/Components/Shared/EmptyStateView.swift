@@ -11,8 +11,8 @@ struct EmptyStateView: View {
     let systemImage: String
     let title: String
     let message: String
-    var actionTitle: String? = nil
-    var onAction: (() -> Void)? = nil
+    var actionTitle: String?
+    var onAction: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 12) {

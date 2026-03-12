@@ -15,13 +15,14 @@ extension PreviewFactory {
     static func discoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
-            $0.results = SharedPreviewMovies.moviesList
-            $0.topRatedMovies = SharedPreviewMovies.moviesList
-            $0.popularMovies = SharedPreviewMovies.moviesList.shuffled()
-            $0.nowPlayingMovies = SharedPreviewMovies.moviesList.reversed()
-            $0.trendingMovies = SharedPreviewMovies.moviesList.shuffled()
-            $0.upcomingMovies = SharedPreviewMovies.moviesList
-            $0.horrorMovies = DiscoverHorrorPreviewData.horrorMovies
+            $0.applyPreviewSections([
+                .topRated: SharedPreviewMovies.moviesList,
+                .popular: SharedPreviewMovies.moviesList.shuffled(),
+                .nowPlaying: Array(SharedPreviewMovies.moviesList.reversed()),
+                .trending: SharedPreviewMovies.moviesList.shuffled(),
+                .upcoming: SharedPreviewMovies.moviesList,
+                .horror: DiscoverHorrorPreviewData.horrorMovies
+            ])
         }
     }
 
@@ -51,7 +52,9 @@ extension PreviewFactory {
     static func oneSectionOnlyDiscoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
-            $0.topRatedMovies = DiscoverPreviewData.movies
+            $0.applyPreviewSections([
+                .topRated: DiscoverPreviewData.movies
+            ])
         }
     }
 
@@ -59,7 +62,9 @@ extension PreviewFactory {
     static func horrorOnlyDiscoverViewModel() -> DiscoverViewModel {
         resetAllPreviewData()
         return configuredViewModel {
-            $0.horrorMovies = DiscoverHorrorPreviewData.horrorMovies
+            $0.applyPreviewSections([
+                .horror: DiscoverHorrorPreviewData.horrorMovies
+            ])
         }
     }
 

@@ -13,13 +13,11 @@ extension SearchResultsList {
     static var previewDefault: some View {
         SharedPreviewMovies.resetIDs()
         let movies = SharedPreviewMovies.moviesList
-        // Mark the first two items as favorites for visual verification
-        let favIDs = Set(movies.prefix(2).map { $0.id })
 
         return SearchResultsList(
             movies: movies,
-            favoriteIDs: favIDs,
-            onToggleFavorite: { _ in },
+            favoriteViewModel: PreviewFactory.favoritesVM(with: Array(movies.prefix(2))),
+            isLoadingNextPage: false,
             loadMoreAction: { _ in }
         )
     }

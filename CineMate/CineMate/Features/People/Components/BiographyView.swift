@@ -54,4 +54,3 @@ struct BiographyView: View {
 #Preview {
     BiographyView(text: String(repeating: "This is a long biography text. ", count: 20))
 }
-

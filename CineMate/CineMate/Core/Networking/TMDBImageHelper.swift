@@ -21,7 +21,7 @@ enum TMDBImageSize: String {
 
 /// A helper for building TMDB image URLs based on image path and size.
 struct TMDBImageHelper {
-    private static let baseURL = "https://image.tmdb.org/t/p/"
+    private static let baseURL = URL(string: "https://image.tmdb.org/t/p")!
 
     /// Constructs a full TMDB image URL.
     ///
@@ -30,7 +30,22 @@ struct TMDBImageHelper {
     ///   - size: The desired `TMDBImageSize`.
     /// - Returns: A fully qualified `URL` or `nil` if `path` is invalid.
     static func url(for path: String?, size: TMDBImageSize) -> URL? {
+        guard let normalizedPath = normalize(path: path) else { return nil }
+
+        return baseURL
+            .appendingPathComponent(size.rawValue)
+            .appendingPathComponent(normalizedPath)
+    }
+
+    private static func normalize(path: String?) -> String? {
         guard let path else { return nil }
-        return URL(string: "\(baseURL)\(size.rawValue)\(path)")
+
+        let trimmed = path.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        if trimmed.hasPrefix("/") {
+            return String(trimmed.dropFirst())
+        }
+        return trimmed
     }
 }

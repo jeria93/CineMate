@@ -9,18 +9,25 @@ import SwiftUI
 
 struct HorizontalMoviesScrollView: View {
     let filmography: [PersonMovieCredit]
+    let movieViewModel: MovieViewModel?
     let maxVisible: Int = 10
+
     @State private var isExpanded = false
-    
+
+    init(filmography: [PersonMovieCredit], movieViewModel: MovieViewModel? = nil) {
+        self.filmography = filmography
+        self.movieViewModel = movieViewModel
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(displayedMovies, id: \.uniqueKey) { movie in
-                        PersonMovieCardView(movie: movie, movieViewModel: nil)
+                        PersonMovieCardView(movie: movie, movieViewModel: movieViewModel)
                     }
-                    
-                    if !isExpanded && filmography.count > maxVisible {
+
+                    if !isExpanded, filmography.count > maxVisible {
                         ExpandMoreCardView(remaining: filmography.count - maxVisible) {
                             isExpanded = true
                         }
@@ -28,8 +35,8 @@ struct HorizontalMoviesScrollView: View {
                 }
                 .padding(.horizontal)
             }
-            
-            if isExpanded && filmography.count > maxVisible {
+
+            if isExpanded, filmography.count > maxVisible {
                 ExpandToggleButton(
                     isExpanded: isExpanded,
                     expandedLabel: "Show less",
@@ -49,12 +56,7 @@ struct HorizontalMoviesScrollView: View {
 }
 
 private extension HorizontalMoviesScrollView {
-    private var displayedMovies: [PersonMovieCredit] {
-        isExpanded ? filmography
-        : Array(filmography.prefix(maxVisible))
+    var displayedMovies: [PersonMovieCredit] {
+        isExpanded ? filmography : Array(filmography.prefix(maxVisible))
     }
 }
-/// Returns the list of movies to be displayed in the scroll view.
-///
-/// - If `isExpanded` is `true`, all movies in `filmography` are shown.
-/// - Otherwise, only the first `maxVisible` movies are shown to limit the layout.

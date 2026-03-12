@@ -9,17 +9,13 @@ import SwiftUI
 
 struct MovieListContentView: View {
     @ObservedObject var viewModel: MovieViewModel
-    let castViewModel: CastViewModel
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
     var body: some View {
         content
             .listStyle(.plain)
-            .refreshable { await viewModel.loadMovies(page: 1) }
-            .task {
-                if viewModel.movies.isEmpty && !viewModel.isLoading {
-                    await viewModel.loadMovies(page: 1)
-                }
+            .refreshable {
+                await viewModel.loadMovies(page: 1)
             }
     }
 }
@@ -27,7 +23,7 @@ struct MovieListContentView: View {
 private extension MovieListContentView {
     @ViewBuilder
     var content: some View {
-        if viewModel.isLoading && viewModel.movies.isEmpty {
+        if viewModel.isLoading, viewModel.movies.isEmpty {
             LoadingView(title: "Loading movies...")
 
         } else if let error = viewModel.errorMessage, viewModel.movies.isEmpty {
@@ -48,10 +44,7 @@ private extension MovieListContentView {
             List(viewModel.movies) { movie in
                 MovieRowView(
                     movie: movie,
-                    isFavorite: favoriteViewModel.favoriteMovies.contains(where: { $0.id == movie.id }),
-                    onToggleFavorite: {
-                        Task { await favoriteViewModel.toggleFavorite(movie: movie)}
-                    }
+                    favoriteViewModel: favoriteViewModel
                 )
                 .contentShape(Rectangle())
                 .task {

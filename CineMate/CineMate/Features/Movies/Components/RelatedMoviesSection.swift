@@ -9,8 +9,16 @@ import SwiftUI
 
 struct RelatedMoviesSection: View {
     let movies: [Movie]
-    let movieViewModel: MovieViewModel
-    @ObservedObject var castViewModel: CastViewModel
+    let movieViewModel: MovieViewModel?
+
+    private var uniqueMovies: [Movie] {
+        movies.removingDuplicateIDs()
+    }
+
+    init(movies: [Movie], movieViewModel: MovieViewModel? = nil) {
+        self.movies = movies
+        self.movieViewModel = movieViewModel
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -18,7 +26,7 @@ struct RelatedMoviesSection: View {
                 .font(.title2.bold())
                 .padding(.horizontal)
 
-            if movies.isEmpty {
+            if uniqueMovies.isEmpty {
                 HStack {
                     Image(systemName: "film")
                         .foregroundColor(.secondary)
@@ -30,8 +38,8 @@ struct RelatedMoviesSection: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(movies) { movie in
-                            RelatedMovieCardView(movie: movie)
+                        ForEach(uniqueMovies) { movie in
+                            RelatedMovieCardView(movie: movie, movieViewModel: movieViewModel)
                         }
                     }
                     .padding(.horizontal)

@@ -41,15 +41,14 @@ struct CastCarouselView: View {
     }
 }
 
-
 #Preview("Standard Cast") {
-    CastCarouselView.preview
+    CastCarouselView.preview.withPreviewNavigation()
 }
 
 #Preview("Long Cast List") {
-    CastCarouselView.longList
+    CastCarouselView.longList.withPreviewNavigation()
 }
 
 #Preview("Empty Cast") {
-    CastCarouselView.emptyCast
+    CastCarouselView.emptyCast.withPreviewNavigation()
 }

@@ -14,8 +14,7 @@ extension RelatedMoviesSection {
     static var previewWithMovies: some View {
         return RelatedMoviesSection(
             movies: PreviewFactory.recommendedMovies,
-            movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
-            castViewModel: PreviewFactory.castViewModel()
+            movieViewModel: PreviewFactory.movieListViewModel()
         )
         .padding()
         .background(Color(.systemBackground))
@@ -26,8 +25,7 @@ extension RelatedMoviesSection {
     static var previewEmpty: some View {
         RelatedMoviesSection(
             movies: [],
-            movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
-            castViewModel: PreviewFactory.castViewModel()
+            movieViewModel: PreviewFactory.movieListViewModel()
         )
         .padding()
         .background(Color(.systemBackground))
@@ -38,8 +36,7 @@ extension RelatedMoviesSection {
     static var previewSingleMovie: some View {
         RelatedMoviesSection(
             movies: [SharedPreviewMovies.starWars],
-            movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
-            castViewModel: PreviewFactory.castViewModel()
+            movieViewModel: PreviewFactory.movieListViewModel()
         )
         .padding()
         .background(Color(.systemBackground))
@@ -50,8 +47,7 @@ extension RelatedMoviesSection {
     static var previewManyMovies: some View {
         RelatedMoviesSection(
             movies: Array(repeating: SharedPreviewMovies.starWars, count: 10),
-            movieViewModel: PreviewFactory.movieDetailViewModelWithRecommendations(),
-            castViewModel: PreviewFactory.castViewModel()
+            movieViewModel: PreviewFactory.movieListViewModel()
         )
         .padding()
         .background(Color(.systemBackground))

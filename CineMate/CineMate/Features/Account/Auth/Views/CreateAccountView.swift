@@ -7,18 +7,19 @@
 
 import SwiftUI
 
+/// Create account screen for both new users and guest upgrade.
 struct CreateAccountView: View {
     @ObservedObject private var createViewModel: CreateAccountViewModel
-
+    
     @State private var showTerms = false
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
     @FocusState private var confirmFocused: Bool
-
+    
     init(createViewModel: CreateAccountViewModel) {
         self._createViewModel = ObservedObject(wrappedValue: createViewModel)
     }
-
+    
     var body: some View {
         ZStack {
             LinearGradient(
@@ -26,10 +27,10 @@ struct CreateAccountView: View {
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()
-
+            
             VStack(spacing: 22) {
                 AuthHeader()
-
+                
                 VStack(alignment: .leading, spacing: 16) {
                     // Email
                     AuthEmailField(
@@ -46,7 +47,7 @@ struct CreateAccountView: View {
                         ValidationMessageView(message: text)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     // Password
                     AuthPasswordField(
                         title: "Password",
@@ -64,7 +65,7 @@ struct CreateAccountView: View {
                         ValidationMessageView(message: text)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     // Confirm password
                     AuthPasswordField(
                         title: "Confirm Password",
@@ -79,7 +80,7 @@ struct CreateAccountView: View {
                         ValidationMessageView(message: text)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     VStack(alignment: .leading, spacing: 10) {
                         Text("I accept the terms and conditions")
                             .font(.callout.weight(.semibold))
@@ -92,7 +93,7 @@ struct CreateAccountView: View {
                                     .tint(AuthTheme.popcorn)
                                     .disabled(createViewModel.isAuthenticating)
                             }
-
+                        
                         Button("View terms") {
                             showTerms = true
                         }
@@ -101,12 +102,12 @@ struct CreateAccountView: View {
                         .foregroundStyle(AuthTheme.popcorn)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-
+                    
                     if let text = createViewModel.termsHelperText {
                         ValidationMessageView(message: text)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     // Submit (smart)
                     Button {
                         Task { await createViewModel.submit() }
@@ -119,19 +120,18 @@ struct CreateAccountView: View {
                     .controlSize(.large)
                     .frame(height: 48)
                     .disabled(!createViewModel.canSubmit)
-
+                    
                     // Server error
                     if let message = createViewModel.errorMessage {
-                        ValidationMessageView(message: message)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        AuthErrorBlock(message: message)
                     }
                 }
                 .padding(.horizontal, 20)
-
+                
                 Spacer(minLength: 8)
             }
             .padding(.bottom, 16)
-
+            
             // Loading overlay
             if createViewModel.isAuthenticating {
                 LoadingView(title: "Creating account…")
@@ -145,6 +145,18 @@ struct CreateAccountView: View {
         .task {
             try? await Task.sleep(nanoseconds: 120_000_000)
             emailFocused = true
+        }
+        .onChange(of: createViewModel.email) { _, _ in
+            createViewModel.clearError()
+        }
+        .onChange(of: createViewModel.password) { _, _ in
+            createViewModel.clearError()
+        }
+        .onChange(of: createViewModel.confirmPassword) { _, _ in
+            createViewModel.clearError()
+        }
+        .onChange(of: createViewModel.acceptedTerms) { _, _ in
+            createViewModel.clearError()
         }
     }
 }

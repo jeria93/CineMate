@@ -10,7 +10,7 @@ import SwiftUI
 struct ErrorMessageView: View {
     let title: String
     let message: String
-    var onRetry: (() -> Void)? = nil
+    var onRetry: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 12) {
@@ -66,4 +66,3 @@ struct ErrorMessageView: View {
         onRetry: { print("Retry tapped!") }
     )
 }
-

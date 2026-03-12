@@ -28,5 +28,3 @@ enum MovieCategory: CaseIterable {
         }
     }
 }
-
-

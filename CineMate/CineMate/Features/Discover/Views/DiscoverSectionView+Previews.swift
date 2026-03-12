@@ -25,7 +25,8 @@ extension DiscoverSectionView {
     static var previewDefault: some View {
         DiscoverSectionView(
             title: "Top Rated",
-            movies: SharedPreviewMovies.moviesList
+            movies: SharedPreviewMovies.moviesList,
+            onSeeAllTap: {}
         )
     }
 
@@ -35,7 +36,8 @@ extension DiscoverSectionView {
     static var previewEmpty: some View {
         DiscoverSectionView(
             title: "Empty Section",
-            movies: []
+            movies: [],
+            onSeeAllTap: {}
         )
     }
 
@@ -45,7 +47,8 @@ extension DiscoverSectionView {
     static var previewOneMovie: some View {
         DiscoverSectionView(
             title: "Just One",
-            movies: [SharedPreviewMovies.dune]
+            movies: [SharedPreviewMovies.dune],
+            onSeeAllTap: {}
         )
         .padding()
     }
@@ -69,7 +72,8 @@ extension DiscoverSectionView {
                     voteAverage: $0.voteAverage,
                     genres: $0.genres
                 )
-            }
+            },
+            onSeeAllTap: {}
         )
         .padding()
     }
@@ -92,7 +96,8 @@ extension DiscoverSectionView {
                     voteAverage: $0.voteAverage,
                     genres: $0.genres
                 )
-            }
+            },
+            onSeeAllTap: {}
         )
         .padding()
     }

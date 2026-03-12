@@ -7,216 +7,409 @@
 
 import Foundation
 
-/// # SearchViewModel
-/// Drives the **Search** screen.
-/// - Debounce on text changes
-/// - Validate input
-/// - Page & cache results
-/// - Prevent duplicate requests
-///
-/// ## Previews
-/// In Xcode Previews, network work is skipped and stable mock data is used.
-///
-/// ## Guest mode
-/// Set `isAutoSearchEnabled = false` to turn off auto-search (e.g. for guest accounts).
-/// Manual `search(_:)` still works when you decide to allow it.
+/// UI states for search content rendering.
+enum SearchViewState: Equatable {
+    case prompt
+    case validationError
+    case loading
+    case results
+    case empty
+    case networkError
+}
+
+/// Drives the Search screen:
+/// - Safe debounce with stale-response protection
+/// - Clear separation of prompt/loading/validation/error/empty/results states
+/// - In-flight guards for duplicate calls
+/// - Infinite scrolling only near list end
+/// - Simple bounded LRU in-memory cache
 @MainActor
 final class SearchViewModel: ObservableObject {
 
-    // MARK: - Published (UI state exposed to the view)
+    // MARK: - Published state
 
-    /// Raw text from the search bar. Debounced on change.
+    /// Raw text from SearchBarView. Debounced on change.
     @Published var query: String = "" { didSet { debounceSearch() } }
 
-    /// Current results to render.
+    /// Search results shown in the list.
     @Published private(set) var results: [Movie] = []
 
-    /// `true` while page 1 is loading.
+    /// True while first page is loading.
     @Published private(set) var isLoading = false
 
-    /// User-facing error (e.g. network failure, no results).
-    @Published var error: SearchError?
+    /// True while a next page fetch is loading.
+    @Published private(set) var isLoadingNextPage = false
 
-    /// Validation feedback for `query` (e.g. invalid characters).
-    @Published var validationMessage: String?
+    /// Active state used by SearchView rendering.
+    @Published private(set) var state: SearchViewState = .prompt
 
-    /// Controls whether typing should auto-trigger searches.
-    /// Set to `false` to disable auto-search (e.g. for guest users).
+    /// Network error for retry UI.
+    @Published private(set) var error: SearchError?
+
+    /// Validation message shown under the search bar.
+    @Published private(set) var validationMessage: String?
+
+    /// Auto-search toggle for text changes.
     @Published var isAutoSearchEnabled: Bool = true
 
-    /// Last normalized query that triggered a real search.
+    /// Guest lock: blocks manual/automatic searches.
+    @Published private(set) var isInteractionLocked = false
+
+    /// Latest valid normalized query.
     @Published private(set) var lastValidQuery: String?
 
-    /// `query` trimmed of whitespace (kept for UI/logic).
+    /// Latest normalized/trimmed query (for UI copy).
     @Published private(set) var trimmedQuery: String = ""
 
     // MARK: - Dependencies
 
-    /// Abstraction for fetching movies (real or mocked).
+    /// Abstraction for data fetches.
     let repository: MovieProtocol
 
-    // MARK: - Runtime (internal)
+    // MARK: - Runtime
 
-    /// Debounce worker for keystrokes.
+    private let isPreviewEnvironment: Bool
+    private let debounceDelayNanos: UInt64
+
     private var debounceTask: Task<Void, Never>?
+    private var currentSearchTask: Task<MovieResult, Error>?
+    private var nextPageTask: Task<MovieResult, Error>?
 
-    /// Simple in-memory cache: `query → results`.
-    private var cache: [String: [Movie]] = [:]
+    /// Prevents duplicate request keys (`query + page`).
+    private var inFlightRequests: Set<SearchRequestKey> = []
 
-    /// Tracks queries currently being fetched to avoid duplicates.
-    private var inFlight: Set<String> = []
+    /// Bounded in-memory LRU cache.
+    private var cache = SearchResultCache(limit: 20)
 
-    /// Max number of cached queries kept in memory.
-    private let maxCacheSize = 20
-
-    /// Manages current/total pages and fetch state.
+    /// Manages current/total pages + next-page fetch flag.
     private var pagination = PaginationManager()
+    private var activeQuery: String?
+    private var activeSearchGeneration: UInt64 = 0
 
     // MARK: - Init
 
-    /// Creates a new view model.
-    /// - Parameter repository: Movie data source (defaults to production).
-    init(repository: MovieProtocol = MovieRepository()) {
+    init(
+        repository: MovieProtocol = MovieRepository(),
+        isPreviewEnvironment: Bool = ProcessInfo.processInfo.isPreview,
+        debounceDelayNanos: UInt64 = 400_000_000
+    ) {
         self.repository = repository
+        self.isPreviewEnvironment = isPreviewEnvironment
+        self.debounceDelayNanos = debounceDelayNanos
     }
 
     // MARK: - Public API
 
-    /// Manually trigger a search (e.g. from a submit button or retry).
-    /// - Parameter query: Raw user text.
     func search(_ query: String) async {
-        let result = SearchValidator.validate(query)
-        guard result.isValid, let trimmed = result.trimmed else { return }
-        lastValidQuery = trimmed
-        await executeSearch(for: trimmed)
-    }
-
-    /// Ask for the next page when the given item gets close to the bottom.
-    /// - Parameter currentItem: The row about to reach the end.
-    func loadNextPageIfNeeded(currentItem: Movie?) async {
-        guard let currentItem = currentItem else { return }
-        let thresholdIndex = results.index(results.endIndex, offsetBy: -5, limitedBy: results.startIndex) ?? results.startIndex
-        if results.firstIndex(where: { $0.id == currentItem.id }) == thresholdIndex {
-            await fetchNextPage()
-        }
-    }
-
-    /// Debounce keystrokes so we don't spam the API.
-    /// Skips entirely in Xcode Previews.
-    func debounceSearch() {
-        guard !ProcessInfo.processInfo.isPreview else { return }
+        guard !isInteractionLocked else { return }
         debounceTask?.cancel()
+
+        if isPreviewEnvironment {
+            applyPreviewState(for: query)
+            return
+        }
+        await performSearchFlow(for: query, bypassCache: false)
+    }
+
+    func retryLastSearch() async {
+        guard !isInteractionLocked else { return }
+
+        let retryCandidate = lastValidQuery ?? query
+        guard !retryCandidate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
+        if isPreviewEnvironment {
+            applyPreviewState(for: retryCandidate)
+            return
+        }
+        await performSearchFlow(for: retryCandidate, bypassCache: true)
+    }
+
+    func loadNextPageIfNeeded(currentItem: Movie?) async {
+        guard !isPreviewEnvironment else { return }
+        guard !isInteractionLocked else { return }
+        guard let currentItem = currentItem else { return }
+        guard state == .results else { return }
+        guard shouldLoadNextPage(for: currentItem), let activeQuery else { return }
+
+        await fetchNextPage(for: activeQuery)
+    }
+
+    func configureGuestMode(isGuest: Bool) {
+        guard isGuest != isInteractionLocked else { return }
+
+        isInteractionLocked = isGuest
+        isAutoSearchEnabled = !isGuest
+
+        guard isGuest else { return }
+
+        invalidateSearchContext(clearCache: true)
+        query = ""
+        trimmedQuery = ""
+        lastValidQuery = nil
+        validationMessage = nil
+        error = nil
+        results = []
+        state = .prompt
+    }
+
+    /// Debounces typing to avoid request spam.
+    func debounceSearch() {
+        debounceTask?.cancel()
+        guard !isPreviewEnvironment else { return }
+        guard isAutoSearchEnabled, !isInteractionLocked else { return }
+
+        let snapshot = query
+        let delay = debounceDelayNanos
         debounceTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 400_000_000) // 0.4s
-            await self?.handleQuery()
+            try? await Task.sleep(nanoseconds: delay)
+            guard !Task.isCancelled else { return }
+            await self?.runDebouncedSearch(for: snapshot)
         }
     }
 }
 
-// MARK: - Private helpers
+// MARK: - Private
 private extension SearchViewModel {
 
-    /// Validate and normalize the current `query`, then search if valid.
-    /// Respects `isAutoSearchEnabled`.
-    /// Skips entirely in Xcode Previews.
-    func handleQuery() async {
-        guard !ProcessInfo.processInfo.isPreview else { return }
-        guard isAutoSearchEnabled else { return }
+    func runDebouncedSearch(for snapshot: String) async {
+        guard snapshot == query else { return }
+        await performSearchFlow(for: snapshot, bypassCache: false)
+    }
 
-        let result = SearchValidator.validate(query)
+    func performSearchFlow(for rawQuery: String, bypassCache: Bool) async {
+        let result = SearchValidator.validate(rawQuery)
         trimmedQuery = result.trimmed ?? ""
         validationMessage = result.message
 
-        guard let trimmed = result.trimmed, result.isValid else {
+        switch result {
+        case .empty:
             resetSearchState()
-            return
+        case .tooShort, .tooLong, .invalidCharacters:
+            applyValidationErrorState()
+        case .valid(let trimmed):
+            lastValidQuery = trimmed
+            await executeSearch(for: trimmed, bypassCache: bypassCache)
         }
-
-        lastValidQuery = trimmed
-        await executeSearch(for: trimmed)
     }
 
-    /// Execute page-1 search with cache and in-flight protection.
-    ///
-    /// Behavior:
-    /// - In **Previews**: returns stable mock data immediately.
-    /// - On new query: resets pagination.
-    /// - Uses cached results if available.
-    /// - Avoids duplicated calls for the same query.
-    /// - Updates loading/error state.
-    func executeSearch(for trimmed: String) async {
-        // Preview path: static mock results.
-        if ProcessInfo.processInfo.isPreview {
-            results = SharedPreviewMovies.moviesList
-            error = nil
+    func executeSearch(for trimmed: String, bypassCache: Bool) async {
+        let requestKey = SearchRequestKey(query: trimmed, page: 1)
+        guard !inFlightRequests.contains(requestKey) else { return }
+
+        let generation = startSearchSession(for: trimmed)
+
+        if !bypassCache, let cached = cache.value(for: trimmed) {
+            applyCachedState(cached, query: trimmed)
             return
         }
 
-        // New query → reset pagination.
-        pagination.reset()
+        inFlightRequests.insert(requestKey)
+        setLoadingState()
 
-        // Serve from cache if present.
-        if let cached = cache[trimmed] {
-            results = cached
-            error = cached.isEmpty ? .noResults : nil
-            return
+        defer {
+            inFlightRequests.remove(requestKey)
+            if canApply(generation: generation, query: trimmed) {
+                isLoading = false
+            }
         }
 
-        // Prevent duplicate calls for the same query.
-        guard !inFlight.contains(trimmed) else { return }
-        inFlight.insert(trimmed)
+        let task = Task { [repository] in
+            try await repository.searchMovies(query: trimmed, page: 1)
+        }
+        currentSearchTask = task
 
-        setLoading(true)
         do {
-            let response = try await repository.searchMovies(query: trimmed, page: 1)
-            results = response.results
-            error = response.results.isEmpty ? .noResults : nil
-            cache[trimmed] = response.results
-            trimCacheIfNeeded()
-            pagination.finishFetching(page: 1, totalPages: response.totalPages)
+            let response = try await task.value
+            guard canApply(generation: generation, query: trimmed) else { return }
+
+            applyFirstPageState(response, query: trimmed)
+        } catch is CancellationError {
+            return
         } catch {
-            results = []
-            self.error = .networkFailure
+            guard canApply(generation: generation, query: trimmed) else { return }
+            applyNetworkErrorState()
         }
-        inFlight.remove(trimmed)
-        setLoading(false)
     }
 
-    /// Fetch next page when available; updates pagination state.
-    func fetchNextPage() async {
-        guard pagination.startFetchingNextPage(),
-              let q = lastValidQuery else { return }
-        do {
-            let next = pagination.state.currentPage + 1
-            let response = try await repository.searchMovies(query: q, page: next)
-            results.append(contentsOf: response.results)
-            pagination.finishFetching(page: next, totalPages: response.totalPages)
-        } catch {
+    func fetchNextPage(for query: String) async {
+        guard pagination.startFetchingNextPage() else { return }
+
+        let nextPage = pagination.state.currentPage + 1
+        let requestKey = SearchRequestKey(query: query, page: nextPage)
+        guard !inFlightRequests.contains(requestKey) else {
             pagination.cancelFetching()
-            self.error = .networkFailure
+            return
+        }
+
+        let generation = activeSearchGeneration
+        inFlightRequests.insert(requestKey)
+        isLoadingNextPage = true
+        error = nil
+
+        defer {
+            inFlightRequests.remove(requestKey)
+            if canApply(generation: generation, query: query) {
+                isLoadingNextPage = false
+            }
+        }
+
+        let task = Task { [repository] in
+            try await repository.searchMovies(query: query, page: nextPage)
+        }
+        nextPageTask = task
+
+        do {
+            let response = try await task.value
+            guard canApply(generation: generation, query: query) else { return }
+
+            appendUnique(response.results)
+            pagination.finishFetching(page: nextPage, totalPages: response.totalPages)
+            cache.set(
+                CachedSearchEntry(
+                    movies: results,
+                    currentPage: pagination.state.currentPage,
+                    totalPages: pagination.state.totalPages
+                ),
+                for: query
+            )
+            state = results.isEmpty ? .empty : .results
+        } catch {
+            guard canApply(generation: generation, query: query) else { return }
+            pagination.cancelFetching()
+
+            if results.isEmpty {
+                applyNetworkErrorState()
+            } else {
+                state = .results
+            }
         }
     }
 
-    /// Toggle loading flag and clear errors when a load begins.
-    func setLoading(_ loading: Bool) {
-        isLoading = loading
-        if loading { error = nil }
+    func shouldLoadNextPage(for currentItem: Movie) -> Bool {
+        guard pagination.hasMorePages else { return false }
+        guard !pagination.isFetching, !isLoading, !isLoadingNextPage else { return false }
+        guard let index = results.firstIndex(where: { $0.id == currentItem.id }) else { return false }
+
+        let threshold = max(results.count - 3, 0)
+        return index >= threshold
     }
 
-    /// Clear UI state for invalid/cleared queries.
-    func resetSearchState() {
+    func appendUnique(_ incoming: [Movie]) {
+        var seen = Set(results.map(\.id))
+        let unique = incoming.filter { seen.insert($0.id).inserted }
+        results.append(contentsOf: unique)
+    }
+
+    func startSearchSession(for query: String) -> UInt64 {
+        activeSearchGeneration &+= 1
+        activeQuery = query
+        currentSearchTask?.cancel()
+        nextPageTask?.cancel()
+        pagination.reset()
+        isLoadingNextPage = false
+        return activeSearchGeneration
+    }
+
+    func canApply(generation: UInt64, query: String) -> Bool {
+        generation == activeSearchGeneration && activeQuery == query
+    }
+
+    func setLoadingState() {
+        isLoading = true
+        isLoadingNextPage = false
+        error = nil
+        state = .loading
+        results = []
+    }
+
+    func applyFirstPageState(_ response: MovieResult, query: String) {
+        let totalPages = max(1, response.totalPages)
+        results = response.results
+        error = nil
+        state = response.results.isEmpty ? .empty : .results
+        pagination.finishFetching(page: 1, totalPages: totalPages)
+        cache.set(
+            CachedSearchEntry(
+                movies: response.results,
+                currentPage: 1,
+                totalPages: totalPages
+            ),
+            for: query
+        )
+    }
+
+    func applyCachedState(_ cached: CachedSearchEntry, query: String) {
+        results = cached.movies
+        error = nil
+        validationMessage = nil
+        isLoading = false
+        isLoadingNextPage = false
+        pagination.finishFetching(page: cached.currentPage, totalPages: cached.totalPages)
+        state = cached.movies.isEmpty ? .empty : .results
+        activeQuery = query
+    }
+
+    func applyValidationErrorState() {
+        invalidateSearchContext(clearCache: false)
         results = []
         error = nil
-        isLoading = false
+        state = .validationError
     }
 
-    /// Keep cache size under the configured limit (FIFO-ish).
-    func trimCacheIfNeeded() {
-        if cache.count > maxCacheSize {
-            let excess = cache.count - maxCacheSize
-            for key in cache.keys.prefix(excess) {
-                cache.removeValue(forKey: key)
-            }
+    func applyNetworkErrorState() {
+        results = []
+        error = .networkFailure
+        state = .networkError
+        pagination.reset()
+    }
+
+    func resetSearchState() {
+        invalidateSearchContext(clearCache: false)
+        trimmedQuery = ""
+        lastValidQuery = nil
+        results = []
+        error = nil
+        validationMessage = nil
+        state = .prompt
+    }
+
+    func invalidateSearchContext(clearCache: Bool) {
+        activeSearchGeneration &+= 1
+        activeQuery = nil
+        debounceTask?.cancel()
+        currentSearchTask?.cancel()
+        nextPageTask?.cancel()
+        inFlightRequests.removeAll()
+        pagination.reset()
+        isLoading = false
+        isLoadingNextPage = false
+        if clearCache {
+            cache.clear()
+        }
+    }
+
+    func applyPreviewState(for rawQuery: String) {
+        let result = SearchValidator.validate(rawQuery)
+        trimmedQuery = result.trimmed ?? ""
+        validationMessage = result.message
+        isLoading = false
+        isLoadingNextPage = false
+        error = nil
+        pagination.reset()
+
+        switch result {
+        case .empty:
+            results = []
+            lastValidQuery = nil
+            state = .prompt
+        case .tooShort, .tooLong, .invalidCharacters:
+            results = []
+            lastValidQuery = nil
+            state = .validationError
+        case .valid(let trimmed):
+            results = SharedPreviewMovies.moviesList
+            lastValidQuery = trimmed
+            state = results.isEmpty ? .empty : .results
         }
     }
 }
@@ -230,19 +423,96 @@ extension SearchViewModel {
         query: String = "",
         results: [Movie] = [],
         isLoading: Bool = false,
+        isLoadingNextPage: Bool = false,
+        state: SearchViewState? = nil,
         error: SearchError? = nil,
         validationMessage: String? = nil,
         lastValidQuery: String? = nil,
-        trimmedQuery: String = ""
+        trimmedQuery: String = "",
+        isInteractionLocked: Bool = false,
+        isAutoSearchEnabled: Bool = true
     ) -> SearchViewModel {
         self.query = query
         self.results = results
         self.isLoading = isLoading
+        self.isLoadingNextPage = isLoadingNextPage
         self.error = error
         self.validationMessage = validationMessage
         self.lastValidQuery = lastValidQuery
         self.trimmedQuery = trimmedQuery
+        self.isInteractionLocked = isInteractionLocked
+        self.isAutoSearchEnabled = isAutoSearchEnabled
+        self.state = state ?? Self.resolvePreviewState(
+            isLoading: isLoading,
+            error: error,
+            validationMessage: validationMessage,
+            results: results,
+            trimmedQuery: trimmedQuery
+        )
         return self
+    }
+
+    static func resolvePreviewState(
+        isLoading: Bool,
+        error: SearchError?,
+        validationMessage: String?,
+        results: [Movie],
+        trimmedQuery: String
+    ) -> SearchViewState {
+        if isLoading { return .loading }
+        if validationMessage != nil { return .validationError }
+        if error != nil { return .networkError }
+        if results.isEmpty && !trimmedQuery.isEmpty { return .empty }
+        if results.isEmpty { return .prompt }
+        return .results
     }
 }
 #endif
+
+// MARK: - Helpers
+private struct SearchRequestKey: Hashable {
+    let query: String
+    let page: Int
+}
+
+private struct CachedSearchEntry {
+    let movies: [Movie]
+    let currentPage: Int
+    let totalPages: Int
+}
+
+private struct SearchResultCache {
+    private let limit: Int
+    private var storage: [String: CachedSearchEntry] = [:]
+    private var accessOrder: [String] = []
+
+    init(limit: Int) {
+        self.limit = max(1, limit)
+    }
+
+    mutating func value(for query: String) -> CachedSearchEntry? {
+        guard let entry = storage[query] else { return nil }
+        moveToMostRecent(query)
+        return entry
+    }
+
+    mutating func set(_ entry: CachedSearchEntry, for query: String) {
+        storage[query] = entry
+        moveToMostRecent(query)
+
+        while accessOrder.count > limit {
+            let oldest = accessOrder.removeFirst()
+            storage.removeValue(forKey: oldest)
+        }
+    }
+
+    mutating func clear() {
+        storage.removeAll()
+        accessOrder.removeAll()
+    }
+
+    private mutating func moveToMostRecent(_ query: String) {
+        accessOrder.removeAll(where: { $0 == query })
+        accessOrder.append(query)
+    }
+}

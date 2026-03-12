@@ -10,6 +10,7 @@ import SwiftUI
 /// Provides SwiftUI previews for all primary `SearchView` states.
 /// Uses `PreviewFactory` to supply deterministic `SearchViewModel` and
 /// a mocked `FavoriteMoviesViewModel` for consistent layout and behavior.
+#if DEBUG
 extension SearchView {
 
     /// Results state: valid query with a populated list.
@@ -60,3 +61,4 @@ extension SearchView {
         )
     }
 }
+#endif

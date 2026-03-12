@@ -9,28 +9,21 @@ import Foundation
 import FirebaseAuth
 import UIKit
 
-/// # FirebaseAuthService
-/// Tiny, preview-safe wrapper around **Firebase Auth** used by view models.
-///
-/// - **Production:** Uses `Auth.auth()` for UID, sign-in, sign-out, etc.
-/// - **Previews:** Never touches Firebase (guarded by `ProcessInfo.processInfo.isPreview`);
-///   returns `nil`, no-ops, or throws `PreviewAuthError`.
-/// - **Goal:** Keep the API small, predictable, and easy to inject.
+/// Small auth service used by auth view models.
+/// In previews it does not call Firebase.
 final class FirebaseAuthService {
 
     // MARK: - State & Identity
 
-    /// `true` if the current Firebase user is anonymous.
-    ///
-    /// - Preview: Always `false` (we don't start Firebase in canvas).
+    /// True when current user is anonymous.
+    /// In previews this is always false.
     var isAnonymous: Bool {
         guard !ProcessInfo.processInfo.isPreview else { return false }
         return Auth.auth().currentUser?.isAnonymous == true
     }
 
-    /// The current user's UID if already signed in; otherwise `nil`.
-    ///
-    /// - Preview: Always `nil` to avoid booting Firebase in canvas.
+    /// Current user uid if signed in.
+    /// In previews this is always nil.
     var currentUserID: String? {
         guard !ProcessInfo.processInfo.isPreview else { return nil }
         return Auth.auth().currentUser?.uid
@@ -38,12 +31,8 @@ final class FirebaseAuthService {
 
     // MARK: - Session
 
-    /// Ensures there is a signed-in user and returns its UID.
-    ///
-    /// - If already signed in: returns that UID.
-    /// - If not: signs in **anonymously** and returns the new UID.
-    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors in production.
-    /// - Use when you **need** a session (e.g. before starting a Firestore stream).
+    /// Returns a signed in uid.
+    /// If no user exists it signs in as anonymous.
     func isLoggedIn() async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         if let uid = currentUserID { return uid }
@@ -51,21 +40,23 @@ final class FirebaseAuthService {
         return result.user.uid
     }
 
-    /// Explicit **anonymous** sign-in. Returns the UID.
-    ///
-    /// - If already signed in: returns the existing UID.
-    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors in production.
+    /// Starts an anonymous session and returns uid.
+    /// If a normal user is active it signs out first.
     func signInAnonymously() async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
-        if let uid = currentUserID { return uid }
-        let res = try await Auth.auth().signInAnonymously()
+        let auth = Auth.auth()
+
+        if let currentUser = auth.currentUser {
+            if currentUser.isAnonymous { return currentUser.uid }
+            try auth.signOut()
+        }
+
+        let res = try await auth.signInAnonymously()
         return res.user.uid
     }
 
-    /// Signs out the current user.
-    ///
-    /// - Note: No-op in previews.
-    /// - Throws: Firebase Auth errors in production if sign-out fails.
+    /// Signs out current user.
+    /// In previews this does nothing.
     func signOut() throws {
         guard !ProcessInfo.processInfo.isPreview else { return }
         try Auth.auth().signOut()
@@ -73,12 +64,9 @@ final class FirebaseAuthService {
 
     // MARK: - Email/Password
 
-    /// Signs in with **email + password** and returns the UID.
-    ///
-    /// Also enforces **email verification**:
-    /// if the user is unverified, this signs out and throws `EmailNotVerifiedError`.
-    ///
-    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors in production.
+    /// Signs in with email and password.
+    /// It also checks email verification.
+    /// Unverified users are signed out and get EmailNotVerifiedError.
     func signIn(email: String, password: String) async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         let result = try await Auth.auth().signIn(withEmail: email, password: password)
@@ -91,77 +79,59 @@ final class FirebaseAuthService {
         return result.user.uid
     }
 
-    /// Creates an account, **sends a verification email**, then signs out.
-    ///
-    /// Use this when you require verification *before* the first sign-in.
-    ///
-    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors in production.
-    func signUpRequiringEmailVerification(email: String, password: String) async throws {
+    /// Creates or upgrades to email account.
+    /// It sends verification email and signs out.
+    func createOrUpgradeEmailAccountRequiringVerification(email: String, password: String) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
-        let result = try await Auth.auth().createUser(withEmail: email, password: password)
 
-        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
-            result.user.sendEmailVerification { error in
-                if let error { cont.resume(throwing: error) } else { cont.resume() }
-            }
+        let user = try await createOrUpgradeEmailAccount(email: email, password: password)
+        do {
+            try await sendVerificationEmail(to: user)
+        } catch {
+            try? Auth.auth().signOut()
+            throw error
         }
-
         try Auth.auth().signOut()
     }
 
-    /// Creates a new account and signs the user in immediately. Returns the UID.
-    ///
-    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors (e.g. email in use, weak password) in production.
-    func signUp(email: String, password: String) async throws -> String {
-        guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
-        let result = try await Auth.auth().createUser(withEmail: email, password: password)
-        return result.user.uid
-    }
-
-    /// Re-sends a **verification email** to the current user.
-    ///
-    /// - Throws: `PreviewAuthError` in previews;
-    ///           `AuthServiceError.noCurrentUser` if nobody is signed in;
-    ///           Firebase Auth errors in production.
+    /// Sends verification email to current user.
+    /// Throws when no current user exists.
     func resendVerificationEmail() async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
-        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
-            user.sendEmailVerification { error in
-                if let error { cont.resume(throwing: error) } else { cont.resume() }
-            }
-        }
+        try await sendVerificationEmail(to: user)
     }
 
-    /// Sends a **password reset** email.
-    ///
-    /// - Parameter email: Target account email.
-    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors in production.
+    /// Sends password reset email.
     func sendPasswordReset(email: String) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         try await Auth.auth().sendPasswordReset(withEmail: email)
     }
 
-    // MARK: - Linking
+    // MARK: - Private
 
-    /// Links the **current (typically anonymous)** user to an **email/password** credential.
-    ///
-    /// If no user is signed in, creates a new email/password account instead.
-    ///
-    /// - Returns: The linked or newly created UID.
-    /// - Throws: `PreviewAuthError` in previews; Firebase Auth errors in production.
-    /// - Note: Enable both **Anonymous** and **Email/Password** providers in Firebase Console.
-    func linkAnonymousAccount(email: String, password: String) async throws -> String {
-        guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
+    private func createOrUpgradeEmailAccount(email: String, password: String) async throws -> User {
+        let auth = Auth.auth()
         let emailCredential = EmailAuthProvider.credential(withEmail: email, password: password)
 
-        guard let currentUser = Auth.auth().currentUser else {
-            let signUpResult = try await Auth.auth().createUser(withEmail: email, password: password)
-            return signUpResult.user.uid
+        if let currentUser = auth.currentUser {
+            if currentUser.isAnonymous {
+                let linkResult = try await currentUser.link(with: emailCredential)
+                return linkResult.user
+            }
+            throw AuthServiceError.unexpectedSignedInUser
         }
 
-        let linkResult = try await currentUser.link(with: emailCredential)
-        return linkResult.user.uid
+        let signUpResult = try await auth.createUser(withEmail: email, password: password)
+        return signUpResult.user
+    }
+
+    private func sendVerificationEmail(to user: User) async throws {
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+            user.sendEmailVerification { error in
+                if let error { cont.resume(throwing: error) } else { cont.resume() }
+            }
+        }
     }
 }
 
@@ -169,16 +139,8 @@ final class FirebaseAuthService {
 
 extension FirebaseAuthService {
 
-    /// Signs in with **Google** and returns the Firebase UID.
-    ///
-    /// - Parameters:
-    ///   - viewController: Presenter used by Google to show its UI.
-    ///   - client: A `GoogleAuthClient` that runs the Google sign-in flow.
-    /// - Returns: The Firebase user UID on success.
-    /// - Throws: `PreviewAuthError` in previews;
-    ///           `UserCancelledSignInError` if the user cancels;
-    ///           `GoogleSignInFailure` if tokens are missing;
-    ///           Firebase Auth errors in production.
+    /// Runs Google sign in and returns Firebase uid.
+    /// The presenter is used by Google ui flow.
     func signInWithGoogle(from viewController: UIViewController, using client: GoogleAuthClient) async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
 

@@ -11,21 +11,28 @@ struct MovieFavoriteButtonView: View {
     let movie: Movie
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
+    @State private var isToggling = false
 
     private var isFavorite: Bool {
         favoriteViewModel.favoriteMovies.contains { $0.id == movie.id }
     }
 
     var body: some View {
-        HeartButton(isOn: isFavorite) {
-            Task { await favoriteViewModel.toggleFavorite(movie: movie) }
+        HeartButton(isOn: isFavorite, isDisabled: isToggling) {
+            guard !isToggling else { return }
+            isToggling = true
+
+            Task {
+                await favoriteViewModel.toggleFavorite(movie: movie)
+                isToggling = false
+            }
         }
     }
-
 }
 
 struct HeartButton: View {
     let isOn: Bool
+    var isDisabled = false
     let toggle: () -> Void
 
     var body: some View {
@@ -35,8 +42,10 @@ struct HeartButton: View {
                 .font(.title2)
                 .padding(8)
                 .background(.ultraThinMaterial, in: Circle())
+                .opacity(isDisabled ? 0.7 : 1)
         }
         .buttonStyle(.plain)
+        .disabled(isDisabled)
     }
 }
 

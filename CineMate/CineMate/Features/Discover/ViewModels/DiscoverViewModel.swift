@@ -8,264 +8,200 @@
 import Foundation
 import SwiftUI
 
-/// **DiscoverViewModel**
-///
-/// Manages the Discover screen state, including multiple movie sections and genre-based filtering.
-///
-/// ### Responsibilities
-/// - Fetch and cache multiple movie sections (Top Rated, Popular, Now Playing, Trending, Upcoming, Horror)
-/// - Support genre-based filtering with in-memory caching to prevent redundant API calls
-/// - Filter Upcoming movies to future releases and Trending movies to the last 5 years
-/// - Manage in-flight protection for simultaneous section fetches and filtering
-/// - Handle errors and loading states for smooth UI updates
-///
-/// ### Usage
-/// ```swift
-/// @StateObject private var discoverViewModel = DiscoverViewModel()
-///
-/// // Load all sections (initial)
-/// Task { await discoverViewModel.fetchAllSections() }
-///
-/// // Change genre (auto-triggers filterSections)
-/// discoverViewModel.selectedGenreId = 28 // e.g., Action
-/// ```
 @MainActor
 final class DiscoverViewModel: ObservableObject {
 
-    // MARK: - Published State (UI bindings)
+    // MARK: - Published State
 
-    /// Current combined results for the selected genre (if used)
-    @Published var results: [Movie] = []
-
-    /// Indicates whether any section is currently loading
-    @Published var isLoading = false
-
-    /// Holds any error that occurred during fetching or filtering
-    @Published var error: SearchError?
-
-    /// Current Discover filter (sorting, genre, etc.)
-    @Published var filters = DiscoverFilter()
-
-    /// Section-specific movie arrays
-    @Published var topRatedMovies: [Movie] = []
-    @Published var popularMovies: [Movie] = []
-    @Published var nowPlayingMovies: [Movie] = []
-    @Published var trendingMovies: [Movie] = []
-    @Published var upcomingMovies: [Movie] = []
-    @Published var horrorMovies: [Movie] = []
-
-    /// List of genres used for filtering (mocked in previews)
-    @Published var genres: [Genre] = ProcessInfo.processInfo.isPreview ? GenrePreviewData.genres : []
-
-    /// Returns `true` if all sections are empty (used for empty-state UI)
-    var allSectionsAreEmpty: Bool {
-        topRatedMovies.isEmpty &&
-        popularMovies.isEmpty &&
-        nowPlayingMovies.isEmpty &&
-        trendingMovies.isEmpty &&
-        upcomingMovies.isEmpty &&
-        horrorMovies.isEmpty
+    @Published private(set) var sections = DiscoverSectionKind.allCases.map {
+        DiscoverSectionState(kind: $0, movies: [])
     }
-
-    /// Currently selected genre ID. `nil` = All genres.
-    /// Setting this triggers an async `filterSections()` call.
-    @Published var selectedGenreId: Int? = nil {
+    @Published var isLoading = false
+    @Published var error: SearchError?
+    @Published var genres: [Genre] = ProcessInfo.processInfo.isPreview ? GenrePreviewData.genres : []
+    @Published var selectedGenreId: Int? {
         didSet {
+            guard oldValue != selectedGenreId else { return }
             Task { await filterSections() }
         }
     }
 
-    // MARK: - Private State (in-flight protection & cache)
+    // MARK: - Public Derived State
 
-    /// Task that fetches all sections (cancelled if a new fetch starts)
-    private var fetchAllTask: Task<Void, Never>?
+    var visibleSections: [DiscoverSectionState] {
+        sections.filter { !$0.movies.isEmpty }
+    }
 
-    /// Task that filters sections (cancelled if the user switches genres)
-    private var filterSectionsTask: Task<Void, Never>?
+    var allSectionsAreEmpty: Bool {
+        visibleSections.isEmpty
+    }
 
-    /// In-memory cache of sections by genre ID (`nil` = all genres)
-    private var sectionCache: [Int?: MovieSections] = [:]
+    // MARK: - Private State
 
-    /// Repository for fetching movie data (injected for production or mock)
+    private enum SectionCacheKey: Hashable {
+        case allGenres
+        case genre(Int)
+    }
+
+    private var sectionCache: [SectionCacheKey: [DiscoverSectionState]] = [:]
+    private var loadTask: Task<Void, Never>?
+    private var inFlightKey: SectionCacheKey?
+    private var activeRequestToken = UUID()
+
     private let repository: MovieProtocol
 
     // MARK: - Initialization
 
     init(repository: MovieProtocol = MovieRepository()) {
         self.repository = repository
-        Task { await fetchGenres() }
+
+        if !ProcessInfo.processInfo.isPreview {
+            Task { await fetchGenres() }
+        }
     }
 
     // MARK: - Public API
 
-    /// Filters all Discover sections based on the selected genre.
-    /// - Cancels any in-flight filter task before starting a new one.
-    /// - Uses cached results when available for faster UI response.
-    func filterSections() async {
-        filterSectionsTask?.cancel()
-        filterSectionsTask = Task.detached(priority: .medium) { [weak self] in
-            guard let self else { return }
-
-            let key = await self.selectedGenreId
-
-            // 1. Use cache if available
-            if let cached = await self.sectionCache[key] {
-                await MainActor.run { self.apply(cached) }
-                return
-            }
-
-            // 2. Handle "All genres" fallback
-            if key == nil {
-                if let allCached = await self.sectionCache[nil] {
-                    await MainActor.run { self.apply(allCached) }
-                } else {
-                    await self.fetchAllSections()
-                }
-                return
-            }
-
-            guard let genreId = key else { return }
-
-            let fiveYearsAgo = Calendar.current.date(byAdding: .year, value: -5, to: Date())!
-
-            do {
-                // Fetch all sections in parallel
-                async let topRated = self.repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .voteAverageDesc, withGenres: [genreId]).queryItems
-                )
-                async let popular = self.repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .popularityDesc, withGenres: [genreId]).queryItems
-                )
-                async let nowPlaying = self.repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .releaseDateDesc, withGenres: [genreId]).queryItems
-                )
-                async let trendingRaw = self.repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .popularityDesc, withGenres: [genreId], minVoteAverage: 5.0).queryItems
-                )
-                async let upcomingRaw = self.repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .releaseDateAsc, withGenres: [genreId]).queryItems
-                    + [URLQueryItem(name: "primary_release_date.gte", value: DateHelper.todayString())]
-                )
-
-                // Local filtering for relevance
-                let upcomingFiltered = try await upcomingRaw.filter {
-                    guard let date = $0.releaseDate.flatMap(DateHelper.parse) else { return false }
-                    return date >= Date()
-                }
-
-                let trendingFiltered = try await trendingRaw.filter {
-                    guard let date = $0.releaseDate.flatMap(DateHelper.parse) else { return false }
-                    return date >= fiveYearsAgo
-                }
-
-                // Combine into section container
-                let sections = MovieSections(
-                    topRated:   try await topRated,
-                    popular:    try await popular,
-                    nowPlaying: try await nowPlaying,
-                    trending:   trendingFiltered,
-                    upcoming:   upcomingFiltered,
-                    horror:     []
-                )
-
-                // Cache & apply if not cancelled
-                if !Task.isCancelled {
-                    await MainActor.run {
-                        self.sectionCache[key] = sections
-                        self.apply(sections)
-                        self.isLoading = false
-                    }
-                }
-            } catch {
-                if !Task.isCancelled {
-                    await MainActor.run {
-                        self.error = .custom(error.localizedDescription)
-                        self.isLoading = false
-                    }
-                }
-            }
-        }
-
-        await filterSectionsTask?.value
+    func fetchAllSections(forceReload: Bool = false) async {
+        await loadSections(for: nil, forceReload: forceReload)
     }
 
-    /// Fetches all sections for "All genres" and caches the result.
-    /// - Uses in-flight protection to prevent overlapping calls.
-    func fetchAllSections() async {
-        if let cached = sectionCache[nil] {
+    func filterSections() async {
+        await loadSections(for: selectedGenreId, forceReload: false)
+    }
+
+    func refreshCurrentSelection(forceReload: Bool = false) async {
+        await loadSections(for: selectedGenreId, forceReload: forceReload)
+    }
+
+    func seeAllFilter(for section: DiscoverSectionKind) -> DiscoverFilter {
+        DiscoverFilterProvider.filter(for: section, selectedGenreId: selectedGenreId)
+    }
+
+    func applyPreviewSections(_ sectionMovies: [DiscoverSectionKind: [Movie]]) {
+        let previewSections = DiscoverSectionKind.allCases.map { kind in
+            DiscoverSectionState(kind: kind, movies: sectionMovies[kind] ?? [])
+        }
+        apply(previewSections)
+    }
+
+    // MARK: - Private Loading Pipeline
+
+    private func loadSections(for genreId: Int?, forceReload: Bool) async {
+        guard !ProcessInfo.processInfo.isPreview else { return }
+        guard SecretManager.hasBearerToken else {
+            error = .custom("Missing API token.")
+            isLoading = false
+            return
+        }
+
+        let cacheKey = sectionCacheKey(for: genreId)
+        if forceReload {
+            sectionCache[cacheKey] = nil
+        } else if let cached = sectionCache[cacheKey] {
+            error = nil
+            isLoading = false
             apply(cached)
             return
         }
-        if let task = fetchAllTask {
-            await task.value
+
+        if !forceReload, let loadTask, inFlightKey == cacheKey {
+            await loadTask.value
             return
         }
 
-        fetchAllTask = Task {
-            defer { fetchAllTask = nil }
+        loadTask?.cancel()
 
-            guard !ProcessInfo.processInfo.isPreview else { return }
-            guard !SecretManager.bearerToken.isEmpty else {
-                self.error = .custom("Missing API token.")
-                return
-            }
+        let requestToken = UUID()
+        activeRequestToken = requestToken
+        inFlightKey = cacheKey
+        error = nil
+        isLoading = true
 
-            isLoading = true
-            error = nil
+        let task = Task { [weak self] in
+            guard let self else { return }
 
             do {
-                // Fetch multiple sections concurrently
-                async let topRated    = repository.fetchMovies(category: .topRated, page: 1).results
-                async let popular     = repository.fetchMovies(category: .popular, page: 1).results
-                async let nowPlaying  = repository.fetchNowPlayingMovies()
-                async let trendingRaw = repository.fetchMovies(category: .trending, page: 1).results
-
-                async let upcomingRaw = repository.discoverMovies(
-                    filters: DiscoverFilter(sortOption: .releaseDateAsc).queryItems
-                    + [URLQueryItem(name: "primary_release_date.gte", value: DateHelper.todayString())]
-                )
-
-                async let horror = repository.discoverMovies(
-                    filters: DiscoverFilter(withGenres: [27]).queryItems
-                )
-
-                // Local filtering
-                let upcomingFiltered = try await upcomingRaw.filter {
-                    guard let date = $0.releaseDate.flatMap(DateHelper.parse) else { return false }
-                    return date >= Date()
-                }
-
-                let fiveYearsAgo = Calendar.current.date(byAdding: .year, value: -5, to: Date())!
-                let trendingFiltered = try await trendingRaw.filter {
-                    guard let date = $0.releaseDate.flatMap(DateHelper.parse) else { return false }
-                    return date >= fiveYearsAgo
-                }
-
-                let sections = MovieSections(
-                    topRated:   try await topRated,
-                    popular:    try await popular,
-                    nowPlaying: try await nowPlaying,
-                    trending:   trendingFiltered,
-                    upcoming:   upcomingFiltered,
-                    horror:     try await horror
-                )
-
-                // Cache and apply
-                sectionCache[nil] = sections
-                apply(sections)
+                let loadedSections = try await self.fetchSectionSnapshot(for: genreId)
+                guard !Task.isCancelled else { return }
+                self.commitLoadedSections(loadedSections, cacheKey: cacheKey, requestToken: requestToken)
+            } catch is CancellationError {
+                self.finishLoadingIfActive(requestToken: requestToken)
             } catch {
-                self.error = .custom(error.localizedDescription)
+                guard !Task.isCancelled else { return }
+                self.commitLoadError(error, requestToken: requestToken)
             }
-
-            isLoading = false
         }
 
-        await fetchAllTask?.value
+        loadTask = task
+        await task.value
     }
 
-    // MARK: - Private Helpers
+    private func fetchSectionSnapshot(for genreId: Int?) async throws -> [DiscoverSectionState] {
+        async let topRated = fetchMovies(for: .topRated, genreId: genreId)
+        async let popular = fetchMovies(for: .popular, genreId: genreId)
+        async let nowPlaying = fetchMovies(for: .nowPlaying, genreId: genreId)
+        async let trending = fetchMovies(for: .trending, genreId: genreId)
+        async let upcoming = fetchMovies(for: .upcoming, genreId: genreId)
+        async let horror = fetchMovies(for: .horror, genreId: genreId)
 
-    /// Fetches the list of available genres from the repository.
+        return [
+            DiscoverSectionState(kind: .topRated, movies: try await topRated),
+            DiscoverSectionState(kind: .popular, movies: try await popular),
+            DiscoverSectionState(kind: .nowPlaying, movies: try await nowPlaying),
+            DiscoverSectionState(kind: .trending, movies: try await trending),
+            DiscoverSectionState(kind: .upcoming, movies: try await upcoming),
+            DiscoverSectionState(kind: .horror, movies: try await horror)
+        ]
+    }
+
+    private func fetchMovies(for section: DiscoverSectionKind, genreId: Int?) async throws -> [Movie] {
+        let filter = DiscoverFilterProvider.filter(for: section, selectedGenreId: genreId)
+        return try await repository.discoverMovies(filters: filter.queryItems)
+    }
+
+    private func commitLoadedSections(
+        _ loadedSections: [DiscoverSectionState],
+        cacheKey: SectionCacheKey,
+        requestToken: UUID
+    ) {
+        guard activeRequestToken == requestToken else { return }
+        sectionCache[cacheKey] = loadedSections
+        error = nil
+        isLoading = false
+        inFlightKey = nil
+        loadTask = nil
+        apply(loadedSections)
+    }
+
+    private func commitLoadError(_ loadingError: Error, requestToken: UUID) {
+        guard activeRequestToken == requestToken else { return }
+        error = .custom(loadingError.localizedDescription)
+        isLoading = false
+        inFlightKey = nil
+        loadTask = nil
+    }
+
+    private func finishLoadingIfActive(requestToken: UUID) {
+        guard activeRequestToken == requestToken else { return }
+        isLoading = false
+        inFlightKey = nil
+        loadTask = nil
+    }
+
+    private func sectionCacheKey(for genreId: Int?) -> SectionCacheKey {
+        if let genreId {
+            return .genre(genreId)
+        }
+        return .allGenres
+    }
+
+    private func apply(_ sections: [DiscoverSectionState]) {
+        self.sections = sections
+    }
+
+    // MARK: - Genre Loading
+
     private func fetchGenres() async {
         do {
             genres = try await repository.fetchGenres()
@@ -273,24 +209,4 @@ final class DiscoverViewModel: ObservableObject {
             print("DiscoverViewModel: Failed to load genres:", error)
         }
     }
-
-    /// Applies a `MovieSections` container to all published properties.
-    private func apply(_ s: MovieSections) {
-        topRatedMovies   = s.topRated
-        popularMovies    = s.popular
-        nowPlayingMovies = s.nowPlaying
-        trendingMovies   = s.trending
-        upcomingMovies   = s.upcoming
-        horrorMovies     = s.horror
-    }
-}
-
-/// A container for all discover movie sections.
-private struct MovieSections {
-    let topRated:   [Movie]
-    let popular:    [Movie]
-    let nowPlaying: [Movie]
-    let trending:   [Movie]
-    let upcoming:   [Movie]
-    let horror:     [Movie]
 }

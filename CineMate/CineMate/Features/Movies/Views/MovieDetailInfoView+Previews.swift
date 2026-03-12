@@ -9,47 +9,50 @@ import SwiftUI
 
 @MainActor
 extension MovieDetailInfoView {
-    /// Preview with full detail data
+    /// Preview with full detail data.
     static var previewWithDetail: some View {
-        MovieDetailInfoView(
-            movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieViewModelWithDetail
+        let context = PreviewFactory.movieDetailInfoContextWithDetail()
+        return MovieDetailInfoView(
+            movie: context.movie,
+            detail: context.detail,
+            watchProviderRegion: context.watchProviderRegion,
+            isLoading: context.isLoading
         )
         .padding()
     }
 
-    /// Preview with empty detail data
+    /// Preview with empty detail data.
     static var previewWithEmptyDetail: some View {
-        MovieDetailInfoView(
-            movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieViewModelWithEmptyDetail
+        let context = PreviewFactory.movieDetailInfoContextWithEmptyDetail()
+        return MovieDetailInfoView(
+            movie: context.movie,
+            detail: context.detail,
+            watchProviderRegion: context.watchProviderRegion,
+            isLoading: context.isLoading
         )
         .padding()
     }
 
-    /// Preview showing streaming providers (e.g. Netflix)
-//    static var previewWithProviders: some View {
-//        MovieDetailInfoView(
-//            movie: SharedPreviewMovies.starWars,
-//            movieViewModel: PreviewFactory.movieViewModelWithProviders
-//        )
-//        .padding()
-//    }
-
-    /// Preview when loading details
+    /// Preview when loading details.
     static var previewLoading: some View {
-        MovieDetailInfoView(
-            movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieViewModelLoading
+        let context = PreviewFactory.movieDetailInfoContextLoading()
+        return MovieDetailInfoView(
+            movie: context.movie,
+            detail: context.detail,
+            watchProviderRegion: context.watchProviderRegion,
+            isLoading: context.isLoading
         )
         .padding()
     }
 
-    /// Preview with no detail data available
+    /// Preview with no detail data available.
     static var previewNoDetail: some View {
-        MovieDetailInfoView(
-            movie: SharedPreviewMovies.starWars,
-            viewModel: PreviewFactory.movieViewModelWithoutDetail
+        let context = PreviewFactory.movieDetailInfoContextWithoutDetail()
+        return MovieDetailInfoView(
+            movie: context.movie,
+            detail: context.detail,
+            watchProviderRegion: context.watchProviderRegion,
+            isLoading: context.isLoading
         )
         .padding()
     }

@@ -15,23 +15,26 @@ struct ExpandToggleButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: {
-            withAnimation { action() }
-        }) {
-            HStack(spacing: 4) {
-                if let systemImage {
-                    Image(systemName: systemImage)
+        Button(
+            action: {
+                withAnimation { action() }
+            },
+            label: {
+                HStack(spacing: 4) {
+                    if let systemImage {
+                        Image(systemName: systemImage)
+                    }
+                    Text(isExpanded ? expandedLabel : collapsedLabel)
                 }
-                Text(isExpanded ? expandedLabel : collapsedLabel)
+                .font(.caption)
+                .foregroundColor(.blue)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+                .contentShape(Rectangle())
             }
-            .font(.caption)
-            .foregroundColor(.blue)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(Color.blue.opacity(0.1))
-            .cornerRadius(8)
-            .contentShape(Rectangle())
-        }
+        )
         .buttonStyle(.plain)
     }
 }

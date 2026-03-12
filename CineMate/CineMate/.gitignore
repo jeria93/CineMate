@@ -30,5 +30,8 @@ fastlane/test_output/
 *.xcuserstate
 *.DS_Store
 
-# Secrets (do not commit real secrets)
-CineMate/CineMate/Features/Resources/Secrets.plist
+# Secrets
+Features/Resources/Secrets.plist
+Core/Config/GoogleService-Info.plist
+Features/Account/Auth/Views/DebugLoginCredentials.local.swift
+*.local.xcconfig

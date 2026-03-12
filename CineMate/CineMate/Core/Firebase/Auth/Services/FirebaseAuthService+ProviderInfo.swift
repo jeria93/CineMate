@@ -47,8 +47,8 @@ extension FirebaseAuthService {
         }
 
         if providers.contains("google.com") { return label("Google") }
-        if providers.contains("apple.com")  { return label("Apple") }
-        if providers.contains("password")   { return label("Email") }
+        if providers.contains("apple.com") { return label("Apple") }
+        if providers.contains("password") { return label("Email") }
 
         // Fallback for any other provider
         return label("Other")

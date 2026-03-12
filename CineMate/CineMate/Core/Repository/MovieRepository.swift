@@ -45,8 +45,7 @@ final class MovieRepository: MovieProtocol {
     }
 
     func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
-        let result = try await service.fetchRecommendedMovies(for: movieId)
-        return result.results
+        try await service.fetchRecommendedMovies(for: movieId)
     }
 
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {

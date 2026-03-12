@@ -7,28 +7,33 @@
 
 import SwiftUI
 
+/// Sheet that lets the user request a password reset email.
 struct ResetPasswordSheet: View {
     // MARK: - Dependencies
     @StateObject private var viewModel: ResetPasswordViewModel
     @EnvironmentObject private var toastCenter: ToastCenter
     @Environment(\.dismiss) private var dismiss
-
+    
     // MARK: - Focus
     @FocusState private var emailFocused: Bool
-
+    
     // MARK: - Init
     init() {
-        _viewModel = StateObject(
-            wrappedValue: ResetPasswordViewModel(
-                service: FirebaseAuthService(),
-                onResetSent: { _ in }
+        if ProcessInfo.processInfo.isPreview {
+            _viewModel = StateObject(wrappedValue: ResetPasswordViewModel(previewEmail: ""))
+        } else {
+            _viewModel = StateObject(
+                wrappedValue: ResetPasswordViewModel(
+                    service: FirebaseAuthService(),
+                    onResetSent: { _ in }
+                )
             )
-        )
+        }
     }
     init(viewModel: ResetPasswordViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -37,7 +42,7 @@ struct ResetPasswordSheet: View {
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()
-
+            
             VStack(spacing: 22) {
                 VStack(spacing: 10) {
                     ZStack {
@@ -45,23 +50,23 @@ struct ResetPasswordSheet: View {
                             .fill(.ultraThinMaterial)
                             .frame(width: 64, height: 64)
                             .overlay(Circle().strokeBorder(AuthTheme.cardStroke))
-
+                        
                         Image(systemName: "lock.rotation")
                             .font(.system(size: 24, weight: .semibold))
                             .symbolRenderingMode(.hierarchical)
                             .foregroundStyle(AuthTheme.iconOnCurtain)
                     }
-
+                    
                     Text("Reset password")
                         .font(.title3.bold())
                         .foregroundStyle(.white)
-
+                    
                     Text("Enter your email to get a reset link")
                         .font(.subheadline)
                         .foregroundStyle(.white.opacity(0.9))
                 }
                 .padding(.top, 15)
-
+                
                 VStack(alignment: .leading, spacing: 16) {
                     AuthEmailField(
                         text: $viewModel.email,
@@ -70,7 +75,7 @@ struct ResetPasswordSheet: View {
                         onSubmit: { Task { await handleSend() } },
                         isFocused: $emailFocused
                     )
-
+                    
                     if let helper = viewModel.emailHelperText {
                         ValidationMessageView(message: helper)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -79,7 +84,7 @@ struct ResetPasswordSheet: View {
                         ValidationMessageView(message: errorText)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-
+                    
                     Button {
                         Task { await handleSend() }
                     } label: {
@@ -90,8 +95,8 @@ struct ResetPasswordSheet: View {
                     .buttonStyle(.pillWhite)
                     .controlSize(.large)
                     .frame(height: 48)
-                    .disabled(viewModel.isSending)
-
+                    .disabled(!viewModel.canSubmit)
+                    
                     Button("Cancel") {
                         dismiss()
                     }
@@ -100,7 +105,7 @@ struct ResetPasswordSheet: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .padding(.horizontal, 20)
-
+                
                 Spacer(minLength: 8)
             }
             .padding(.bottom, 16)
@@ -117,9 +122,12 @@ struct ResetPasswordSheet: View {
                 LoadingView(title: "Sending…").transition(.opacity)
             }
         }
+        .onChange(of: viewModel.email) { _, _ in
+            viewModel.clearError()
+        }
         .toast(toastCenter.message)
     }
-
+    
     // MARK: - Actions
     private func handleSend() async {
         if await viewModel.sendPasswordReset() {

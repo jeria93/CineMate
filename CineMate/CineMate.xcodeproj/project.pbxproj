@@ -242,6 +242,7 @@
 		03FBBEB42E24388500E35462 /* SeeAllMoviesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBBEB32E24388500E35462 /* SeeAllMoviesView.swift */; };
 		03FBBEB62E243A1E00E35462 /* MoviePosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBBEB52E243A1E00E35462 /* MoviePosterView.swift */; };
 		03FBBEB82E243B0B00E35462 /* SectionMoviesView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBBEB72E243B0B00E35462 /* SectionMoviesView+Previews.swift */; };
+		03FBBEC12E75000100E35462 /* SectionMoviesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBBEC02E75000100E35462 /* SectionMoviesView.swift */; };
 		03FBBEBA2E243B1600E35462 /* MoviePosterView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBBEB92E243B1600E35462 /* MoviePosterView+Previews.swift */; };
 		03FBBEBC2E2442B400E35462 /* SectionMoviesPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBBEBB2E2442B400E35462 /* SectionMoviesPreviewData.swift */; };
 		03FBBEBE2E24440300E35462 /* MoviePosterPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBBEBD2E24440300E35462 /* MoviePosterPreviewData.swift */; };
@@ -252,7 +253,21 @@
 		03FE32342E07394C00C9B356 /* PersonDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32332E07394C00C9B356 /* PersonDetail.swift */; };
 		03FE32362E07414400C9B356 /* PersonViewModel+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32352E07414400C9B356 /* PersonViewModel+Preview.swift */; };
 		03FE32382E07416900C9B356 /* PersonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32372E07416900C9B356 /* PersonViewModel.swift */; };
+		9A1F1B3F2F01000100A1B2C3 /* SearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3C2F01000100A1B2C3 /* SearchViewModelTests.swift */; };
+		9A1F1B402F01000100A1B2C3 /* SearchValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */; };
+		9A1F1B412F01000100A1B2C3 /* SearchTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */; };
+		9A1F1B422F01000100A1B2C3 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1F1B432F01000100A1B2C3 /* XCTest.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9A1F1B442F01000100A1B2C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 030611FB2DF4BA4B0013F7AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 030612022DF4BA4B0013F7AF;
+			remoteInfo = CineMate;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		030289C92E52768B00F8AF00 /* FirebaseAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAuthService.swift; sourceTree = "<group>"; };
@@ -266,6 +281,11 @@
 		030599792E1F05A500626215 /* DiscoverView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverView+Previews.swift"; sourceTree = "<group>"; };
 		030599832E1F0C5000626215 /* SortOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOption.swift; sourceTree = "<group>"; };
 		030612032DF4BA4B0013F7AF /* CineMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CineMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A1F1B342F01000100A1B2C3 /* CineMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CineMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A1F1B3C2F01000100A1B2C3 /* SearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModelTests.swift; sourceTree = "<group>"; };
+		9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchValidatorTests.swift; sourceTree = "<group>"; };
+		9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTestDoubles.swift; sourceTree = "<group>"; };
+		9A1F1B432F01000100A1B2C3 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		030612242DF4BEB40013F7AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		030612252DF4BEB40013F7AF /* CineMateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CineMateApp.swift; sourceTree = "<group>"; };
 		030612332DF4BF4E0013F7AF /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
@@ -491,6 +511,7 @@
 		03FBBEB32E24388500E35462 /* SeeAllMoviesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeeAllMoviesView.swift; sourceTree = "<group>"; };
 		03FBBEB52E243A1E00E35462 /* MoviePosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviePosterView.swift; sourceTree = "<group>"; };
 		03FBBEB72E243B0B00E35462 /* SectionMoviesView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SectionMoviesView+Previews.swift"; sourceTree = "<group>"; };
+		03FBBEC02E75000100E35462 /* SectionMoviesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionMoviesView.swift; sourceTree = "<group>"; };
 		03FBBEB92E243B1600E35462 /* MoviePosterView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoviePosterView+Previews.swift"; sourceTree = "<group>"; };
 		03FBBEBB2E2442B400E35462 /* SectionMoviesPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionMoviesPreviewData.swift; sourceTree = "<group>"; };
 		03FBBEBD2E24440300E35462 /* MoviePosterPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviePosterPreviewData.swift; sourceTree = "<group>"; };
@@ -515,6 +536,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9A1F1B362F01000100A1B2C3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A1F1B422F01000100A1B2C3 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -531,6 +560,7 @@
 			isa = PBXGroup;
 			children = (
 				030612282DF4BEB40013F7AF /* CineMate */,
+				9A1F1B3B2F01000100A1B2C3 /* CineMateTests */,
 				030612042DF4BA4B0013F7AF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -539,8 +569,19 @@
 			isa = PBXGroup;
 			children = (
 				030612032DF4BA4B0013F7AF /* CineMate.app */,
+				9A1F1B342F01000100A1B2C3 /* CineMateTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9A1F1B3B2F01000100A1B2C3 /* CineMateTests */ = {
+			isa = PBXGroup;
+			children = (
+				9A1F1B3C2F01000100A1B2C3 /* SearchViewModelTests.swift */,
+				9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */,
+				9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */,
+			);
+			path = CineMateTests;
 			sourceTree = "<group>";
 		};
 		030612282DF4BEB40013F7AF /* CineMate */ = {
@@ -1360,6 +1401,7 @@
 				03CC7E252E22F4F30045E678 /* DiscoverContentView+Previews.swift */,
 				0366237B2E2065FC008FDE2E /* DiscoverSectionView.swift */,
 				036623792E2065E2008FDE2E /* DiscoverSectionView+Previews.swift */,
+				03FBBEC02E75000100E35462 /* SectionMoviesView.swift */,
 				03FBBEB72E243B0B00E35462 /* SectionMoviesView+Previews.swift */,
 			);
 			path = Views;
@@ -1523,6 +1565,7 @@
 			buildPhases = (
 				030611FF2DF4BA4B0013F7AF /* Sources */,
 				030612002DF4BA4B0013F7AF /* Frameworks */,
+				03F7D0A92E73A00100A1B2C3 /* SwiftLint */,
 				030612012DF4BA4B0013F7AF /* Resources */,
 			);
 			buildRules = (
@@ -1540,6 +1583,26 @@
 			productReference = 030612032DF4BA4B0013F7AF /* CineMate.app */;
 			productType = "com.apple.product-type.application";
 		};
+		9A1F1B332F01000100A1B2C3 /* CineMateTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9A1F1B382F01000100A1B2C3 /* Build configuration list for PBXNativeTarget "CineMateTests" */;
+			buildPhases = (
+				9A1F1B352F01000100A1B2C3 /* Sources */,
+				9A1F1B362F01000100A1B2C3 /* Frameworks */,
+				9A1F1B372F01000100A1B2C3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9A1F1B452F01000100A1B2C3 /* PBXTargetDependency */,
+			);
+			name = CineMateTests;
+			packageProductDependencies = (
+			);
+			productName = CineMateTests;
+			productReference = 9A1F1B342F01000100A1B2C3 /* CineMateTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1552,6 +1615,10 @@
 				TargetAttributes = {
 					030612022DF4BA4B0013F7AF = {
 						CreatedOnToolsVersion = 16.4;
+					};
+					9A1F1B332F01000100A1B2C3 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 030612022DF4BA4B0013F7AF;
 					};
 				};
 			};
@@ -1574,6 +1641,7 @@
 			projectRoot = "";
 			targets = (
 				030612022DF4BA4B0013F7AF /* CineMate */,
+				9A1F1B332F01000100A1B2C3 /* CineMateTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1589,7 +1657,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9A1F1B372F01000100A1B2C3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		03F7D0A92E73A00100A1B2C3 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:${PATH}\"\n\nSWIFTLINT=\"\"\nif command -v swiftlint > /dev/null 2>&1\nthen\n  SWIFTLINT=\"$(command -v swiftlint)\"\nelif [ -x \"/opt/homebrew/bin/swiftlint\" ]\nthen\n  SWIFTLINT=\"/opt/homebrew/bin/swiftlint\"\nelif [ -x \"/usr/local/bin/swiftlint\" ]\nthen\n  SWIFTLINT=\"/usr/local/bin/swiftlint\"\nfi\n\nif [ -n \"${SWIFTLINT}\" ]\nthen\n  if ! \"${SWIFTLINT}\" lint --no-cache --config \"${SRCROOT}/.swiftlint.yml\"\n  then\n    echo \"warning: SwiftLint found violations. Build is not blocked\"\n  fi\nelse\n  echo \"warning: SwiftLint is not installed. Install with Homebrew using brew install swiftlint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		030611FF2DF4BA4B0013F7AF /* Sources */ = {
@@ -1784,6 +1881,7 @@
 				03DCB0642E5604890071C3B2 /* PreviewFactory+CreateAccount.swift in Sources */,
 				03BAD69D2E2984700035F1F5 /* PersonInfoPreviewData.swift in Sources */,
 				03FBBEB82E243B0B00E35462 /* SectionMoviesView+Previews.swift in Sources */,
+				03FBBEC12E75000100E35462 /* SectionMoviesView.swift in Sources */,
 				03ABC8E42E21AFBC001A950D /* EmptyStateView+Previews.swift in Sources */,
 				031F2E342E0DD735001E41B8 /* ExpandToggleButton.swift in Sources */,
 				039BECD12E26F5BD00C76EA6 /* PreviewID.swift in Sources */,
@@ -1837,7 +1935,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9A1F1B352F01000100A1B2C3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A1F1B412F01000100A1B2C3 /* SearchTestDoubles.swift in Sources */,
+				9A1F1B402F01000100A1B2C3 /* SearchValidatorTests.swift in Sources */,
+				9A1F1B3F2F01000100A1B2C3 /* SearchViewModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9A1F1B452F01000100A1B2C3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 030612022DF4BA4B0013F7AF /* CineMate */;
+			targetProxy = 9A1F1B442F01000100A1B2C3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0306120C2DF4BA4C0013F7AF /* Debug */ = {
@@ -1971,6 +2087,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N693GNQH6J;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CineMate/Info.plist;
@@ -2000,6 +2117,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N693GNQH6J;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CineMate/Info.plist;
@@ -2021,6 +2139,54 @@
 			};
 			name = Release;
 		};
+		9A1F1B392F01000100A1B2C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N693GNQH6J;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nicholasgaete.CineMateTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CineMate.app/CineMate";
+			};
+			name = Debug;
+		};
+		9A1F1B3A2F01000100A1B2C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N693GNQH6J;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nicholasgaete.CineMateTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CineMate.app/CineMate";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2038,6 +2204,15 @@
 			buildConfigurations = (
 				0306120F2DF4BA4C0013F7AF /* Debug */,
 				030612102DF4BA4C0013F7AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9A1F1B382F01000100A1B2C3 /* Build configuration list for PBXNativeTarget "CineMateTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9A1F1B392F01000100A1B2C3 /* Debug */,
+				9A1F1B3A2F01000100A1B2C3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
