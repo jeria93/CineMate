@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-/// Previews for `MovieDetailView`, including mock data from PreviewFactory and SharedPreviewMovies.
-/// - Includes `PreviewID.reset()` to ensure consistent preview IDs across runs.
+/// Previews for `MovieDetailView` using deterministic local preview state.
 extension MovieDetailView {
+    @MainActor
     static var previewDefault: some View {
         PreviewID.reset()
 
         return MovieDetailView(
             movieId: SharedPreviewMovies.starWars.id,
-            movieViewModel: PreviewFactory.movieDetailViewModelWithData(),
+            movieViewModel: PreviewFactory.movieListViewModel(),
             castViewModel: PreviewFactory.castViewModel(),
-            favoriteViewModel: PreviewFactory.favoritesViewModel()
+            favoriteViewModel: PreviewFactory.favoritesViewModel(),
+            detailViewModel: PreviewFactory.movieDetailViewModelWithData()
         )
-        .withPreviewNavigation()
     }
 }

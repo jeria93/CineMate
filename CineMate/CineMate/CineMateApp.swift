@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import AppIntents
 
 /// CineMateApp — DI root & bootstrap
 ///

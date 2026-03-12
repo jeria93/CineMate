@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// Represents a single movie credit where a person was cast in a role.
-/// Endpoint: https://developer.themoviedb.org/reference/person-movie-credits
+/// A movie credit for a person.
+/// TMDB endpoint: https://developer.themoviedb.org/reference/person-movie-credits
 struct PersonMovieCredit: Codable, Identifiable {
     let id: Int
     let title: String?
@@ -17,19 +17,32 @@ struct PersonMovieCredit: Codable, Identifiable {
     let posterPath: String?
     let popularity: Double?
 
-    /// A unique identifier combining movie ID and character name.
-    /// Used for identifying movies in lists where the same movie may appear multiple times.
-    var uniqueKey: String { "\(id)-\(character ?? "unknown")-\(releaseDate ?? "unknown")"}
+    /// Unique key for list rendering when duplicates exist.
+    var uniqueKey: String { "\(id)-\(character ?? "unknown")-\(releaseDate ?? "unknown")" }
 
-    /// Returns a full image URL for the movie poster (w185 size).
+    /// Poster URL in w185 size.
     var posterURL: URL? {
         TMDBImageHelper.url(for: posterPath, size: .w185)
     }
+
+    /// Makes a small movie stub for navigation.
+    var asMovie: Movie? {
+        guard let title else { return nil }
+        return Movie(
+            id: id,
+            title: title,
+            overview: nil,
+            posterPath: posterPath,
+            backdropPath: nil,
+            releaseDate: releaseDate,
+            voteAverage: nil,
+            genres: nil
+        )
+    }
 }
 
-/// Response object from the person movie credits endpoint.
-/// Includes all movies a person has acted in (as cast).
-/// Endpoint: https://developer.themoviedb.org/reference/person-movie-credits
+/// Response model for person movie credits.
+/// TMDB endpoint: https://developer.themoviedb.org/reference/person-movie-credits
 struct PersonMovieCreditsResponse: Codable {
     let cast: [PersonMovieCredit]
 }

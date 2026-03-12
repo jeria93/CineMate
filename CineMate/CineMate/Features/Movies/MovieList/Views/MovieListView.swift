@@ -10,8 +10,6 @@ import SwiftUI
 struct MovieListView: View {
     @ObservedObject var viewModel: MovieViewModel
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
-    let castViewModel: CastViewModel
-    @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
         VStack {
@@ -19,13 +17,13 @@ struct MovieListView: View {
 
             MovieListContentView(
                 viewModel: viewModel,
-                castViewModel: castViewModel,
                 favoriteViewModel: favoriteViewModel
             )
         }
         .navigationTitle(viewModel.selectedCategory.displayName)
-        .task(id: viewModel.selectedCategory) { await viewModel.loadMovies() }
-        .refreshable { await viewModel.loadMovies() }
+        .task(id: viewModel.selectedCategory) {
+            await viewModel.loadMovies(page: 1)
+        }
     }
 }
 

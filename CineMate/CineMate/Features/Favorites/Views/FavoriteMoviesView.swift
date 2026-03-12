@@ -31,10 +31,7 @@ struct FavoriteMoviesView: View {
             List(viewModel.favoriteMovies) { movie in
                 MovieRowView(
                     movie: movie,
-                    isFavorite: true,
-                    onToggleFavorite: {
-                        Task { await viewModel.toggleFavorite(movie: movie) }
-                    }
+                    favoriteViewModel: viewModel
                 )
             }
             .listStyle(.plain)

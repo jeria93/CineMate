@@ -18,9 +18,9 @@ struct SearchView: View {
                 text: $searchViewModel.query,
                 isDisabled: isGuestMode
             )
-                .onSubmit {
-                    Task { await searchViewModel.search(searchViewModel.query) }
-                }
+            .onSubmit {
+                Task { await searchViewModel.search(searchViewModel.query) }
+            }
 
             if let message = searchViewModel.validationMessage {
                 ValidationMessageView(message: message)
@@ -57,11 +57,8 @@ struct SearchView: View {
         case .results:
             SearchResultsList(
                 movies: searchViewModel.results,
-                favoriteIDs: Set(favoriteViewModel.favoriteMovies.map { $0.id }),
+                favoriteViewModel: favoriteViewModel,
                 isLoadingNextPage: searchViewModel.isLoadingNextPage,
-                onToggleFavorite: { movie in
-                    Task { await favoriteViewModel.toggleFavorite(movie: movie) }
-                },
                 loadMoreAction: { movie in
                     Task { await searchViewModel.loadNextPageIfNeeded(currentItem: movie) }
                 }

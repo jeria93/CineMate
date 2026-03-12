@@ -9,100 +9,120 @@ import SwiftUI
 
 struct MovieDetailInfoView: View {
     let movie: Movie
-    @ObservedObject var viewModel: MovieViewModel
+    let detail: MovieDetail?
+    let watchProviderRegion: WatchProviderRegion?
+    let isLoading: Bool
+
     @EnvironmentObject private var navigator: AppNavigator
+
+    private var titleText: String {
+        detail?.title ?? movie.title
+    }
+
+    private var releaseDateText: String? {
+        detail?.releaseDate ?? movie.releaseDate
+    }
+
+    private var voteAverageValue: Double? {
+        detail?.voteAverage ?? movie.voteAverage
+    }
+
+    private var overviewText: String? {
+        detail?.overview ?? movie.overview
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            Text(titleText)
+                .font(.largeTitle.bold())
 
-            if viewModel.isLoadingDetail {
-                ProgressView("Loading movie details...")
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
-            } else {
-                Text(movie.title)
-                    .font(.largeTitle.bold())
-
-                HStack(spacing: 10) {
-                    if let releaseDate = movie.releaseDate {
-                        Text("Release: \(releaseDate)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if let vote = movie.voteAverage {
-                        HStack(spacing: 4) {
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.yellow)
-                                .font(.caption)
-                            Text(String(format: "%.1f", vote))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-
-                if let detail = viewModel.movieDetail, !detail.previewGenres.isEmpty {
-                    MovieGenresView(genres: detail.previewGenres)
-                        .environmentObject(navigator)
-                }
-
-                if let overview = movie.overview {
-                    Text(overview)
-                        .font(.body)
+            HStack(spacing: 10) {
+                if let releaseDateText {
+                    Text("Release: \(releaseDateText)")
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
 
-                if let region = viewModel.watchProviderRegion {
-                    WatchProvidersView(region: region)
-                }
-
-                if let detail = viewModel.movieDetail {
-                    Divider()
-
-                    if let runtime = detail.runtime {
-                        Text("Runtime: \(runtime / 60)h \(runtime % 60)m")
+                if let voteAverageValue {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                            .font(.caption)
+                        Text(String(format: "%.1f", voteAverageValue))
                             .font(.caption)
                             .foregroundColor(.secondary)
-                    }
-
-                    if !detail.productionCompanies.isEmpty {
-                        Text("Produced by: \(detail.productionCompanies.map { $0.name }.joined(separator: ", "))")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if !detail.productionCountries.isEmpty {
-                        Text("Countries: \(detail.productionCountries.map { $0.name }.joined(separator: ", "))")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if let budget = detail.budget, budget > 0 {
-                        Text("Budget: \(budget.formattedWithSeparator()) USD")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if let revenue = detail.revenue, revenue > 0 {
-                        Text("Revenue: \(revenue.formattedWithSeparator()) USD")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if let status = detail.status {
-                        Text("Status: \(status)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if let homepage = detail.homepage, let url = URL(string: homepage) {
-                        Link("🌐 Official Website", destination: url)
-                            .font(.caption)
-                            .foregroundColor(.blue)
                     }
                 }
             }
+
+            if let genres = detail?.genres, !genres.isEmpty {
+                MovieGenresView(genres: genres)
+                    .environmentObject(navigator)
+            }
+
+            if let overviewText, !overviewText.isEmpty {
+                Text(overviewText)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+
+            if let watchProviderRegion {
+                WatchProvidersView(region: watchProviderRegion)
+            }
+
+            if let detail {
+                detailMetadata(detail)
+            } else if isLoading {
+                ProgressView("Loading movie details...")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func detailMetadata(_ detail: MovieDetail) -> some View {
+        Divider()
+
+        if let runtime = detail.runtime {
+            Text("Runtime: \(runtime / 60)h \(runtime % 60)m")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+
+        if !detail.productionCompanies.isEmpty {
+            Text("Produced by: \(detail.productionCompanies.map { $0.name }.joined(separator: ", "))")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+
+        if !detail.productionCountries.isEmpty {
+            Text("Countries: \(detail.productionCountries.map { $0.name }.joined(separator: ", "))")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+
+        if let budget = detail.budget, budget > 0 {
+            Text("Budget: \(budget.formattedWithSeparator()) USD")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+
+        if let revenue = detail.revenue, revenue > 0 {
+            Text("Revenue: \(revenue.formattedWithSeparator()) USD")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+
+        if let status = detail.status {
+            Text("Status: \(status)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+
+        if let homepageURL = detail.homepageURL {
+            Link("Official Website", destination: homepageURL)
+                .font(.caption)
+                .foregroundColor(.blue)
         }
     }
 }
@@ -122,6 +142,7 @@ struct MovieDetailInfoView: View {
 #Preview("No Detail (Fallback)") {
     MovieDetailInfoView.previewNoDetail.withPreviewNavigation()
 }
+
 /// Returns the number as a string with thousands separators (e.g. "1,000,000").
 private extension Int {
     func formattedWithSeparator() -> String {
