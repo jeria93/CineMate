@@ -8,14 +8,14 @@
 import Foundation
 
 extension CastViewModel {
-    static var preview: CastViewModel {
-        PreviewID.reset()
-        let vm = CastViewModel(repository: PreviewFactory.repository)
-        vm.cast = MovieCreditsPreviewData.starWarsCredits().cast
-        return vm
-    }
+  static var preview: CastViewModel {
+    PreviewID.reset()
+    let vm = CastViewModel(repository: PreviewFactory.repository)
+    vm.seedPreviewCredits(MovieCreditsPreviewData.starWarsCredits())
+    return vm
+  }
 
-    static var live: CastViewModel {
-        CastViewModel(repository: MovieRepository())
-    }
+  static var live: CastViewModel {
+    CastViewModel(repository: MovieRepository())
+  }
 }

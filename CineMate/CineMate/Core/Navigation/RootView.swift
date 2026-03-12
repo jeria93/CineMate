@@ -7,23 +7,9 @@
 
 import SwiftUI
 
-/// RootView
-/// --------
-/// What this view does:
-/// - Hosts one shared `NavigationStack` via `AppNavigator`.
-/// - Shows a `TabView` with five tabs: Movies, Favorites, Discover, Search, Account.
-/// - Resolves navigation by pushing `AppRoute` values in `.navigationDestination`.
-/// - Shows lightweight global toasts via `ToastCenter`.
-///
-/// Guest gating:
-/// - If `authViewModel.isGuest` is true, **Discover** and **Search** are locked.
-/// - We still render those screens but disable interaction and show a `LockedFeatureOverlay`.
-/// - The overlay’s CTA routes to Create Account via `navigator.goToCreateAccount()`.
-///
-/// Design notes:
-/// - Simple DI: long-lived view models are injected from the App root.
-/// - View models do not perform navigation; routing is centralized here.
-/// - One place controls guest gating so feature views stay clean.
+/// Root screen for tabs and app navigation.
+/// Uses one shared `NavigationStack` with `AppNavigator`.
+/// Shows lock overlays for guest users on protected tabs.
 private enum MainTab: String, Hashable {
     case movies
     case favorites
@@ -38,7 +24,7 @@ struct RootView: View {
     @State private var selectedTab: MainTab = .movies
     @State private var tabPaths: [MainTab: [AppRoute]] = [:]
 
-    // Simple DI — long-lived VMs injected by the App
+    // View models are injected from the app root.
     let movieVM: MovieViewModel
     let castVM: CastViewModel
     let favVM: FavoriteMoviesViewModel
@@ -52,17 +38,17 @@ struct RootView: View {
     var body: some View {
         NavigationStack(path: $navigator.path) {
             TabView(selection: $selectedTab) {
-                // Movies
+                // Movies tab
                 MovieListView(viewModel: movieVM, favoriteViewModel: favVM)
                     .tabItem { Label("Movies", systemImage: "film") }
                     .tag(MainTab.movies)
 
-                // Favorites
+                // Favorites tab
                 FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
                     .tabItem { Label("Favorites", systemImage: "heart.fill") }
                     .tag(MainTab.favorites)
 
-                // Discover — locked for guests
+                // Discover tab with guest lock
                 ZStack {
                     let isLocked = authViewModel.isGuest
                     DiscoverView(viewModel: discoverVM)
@@ -77,7 +63,7 @@ struct RootView: View {
                 .tabItem { Label("Discover", systemImage: "safari") }
                 .tag(MainTab.discover)
 
-                // Search — locked for guests
+                // Search tab with guest lock
                 ZStack {
                     let isLocked = authViewModel.isGuest
                     SearchView(
@@ -96,21 +82,21 @@ struct RootView: View {
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
                 .tag(MainTab.search)
 
-                // Account
+                // Account tab
                 AccountView(viewModel: authViewModel)
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
                     .tag(MainTab.auth)
             }
-            // Start Firestore listeners when Root appears
+            // Start Firestore listeners when root appears.
             .task { await favVM.startFavoritesListenerIfNeeded() }
             .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
 
-            // Keep an up-to-date snapshot for the currently active tab.
+            // Save the path for the active tab.
             .onChange(of: navigator.path) { _, newPath in
                 tabPaths[selectedTab] = newPath
             }
 
-            // Restore the destination stack for the selected tab.
+            // Restore the path when the tab changes.
             .onChange(of: selectedTab) { oldTab, newTab in
                 guard oldTab != newTab else { return }
                 tabPaths[oldTab] = navigator.path
@@ -121,7 +107,7 @@ struct RootView: View {
                 )
             }
 
-            // Route -> destination
+            // Build a destination for each route.
             .navigationDestination(for: AppRoute.self) { route in
                 destination(for: route)
             }
@@ -133,9 +119,9 @@ struct RootView: View {
     }
 }
 
-private extension RootView {
+extension RootView {
     @ViewBuilder
-    func destination(for route: AppRoute) -> some View {
+    fileprivate func destination(for route: AppRoute) -> some View {
         switch route {
         case .movie(let id):
             MovieDetailView(
@@ -149,13 +135,14 @@ private extension RootView {
             CastMemberDetailView(
                 member: member(for: id),
                 personViewModel: personVM,
-                favoritePeopleVM: favoritePeopleVM
+                favoritePeopleVM: favoritePeopleVM,
+                movieViewModel: movieVM
             )
 
         case .genre(let name):
             GenreDetailView(genreName: name)
 
-        case .seeAllMovies(title: let title, filter: let filter):
+        case .seeAllMovies(let title, let filter):
             SeeAllMoviesView(
                 viewModel: SeeAllMoviesViewModel(
                     repository: movieVM.underlyingRepository,
@@ -165,7 +152,7 @@ private extension RootView {
             )
 
         case .createAccount:
-            // In-app (user is signed in, possibly anonymous → can upgrade)
+            // Signed in users can still upgrade anonymous accounts.
             CreateAccountView(
                 createViewModel: CreateAccountViewModel(
                     service: authService,
@@ -178,7 +165,7 @@ private extension RootView {
         }
     }
 
-    func member(for id: Int) -> CastMember {
+    fileprivate func member(for id: Int) -> CastMember {
         castVM.cast.first(where: { $0.id == id })
         ?? castVM.crew.first(where: { $0.id == id }).map(CastMember.init(from:))
         ?? favoritePeopleVM.favorites.first(where: { $0.id == id }).map(CastMember.init(from:))

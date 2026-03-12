@@ -7,269 +7,289 @@
 
 import Foundation
 
-/// ViewModel that loads and exposes person-related data (details, external IDs, filmography)
-/// for use in SwiftUI views.
-///
-/// Features:
-/// - In-memory caching of fetched data (per personId) to avoid repeated API calls.
-/// - In-flight guards to prevent firing the same request concurrently.
-/// - Simple favorite-cast toggling to support UI actions.
-///
-/// Threading: Annotated with `@MainActor`, so all published state changes happen on the main thread.
+/// Loads and stores person screen data.
+/// Includes detail data, external IDs, and movie credits.
 @MainActor
 final class PersonViewModel: ObservableObject {
 
-    // MARK: - Published State
+  @Published var personDetail: PersonDetail?
+  @Published var personExternalIDs: PersonExternalIDs?
+  @Published var personMovies: [PersonMovieCredit] = []
+  @Published var isLoading = false
+  @Published var errorMessage: String?
+  @Published private(set) var activePersonID: Int?
 
-    @Published var personDetail: PersonDetail?
-    @Published var personExternalIDs: PersonExternalIDs?
-    @Published var personMovies: [PersonMovieCredit] = []
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
-    @Published var favoriteCastIds: Set<Int> = []
+  private let repository: MovieProtocol
 
-    // MARK: - Dependencies
+  private struct PersonBundle {
+    let detail: PersonDetail
+    let externalIDs: PersonExternalIDs?
+  }
 
-    /// Repository abstraction that performs the actual API calls.
-    private let repository: MovieProtocol
+  /// Cache for person detail and external IDs.
+  private var personCache: [Int: PersonBundle] = [:]
+  /// Cache for person movie credits.
+  private var creditsCache: [Int: [PersonMovieCredit]] = [:]
 
-    // MARK: - Caches
+  /// Reused running requests per person.
+  private var detailTasks: [Int: Task<PersonBundle, Error>] = [:]
+  private var creditsTasks: [Int: Task<[PersonMovieCredit], Error>] = [:]
 
-    /// Cache for detail + external IDs, keyed by personId.
-    /// Tuple keeps related payloads together to avoid multiple lookups.
-    private var detailCache: [Int: (detail: PersonDetail, external: PersonExternalIDs?)] = [:]
+  init(repository: MovieProtocol) {
+    self.repository = repository
+  }
 
-    /// Cache for movie credits (filmography), keyed by personId.
-    private var creditsCache: [Int: [PersonMovieCredit]] = [:]
-    private var runningTasks: [Int: [Task<Void, Never>]] = [:]
+  /// Loads person data for one ID.
+  /// Uses cache first, then network if needed.
+  func loadPersonProfile(for personId: Int, forceRefresh: Bool = false) async {
+    prepareForRequest(personId: personId, forceRefresh: forceRefresh)
+    applyCacheIfAvailable(for: personId)
 
-    // MARK: - In-flight Guards
-
-    /// Set of personIds currently being fetched for detail/external IDs.
-    private var detailInFlight: Set<Int> = []
-
-    /// Set of personIds currently being fetched for credits.
-    private var creditsInFlight: Set<Int> = []
-
-    // MARK: - Init
-
-    /// Initializes a new `PersonViewModel`.
-    /// - Parameter repository: Concrete implementation of `MovieProtocol`.
-    init(repository: MovieProtocol) {
-        self.repository = repository
+    if hasCompleteCache(for: personId) {
+      isLoading = false
+      errorMessage = nil
+      return
     }
 
-    // MARK: - Favorites
+    isLoading = true
+    errorMessage = nil
 
-    /// Toggles a person (by cast id) in/out of the favorites set.
-    /// - Parameter id: The cast member's TMDB id.
-    func toggleFavoriteCast(id: Int) {
-        if favoriteCastIds.contains(id) {
-            favoriteCastIds.remove(id)
-        } else {
-            favoriteCastIds.insert(id)
-        }
+    async let detailResult = detailResult(for: personId, forceRefresh: forceRefresh)
+    async let creditsResult = creditsResult(for: personId, forceRefresh: forceRefresh)
+
+    let resolvedDetail = await detailResult
+    let resolvedCredits = await creditsResult
+
+    guard activePersonID == personId else { return }
+    isLoading = false
+
+    switch resolvedDetail {
+    case .success(let bundle):
+      personDetail = bundle.detail
+      personExternalIDs = bundle.externalIDs
+    case .failure(let error):
+      handleDetailFailure(error, for: personId)
+      return
     }
 
-    /// Checks whether the given cast id is marked as favorite.
-    /// - Parameter id: The cast member's TMDB id.
-    func isFavoriteCast(id: Int) -> Bool {
-        favoriteCastIds.contains(id)
+    switch resolvedCredits {
+    case .success(let credits):
+      personMovies = credits
+      errorMessage = nil
+    case .failure(let error):
+      handleCreditsFailure(error, for: personId)
     }
+  }
 
-    // MARK: - Loaders
+  /// Cancels running tasks for one person.
+  func cancelOngoingTasks(for personId: Int) {
+    detailTasks[personId]?.cancel()
+    creditsTasks[personId]?.cancel()
+    detailTasks[personId] = nil
+    creditsTasks[personId] = nil
 
-    /// Loads `PersonDetail` and `PersonExternalIDs` for a given person.
-    ///
-    /// Flow:
-    /// 1. Return immediately if cached.
-    /// 2. Skip if a request for this `personId` is already in-flight.
-    /// 3. Otherwise request both endpoints in parallel, cache & publish.
-    ///
-    /// - Parameter personId: TMDB person id.
-    func loadPersonDetail(for personId: Int) async {
-        if let cached = detailCache[personId] {
-            personDetail      = cached.detail
-            personExternalIDs = cached.external
-            errorMessage      = nil
-            isLoading         = false
-            return
-        }
-
-        // in-flight guard
-        guard !detailInFlight.contains(personId) else { return }
-        detailInFlight.insert(personId)
-
-        isLoading = true
-        defer {
-            isLoading = false
-            detailInFlight.remove(personId)
-        }
-
-        // network calls wrapped in a Task (for cancellation support)
-        let task = Task { [unowned self] in
-            do {
-                async let detail   = repository.fetchPersonDetail(for: personId)
-                async let external = repository.fetchPersonExternalIDs(for: personId)
-                let detailResult = try await detail
-                let externalIDs = try await external
-
-                detailCache[personId] = (detailResult, externalIDs)
-                personDetail          = detailResult
-                personExternalIDs     = externalIDs
-                errorMessage          = nil
-            } catch is CancellationError {
-                // silently cancelled
-            } catch {
-                errorMessage = error.localizedDescription
-            }
-        }
-        runningTasks[personId, default: []].append(task)
-        _ = await task.value
-    }
-
-    /// Loads the movie credits (filmography) for a given person.
-    ///
-    /// Flow:
-    /// 1. Return cached list if present.
-    /// 2. Skip if a fetch for this `personId` is already running.
-    /// 3. Otherwise fetch, cache, and publish.
-    ///
-    /// - Parameter personId: TMDB person id.
-    func loadPersonMovieCredits(for personId: Int) async {
-        // Cache hit – stop spinner early
-        if let cached = creditsCache[personId] {
-            personMovies = cached
-            isLoading    = false
-            return
-        }
-
-        guard !creditsInFlight.contains(personId) else { return }
-        creditsInFlight.insert(personId)
-
-        isLoading = true
-        defer {
-            isLoading = false
-            creditsInFlight.remove(personId)
-        }
-
-        let task = Task { [unowned self] in
-            do {
-                let credits = try await repository.fetchPersonMovieCredits(for: personId)
-                creditsCache[personId] = credits
-                personMovies = credits
-            } catch is CancellationError {
-                // silently cancelled
-            } catch {
-                print("Credits error: \(error)")
-            }
-        }
-        runningTasks[personId, default: []].append(task)
-        _ = await task.value
-    }
-
-    /// Cancels any ongoing tasks for the given person and clears temporary state.
-    /// - Parameter id: TMDB person id.
-    func cancelOngoingTasks(for id: Int) {
-        runningTasks[id]?.forEach { $0.cancel() }
-        runningTasks[id] = nil
-        isLoading = false
-    }
-
-    // MARK: - Internal implementations (mirrors above, used if needed)
-
-    private func _loadPersonDetailImpl(_ personId: Int) async {
-        // NOTE: same logic as loadPersonDetail, just structured differently
-        if let cached = detailCache[personId] {
-            personDetail      = cached.detail
-            personExternalIDs = cached.external
-            errorMessage      = nil
-            return
-        }
-        guard !detailInFlight.contains(personId) else { return }
-        detailInFlight.insert(personId)
-
-        isLoading = true
-        defer {
-            isLoading = false
-            detailInFlight.remove(personId)
-        }
-
-        do {
-            async let detail   = repository.fetchPersonDetail(for: personId)
-            async let external = repository.fetchPersonExternalIDs(for: personId)
-
-            let detailResult = try await detail
-            let externalIDs = try await external
-
-            detailCache[personId] = (detailResult, externalIDs)
-            personDetail          = detailResult
-            personExternalIDs     = externalIDs
-            errorMessage          = nil
-        } catch is CancellationError {
-            // silently cancelled
-        } catch {
-            personDetail      = nil
-            personExternalIDs = nil
-            errorMessage      = error.localizedDescription
-        }
-    }
-
-    private func _loadPersonMovieCreditsImpl(_ personId: Int) async {
-        if let cached = creditsCache[personId] {
-            personMovies = cached
-            return
-        }
-        guard !creditsInFlight.contains(personId) else { return }
-        creditsInFlight.insert(personId)
-
-        do {
-            let credits = try await repository.fetchPersonMovieCredits(for: personId)
-            creditsCache[personId] = credits
-            personMovies = credits
-        } catch is CancellationError {
-            // silently cancelled
-        } catch {
-            personMovies = []
-            print("Failed to load movie credits for person: \(error.localizedDescription)")
-        }
-        creditsInFlight.remove(personId)
-    }
-}
-
-// MARK: - Computed Helpers
-
-extension PersonViewModel {
-    /// Top 5 most popular movies used for the "Known For" section.
-    var knownForMovies: [PersonMovieCredit] {
-        personMovies
-            .filter { $0.popularity != nil }
-            .sorted { ($0.popularity ?? 0) > ($1.popularity ?? 0) }
-            .prefix(5)
-            .map { $0 }
-    }
+    guard activePersonID == personId else { return }
+    isLoading = false
+  }
 }
 
 extension PersonViewModel {
-    /// Returns cached `PersonDetail` if already fetched.
-    func person(by id: Int) -> PersonDetail? {
-        detailCache[id]?.detail
-    }
+  /// Top 5 popular unique movies for the Known For section.
+  var knownForMovies: [PersonMovieCredit] {
+    var seenMovieIDs = Set<Int>()
+    return
+      personMovies
+      .sorted { ($0.popularity ?? 0) > ($1.popularity ?? 0) }
+      .filter { seenMovieIDs.insert($0.id).inserted }
+      .prefix(5)
+      .map { $0 }
+  }
+
+  func person(by id: Int) -> PersonDetail? {
+    personCache[id]?.detail
+  }
+
+  func resetForNewPerson() {
+    personDetail = nil
+    personExternalIDs = nil
+    personMovies = []
+    errorMessage = nil
+    isLoading = false
+    activePersonID = nil
+  }
+
+  func hasCredits(for id: Int) -> Bool {
+    creditsCache[id] != nil
+  }
 }
 
 extension PersonViewModel {
-    /// Clears state before loading a new person to avoid showing stale data.
-    func resetForNewPerson() {
-        personDetail      = nil
-        personExternalIDs = nil
-        personMovies      = []
-        errorMessage      = nil
+  private func prepareForRequest(personId: Int, forceRefresh: Bool) {
+    if activePersonID != personId {
+      clearVisibleState()
+      cancelTasksForOtherPeople(except: personId)
     }
-}
+    activePersonID = personId
 
-extension PersonViewModel {
-    /// Returns true if movie credits are already cached for the person.
-    func hasCredits(for id: Int) -> Bool {
-        creditsCache[id] != nil
+    if forceRefresh {
+      clearCache(for: personId)
+      cancelOngoingTasks(for: personId)
     }
+  }
+
+  private func clearVisibleState() {
+    personDetail = nil
+    personExternalIDs = nil
+    personMovies = []
+    errorMessage = nil
+    isLoading = false
+  }
+
+  private func clearCache(for personId: Int) {
+    personCache[personId] = nil
+    creditsCache[personId] = nil
+  }
+
+  private func cancelTasksForOtherPeople(except personId: Int) {
+    let detailIDs = detailTasks.keys.filter { $0 != personId }
+    for id in detailIDs {
+      detailTasks[id]?.cancel()
+      detailTasks[id] = nil
+    }
+
+    let creditIDs = creditsTasks.keys.filter { $0 != personId }
+    for id in creditIDs {
+      creditsTasks[id]?.cancel()
+      creditsTasks[id] = nil
+    }
+  }
+
+  private func hasCompleteCache(for personId: Int) -> Bool {
+    personCache[personId] != nil && creditsCache[personId] != nil
+  }
+
+  private func applyCacheIfAvailable(for personId: Int) {
+    if let bundle = personCache[personId] {
+      personDetail = bundle.detail
+      personExternalIDs = bundle.externalIDs
+    }
+
+    if let cachedCredits = creditsCache[personId] {
+      personMovies = cachedCredits
+    }
+  }
+
+  private func detailResult(for personId: Int, forceRefresh: Bool) async -> Result<
+    PersonBundle, Error
+  > {
+    do {
+      return .success(
+        try await fetchDetailBundle(for: personId, forceRefresh: forceRefresh)
+      )
+    } catch {
+      return .failure(error)
+    }
+  }
+
+  private func creditsResult(for personId: Int, forceRefresh: Bool) async -> Result<
+    [PersonMovieCredit], Error
+  > {
+    do {
+      return .success(
+        try await fetchCredits(for: personId, forceRefresh: forceRefresh)
+      )
+    } catch {
+      return .failure(error)
+    }
+  }
+
+  private func fetchDetailBundle(
+    for personId: Int,
+    forceRefresh: Bool
+  ) async throws -> PersonBundle {
+    if !forceRefresh, let cached = personCache[personId] {
+      return cached
+    }
+
+    let task = detailTask(for: personId)
+    defer { detailTasks[personId] = nil }
+
+    let bundle = try await task.value
+    personCache[personId] = bundle
+    return bundle
+  }
+
+  private func fetchCredits(
+    for personId: Int,
+    forceRefresh: Bool
+  ) async throws -> [PersonMovieCredit] {
+    if !forceRefresh, let cached = creditsCache[personId] {
+      return cached
+    }
+
+    let task = creditsTask(for: personId)
+    defer { creditsTasks[personId] = nil }
+
+    let credits = try await task.value
+    creditsCache[personId] = credits
+    return credits
+  }
+
+  private func detailTask(for personId: Int) -> Task<PersonBundle, Error> {
+    if let runningTask = detailTasks[personId] {
+      return runningTask
+    }
+
+    let task = Task { [repository] in
+      async let detailRequest = repository.fetchPersonDetail(for: personId)
+      async let externalRequest = repository.fetchPersonExternalIDs(for: personId)
+
+      let detail = try await detailRequest
+      let externalIDs: PersonExternalIDs?
+
+      do {
+        externalIDs = try await externalRequest
+      } catch is CancellationError {
+        throw CancellationError()
+      } catch {
+        externalIDs = nil
+      }
+
+      return PersonBundle(detail: detail, externalIDs: externalIDs)
+    }
+
+    detailTasks[personId] = task
+    return task
+  }
+
+  private func creditsTask(for personId: Int) -> Task<[PersonMovieCredit], Error> {
+    if let runningTask = creditsTasks[personId] {
+      return runningTask
+    }
+
+    let task = Task { [repository] in
+      try await repository.fetchPersonMovieCredits(for: personId)
+    }
+
+    creditsTasks[personId] = task
+    return task
+  }
+
+  private func handleDetailFailure(_ error: Error, for personId: Int) {
+    guard activePersonID == personId else { return }
+    guard !(error is CancellationError) else { return }
+
+    personDetail = nil
+    personExternalIDs = nil
+    personMovies = creditsCache[personId] ?? []
+    errorMessage = error.localizedDescription
+  }
+
+  private func handleCreditsFailure(_ error: Error, for personId: Int) {
+    guard activePersonID == personId else { return }
+    guard !(error is CancellationError) else { return }
+
+    personMovies = creditsCache[personId] ?? []
+    errorMessage = error.localizedDescription
+  }
 }

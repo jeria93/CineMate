@@ -8,91 +8,41 @@
 import SwiftUI
 
 struct KnownForScrollView: View {
-    let movies: [PersonMovieCredit]
-    @EnvironmentObject private var navigator: AppNavigator
-    let movieViewModel: MovieViewModel?
+  let movies: [PersonMovieCredit]
+  let movieViewModel: MovieViewModel?
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Divider().padding(.vertical, 8)
-
-            Text("Most Iconic Roles")
-                .font(.title3.bold())
-                .padding(.horizontal)
-
-            if movies.isEmpty {
-                Text("No iconic roles found.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal)
-            } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(movies) { credit in
-                            VStack(alignment: .leading) {
-                                AsyncImage(url: credit.posterURL) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 100)
-                                        .cornerRadius(12)
-                                        .background(Color.yellow.opacity(0.1))
-                                } placeholder: {
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(Color.gray.opacity(0.3))
-                                        .frame(width: 100, height: 150)
-                                }
-
-                                Text(credit.title ?? "Unknown")
-                                    .font(.caption)
-                                    .frame(width: 100)
-                                    .lineLimit(1)
-                            }
-                            .onTapGesture {
-                                if let stub = credit.asMovie {
-                                    movieViewModel?.cacheStub(stub)
-                                }
-                                navigator.goToMovie(id: credit.id)
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-            }
+  var body: some View {
+    if movies.isEmpty {
+      Text("No known-for titles available.")
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+    } else {
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 12) {
+          ForEach(movies, id: \.uniqueKey) { credit in
+            PersonMovieCardView(movie: credit, movieViewModel: movieViewModel)
+          }
         }
+        .padding(.horizontal)
+      }
     }
+  }
 }
 
 #Preview("Known For – Full") {
-    KnownForScrollView.previewFull.withPreviewNavigation()
+  KnownForScrollView.previewFull
 }
 
 #Preview("Known For – Empty") {
-    KnownForScrollView.previewEmpty.withPreviewNavigation()
+  KnownForScrollView.previewEmpty
 }
 
 #Preview("Known For – Partial") {
-    KnownForScrollView.previewPartial.withPreviewNavigation()
+  KnownForScrollView.previewPartial
 }
 
 #Preview("Known For – Overflow") {
-    KnownForScrollView.previewOverflow.withPreviewNavigation()
-}
-
-extension PersonMovieCredit {
-    /// Converts a `PersonMovieCredit` into a simplified `Movie` model.
-    /// Used to provide an immediate stub before full detail loads.
-    var asMovie: Movie? {
-        guard let title = title else { return nil }
-        return Movie(
-            id: id,
-            title: title,
-            overview: nil,
-            posterPath: posterPath,
-            backdropPath: nil,
-            releaseDate: releaseDate,
-            voteAverage: nil,
-            genres: nil
-        )
-    }
+  KnownForScrollView.previewOverflow
 }

@@ -7,29 +7,30 @@
 
 import SwiftUI
 
-/// Previews for cast-related view models and views.
+/// Preview helpers for cast screens.
 @MainActor
 extension PreviewFactory {
 
-    /// Cast list with mock data.
-    static func castViewModel() -> CastViewModel {
-        resetAllPreviewData()
-        let vm = CastViewModel(repository: repository)
-        vm.cast = MovieCreditsPreviewData.starWarsCredits().cast
-        return vm
-    }
+  /// Cast view model with mock credits.
+  static func castViewModel() -> CastViewModel {
+    resetAllPreviewData()
+    let vm = CastViewModel(repository: repository)
+    vm.seedPreviewCredits(MovieCreditsPreviewData.starWarsCredits())
+    return vm
+  }
 
-    /// Cast member detail with mock data wrapped in a NavigationStack.
-    static func castMemberDetailView() -> some View {
-        resetAllPreviewData()
-        let nav = AppNavigator()
-        return NavigationStack {
-            CastMemberDetailView(
-                member: CastMemberPreviewData.markHamill,
-                personViewModel: .preview,
-                favoritePeopleVM: PreviewFactory.favoritePeopleDefaultVM()
-            )
-        }
-        .environmentObject(nav)
+  /// Cast member detail preview in a navigation stack.
+  static func castMemberDetailView() -> some View {
+    resetAllPreviewData()
+    let nav = AppNavigator()
+    return NavigationStack {
+      CastMemberDetailView(
+        member: CastMemberPreviewData.markHamill,
+        personViewModel: .preview,
+        favoritePeopleVM: PreviewFactory.favoritePeopleDefaultVM(),
+        movieViewModel: PreviewFactory.movieListViewModel()
+      )
     }
+    .environmentObject(nav)
+  }
 }
