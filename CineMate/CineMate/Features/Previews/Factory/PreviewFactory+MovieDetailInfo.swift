@@ -7,39 +7,48 @@
 
 import Foundation
 
+struct MovieDetailInfoPreviewContext {
+    let movie: Movie
+    let detail: MovieDetail?
+    let watchProviderRegion: WatchProviderRegion?
+    let isLoading: Bool
+}
+
 @MainActor
 extension PreviewFactory {
-
-    /// ViewModel with full movie detail and genres.
-    static var movieViewModelWithDetail: MovieViewModel {
-        let vm = MovieViewModel(repository: MockMovieRepository())
-        vm.movieDetail = MovieDetailPreviewData.starWarsDetail
-        return vm
+    static func movieDetailInfoContextWithDetail() -> MovieDetailInfoPreviewContext {
+        MovieDetailInfoPreviewContext(
+            movie: SharedPreviewMovies.starWars,
+            detail: MovieDetailPreviewData.starWarsDetail,
+            watchProviderRegion: PreviewData.mockWatchProviderRegion,
+            isLoading: false
+        )
     }
 
-    /// ViewModel with empty genres and no detail fields.
-    static var movieViewModelWithEmptyDetail: MovieViewModel {
-        let vm = MovieViewModel(repository: MockMovieRepository())
-        vm.movieDetail = MovieDetailPreviewData.emptyDetail
-        return vm
+    static func movieDetailInfoContextWithEmptyDetail() -> MovieDetailInfoPreviewContext {
+        MovieDetailInfoPreviewContext(
+            movie: SharedPreviewMovies.starWars,
+            detail: MovieDetailPreviewData.emptyDetail,
+            watchProviderRegion: nil,
+            isLoading: false
+        )
     }
 
-    /// ViewModel in loading state (simulates detail being fetched).
-    static var movieViewModelLoading: MovieViewModel {
-        let vm = MovieViewModel(repository: MockMovieRepository())
-        vm.isLoadingDetail = true
-        return vm
+    static func movieDetailInfoContextLoading() -> MovieDetailInfoPreviewContext {
+        MovieDetailInfoPreviewContext(
+            movie: SharedPreviewMovies.starWars,
+            detail: nil,
+            watchProviderRegion: nil,
+            isLoading: true
+        )
     }
 
-    // ViewModel with watch provider region set.
-//    static var movieViewModelWithProviders: MovieViewModel {
-//        let vm = MovieViewModel(repository: MockMovieRepository())
-//        vm.watchProviderRegion = WatchProviderPreviewData.defaultRegion
-//        return vm
-//    }
-
-    /// ViewModel without any movie detail set (fallback UI).
-    static var movieViewModelWithoutDetail: MovieViewModel {
-        MovieViewModel(repository: MockMovieRepository())
+    static func movieDetailInfoContextWithoutDetail() -> MovieDetailInfoPreviewContext {
+        MovieDetailInfoPreviewContext(
+            movie: SharedPreviewMovies.starWars,
+            detail: nil,
+            watchProviderRegion: nil,
+            isLoading: false
+        )
     }
 }

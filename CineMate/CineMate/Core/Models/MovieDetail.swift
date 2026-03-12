@@ -51,6 +51,20 @@ struct ProductionCountry: Codable {
 // MARK: - Convenience Extensions
 
 extension MovieDetail {
+    /// Converts detailed data into a lightweight list movie model.
+    var asMovieStub: Movie {
+        Movie(
+            id: id,
+            title: title,
+            overview: overview,
+            posterPath: posterPath,
+            backdropPath: backdropPath,
+            releaseDate: releaseDate,
+            voteAverage: voteAverage,
+            genres: genreNames
+        )
+    }
+
     /// Returns only the genre names as strings.
     var genreNames: [String] {
         genres.map { $0.name }

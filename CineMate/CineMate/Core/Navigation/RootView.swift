@@ -53,7 +53,7 @@ struct RootView: View {
         NavigationStack(path: $navigator.path) {
             TabView(selection: $selectedTab) {
                 // Movies
-                MovieListView(viewModel: movieVM, favoriteViewModel: favVM, castViewModel: castVM)
+                MovieListView(viewModel: movieVM, favoriteViewModel: favVM)
                     .tabItem { Label("Movies", systemImage: "film") }
                     .tag(MainTab.movies)
 

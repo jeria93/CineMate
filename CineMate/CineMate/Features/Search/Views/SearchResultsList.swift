@@ -10,9 +10,8 @@ import SwiftUI
 /// Scrollable list of search results with infinite scroll support.
 struct SearchResultsList: View {
     let movies: [Movie]
-    let favoriteIDs: Set<Int>
+    @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
     let isLoadingNextPage: Bool
-    let onToggleFavorite: (Movie) -> Void
     let loadMoreAction: (Movie) -> Void
 
     var body: some View {
@@ -21,8 +20,7 @@ struct SearchResultsList: View {
                 ForEach(movies) { movie in
                     MovieRowView(
                         movie: movie,
-                        isFavorite: favoriteIDs.contains(movie.id),
-                        onToggleFavorite: { onToggleFavorite(movie) }
+                        favoriteViewModel: favoriteViewModel
                     )
                     .onAppear {
                         guard isPaginationTrigger(movie) else { return }

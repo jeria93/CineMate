@@ -7,42 +7,27 @@
 
 import SwiftUI
 
-/// Previews for various states of `MovieViewModel`
+/// Previews for movie list/detail view models.
 @MainActor
 extension PreviewFactory {
 
-    /// List with mock movies
+    // MARK: - MovieViewModel (List)
+
+    /// List with mock movies.
     static func movieListViewModel() -> MovieViewModel {
         resetAllPreviewData()
         let vm = MovieViewModel(repository: repository)
-        vm.movies = SharedPreviewMovies.moviesList
+        vm.movies = SharedPreviewMovies.moviesList.removingDuplicateIDs()
         return vm
     }
 
-    /// Detail with full mock data (incl. credits)
-    static func movieDetailViewModelWithData() -> MovieViewModel {
-        resetAllPreviewData()
-        let vm = MovieViewModel(repository: repository)
-        vm.movieDetail = MovieDetailPreviewData.starWarsDetail
-        vm.movieCredits = MovieCreditsPreviewData.starWarsCredits()
-        return vm
-    }
-
-    /// Detail with empty data only
-    static func movieDetailViewModelEmptyDetail() -> MovieViewModel {
-        resetAllPreviewData()
-        let vm = MovieViewModel(repository: repository)
-        vm.movieDetail = MovieDetailPreviewData.emptyDetail
-        return vm
-    }
-
-    /// Empty state (no data)
+    /// Empty state (no data).
     static func emptyMovieViewModel() -> MovieViewModel {
         resetAllPreviewData()
         return MovieViewModel(repository: repository)
     }
 
-    /// Loading spinner state
+    /// Loading spinner state.
     static func loadingMovieViewModel() -> MovieViewModel {
         resetAllPreviewData()
         let vm = MovieViewModel(repository: repository)
@@ -50,7 +35,7 @@ extension PreviewFactory {
         return vm
     }
 
-    /// Error message state
+    /// Error message state.
     static func errorMovieViewModel() -> MovieViewModel {
         resetAllPreviewData()
         let vm = MovieViewModel(repository: repository)
@@ -58,27 +43,52 @@ extension PreviewFactory {
         return vm
     }
 
-    /// Only recommended movies loaded
-    static func movieDetailViewModelWithRecommendations() -> MovieViewModel {
+    // MARK: - MovieDetailViewModel (Detail)
+
+    /// Detail with full mock data.
+    static func movieDetailViewModelWithData() -> MovieDetailViewModel {
         resetAllPreviewData()
-        let vm = MovieViewModel(repository: repository)
+        let vm = MovieDetailViewModel(repository: repository)
+        vm.movieDetail = MovieDetailPreviewData.starWarsDetail
+        vm.movieVideos = PreviewData.sampleVideos
         vm.recommendedMovies = recommendedMovies
-        return vm
-    }
-
-    /// Detail with mock watch providers
-    static func movieDetailViewModelWithWatchProviders() -> MovieViewModel {
-        resetAllPreviewData()
-        let vm = MovieViewModel(repository: repository)
         vm.watchProviderRegion = PreviewData.mockWatchProviderRegion
+        vm.state = .loaded
         return vm
     }
 
-    /// Loading just the detail section
-    static func movieDetailViewModelLoading() -> MovieViewModel {
+    /// Detail with empty data only.
+    static func movieDetailViewModelEmptyDetail() -> MovieDetailViewModel {
         resetAllPreviewData()
-        let vm = MovieViewModel(repository: repository)
-        vm.isLoadingDetail = true
+        let vm = MovieDetailViewModel(repository: repository)
+        vm.movieDetail = MovieDetailPreviewData.emptyDetail
+        vm.state = .loaded
+        return vm
+    }
+    
+    /// Detail with only recommendations loaded.
+    static func movieDetailViewModelWithRecommendations() -> MovieDetailViewModel {
+        resetAllPreviewData()
+        let vm = MovieDetailViewModel(repository: repository)
+        vm.recommendedMovies = recommendedMovies
+        vm.state = .loaded
+        return vm
+    }
+
+    /// Detail with watch providers loaded.
+    static func movieDetailViewModelWithWatchProviders() -> MovieDetailViewModel {
+        resetAllPreviewData()
+        let vm = MovieDetailViewModel(repository: repository)
+        vm.watchProviderRegion = PreviewData.mockWatchProviderRegion
+        vm.state = .loaded
+        return vm
+    }
+
+    /// Loading just the detail section.
+    static func movieDetailViewModelLoading() -> MovieDetailViewModel {
+        resetAllPreviewData()
+        let vm = MovieDetailViewModel(repository: repository)
+        vm.state = .loading
         return vm
     }
 }
