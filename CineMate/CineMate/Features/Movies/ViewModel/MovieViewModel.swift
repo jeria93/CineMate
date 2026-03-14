@@ -147,12 +147,19 @@ enum MovieDetailScreenState: Equatable {
     case failed(String)
 }
 
+enum WatchProvidersSectionState: Equatable {
+    case idle
+    case loading
+    case loaded(WatchProviderAvailability)
+    case failed(String)
+}
+
 /// Owns movie detail state (detail, trailer videos, providers and recommendations).
 @MainActor
 final class MovieDetailViewModel: ObservableObject {
     @Published var movieDetail: MovieDetail?
     @Published var recommendedMovies: [Movie] = []
-    @Published var watchProviderRegion: WatchProviderRegion?
+    @Published var watchProvidersState: WatchProvidersSectionState = .idle
     @Published var movieVideos: [MovieVideo] = []
     @Published var state: MovieDetailScreenState = .idle
 
@@ -163,7 +170,7 @@ final class MovieDetailViewModel: ObservableObject {
 
     private var detailCache: [Int: MovieDetail] = [:]
     private var recommendationsCache: [Int: [Movie]] = [:]
-    private var providerCache: [Int: WatchProviderRegion] = [:]
+    private var providerCache: [Int: WatchProviderAvailability] = [:]
     private var videoCache: [Int: [MovieVideo]] = [:]
 
     init(repository: MovieProtocol = MovieRepository()) {
@@ -188,6 +195,32 @@ final class MovieDetailViewModel: ObservableObject {
         movieDetail?.asMovieStub
     }
 
+    var watchProviderAvailability: WatchProviderAvailability? {
+        if case let .loaded(availability) = watchProvidersState {
+            return availability
+        }
+        return nil
+    }
+
+    var watchProviderErrorMessage: String? {
+        if case let .failed(message) = watchProvidersState {
+            return message
+        }
+        return nil
+    }
+
+    var isWatchProvidersLoading: Bool {
+        if case .loading = watchProvidersState {
+            return true
+        }
+        return false
+    }
+
+    private enum WatchProvidersFetchResult {
+        case loaded(WatchProviderAvailability)
+        case failed(String)
+    }
+
     /// Loads the movie detail bundle for one movie ID.
     /// Uses in-memory caches and ignores stale responses from older requests.
     func load(movieId: Int) async {
@@ -201,18 +234,24 @@ final class MovieDetailViewModel: ObservableObject {
         applyCachedValues(for: movieId)
         if hasCompleteCache(for: movieId) {
             state = .loaded
+            if providerCache[movieId] == nil {
+                await loadWatchProviders(for: movieId)
+            }
             return
         }
 
         guard !inFlightRequests.contains(movieId) else { return }
         inFlightRequests.insert(movieId)
         state = .loading
+        if providerCache[movieId] == nil {
+            watchProvidersState = .loading
+        }
 
         defer { inFlightRequests.remove(movieId) }
 
         async let detailRequest = repository.fetchMovieDetails(for: movieId)
         async let recommendationsRequest = repository.fetchRecommendedMovies(for: movieId)
-        async let providersRequest = repository.fetchWatchProviders(for: movieId)
+        async let providersResult = fetchWatchProvidersResult(for: movieId)
         async let videosRequest = repository.fetchMovieVideos(for: movieId)
 
         do {
@@ -221,20 +260,19 @@ final class MovieDetailViewModel: ObservableObject {
                 from: try await recommendationsRequest,
                 excluding: movieId
             )
-            let providers = try await providersRequest
             let videos = try await videosRequest
+            let providerResult = await providersResult
 
             guard currentMovieID == movieId else { return }
 
             detailCache[movieId] = detail
             recommendationsCache[movieId] = recommendations
-            providerCache[movieId] = providers
             videoCache[movieId] = videos
 
             movieDetail = detail
             recommendedMovies = recommendations
-            watchProviderRegion = providers
             movieVideos = videos
+            applyWatchProvidersResult(providerResult, for: movieId)
             state = .loaded
         } catch {
             guard currentMovieID == movieId else { return }
@@ -246,7 +284,7 @@ final class MovieDetailViewModel: ObservableObject {
     private func clearVisibleState() {
         movieDetail = nil
         recommendedMovies = []
-        watchProviderRegion = nil
+        watchProvidersState = .idle
         movieVideos = []
         state = currentMovieID == nil ? .idle : .empty
     }
@@ -259,7 +297,9 @@ final class MovieDetailViewModel: ObservableObject {
             recommendedMovies = recommendations
         }
         if let providers = providerCache[movieId] {
-            watchProviderRegion = providers
+            watchProvidersState = .loaded(providers)
+        } else {
+            watchProvidersState = .idle
         }
         if let videos = videoCache[movieId] {
             movieVideos = videos
@@ -269,8 +309,39 @@ final class MovieDetailViewModel: ObservableObject {
     private func hasCompleteCache(for movieId: Int) -> Bool {
         detailCache[movieId] != nil &&
         recommendationsCache[movieId] != nil &&
-        providerCache[movieId] != nil &&
         videoCache[movieId] != nil
+    }
+
+    private func fetchWatchProvidersResult(for movieId: Int) async -> WatchProvidersFetchResult {
+        if let cached = providerCache[movieId] {
+            return .loaded(cached)
+        }
+
+        do {
+            let availability = try await repository.fetchWatchProviders(for: movieId)
+            return .loaded(availability)
+        } catch {
+            return .failed(error.localizedDescription)
+        }
+    }
+
+    private func loadWatchProviders(for movieId: Int) async {
+        guard currentMovieID == movieId else { return }
+        watchProvidersState = .loading
+
+        let result = await fetchWatchProvidersResult(for: movieId)
+        guard currentMovieID == movieId else { return }
+        applyWatchProvidersResult(result, for: movieId)
+    }
+
+    private func applyWatchProvidersResult(_ result: WatchProvidersFetchResult, for movieId: Int) {
+        switch result {
+        case .loaded(let availability):
+            providerCache[movieId] = availability
+            watchProvidersState = .loaded(availability)
+        case .failed(let message):
+            watchProvidersState = .failed(message)
+        }
     }
 
     private func deduplicatedRecommendations(from movies: [Movie], excluding movieId: Int) -> [Movie] {

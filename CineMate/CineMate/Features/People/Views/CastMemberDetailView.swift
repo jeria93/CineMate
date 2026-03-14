@@ -127,7 +127,10 @@ struct CastMemberDetailView: View {
           .font(.title)
           .bold()
 
-        HeartButton(isOn: favoritePeopleVM.isFavorite(id: member.id)) {
+        HeartButton(
+          isOn: favoritePeopleVM.isFavorite(id: member.id),
+          isDisabled: favoritePeopleVM.isToggleInFlight(id: member.id)
+        ) {
           Task { await favoritePeopleVM.toggleFavorite(person: personRef) }
         }
       }

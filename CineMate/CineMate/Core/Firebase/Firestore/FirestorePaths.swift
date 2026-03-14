@@ -16,29 +16,55 @@ import FirebaseFirestore
 /// - Return **references only** (no reads/writes here).
 enum FirestorePaths {
 
-    /// The shared Firestore instance.
-    private static var db: Firestore { Firestore.firestore() }
+    // MARK: - Root
 
     /// `/users` collection.
-    static func users() -> CollectionReference {
+    static func users(in db: Firestore) -> CollectionReference {
         db.collection("users")
     }
 
+    /// `/users` collection (shared Firestore).
+    static func users() -> CollectionReference {
+        users(in: Firestore.firestore())
+    }
+
+    // MARK: - User
+
     /// `/users/{uid}` document.
     /// - Parameter uid: The Firebase Auth user ID.
-    static func userDoc(uid: String) -> DocumentReference {
-        users().document(uid)
+    static func userDoc(uid: String, in db: Firestore) -> DocumentReference {
+        users(in: db).document(uid)
     }
+
+    /// `/users/{uid}` document (shared Firestore).
+    /// - Parameter uid: The Firebase Auth user ID.
+    static func userDoc(uid: String) -> DocumentReference {
+        userDoc(uid: uid, in: Firestore.firestore())
+    }
+
+    // MARK: - Favorites
 
     /// `/users/{uid}/favorites` collection.
     /// - Parameter uid: The Firebase Auth user ID.
+    static func userFavorites(uid: String, in db: Firestore) -> CollectionReference {
+        userDoc(uid: uid, in: db).collection("favorites")
+    }
+
+    /// `/users/{uid}/favorites` collection (shared Firestore).
+    /// - Parameter uid: The Firebase Auth user ID.
     static func userFavorites(uid: String) -> CollectionReference {
-        userDoc(uid: uid).collection("favorites")
+        userFavorites(uid: uid, in: Firestore.firestore())
     }
 
     /// `/users/{uid}/favorite_people` collection.
     /// - Parameter uid: The Firebase Auth user ID.
+    static func userFavoritePeople(uid: String, in db: Firestore) -> CollectionReference {
+        userDoc(uid: uid, in: db).collection("favorite_people")
+    }
+
+    /// `/users/{uid}/favorite_people` collection (shared Firestore).
+    /// - Parameter uid: The Firebase Auth user ID.
     static func userFavoritePeople(uid: String) -> CollectionReference {
-        userDoc(uid: uid).collection("favorite_people")
+        userFavoritePeople(uid: uid, in: Firestore.firestore())
     }
 }

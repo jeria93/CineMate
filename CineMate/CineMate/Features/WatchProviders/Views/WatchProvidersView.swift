@@ -8,24 +8,31 @@
 import SwiftUI
 
 struct WatchProvidersView: View {
-    let region: WatchProviderRegion
+    let movieId: Int
+    let availability: WatchProviderAvailability?
+    let isLoading: Bool
+    let errorMessage: String?
+
     @State private var selection: WatchProviderCategory = .flatrate
 
-    var selectedProviders: [WatchProvider] {
-        switch selection {
-        case .flatrate: return region.flatrate ?? []
-        case .rent:     return region.rent ?? []
-        case .buy:      return region.buy ?? []
-        }
+    private var resolvedRegion: WatchProviderRegion? {
+        availability?.region
+    }
+
+    private var selectedProviders: [WatchProvider] {
+        guard let resolvedRegion else { return [] }
+        return selection.providers(in: resolvedRegion)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            WatchProviderCategoryPicker(selection: $selection)
-            WatchProviderListView(providers: selectedProviders, selection: selection)
+            Text("Where to watch")
+                .font(.headline)
 
-            if let link = region.link, let url = URL(string: link) {
-                Divider()
+            regionHeader
+            contentView
+
+            if let url = resolvedRegion?.linkURL {
                 Link(destination: url) {
                     HStack {
                         Text("See all streaming options")
@@ -33,14 +40,100 @@ struct WatchProvidersView: View {
                         Image(systemName: "arrow.up.right.square")
                     }
                     .font(.subheadline)
-                    .foregroundColor(.accentColor)
-                    .padding()
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
                     .background(Color(UIColor.secondarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
         }
         .padding(.vertical, 8)
+        .onAppear {
+            syncSelectionWithResolvedRegion()
+        }
+        .onChange(of: movieId) { _, _ in
+            syncSelectionWithResolvedRegion()
+        }
+        .onChange(of: availability?.resolvedRegionCode) { _, _ in
+            syncSelectionWithResolvedRegion()
+        }
+    }
+
+    @ViewBuilder
+    private var regionHeader: some View {
+        if let availability {
+            VStack(alignment: .leading, spacing: 2) {
+                if let resolvedRegionCode = availability.resolvedRegionCode {
+                    let resolvedName = availability.resolvedRegionName ?? resolvedRegionCode
+                    Text("\(availability.sourceLabel): \(resolvedName) (\(resolvedRegionCode))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("No watch-provider region data for \(availability.requestedRegionName) (\(availability.requestedRegionCode)).")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                if availability.source != .requestedRegion {
+                    let requested = "\(availability.requestedRegionName) (\(availability.requestedRegionCode))"
+                    let fallback = "\(availability.fallbackRegionName) (\(availability.fallbackRegionCode))"
+                    Text("Requested: \(requested) · Fallback: \(fallback)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } else if isLoading {
+            Text("Resolving watch providers for your region…")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        if isLoading, availability == nil {
+            ProgressView("Loading watch providers…")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 4)
+        } else if let errorMessage, availability == nil {
+            fallbackCard(
+                title: "Could not load watch providers",
+                message: errorMessage,
+                iconName: "exclamationmark.triangle"
+            )
+        } else if let resolvedRegion {
+            WatchProviderCategoryPicker(selection: $selection, region: resolvedRegion)
+            WatchProviderListView(
+                providers: selectedProviders,
+                selection: selection,
+                resolvedRegionCode: availability?.resolvedRegionCode,
+                resolvedRegionName: availability?.resolvedRegionName
+            )
+        } else {
+            fallbackCard(
+                title: "No regional provider data",
+                message: "TMDB has no watch-provider data for your region or fallback region right now.",
+                iconName: "globe.badge.chevron.backward"
+            )
+        }
+    }
+
+    private func syncSelectionWithResolvedRegion() {
+        selection = WatchProviderCategory.preferredInitialSelection(in: availability?.region)
+    }
+
+    private func fallbackCard(title: String, message: String, iconName: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label(title, systemImage: iconName)
+                .font(.subheadline.weight(.semibold))
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }
 
@@ -50,4 +143,20 @@ struct WatchProvidersView: View {
 
 #Preview("No Providers") {
     WatchProvidersView.previewEmpty
+}
+
+#Preview("Fallback Region") {
+    WatchProvidersView.previewFallbackRegion
+}
+
+#Preview("No Region Data") {
+    WatchProvidersView.previewNoRegionData
+}
+
+#Preview("Loading") {
+    WatchProvidersView.previewLoading
+}
+
+#Preview("Error") {
+    WatchProvidersView.previewError
 }

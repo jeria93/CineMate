@@ -11,20 +11,18 @@ struct MovieFavoriteButtonView: View {
     let movie: Movie
     @ObservedObject var favoriteViewModel: FavoriteMoviesViewModel
 
-    @State private var isToggling = false
-
     private var isFavorite: Bool {
-        favoriteViewModel.favoriteMovies.contains { $0.id == movie.id }
+        favoriteViewModel.isFavorite(id: movie.id)
+    }
+
+    private var isToggling: Bool {
+        favoriteViewModel.isToggleInFlight(id: movie.id)
     }
 
     var body: some View {
         HeartButton(isOn: isFavorite, isDisabled: isToggling) {
-            guard !isToggling else { return }
-            isToggling = true
-
             Task {
                 await favoriteViewModel.toggleFavorite(movie: movie)
-                isToggling = false
             }
         }
     }

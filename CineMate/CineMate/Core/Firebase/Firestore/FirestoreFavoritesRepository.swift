@@ -38,9 +38,9 @@ final class FirestoreFavoritesRepository {
         if let genres = movie.genres { data["genres"] = genres }
         if let overview = movie.overview { data["overview"] = overview }
 
-        try await firestore
-            .collection("users").document(uid)
-            .collection("favorites").document(String(movie.id))
+        try await FirestorePaths
+            .userFavorites(uid: uid, in: firestore)
+            .document(String(movie.id))
             .setData(data, merge: true)
     }
 
@@ -49,26 +49,24 @@ final class FirestoreFavoritesRepository {
     ///   - id: TMDB movie ID.
     ///   - uid: Owner's user ID.
     func removeFavorite(id: Int, for uid: String) async throws {
-        try await firestore
-            .collection("users").document(uid)
-            .collection("favorites").document(String(id))
+        try await FirestorePaths
+            .userFavorites(uid: uid, in: firestore)
+            .document(String(id))
             .delete()
     }
 
     /// Live stream of a user's favorite movies ordered by newest first.
     /// - Parameter uid: Owner's user ID.
     /// - Returns: Async stream emitting full lists on every change.
-    func favoritesStream(for uid: String) -> AsyncStream<[Movie]> {
-        AsyncStream { continuation in
-            let query = firestore
-                .collection("users").document(uid)
-                .collection("favorites")
+    func favoritesStream(for uid: String) -> AsyncThrowingStream<[Movie], Error> {
+        AsyncThrowingStream { continuation in
+            let query = FirestorePaths
+                .userFavorites(uid: uid, in: firestore)
                 .order(by: "createdAt", descending: true)
 
             let listener = query.addSnapshotListener { snapshot, error in
                 if let error = error {
-                    print("favoritesStream error:", error)
-                    continuation.finish()
+                    continuation.finish(throwing: error)
                     return
                 }
                 let movies = snapshot?.documents.compactMap(Self.mapToMovie(doc:)) ?? []
@@ -81,9 +79,12 @@ final class FirestoreFavoritesRepository {
     /// Maps a Firestore document to a `Movie` (lenient on optionals).
     /// - Parameter doc: Firestore document.
     /// - Returns: Movie or `nil` if required fields are missing.
-    private static func mapToMovie(doc: DocumentSnapshot) -> Movie? {
-        let data = doc.data() ?? [:]
-        guard let id = data["id"] as? Int, let title = data["title"] as? String else { return nil }
+    private static func mapToMovie(doc: QueryDocumentSnapshot) -> Movie? {
+        let data = doc.data()
+        let fallbackID = Int(doc.documentID)
+        guard let id = intValue(from: data["id"]) ?? fallbackID,
+              let title = data["title"] as? String else { return nil }
+
         return Movie(
             id: id,
             title: title,
@@ -91,8 +92,22 @@ final class FirestoreFavoritesRepository {
             posterPath: data["posterPath"] as? String,
             backdropPath: nil,
             releaseDate: data["releaseDate"] as? String,
-            voteAverage: data["voteAverage"] as? Double,
+            voteAverage: doubleValue(from: data["voteAverage"]),
             genres: data["genres"] as? [String]
         )
+    }
+
+    private static func intValue(from raw: Any?) -> Int? {
+        if let value = raw as? Int { return value }
+        if let value = raw as? NSNumber { return value.intValue }
+        if let value = raw as? String { return Int(value) }
+        return nil
+    }
+
+    private static func doubleValue(from raw: Any?) -> Double? {
+        if let value = raw as? Double { return value }
+        if let value = raw as? NSNumber { return value.doubleValue }
+        if let value = raw as? String { return Double(value) }
+        return nil
     }
 }

@@ -29,8 +29,57 @@ struct PreviewData {
     static let mockWatchProviderRegion = WatchProviderRegion(
         link: "https://www.themoviedb.org/movie/11/watch",
         flatrate: mockWatchProviders,
+        rent: [mockWatchProviders[1]],
+        buy: nil,
+        free: nil,
+        ads: nil
+    )
+
+    static let mockWatchProviderRegionRentOnly = WatchProviderRegion(
+        link: "https://www.themoviedb.org/movie/11/watch?locale=US",
+        flatrate: nil,
+        rent: [mockWatchProviders[1], mockWatchProviders[2]],
+        buy: nil,
+        free: nil,
+        ads: nil
+    )
+
+    static let mockWatchProviderRegionEmptyCatalog = WatchProviderRegion(
+        link: "https://www.themoviedb.org/movie/11/watch?locale=SE",
+        flatrate: nil,
         rent: nil,
-        buy: nil
+        buy: nil,
+        free: nil,
+        ads: nil
+    )
+
+    static let mockWatchProviderAvailability = WatchProviderAvailability(
+        requestedRegionCode: "SE",
+        fallbackRegionCode: "US",
+        resolvedRegionCode: "SE",
+        source: .requestedRegion,
+        region: mockWatchProviderRegion
+    )
+
+    static let mockWatchProviderFallbackAvailability = WatchProviderAvailability(
+        requestedRegionCode: "SE",
+        fallbackRegionCode: "US",
+        resolvedRegionCode: "US",
+        source: .fallbackRegion,
+        region: mockWatchProviderRegionRentOnly
+    )
+
+    static let mockWatchProviderUnavailableAvailability = WatchProviderAvailability.unavailable(
+        requestedRegionCode: "SE",
+        fallbackRegionCode: "US"
+    )
+
+    static let mockWatchProviderEmptyCatalogAvailability = WatchProviderAvailability(
+        requestedRegionCode: "SE",
+        fallbackRegionCode: "US",
+        resolvedRegionCode: "SE",
+        source: .requestedRegion,
+        region: mockWatchProviderRegionEmptyCatalog
     )
 
 }
