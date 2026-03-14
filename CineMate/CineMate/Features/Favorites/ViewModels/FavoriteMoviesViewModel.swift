@@ -130,15 +130,15 @@ final class FavoriteMoviesViewModel: ObservableObject {
             do {
                 for try await movies in repository.favoritesStream(for: uid) {
                     if Task.isCancelled { break }
-                    await self.applySnapshot(movies, for: uid)
+                    self.applySnapshot(movies, for: uid)
                 }
             } catch is CancellationError {
                 // Cancellation is expected when listener stops.
             } catch {
-                await self.handleStreamError(error, for: uid)
+                self.handleStreamError(error, for: uid)
             }
 
-            await self.handleStreamTermination(for: uid)
+            self.handleStreamTermination(for: uid)
         }
     }
 

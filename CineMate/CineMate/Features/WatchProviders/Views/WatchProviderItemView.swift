@@ -10,20 +10,28 @@ import SwiftUI
 struct WatchProviderItemView: View {
     let provider: WatchProvider
 
+    private enum Layout {
+        static let cardWidth: CGFloat = 78
+        static let cardHeight: CGFloat = 90
+        static let logoSize: CGFloat = 56
+        static let nameHeight: CGFloat = 14
+    }
+
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             logoView
-                .frame(width: 56, height: 56)
+                .frame(width: Layout.logoSize, height: Layout.logoSize)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
             Text(provider.displayName)
                 .font(.caption2)
-                .lineLimit(2)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .allowsTightening(true)
                 .multilineTextAlignment(.center)
-                .frame(width: 72)
+                .frame(width: Layout.cardWidth - 6, height: Layout.nameHeight, alignment: .top)
         }
-        .frame(width: 76)
-        .padding(.vertical, 2)
+        .frame(width: Layout.cardWidth, height: Layout.cardHeight, alignment: .top)
     }
 
     @ViewBuilder
@@ -70,6 +78,10 @@ struct WatchProviderItemView: View {
 
 #Preview("Disney+") {
     WatchProviderItemView.previewDisneyPlus
+}
+
+#Preview("Long Name") {
+    WatchProviderItemView.previewLongName
 }
 
 #Preview("Missing Logo") {

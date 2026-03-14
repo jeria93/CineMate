@@ -8,15 +8,24 @@
 import SwiftUI
 
 extension WatchProviderItemView {
-    
+
     static var previewNetflix: some View {
         WatchProviderItemView(provider: PreviewData.mockWatchProviders[0])
             .padding()
     }
-    
+
     static var previewDisneyPlus: some View {
         WatchProviderItemView(provider: PreviewData.mockWatchProviders[2])
             .padding()
+    }
+
+    static var previewLongName: some View {
+        WatchProviderItemView(provider: WatchProvider(
+            providerId: 1001,
+            providerName: "Google Play Movies",
+            logoPath: nil
+        ))
+        .padding()
     }
 
     static var previewEmpty: some View {

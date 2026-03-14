@@ -36,7 +36,7 @@ struct WatchProviderListView: View {
             .padding(.vertical, 4)
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
+                HStack(alignment: .top, spacing: 12) {
                     ForEach(providers) { provider in
                         WatchProviderItemView(provider: provider)
                     }
