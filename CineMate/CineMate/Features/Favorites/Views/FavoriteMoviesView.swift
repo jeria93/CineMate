@@ -17,22 +17,38 @@ struct FavoriteMoviesView: View {
 
     @ViewBuilder
     private var contentView: some View {
-        if let message = viewModel.errorMessage {
-            ErrorMessageView(title: "Failed to load", message: message)
-        } else if viewModel.isLoading {
+        switch viewModel.contentState {
+        case .loading:
             LoadingView(title: "Loading favorites...")
-        } else if viewModel.favoriteMovies.isEmpty {
+
+        case .error(let message):
+            ErrorMessageView(
+                title: "Failed to load favorites",
+                message: message,
+                onRetry: { viewModel.retryListener() }
+            )
+
+        case .empty:
             EmptyStateView(
                 systemImage: "heart",
                 title: "No favorites yet",
                 message: "Tap the heart on a movie to add it to your favorites"
             )
-        } else {
-            List(viewModel.favoriteMovies) { movie in
-                MovieRowView(
-                    movie: movie,
-                    favoriteViewModel: viewModel
-                )
+
+        case .content:
+            List {
+                if let inlineError = viewModel.inlineErrorMessage {
+                    Text(inlineError)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
+                ForEach(viewModel.favoriteMovies) { movie in
+                    MovieRowView(
+                        movie: movie,
+                        favoriteViewModel: viewModel
+                    )
+                }
             }
             .listStyle(.plain)
             .scrollIndicators(.hidden)

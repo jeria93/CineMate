@@ -48,8 +48,8 @@ final class MovieRepository: MovieProtocol {
         try await service.fetchRecommendedMovies(for: movieId)
     }
 
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
-        try await service.fetchWatchProviderRegion(for: movieId)
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
+        try await service.fetchWatchProviderAvailability(for: movieId)
     }
 
     // MARK: - Person

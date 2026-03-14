@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WatchProviderCategoryPicker: View {
     @Binding var selection: WatchProviderCategory
+    let region: WatchProviderRegion
 
     var body: some View {
         HStack(spacing: 8) {
@@ -16,6 +17,7 @@ struct WatchProviderCategoryPicker: View {
                 WatchProviderCategoryButton(
                     category: category,
                     isSelected: category == selection,
+                    hasContent: !category.providers(in: region).isEmpty,
                     onTap: {
                         selection = category
                     }
@@ -27,6 +29,9 @@ struct WatchProviderCategoryPicker: View {
 }
 
 #Preview("Flatrate selected") {
-    WatchProviderCategoryPicker(selection: .constant(.flatrate))
-        .padding()
+    WatchProviderCategoryPicker(
+        selection: .constant(.flatrate),
+        region: PreviewData.mockWatchProviderRegion
+    )
+    .padding()
 }

@@ -117,9 +117,15 @@ final class MockMovieRepository: MovieProtocol {
         return SharedPreviewMovies.moviesList
     }
 
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
         try await Task.sleep(nanoseconds: Delay.short)
-        return PreviewData.mockWatchProviderRegion
+        return WatchProviderAvailability(
+            requestedRegionCode: "SE",
+            fallbackRegionCode: "US",
+            resolvedRegionCode: "SE",
+            source: .requestedRegion,
+            region: PreviewData.mockWatchProviderRegion
+        )
     }
 
     // MARK: - Person

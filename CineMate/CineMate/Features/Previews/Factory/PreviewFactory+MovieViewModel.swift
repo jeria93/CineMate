@@ -52,7 +52,7 @@ extension PreviewFactory {
         vm.movieDetail = MovieDetailPreviewData.starWarsDetail
         vm.movieVideos = PreviewData.sampleVideos
         vm.recommendedMovies = recommendedMovies
-        vm.watchProviderRegion = PreviewData.mockWatchProviderRegion
+        vm.watchProvidersState = .loaded(PreviewData.mockWatchProviderAvailability)
         vm.state = .loaded
         return vm
     }
@@ -79,7 +79,7 @@ extension PreviewFactory {
     static func movieDetailViewModelWithWatchProviders() -> MovieDetailViewModel {
         resetAllPreviewData()
         let vm = MovieDetailViewModel(repository: repository)
-        vm.watchProviderRegion = PreviewData.mockWatchProviderRegion
+        vm.watchProvidersState = .loaded(PreviewData.mockWatchProviderAvailability)
         vm.state = .loaded
         return vm
     }

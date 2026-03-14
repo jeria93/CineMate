@@ -10,27 +10,37 @@ import SwiftUI
 struct WatchProviderListView: View {
     let providers: [WatchProvider]
     let selection: WatchProviderCategory
+    let resolvedRegionCode: String?
+    let resolvedRegionName: String?
+
+    private var regionLabel: String {
+        if let resolvedRegionName, let resolvedRegionCode {
+            return "\(resolvedRegionName) (\(resolvedRegionCode))"
+        }
+        if let resolvedRegionCode {
+            return resolvedRegionCode
+        }
+        return "your region"
+    }
 
     var body: some View {
-
         if providers.isEmpty {
-
-            Text("Not available for \(selection.rawValue.lowercased()) in your region.")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.leading)
-                .transition(.opacity)
-                .animation(.easeInOut, value: providers)
-
+            VStack(alignment: .leading, spacing: 4) {
+                Text(selection.emptyTitle)
+                    .font(.subheadline.weight(.semibold))
+                Text("Not available in \(regionLabel) right now.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
+                HStack(alignment: .top, spacing: 12) {
                     ForEach(providers) { provider in
                         WatchProviderItemView(provider: provider)
-                            .transition(.opacity.combined(with: .scale))
                     }
                 }
-                .animation(.easeInOut, value: providers)
             }
         }
     }

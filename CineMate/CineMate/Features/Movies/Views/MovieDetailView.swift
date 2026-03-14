@@ -107,7 +107,9 @@ struct MovieDetailView: View {
             MovieDetailInfoView(
                 movie: movie,
                 detail: detailViewModel.movieDetail,
-                watchProviderRegion: detailViewModel.watchProviderRegion,
+                watchProviderAvailability: detailViewModel.watchProviderAvailability,
+                isWatchProvidersLoading: detailViewModel.isWatchProvidersLoading,
+                watchProviderErrorMessage: detailViewModel.watchProviderErrorMessage,
                 isLoading: detailViewModel.isLoading
             )
             MovieDetailActionBarView(movie: movie, videos: detailViewModel.movieVideos)

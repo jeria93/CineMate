@@ -25,29 +25,18 @@ final class FirestoreFavoritePeopleRepository {
     /// Live stream of a user's favorite people ordered by newest first.
     /// - Parameter uid: Owner's user ID.
     /// - Returns: Async stream emitting full lists on every change.
-    func favoritePeopleStream(uid: String) -> AsyncStream<[PersonRef]> {
-        AsyncStream { continuation in
-            let query = firestore
-                .collection("users").document(uid)
-                .collection("favorite_people")
+    func favoritePeopleStream(uid: String) -> AsyncThrowingStream<[PersonRef], Error> {
+        AsyncThrowingStream { continuation in
+            let query = FirestorePaths
+                .userFavoritePeople(uid: uid, in: firestore)
                 .order(by: "createdAt", descending: true)
 
             let listener = query.addSnapshotListener { snapshot, error in
                 if let error = error {
-                    print("favoritePeopleStream error:", error)
-                    continuation.finish()
+                    continuation.finish(throwing: error)
                     return
                 }
-                let people: [PersonRef] = snapshot?.documents.compactMap { doc in
-                    let data = doc.data()
-                    guard let id = data["id"] as? Int,
-                          let name = data["name"] as? String else { return nil }
-                    return PersonRef(
-                        id: id,
-                        name: name,
-                        profilePath: data["profilePath"] as? String
-                    )
-                } ?? []
+                let people = snapshot?.documents.compactMap(Self.mapToPerson(doc:)) ?? []
                 continuation.yield(people)
             }
             continuation.onTermination = { _ in listener.remove() }
@@ -59,9 +48,9 @@ final class FirestoreFavoritePeopleRepository {
     ///   - person: Person to persist.
     ///   - uid: Owner's user ID.
     func addFavorite(person: PersonRef, uid: String) async throws {
-        try await firestore
-            .collection("users").document(uid)
-            .collection("favorite_people").document("\(person.id)")
+        try await FirestorePaths
+            .userFavoritePeople(uid: uid, in: firestore)
+            .document("\(person.id)")
             .setData([
                 "id": person.id,
                 "name": person.name,
@@ -75,9 +64,29 @@ final class FirestoreFavoritePeopleRepository {
     ///   - id: TMDB person ID.
     ///   - uid: Owner's user ID.
     func removeFavorite(id: Int, uid: String) async throws {
-        try await firestore
-            .collection("users").document(uid)
-            .collection("favorite_people").document("\(id)")
+        try await FirestorePaths
+            .userFavoritePeople(uid: uid, in: firestore)
+            .document("\(id)")
             .delete()
+    }
+
+    private static func mapToPerson(doc: QueryDocumentSnapshot) -> PersonRef? {
+        let data = doc.data()
+        let fallbackID = Int(doc.documentID)
+        guard let id = intValue(from: data["id"]) ?? fallbackID,
+              let name = data["name"] as? String else { return nil }
+
+        return PersonRef(
+            id: id,
+            name: name,
+            profilePath: data["profilePath"] as? String
+        )
+    }
+
+    private static func intValue(from raw: Any?) -> Int? {
+        if let value = raw as? Int { return value }
+        if let value = raw as? NSNumber { return value.intValue }
+        if let value = raw as? String { return Int(value) }
+        return nil
     }
 }
