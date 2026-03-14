@@ -12,7 +12,7 @@ import Foundation
 enum SharedPreviewMovies {
 
     static let inception = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.sharedMovies, 1),
         title: "Inception",
         overview: "A thief with the rare ability to enter people's dreams and steal secrets from their subconscious.",
         posterPath: "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
@@ -23,7 +23,7 @@ enum SharedPreviewMovies {
     )
 
     static let interstellar = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.sharedMovies, 2),
         title: "Interstellar",
         overview: "Explorers travel through a wormhole in space to ensure humanity's survival.",
         posterPath: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
@@ -34,7 +34,7 @@ enum SharedPreviewMovies {
     )
 
     static let oppenheimer = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.sharedMovies, 3),
         title: "Oppenheimer",
         overview: "The story of J. Robert Oppenheimer and the atomic bomb.",
         posterPath: "/ptpr0kGAckfQkJeJIt8st5dglvd.jpg",
@@ -45,7 +45,7 @@ enum SharedPreviewMovies {
     )
 
     static let starWars = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.sharedMovies, 4),
         title: "Star Wars: A New Hope",
         overview: "Luke Skywalker joins forces with Jedi, a Wookiee and two droids to fight the Empire.",
         posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
@@ -56,7 +56,7 @@ enum SharedPreviewMovies {
     )
 
     static let matrix = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.sharedMovies, 5),
         title: "The Matrix",
         overview: "A hacker learns about the true nature of reality and his role in the war against its controllers.",
         posterPath: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
@@ -67,7 +67,7 @@ enum SharedPreviewMovies {
     )
 
     static let dune = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.sharedMovies, 6),
         title: "Dune",
         overview: "Paul Atreides leads desert warriors against interplanetary rivals.",
         posterPath: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
@@ -87,7 +87,7 @@ enum SharedPreviewMovies {
     ]
 
     static let minimalMovie = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.sharedMovies, 99),
         title: "Unknown Title",
         overview: nil,
         posterPath: nil,
@@ -101,8 +101,8 @@ enum SharedPreviewMovies {
 
 /// Preview reset helper for SharedPreviewMovies
 extension SharedPreviewMovies {
-    /// Resets preview ID state for use in previews involving SharedPreviewMovies
+    /// Backward-compatible no-op after moving to deterministic IDs.
     static func resetIDs() {
-        PreviewID.reset()
+        _ = moviesList
     }
 }

@@ -78,6 +78,7 @@ struct MovieDetailView: View {
             }
         }
         .task(id: movieId) {
+            guard !ProcessInfo.processInfo.isPreview else { return }
             await loadDetailScreen()
         }
         .navigationTitle(movie?.title ?? "Movie")
@@ -217,4 +218,16 @@ private struct MovieCreditsSection: View {
 
 #Preview("Star Wars Detail") {
     MovieDetailView.previewDefault.withPreviewNavigation()
+}
+
+#Preview("Loading") {
+    MovieDetailView.previewLoading.withPreviewNavigation()
+}
+
+#Preview("Error") {
+    MovieDetailView.previewError.withPreviewNavigation()
+}
+
+#Preview("Empty Detail") {
+    MovieDetailView.previewEmptyDetail.withPreviewNavigation()
 }

@@ -16,6 +16,18 @@ struct DiscoverMovieRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
+            posterView
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private var posterView: some View {
+        if ProcessInfo.processInfo.isPreview {
+            placeholderView
+                .onTapGesture { navigator.goToMovie(id: movie.id) }
+        } else {
             AsyncImage(url: movie.posterSmallURL) { phase in
                 switch phase {
                 case .success(let image):
@@ -40,18 +52,13 @@ struct DiscoverMovieRow: View {
                             isImageLoaded = true
                         }
 
-                case .failure:
-                    placeholderView
-
-                case .empty:
+                case .failure, .empty:
                     placeholderView
                 @unknown default:
                     placeholderView
                 }
             }
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal)
     }
 
     private var placeholderView: some View {

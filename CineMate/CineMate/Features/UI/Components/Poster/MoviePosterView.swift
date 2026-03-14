@@ -15,38 +15,45 @@ struct MoviePosterView: View {
     @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
-        AsyncImage(url: movie.posterSmallURL) { phase in
-            switch phase {
-            case .success(let image):
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 120, height: 180)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(radius: 4)
-                    .scaleEffect(isTapped ? 0.95 : (isImageLoaded ? 1 : 0.95))
-                    .opacity(isImageLoaded ? 1 : 0)
-                    .animation(.easeOut(duration: 0.3), value: isImageLoaded)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isTapped)
-                    .onTapGesture {
-                        isTapped = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            isTapped = false
+        posterView
+    }
+
+    @ViewBuilder
+    private var posterView: some View {
+        if ProcessInfo.processInfo.isPreview {
+            placeholder
+                .onTapGesture { navigator.goToMovie(id: movie.id) }
+        } else {
+            AsyncImage(url: movie.posterSmallURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 120, height: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .shadow(radius: 4)
+                        .scaleEffect(isTapped ? 0.95 : (isImageLoaded ? 1 : 0.95))
+                        .opacity(isImageLoaded ? 1 : 0)
+                        .animation(.easeOut(duration: 0.3), value: isImageLoaded)
+                        .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isTapped)
+                        .onTapGesture {
+                            isTapped = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                isTapped = false
+                            }
+                            navigator.goToMovie(id: movie.id)
                         }
-                        navigator.goToMovie(id: movie.id)
-                    }
-                    .onAppear {
-                        isImageLoaded = true
-                    }
+                        .onAppear {
+                            isImageLoaded = true
+                        }
 
-            case .failure:
-                placeholder
+                case .failure, .empty:
+                    placeholder
 
-            case .empty:
-                placeholder
-
-            @unknown default:
-                placeholder
+                @unknown default:
+                    placeholder
+                }
             }
         }
     }

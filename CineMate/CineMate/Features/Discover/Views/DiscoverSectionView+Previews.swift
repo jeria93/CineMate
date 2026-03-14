@@ -19,9 +19,7 @@ extension DiscoverSectionView {
 
     /// Preview with standard list of movies.
     ///
-    /// Uses `SharedPreviewMovies.moviesList` which contains a fixed set of
-    /// mock movies created with `PreviewID.next()`.
-    /// No need to call `PreviewID.reset()` here.
+    /// Uses `SharedPreviewMovies.moviesList`, which contains deterministic IDs.
     static var previewDefault: some View {
         DiscoverSectionView(
             title: "Top Rated",
@@ -56,21 +54,19 @@ extension DiscoverSectionView {
     /// Preview where all movies are missing posters.
     ///
     /// Creates new movie instances with `.posterPath = nil`.
-    /// `PreviewID.reset()` is required here to avoid ID conflicts.
     static var previewNoPosters: some View {
-        PreviewID.reset()
-        return DiscoverSectionView(
+        DiscoverSectionView(
             title: "No Posters",
-            movies: SharedPreviewMovies.moviesList.map {
+            movies: SharedPreviewMovies.moviesList.enumerated().map { index, movie in
                 Movie(
-                    id: PreviewID.next(),
-                    title: $0.title,
-                    overview: $0.overview,
+                    id: PreviewID.scoped(.discover, 200 + index),
+                    title: movie.title,
+                    overview: movie.overview,
                     posterPath: nil,
-                    backdropPath: $0.backdropPath,
-                    releaseDate: $0.releaseDate,
-                    voteAverage: $0.voteAverage,
-                    genres: $0.genres
+                    backdropPath: movie.backdropPath,
+                    releaseDate: movie.releaseDate,
+                    voteAverage: movie.voteAverage,
+                    genres: movie.genres
                 )
             },
             onSeeAllTap: {}
@@ -80,21 +76,20 @@ extension DiscoverSectionView {
 
     /// Preview with artificially long titles to test line wrapping and overflow handling.
     ///
-    /// `PreviewID.reset()` is needed because new `Movie` instances are created with fresh IDs.
+    /// Uses deterministic IDs to avoid collisions in `ForEach`.
     static var previewLongTitles: some View {
-        PreviewID.reset()
-        return DiscoverSectionView(
+        DiscoverSectionView(
             title: "Long Titles",
-            movies: SharedPreviewMovies.moviesList.map {
+            movies: SharedPreviewMovies.moviesList.enumerated().map { index, movie in
                 Movie(
-                    id: PreviewID.next(),
-                    title: $0.title + " — This is a very long movie title to test wrapping",
-                    overview: $0.overview,
-                    posterPath: $0.posterPath,
-                    backdropPath: $0.backdropPath,
-                    releaseDate: $0.releaseDate,
-                    voteAverage: $0.voteAverage,
-                    genres: $0.genres
+                    id: PreviewID.scoped(.discover, 300 + index),
+                    title: movie.title + " — This is a very long movie title to test wrapping",
+                    overview: movie.overview,
+                    posterPath: movie.posterPath,
+                    backdropPath: movie.backdropPath,
+                    releaseDate: movie.releaseDate,
+                    voteAverage: movie.voteAverage,
+                    genres: movie.genres
                 )
             },
             onSeeAllTap: {}

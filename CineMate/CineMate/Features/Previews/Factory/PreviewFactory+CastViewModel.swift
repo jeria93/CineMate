@@ -11,26 +11,26 @@ import SwiftUI
 @MainActor
 extension PreviewFactory {
 
-  /// Cast view model with mock credits.
-  static func castViewModel() -> CastViewModel {
-    resetAllPreviewData()
-    let vm = CastViewModel(repository: repository)
-    vm.seedPreviewCredits(MovieCreditsPreviewData.starWarsCredits())
-    return vm
-  }
-
-  /// Cast member detail preview in a navigation stack.
-  static func castMemberDetailView() -> some View {
-    resetAllPreviewData()
-    let nav = AppNavigator()
-    return NavigationStack {
-      CastMemberDetailView(
-        member: CastMemberPreviewData.markHamill,
-        personViewModel: .preview,
-        favoritePeopleVM: PreviewFactory.favoritePeopleDefaultVM(),
-        movieViewModel: PreviewFactory.movieListViewModel()
-      )
+    /// Cast view model with mock credits.
+    static func castViewModel() -> CastViewModel {
+        let vm = CastViewModel(repository: repository)
+        vm.seedPreviewCredits(
+            MovieCreditsPreviewData.starWarsCredits(movieId: SharedPreviewMovies.starWars.id)
+        )
+        return vm
     }
-    .environmentObject(nav)
-  }
+
+    /// Cast member detail preview in a navigation stack.
+    static func castMemberDetailView() -> some View {
+        let nav = AppNavigator()
+        return NavigationStack {
+            CastMemberDetailView(
+                member: CastMemberPreviewData.markHamill,
+                personViewModel: .preview,
+                favoritePeopleVM: favoritePeopleDefaultVM(),
+                movieViewModel: movieListViewModel()
+            )
+        }
+        .environmentObject(nav)
+    }
 }

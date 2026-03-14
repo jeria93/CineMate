@@ -16,28 +16,30 @@ struct PosterImageView: View {
 
     var body: some View {
         Group {
-            if let url = url {
+            if ProcessInfo.processInfo.isPreview {
+                fallbackPoster
+            } else if let url = url {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
                         .scaledToFill()
                 } placeholder: {
-                    Image(systemName: "film")
-                        .font(.largeTitle)
-                        .frame(width: width, height: height)
-                        .background(Color.gray.opacity(0.3))
-                        .cornerRadius(8)
+                    fallbackPoster
                 }
                 .frame(width: width, height: height)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
-                Image(systemName: "film")
-                    .font(.largeTitle)
-                    .frame(width: width, height: height)
-                    .background(Color.gray.opacity(0.3))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                fallbackPoster
             }
         }
+    }
+
+    private var fallbackPoster: some View {
+        Image(systemName: "film")
+            .font(.largeTitle)
+            .frame(width: width, height: height)
+            .background(Color.gray.opacity(0.3))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 

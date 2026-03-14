@@ -15,6 +15,7 @@ enum ShareHelper {
     /// and an image loaded from the poster URL.
     /// Returns `nil` if any step (poster URL missing, download failure, or image conversion) fails
     static func createShareItem(for movie: Movie) async -> MovieShareItem? {
+        guard !ProcessInfo.processInfo.isPreview else { return nil }
 
         guard
             let posterURL = movie.posterSmallURL,

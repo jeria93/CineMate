@@ -13,13 +13,7 @@ import Foundation
 extension MovieViewModel {
 
     /// A configured `MovieViewModel` with a list of mock movies.
-    ///
-    /// - Calls `PreviewID.reset()` to ensure unique movie IDs.
-    /// - Injects `MockMovieRepository` to avoid real API dependency.
     static var preview: MovieViewModel {
-        PreviewID.reset()
-        let vm = MovieViewModel(repository: MockMovieRepository())
-        vm.movies = SharedPreviewMovies.moviesList
-        return vm
+        PreviewFactory.movieListViewModel()
     }
 }

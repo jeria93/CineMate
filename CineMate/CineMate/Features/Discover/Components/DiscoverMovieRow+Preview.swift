@@ -17,7 +17,6 @@ extension DiscoverMovieRow {
     /// Preview with valid poster image.
     ///
     /// Uses mock data from `DiscoverRowPreviewData.dune`.
-    /// `PreviewID.reset()` can be omitted if IDs are not used.
     static var previewPoster: some View {
         DiscoverMovieRow(movie: DiscoverRowPreviewData.dune)
             .padding()

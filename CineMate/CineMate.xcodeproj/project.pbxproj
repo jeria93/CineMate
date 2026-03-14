@@ -81,7 +81,7 @@
 		0348464F2E4B7A930078E298 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0348464E2E4B7A930078E298 /* FavoritesView.swift */; };
 		034846512E4B7FC40078E298 /* FavoritesView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034846502E4B7FC40078E298 /* FavoritesView+Previews.swift */; };
 		034846532E4BDADC0078E298 /* PreviewFactory+FavoritePeople.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034846522E4BDADC0078E298 /* PreviewFactory+FavoritePeople.swift */; };
-		034846552E4BE09E0078E298 /* FavoritePeoplePreviewData.swift .swift in Sources */ = {isa = PBXBuildFile; fileRef = 034846542E4BE09E0078E298 /* FavoritePeoplePreviewData.swift .swift */; };
+		034846552E4BE09E0078E298 /* FavoritePeoplePreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034846542E4BE09E0078E298 /* FavoritePeoplePreviewData.swift */; };
 		034846592E4BEC490078E298 /* FavoritePeopleGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034846582E4BEC490078E298 /* FavoritePeopleGrid.swift */; };
 		034AAEED2E00BA6600099259 /* TMDBEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */; };
 		034AAEEF2E00BCD000099259 /* TMDBError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034AAEEE2E00BCD000099259 /* TMDBError.swift */; };
@@ -352,7 +352,7 @@
 		0348464E2E4B7A930078E298 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		034846502E4B7FC40078E298 /* FavoritesView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoritesView+Previews.swift"; sourceTree = "<group>"; };
 		034846522E4BDADC0078E298 /* PreviewFactory+FavoritePeople.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+FavoritePeople.swift"; sourceTree = "<group>"; };
-		034846542E4BE09E0078E298 /* FavoritePeoplePreviewData.swift .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoritePeoplePreviewData.swift .swift"; sourceTree = "<group>"; };
+		034846542E4BE09E0078E298 /* FavoritePeoplePreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoritePeoplePreviewData.swift"; sourceTree = "<group>"; };
 		034846582E4BEC490078E298 /* FavoritePeopleGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePeopleGrid.swift; sourceTree = "<group>"; };
 		034AAEEC2E00BA6600099259 /* TMDBEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBEndpoint.swift; sourceTree = "<group>"; };
 		034AAEEE2E00BCD000099259 /* TMDBError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TMDBError.swift; sourceTree = "<group>"; };
@@ -1443,7 +1443,7 @@
 		03D5E2332E4CCB2000AAB2D3 /* PreviewData */ = {
 			isa = PBXGroup;
 			children = (
-				034846542E4BE09E0078E298 /* FavoritePeoplePreviewData.swift .swift */,
+				034846542E4BE09E0078E298 /* FavoritePeoplePreviewData.swift */,
 			);
 			path = PreviewData;
 			sourceTree = "<group>";
@@ -1707,7 +1707,7 @@
 				0359A97D2E03488000818BD2 /* CastViewModel.swift in Sources */,
 				03F0A4C02E5A42750071856D /* RoundedField.swift in Sources */,
 				030BC54A2DFB6ECB00D1F96F /* TrailerHelper.swift in Sources */,
-				034846552E4BE09E0078E298 /* FavoritePeoplePreviewData.swift .swift in Sources */,
+				034846552E4BE09E0078E298 /* FavoritePeoplePreviewData.swift in Sources */,
 				03DCB0622E5603A70071C3B2 /* CreateAccountPreviewData.swift in Sources */,
 				030612652DF4CDAD0013F7AF /* PreviewData.swift in Sources */,
 				03BAD6AB2E298B990035F1F5 /* KnownForPreviewData.swift in Sources */,
