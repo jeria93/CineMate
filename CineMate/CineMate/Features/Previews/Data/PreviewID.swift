@@ -17,6 +17,9 @@ enum PreviewID {
         case movieCredits = 140_000
         case movieDetail = 150_000
         case movieComponents = 160_000
+        case peopleComponents = 170_000
+        case genre = 180_000
+        case ui = 190_000
     }
 
     private static var currentID: Int = 100_000

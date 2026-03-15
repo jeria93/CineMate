@@ -13,7 +13,7 @@ enum MoviePosterViewPreviewData {
 
     /// A fully populated Dune movie with valid poster path.
     static let dune = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.ui, 1),
         title: "Dune",
         overview: "Paul Atreides leads nomadic tribes in a battle to control Arrakis.",
         posterPath: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
@@ -25,7 +25,7 @@ enum MoviePosterViewPreviewData {
 
     /// Same Dune movie but without a poster path (simulates fallback scenarios).
     static let duneNoPoster = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.ui, 2),
         title: "Dune",
         overview: "Paul Atreides leads nomadic tribes in a battle to control Arrakis.",
         posterPath: nil,

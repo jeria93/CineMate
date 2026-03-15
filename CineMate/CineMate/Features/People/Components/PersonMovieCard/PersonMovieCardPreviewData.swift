@@ -12,7 +12,7 @@ enum PersonMovieCardPreviewData {
 
     /// Full valid movie credit.
     static let standard: PersonMovieCredit = PersonMovieCredit(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.peopleComponents, 200),
         title: "Return of the Jedi",
         character: "Luke Skywalker",
         releaseDate: "1983-05-25",
@@ -22,7 +22,7 @@ enum PersonMovieCardPreviewData {
 
     /// Missing poster path.
     static let missingPoster: PersonMovieCredit = PersonMovieCredit(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.peopleComponents, 201),
         title: "Mystery Movie",
         character: nil,
         releaseDate: "2025-01-01",
@@ -32,7 +32,7 @@ enum PersonMovieCardPreviewData {
 
     /// Missing title (fallback text shown).
     static let missingTitle: PersonMovieCredit = PersonMovieCredit(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.peopleComponents, 202),
         title: nil,
         character: "Detective John",
         releaseDate: "2024-12-12",

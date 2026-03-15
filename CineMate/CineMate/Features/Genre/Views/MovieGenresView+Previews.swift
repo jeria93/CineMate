@@ -18,11 +18,11 @@ extension MovieGenresView {
     /// Preview showing very long genre names and special characters.
     static var previewLongNames: some View {
         let customGenres: [Genre] = [
-            Genre(id: PreviewID.next(), name: "Science Fiction & Fantasy Adventure"),
-            Genre(id: PreviewID.next(), name: "🎬 Drama"),
-            Genre(id: PreviewID.next(), name: "")
+            Genre(id: PreviewID.scoped(.genre, 1), name: "Science Fiction & Fantasy Adventure"),
+            Genre(id: PreviewID.scoped(.genre, 2), name: "🎬 Drama"),
+            Genre(id: PreviewID.scoped(.genre, 3), name: "")
         ]
-
+        
         return MovieGenresView(genres: customGenres)
             .withPreviewNavigation()
             .background(Color(.systemBackground))

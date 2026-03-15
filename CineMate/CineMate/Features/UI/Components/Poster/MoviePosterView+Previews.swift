@@ -15,13 +15,11 @@ extension MoviePosterView {
 
     /// Preview for poster with valid image
     static var previewDefault: some View {
-        PreviewID.reset()
-        return MoviePosterView(movie: MoviePosterViewPreviewData.dune)
+        MoviePosterView(movie: MoviePosterViewPreviewData.dune)
     }
 
     /// Preview for poster with missing image
     static var previewMissingPoster: some View {
-        PreviewID.reset()
-        return MoviePosterView(movie: MoviePosterViewPreviewData.duneNoPoster)
+        MoviePosterView(movie: MoviePosterViewPreviewData.duneNoPoster)
     }
 }
