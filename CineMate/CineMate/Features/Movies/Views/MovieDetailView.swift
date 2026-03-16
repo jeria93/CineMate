@@ -98,8 +98,10 @@ struct MovieDetailView: View {
             PosterImageView(
                 url: movie.posterLargeURL,
                 title: movie.title,
-                width: 300,
-                height: 450
+                width: SharedUI.Size.posterLarge.width,
+                height: SharedUI.Size.posterLarge.height,
+                cornerRadius: SharedUI.Radius.medium,
+                shadowRadius: 4
             )
             .overlay(alignment: .topTrailing) {
                 MovieFavoriteButtonView(movie: movie, favoriteViewModel: favoriteViewModel)

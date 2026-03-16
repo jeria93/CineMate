@@ -12,8 +12,8 @@ extension PosterImageView {
         PosterImageView(
             url: URL(string: "https://image.tmdb.org/t/p/w200/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"),
             title: "Star Wars - Episode V",
-            width: 80,
-            height: 120
+            width: SharedUI.Size.posterCompact.width,
+            height: SharedUI.Size.posterCompact.height
         )
         .padding()
     }
@@ -22,8 +22,8 @@ extension PosterImageView {
         PosterImageView(
             url: nil,
             title: "No Poster",
-            width: 80,
-            height: 120
+            width: SharedUI.Size.posterCompact.width,
+            height: SharedUI.Size.posterCompact.height
         )
         .padding()
     }
@@ -33,8 +33,8 @@ extension PosterImageView {
             PosterImageView(
                 url: URL(string: "https://image.tmdb.org/t/p/w200/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"),
                 title: "Star Wars - Episode V",
-                width: 80,
-                height: 120
+                width: SharedUI.Size.posterCompact.width,
+                height: SharedUI.Size.posterCompact.height
             )
         }
     }

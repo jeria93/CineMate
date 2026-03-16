@@ -29,7 +29,7 @@ struct TMDBImageHelper {
     ///   - path: The image path string (e.g. `/abc123.jpg`).
     ///   - size: The desired `TMDBImageSize`.
     /// - Returns: A fully qualified `URL` or `nil` if `path` is invalid.
-    static func url(for path: String?, size: TMDBImageSize) -> URL? {
+    static func url(for path: String?, size: TMDBImageSize = .w342) -> URL? {
         guard let normalizedPath = normalize(path: path) else { return nil }
 
         return baseURL

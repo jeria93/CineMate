@@ -8,17 +8,65 @@
 import SwiftUI
 
 struct EmptyStateView: View {
+    enum Layout {
+        case fullScreen
+        case inline
+    }
+
     let systemImage: String
     let title: String
     let message: String
+    let layout: Layout
     var actionTitle: String?
     var onAction: (() -> Void)?
 
+    init(
+        systemImage: String,
+        title: String,
+        message: String,
+        layout: Layout = .fullScreen,
+        actionTitle: String? = nil,
+        onAction: (() -> Void)? = nil
+    ) {
+        self.systemImage = systemImage
+        self.title = title
+        self.message = message
+        self.layout = layout
+        self.actionTitle = actionTitle
+        self.onAction = onAction
+    }
+
     var body: some View {
-        VStack(spacing: 12) {
+        Group {
+            switch layout {
+            case .fullScreen:
+                OverlayContainer(backdrop: .material) {
+                    OverlayCard {
+                        content
+                    }
+                }
+            case .inline:
+                content
+                    .padding(SharedUI.Overlay.cardPadding)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
+                            .stroke(.quaternary, lineWidth: 1)
+                    )
+            }
+        }
+    }
+
+    private var content: some View {
+        VStack(spacing: SharedUI.Spacing.medium) {
             Image(systemName: systemImage)
                 .font(.system(size: 40))
                 .foregroundStyle(.gray)
+                .accessibilityHidden(true)
 
             Text(title)
                 .font(.headline)
@@ -31,11 +79,9 @@ struct EmptyStateView: View {
             if let actionTitle, let onAction {
                 Button(actionTitle, action: onAction)
                     .buttonStyle(.borderedProminent)
-                    .padding(.top, 8)
+                    .padding(.top, SharedUI.Spacing.small)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial)
     }
 }
 

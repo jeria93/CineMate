@@ -15,10 +15,10 @@ struct PersonCardView: View {
             PosterImageView(
                 url: person.profileSmallURL,
                 title: person.name,
-                width: 100,
-                height: 150
+                width: SharedUI.Size.posterCard.width,
+                height: SharedUI.Size.posterCard.height,
+                cornerRadius: SharedUI.Radius.small
             )
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
             Text(person.name)
                 .font(.caption)

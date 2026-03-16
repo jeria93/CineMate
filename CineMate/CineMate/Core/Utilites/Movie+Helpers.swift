@@ -7,15 +7,26 @@
 
 import Foundation
 
+private func uniqueByID<Item, ID: Hashable>(_ items: [Item], id: KeyPath<Item, ID>) -> [Item] {
+    var seenIDs = Set<ID>()
+    return items.filter { seenIDs.insert($0[keyPath: id]).inserted }
+}
+
 extension Array where Element == Movie {
     /// Removes duplicate movies based on their `id`.
     func removingDuplicateIDs() -> [Movie] {
-        Dictionary(grouping: self, by: \.id)
-            .compactMap { $0.value.first }
+        uniqueByID(self, id: \.id)
     }
 
     /// Filters out movies that already exist in the given ID set.
     func excluding(alreadySeenIDs: Set<Int>) -> [Movie] {
-        self.filter { !alreadySeenIDs.contains($0.id) }
+        filter { !alreadySeenIDs.contains($0.id) }
+    }
+}
+
+extension Array where Element == PersonRef {
+    /// Removes duplicate people based on their `id`.
+    func removingDuplicateIDs() -> [PersonRef] {
+        uniqueByID(self, id: \.id)
     }
 }
