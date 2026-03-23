@@ -94,7 +94,7 @@ struct PosterImageView: View {
         }
     }
 
-    private func animateTap(action: () -> Void) {
+    private func animateTap(action: @escaping () -> Void) {
         isPressed = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
             isPressed = false
