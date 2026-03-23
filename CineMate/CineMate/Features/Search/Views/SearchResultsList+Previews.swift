@@ -11,7 +11,6 @@ extension SearchResultsList {
 
     /// Preview with a list of common mock movies and a couple marked as favorites.
     static var previewDefault: some View {
-        SharedPreviewMovies.resetIDs()
         let movies = SharedPreviewMovies.moviesList
 
         return SearchResultsList(

@@ -15,7 +15,9 @@ extension MovieDetailInfoView {
         return MovieDetailInfoView(
             movie: context.movie,
             detail: context.detail,
-            watchProviderRegion: context.watchProviderRegion,
+            watchProviderAvailability: context.watchProviderAvailability,
+            isWatchProvidersLoading: context.isWatchProvidersLoading,
+            watchProviderErrorMessage: context.watchProviderErrorMessage,
             isLoading: context.isLoading
         )
         .padding()
@@ -27,7 +29,9 @@ extension MovieDetailInfoView {
         return MovieDetailInfoView(
             movie: context.movie,
             detail: context.detail,
-            watchProviderRegion: context.watchProviderRegion,
+            watchProviderAvailability: context.watchProviderAvailability,
+            isWatchProvidersLoading: context.isWatchProvidersLoading,
+            watchProviderErrorMessage: context.watchProviderErrorMessage,
             isLoading: context.isLoading
         )
         .padding()
@@ -39,7 +43,9 @@ extension MovieDetailInfoView {
         return MovieDetailInfoView(
             movie: context.movie,
             detail: context.detail,
-            watchProviderRegion: context.watchProviderRegion,
+            watchProviderAvailability: context.watchProviderAvailability,
+            isWatchProvidersLoading: context.isWatchProvidersLoading,
+            watchProviderErrorMessage: context.watchProviderErrorMessage,
             isLoading: context.isLoading
         )
         .padding()
@@ -51,7 +57,9 @@ extension MovieDetailInfoView {
         return MovieDetailInfoView(
             movie: context.movie,
             detail: context.detail,
-            watchProviderRegion: context.watchProviderRegion,
+            watchProviderAvailability: context.watchProviderAvailability,
+            isWatchProvidersLoading: context.isWatchProvidersLoading,
+            watchProviderErrorMessage: context.watchProviderErrorMessage,
             isLoading: context.isLoading
         )
         .padding()

@@ -11,7 +11,7 @@ import Foundation
 /// These are injected into ViewModels to simulate horror-specific UI states.
 struct DiscoverHorrorPreviewData {
     static let conjuring = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.discover, 1),
         title: "The Conjuring",
         overview: "Paranormal investigators help a family terrorized by a dark presence.",
         posterPath: "/wVYREutTvI2tmxr6ujrHT704wGF.jpg",
@@ -22,7 +22,7 @@ struct DiscoverHorrorPreviewData {
     )
 
     static let hereditary = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.discover, 2),
         title: "Hereditary",
         overview: "A grieving family is haunted by tragic and disturbing occurrences.",
         posterPath: "/g4VxE3b060xMFxoos53CcB2LzMk.jpg",
@@ -33,7 +33,7 @@ struct DiscoverHorrorPreviewData {
     )
 
     static let insidious = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.discover, 3),
         title: "Insidious",
         overview: "A family looks to prevent evil spirits from trapping their comatose child.",
         posterPath: "/tmlDFIUpGRKiuWm9Ixc6CYDk4y0.jpg",

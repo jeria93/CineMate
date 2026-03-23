@@ -73,7 +73,10 @@ extension MovieDetail {
     /// Creates preview `Genre` objects from the genre names.
     /// Useful in previews or fallback UI when full genre objects are needed.
     var previewGenres: [Genre] {
-        genreNames.map { Genre(id: PreviewID.next(), name: $0) }
+        let base = abs(id % 10_000) * 100
+        return genreNames.enumerated().map { index, name in
+            Genre(id: base + index + 1, name: name)
+        }
     }
 
     /// Human-readable runtime like "1h 32m" or nil if unknown.

@@ -46,4 +46,10 @@ extension CreateAccountView {
         CreateAccountView(createViewModel: PreviewFactory.makeServerError())
             .withPreviewNavigation()
     }
+
+    /// Terms unchecked after submit.
+    static var previewTermsNotAccepted: some View {
+        CreateAccountView(createViewModel: PreviewFactory.previewTermsNotAccepted())
+            .withPreviewNavigation()
+    }
 }

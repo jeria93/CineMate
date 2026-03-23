@@ -13,12 +13,11 @@ import SwiftUI
 extension MovieDetailActionBarView {
 
     static var previewDefault: some View {
-        PreviewID.reset()
-        return MovieDetailActionBarView(
+        MovieDetailActionBarView(
             movie: SharedPreviewMovies.starWars,
             videos: PreviewData.sampleVideos
         )
-            .padding()
-            .background(Color(.systemBackground))
+        .padding()
+        .background(Color(.systemBackground))
     }
 }

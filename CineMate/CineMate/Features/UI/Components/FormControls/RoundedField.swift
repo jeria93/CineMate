@@ -43,8 +43,8 @@ struct RoundedField<Content: View>: View {
     }
 
     // Tuned constants to match iOS text field visuals.
-    private let cornerRadius: CGFloat = 8
-    private let horizontalPadding: CGFloat = 12
+    private let cornerRadius: CGFloat = SharedUI.Radius.small
+    private let horizontalPadding: CGFloat = SharedUI.Spacing.medium
     private let verticalPadding: CGFloat = 10
     private let trailingInset: CGFloat = 6
     private let interIconSpacing: CGFloat = 6
@@ -84,7 +84,7 @@ struct RoundedField<Content: View>: View {
 /// - Note: Keeps hit area, color, and layout consistent across fields.
 private struct RoundedFieldIconButton: View {
     let icon: TrailingIcon
-    private let tapTargetSize: CGFloat = 32
+    private let tapTargetSize: CGFloat = SharedUI.Size.fieldIconTapTarget
     private let symbolPointSize: CGFloat = 18
 
     var body: some View {
@@ -100,5 +100,6 @@ private struct RoundedFieldIconButton: View {
         .disabled(!icon.isEnabled)
         .opacity(icon.isEnabled ? 1 : 0.4)
         .accessibilityLabel(icon.accessibilityLabel ?? icon.systemName)
+        .accessibilityAddTraits(.isButton)
     }
 }

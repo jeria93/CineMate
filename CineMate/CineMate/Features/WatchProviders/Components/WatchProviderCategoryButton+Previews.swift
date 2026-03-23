@@ -13,6 +13,7 @@ extension WatchProviderCategoryButton {
         WatchProviderCategoryButton(
             category: .flatrate,
             isSelected: true,
+            hasContent: true,
             onTap: {}
         )
         .padding()
@@ -22,6 +23,7 @@ extension WatchProviderCategoryButton {
         WatchProviderCategoryButton(
             category: .rent,
             isSelected: false,
+            hasContent: false,
             onTap: {}
         )
         .padding()
@@ -40,6 +42,7 @@ extension WatchProviderCategoryButton {
                 WatchProviderCategoryButton(
                     category: category,
                     isSelected: category == .flatrate,
+                    hasContent: category != .buy,
                     onTap: {}
                 )
             }

@@ -61,30 +61,29 @@ struct SeeAllMoviesView: View {
 
 extension SeeAllMoviesView {
     static var previewDefault: some View {
-        PreviewFactory.resetAllPreviewData()
         return SeeAllMoviesView(
-            viewModel: .preview,
+            viewModel: PreviewFactory.seeAllMoviesPreviewViewModel(),
             title: "Popular Movies"
         )
     }
 
     static var previewLoading: some View {
         SeeAllMoviesView(
-            viewModel: .loading,
+            viewModel: PreviewFactory.seeAllMoviesLoadingViewModel(),
             title: ""
         )
     }
 
     static var previewError: some View {
         SeeAllMoviesView(
-            viewModel: .error,
+            viewModel: PreviewFactory.seeAllMoviesErrorViewModel(),
             title: "Error"
         )
     }
 
     static var previewEmpty: some View {
         SeeAllMoviesView(
-            viewModel: .empty,
+            viewModel: PreviewFactory.seeAllMoviesEmptyViewModel(),
             title: "Empty"
         )
     }

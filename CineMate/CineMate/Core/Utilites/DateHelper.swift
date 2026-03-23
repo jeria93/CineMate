@@ -9,43 +9,48 @@ import Foundation
 
 /// A utility for working with date strings and calculating ages, durations, etc.
 enum DateHelper {
-
-    /// Parses a string with format "yyyy-MM-dd" into a Date.
-    static func parse(_ dateString: String) -> Date? {
+    private static let utcCalendar = Calendar(identifier: .gregorian)
+    private static let tmdbFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.calendar = utcCalendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        return formatter.date(from: dateString)
+        return formatter
+    }()
+
+    /// Parses a string with format "yyyy-MM-dd" into a Date.
+    static func parse(_ dateString: String?) -> Date? {
+        guard let dateString else { return nil }
+        let cleaned = dateString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return nil }
+        return tmdbFormatter.date(from: cleaned)
     }
 
     /// Calculates age in years from a birthdate string ("yyyy-MM-dd") to today.
     static func calculateAge(from birthday: String) -> Int? {
         guard let birthDate = parse(birthday) else { return nil }
-        let now = Date()
-        let ageComponents = Calendar.current.dateComponents([.year], from: birthDate, to: now)
-        return ageComponents.year
+        return yearsBetween(start: birthDate, end: Date())
     }
 
     /// Calculates lived years between birth and death (both "yyyy-MM-dd").
     static func calculateYearsLived(birthday: String, deathday: String) -> Int? {
         guard let birthDate = parse(birthday),
               let deathDate = parse(deathday) else { return nil }
-
-        let components = Calendar.current.dateComponents([.year], from: birthDate, to: deathDate)
-        return components.year
+        return yearsBetween(start: birthDate, end: deathDate)
     }
 
     /// Returns the current year as a string, e.g., "2025".
     static func currentYearString() -> String {
-        let year = Calendar.current.component(.year, from: Date())
-        return "\(year)"
+        String(utcCalendar.component(.year, from: Date()))
     }
 
     /// Returns today's date as a string in "yyyy-MM-dd" format (TMDB compatible).
     static func todayString() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        return formatter.string(from: Date())
+        tmdbFormatter.string(from: Date())
+    }
+
+    private static func yearsBetween(start: Date, end: Date) -> Int? {
+        utcCalendar.dateComponents([.year], from: start, to: end).year
     }
 }

@@ -91,10 +91,17 @@ final class TMDBService {
         try await request(endpoint: .watchProviders(movieId))
     }
 
-    func fetchWatchProviderRegion(for movieId: Int) async throws -> WatchProviderRegion {
+    func fetchWatchProviderAvailability(
+        for movieId: Int,
+        preferredRegionCode: String? = nil,
+        fallbackRegionCode: String = WatchProviderAvailability.defaultFallbackRegionCode
+    ) async throws -> WatchProviderAvailability {
         let response = try await fetchWatchProviders(for: movieId)
-        let regionCode = Locale.current.region?.identifier ?? "US"
-        return response.results[regionCode] ?? .empty
+        let requestedRegionCode = preferredRegionCode ?? userRegion
+        return response.resolveAvailability(
+            preferredRegionCode: requestedRegionCode,
+            fallbackRegionCode: fallbackRegionCode
+        )
     }
 
     // MARK: - Person

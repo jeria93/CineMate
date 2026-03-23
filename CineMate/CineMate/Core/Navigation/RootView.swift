@@ -55,8 +55,6 @@ struct RootView: View {
                         .allowsHitTesting(!isLocked)
                     if isLocked {
                         LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .ignoresSafeArea()
                             .zIndex(1)
                     }
                 }
@@ -74,8 +72,6 @@ struct RootView: View {
                     .allowsHitTesting(!isLocked)
                     if isLocked {
                         LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .ignoresSafeArea()
                             .zIndex(1)
                     }
                 }
@@ -87,9 +83,11 @@ struct RootView: View {
                     .tabItem { Label("Account", systemImage: "person.crop.circle") }
                     .tag(MainTab.auth)
             }
-            // Start Firestore listeners when root appears.
-            .task { await favVM.startFavoritesListenerIfNeeded() }
-            .task { await favoritePeopleVM.startFavoritesListenerIfNeeded() }
+            // Keep favorites listeners aligned with current auth session.
+            .task(id: authViewModel.currentUID) {
+                favVM.syncAuthState(uid: authViewModel.currentUID)
+                favoritePeopleVM.syncAuthState(uid: authViewModel.currentUID)
+            }
 
             // Save the path for the active tab.
             .onChange(of: navigator.path) { _, newPath in
@@ -114,6 +112,11 @@ struct RootView: View {
         }
         .onAppear {
             tabPaths[selectedTab] = navigator.path
+        }
+        .onDisappear {
+            // RootView only exists in signed-in flow, so clear state on teardown.
+            favVM.stopFavoritesListenerIfNeeded(keepCurrentState: false)
+            favoritePeopleVM.stopFavoritesListenerIfNeeded(keepCurrentState: false)
         }
         .toast(toastCenter.message)
     }

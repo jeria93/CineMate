@@ -52,7 +52,7 @@ extension PreviewFactory {
         vm.movieDetail = MovieDetailPreviewData.starWarsDetail
         vm.movieVideos = PreviewData.sampleVideos
         vm.recommendedMovies = recommendedMovies
-        vm.watchProviderRegion = PreviewData.mockWatchProviderRegion
+        vm.watchProvidersState = .loaded(PreviewData.mockWatchProviderAvailability)
         vm.state = .loaded
         return vm
     }
@@ -79,7 +79,7 @@ extension PreviewFactory {
     static func movieDetailViewModelWithWatchProviders() -> MovieDetailViewModel {
         resetAllPreviewData()
         let vm = MovieDetailViewModel(repository: repository)
-        vm.watchProviderRegion = PreviewData.mockWatchProviderRegion
+        vm.watchProvidersState = .loaded(PreviewData.mockWatchProviderAvailability)
         vm.state = .loaded
         return vm
     }
@@ -89,6 +89,14 @@ extension PreviewFactory {
         resetAllPreviewData()
         let vm = MovieDetailViewModel(repository: repository)
         vm.state = .loading
+        return vm
+    }
+
+    /// Error state for full-screen fallback previews.
+    static func movieDetailViewModelError() -> MovieDetailViewModel {
+        resetAllPreviewData()
+        let vm = MovieDetailViewModel(repository: repository)
+        vm.state = .failed("Failed to load movie details.")
         return vm
     }
 }

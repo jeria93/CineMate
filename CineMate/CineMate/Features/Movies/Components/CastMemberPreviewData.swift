@@ -12,21 +12,21 @@ import Foundation
 enum CastMemberPreviewData {
 
     static let markHamill = CastMember(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.movieComponents, 1),
         name: "Mark Hamill",
         character: "Luke Skywalker",
         profilePath: "/2ZulC2Ccq1yv3pemusks6Zlfy2s.jpg"
     )
 
     static let unknownActor = CastMember(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.movieComponents, 2),
         name: "Unknown Actor",
         character: nil,
         profilePath: nil
     )
 
     static let longNameActor = CastMember(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.movieComponents, 3),
         name: "This is a really really really long actor name",
         character: "Extraordinary Sidekick of Episode 47 Part 3",
         profilePath: nil

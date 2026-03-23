@@ -10,17 +10,26 @@ import SwiftUI
 struct SocialLinkButtonView: View {
     let url: URL?
     let assetName: String
+    let accessibilityLabel: String
+
+    init(url: URL?, assetName: String, accessibilityLabel: String? = nil) {
+        self.url = url
+        self.assetName = assetName
+        self.accessibilityLabel = accessibilityLabel ?? assetName
+    }
 
     var body: some View {
         if let url {
             Link(destination: url) {
-                Image(assetName)
-                    .renderingMode(.template)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .foregroundStyle(.primary)
+                IconButtonLabel(accessibilityLabel: accessibilityLabel) {
+                    Image(assetName)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundStyle(.primary)
+                }
             }
+            .buttonStyle(.plain)
         }
     }
 }

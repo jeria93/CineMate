@@ -27,8 +27,8 @@ struct RelatedMovieCardView: View {
                 PosterImageView(
                     url: movie.posterSmallURL,
                     title: movie.title,
-                    width: 100,
-                    height: 150
+                    width: SharedUI.Size.posterCard.width,
+                    height: SharedUI.Size.posterCard.height
                 )
 
                 Text(movie.title)
@@ -37,7 +37,7 @@ struct RelatedMovieCardView: View {
                     .lineLimit(1)
                     .foregroundStyle(.primary)
             }
-            .frame(width: 100, alignment: .leading)
+            .frame(width: SharedUI.Size.posterCard.width, alignment: .leading)
         }
         .buttonStyle(.plain)
     }

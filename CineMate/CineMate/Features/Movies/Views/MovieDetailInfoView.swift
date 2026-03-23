@@ -10,7 +10,9 @@ import SwiftUI
 struct MovieDetailInfoView: View {
     let movie: Movie
     let detail: MovieDetail?
-    let watchProviderRegion: WatchProviderRegion?
+    let watchProviderAvailability: WatchProviderAvailability?
+    let isWatchProvidersLoading: Bool
+    let watchProviderErrorMessage: String?
     let isLoading: Bool
 
     @EnvironmentObject private var navigator: AppNavigator
@@ -66,9 +68,12 @@ struct MovieDetailInfoView: View {
                     .foregroundColor(.secondary)
             }
 
-            if let watchProviderRegion {
-                WatchProvidersView(region: watchProviderRegion)
-            }
+            WatchProvidersView(
+                movieId: detail?.id ?? movie.id,
+                availability: watchProviderAvailability,
+                isLoading: isWatchProvidersLoading,
+                errorMessage: watchProviderErrorMessage
+            )
 
             if let detail {
                 detailMetadata(detail)

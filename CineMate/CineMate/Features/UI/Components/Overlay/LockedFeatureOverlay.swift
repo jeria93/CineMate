@@ -7,25 +7,110 @@
 
 import SwiftUI
 
+enum OverlayBackdropStyle {
+    case material
+    case dimmed(CGFloat)
+    case none
+}
+
+struct OverlayContainer<Content: View>: View {
+    let backdrop: OverlayBackdropStyle
+    var ignoresSafeArea = true
+    @ViewBuilder var content: () -> Content
+
+    init(
+        backdrop: OverlayBackdropStyle = .material,
+        ignoresSafeArea: Bool = true,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.backdrop = backdrop
+        self.ignoresSafeArea = ignoresSafeArea
+        self.content = content
+    }
+
+    var body: some View {
+        Group {
+            if ignoresSafeArea {
+                container.ignoresSafeArea()
+            } else {
+                container
+            }
+        }
+    }
+
+    private var container: some View {
+        ZStack {
+            switch backdrop {
+            case .material:
+                Rectangle().fill(.ultraThinMaterial)
+            case .dimmed(let opacity):
+                Color.black.opacity(opacity)
+            case .none:
+                EmptyView()
+            }
+
+            content()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+struct OverlayCard<Content: View>: View {
+    var maxWidth = SharedUI.Overlay.cardMaxWidth
+    @ViewBuilder var content: () -> Content
+
+    init(
+        maxWidth: CGFloat = SharedUI.Overlay.cardMaxWidth,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.maxWidth = maxWidth
+        self.content = content
+    }
+
+    var body: some View {
+        VStack(spacing: SharedUI.Spacing.medium) {
+            content()
+        }
+        .padding(SharedUI.Overlay.cardPadding)
+        .frame(maxWidth: maxWidth)
+        .background(
+            RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
+                .fill(.ultraThinMaterial)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
+                .stroke(.quaternary, lineWidth: 1)
+        )
+        .shadow(radius: 18, y: SharedUI.Spacing.small)
+        .padding(.horizontal, SharedUI.Spacing.xxLarge)
+    }
+}
+
 struct LockedFeatureOverlay: View {
-    let title: String = "Create a free account to continue"
+    let title: String
     let message: String?
+    let ctaTitle: String
     let onCTA: () -> Void
 
-    init(message: String? = nil,
-         onCTA: @escaping () -> Void = {}) {
+    init(
+        title: String = "Create a free account to continue",
+        message: String? = nil,
+        ctaTitle: String = "Create Account",
+        onCTA: @escaping () -> Void = {}
+    ) {
+        self.title = title
         self.message = message
+        self.ctaTitle = ctaTitle
         self.onCTA = onCTA
     }
 
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.35).ignoresSafeArea()
-
-            VStack(spacing: 12) {
+        OverlayContainer(backdrop: .dimmed(SharedUI.Overlay.dimOpacity)) {
+            OverlayCard {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
 
                 Text(title)
                     .font(.headline)
@@ -38,21 +123,9 @@ struct LockedFeatureOverlay: View {
                         .multilineTextAlignment(.center)
                 }
 
-                Button("Create Account", action: onCTA)
+                Button(ctaTitle, action: onCTA)
                     .buttonStyle(.borderedProminent)
             }
-            .padding(18)
-            .frame(maxWidth: 320)
-            .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(.ultraThinMaterial)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(.quaternary, lineWidth: 1)
-            )
-            .shadow(radius: 18, y: 8)
-            .padding(.horizontal, 24)
         }
         .contentShape(Rectangle())
         .allowsHitTesting(true)

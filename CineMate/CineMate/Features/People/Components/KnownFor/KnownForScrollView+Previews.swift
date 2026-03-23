@@ -45,7 +45,7 @@ extension KnownForScrollView {
     static var previewPartial: some View {
         let partial = [
             PersonMovieCredit(
-                id: PreviewID.next(),
+                id: PreviewID.scoped(.peopleComponents, 20),
                 title: "Mysterious Adventure",
                 character: nil,
                 releaseDate: "2025-01-01",
@@ -66,12 +66,12 @@ extension KnownForScrollView {
     static var previewOverflow: some View {
         let manyMovies = (1...25).map { index in
             PersonMovieCredit(
-                id: PreviewID.next(),
+                id: PreviewID.scoped(.peopleComponents, 100 + index),
                 title: "Movie \(index)",
                 character: nil,
                 releaseDate: "20\(10 + index)-01-01",
                 posterPath: nil,
-                popularity: Double.random(in: 10...100)
+                popularity: Double(100 - index)
             )
         }
         let movieVM = MovieViewModel.previewWithStubs

@@ -33,7 +33,7 @@
 //    static var previewNoPoster: some View {
 //        MovieRowView(
 //            movie: Movie(
-//                id: PreviewID.next(),
+//                id: PreviewID.scoped(.ui, 901),
 //                title: SharedPreviewMovies.starWars.title,
 //                overview: SharedPreviewMovies.starWars.overview,
 //                posterPath: nil,
@@ -53,7 +53,7 @@
 //    static var previewNoOverview: some View {
 //        MovieRowView(
 //            movie: Movie(
-//                id: PreviewID.next(),
+//                id: PreviewID.scoped(.ui, 902),
 //                title: SharedPreviewMovies.starWars.title,
 //                overview: nil,
 //                posterPath: SharedPreviewMovies.starWars.posterPath,
@@ -73,7 +73,7 @@
 //    static var previewLongOverview: some View {
 //        MovieRowView(
 //            movie: Movie(
-//                id: PreviewID.next(),
+//                id: PreviewID.scoped(.ui, 903),
 //                title: SharedPreviewMovies.starWars.title,
 //                overview: String(repeating: SharedPreviewMovies.starWars.overview ?? "", count: 10),
 //                posterPath: SharedPreviewMovies.starWars.posterPath,

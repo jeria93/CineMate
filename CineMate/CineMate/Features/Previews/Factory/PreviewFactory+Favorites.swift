@@ -20,7 +20,6 @@ extension PreviewFactory {
 
     /// Default scenario: a reasonable list of favorites.
     static func favoritesViewModel() -> FavoriteMoviesViewModel {
-        SharedPreviewMovies.resetIDs()
         return favoritesVM(with: SharedPreviewMovies.moviesList)
     }
 
@@ -31,10 +30,9 @@ extension PreviewFactory {
 
     /// Many scenario: stress test layout/scrolling.
     static func manyFavoritesViewModel() -> FavoriteMoviesViewModel {
-        SharedPreviewMovies.resetIDs()
         let many = (1...20).map { index in
             Movie(
-                id: PreviewID.next(),
+                id: PreviewID.scoped(.favorites, 300 + index),
                 title: "Sample \(index)",
                 overview: nil,
                 posterPath: nil,

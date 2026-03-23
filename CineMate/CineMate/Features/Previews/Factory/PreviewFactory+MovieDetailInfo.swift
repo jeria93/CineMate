@@ -10,7 +10,9 @@ import Foundation
 struct MovieDetailInfoPreviewContext {
     let movie: Movie
     let detail: MovieDetail?
-    let watchProviderRegion: WatchProviderRegion?
+    let watchProviderAvailability: WatchProviderAvailability?
+    let isWatchProvidersLoading: Bool
+    let watchProviderErrorMessage: String?
     let isLoading: Bool
 }
 
@@ -20,7 +22,9 @@ extension PreviewFactory {
         MovieDetailInfoPreviewContext(
             movie: SharedPreviewMovies.starWars,
             detail: MovieDetailPreviewData.starWarsDetail,
-            watchProviderRegion: PreviewData.mockWatchProviderRegion,
+            watchProviderAvailability: PreviewData.mockWatchProviderAvailability,
+            isWatchProvidersLoading: false,
+            watchProviderErrorMessage: nil,
             isLoading: false
         )
     }
@@ -29,7 +33,9 @@ extension PreviewFactory {
         MovieDetailInfoPreviewContext(
             movie: SharedPreviewMovies.starWars,
             detail: MovieDetailPreviewData.emptyDetail,
-            watchProviderRegion: nil,
+            watchProviderAvailability: nil,
+            isWatchProvidersLoading: false,
+            watchProviderErrorMessage: nil,
             isLoading: false
         )
     }
@@ -38,7 +44,9 @@ extension PreviewFactory {
         MovieDetailInfoPreviewContext(
             movie: SharedPreviewMovies.starWars,
             detail: nil,
-            watchProviderRegion: nil,
+            watchProviderAvailability: nil,
+            isWatchProvidersLoading: true,
+            watchProviderErrorMessage: nil,
             isLoading: true
         )
     }
@@ -47,7 +55,9 @@ extension PreviewFactory {
         MovieDetailInfoPreviewContext(
             movie: SharedPreviewMovies.starWars,
             detail: nil,
-            watchProviderRegion: nil,
+            watchProviderAvailability: nil,
+            isWatchProvidersLoading: false,
+            watchProviderErrorMessage: "Could not load watch providers.",
             isLoading: false
         )
     }

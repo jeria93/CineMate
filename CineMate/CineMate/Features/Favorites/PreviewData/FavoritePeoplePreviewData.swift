@@ -1,5 +1,5 @@
 //
-//  FavoritePeoplePreviewData.swift .swift
+//  FavoritePeoplePreviewData.swift
 //  CineMate
 //
 //  Created by Nicholas Samuelsson Jeria on 2025-08-12.
@@ -17,20 +17,22 @@ enum FavoritePeoplePreviewData {
     /// A small, human-readable set of sample people.
     /// - Returns: 3 well-known names for quick visual checks.
     static func few() -> [PersonRef] {
-        PreviewID.reset()
-        return [
-            .init(id: PreviewID.next(), name: "Emma Stone", profilePath: nil),
-            .init(id: PreviewID.next(), name: "Leonardo DiCaprio", profilePath: nil),
-            .init(id: PreviewID.next(), name: "Greta Gerwig", profilePath: nil)
+        [
+            .init(id: PreviewID.scoped(.favorites, 1), name: "Emma Stone", profilePath: nil),
+            .init(id: PreviewID.scoped(.favorites, 2), name: "Leonardo DiCaprio", profilePath: nil),
+            .init(id: PreviewID.scoped(.favorites, 3), name: "Greta Gerwig", profilePath: nil)
         ]
     }
 
     /// A larger list to stress-test grid layout and scrolling.
     /// - Returns: 20 placeholder people with unique IDs.
     static func many() -> [PersonRef] {
-        PreviewID.reset()
-        return (1...20).map { index in
-            .init(id: PreviewID.next(), name: "Person \(index)", profilePath: nil)
+        (1...20).map { index in
+            .init(
+                id: PreviewID.scoped(.favorites, 100 + index),
+                name: "Person \(index)",
+                profilePath: nil
+            )
         }
     }
 }

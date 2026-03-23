@@ -7,44 +7,139 @@
 
 import Foundation
 
-/// Represents the full response from TMDB's `/movie/{movie_id}/watch/providers` endpoint.
-/// This response contains all available watch providers grouped by country code (e.g., "SE", "US").
-///
-/// - Endpoint: [Get Watch Providers for a Movie](https://developer.themoviedb.org/reference/movie-watch-providers)
-/// - Example usage: To fetch where a specific movie can be streamed, rented or bought.
-struct WatchProvidersResponse: Decodable {
+/// Represents TMDB `/movie/{movie_id}/watch/providers` response.
+/// Keys in `results` are ISO 3166-1 region codes (e.g. `SE`, `US`).
+struct WatchProvidersResponse: Decodable, Equatable {
     let results: [String: WatchProviderRegion]
 }
 
-/// Represents the streaming availability for a movie in a specific country/region.
-///
-/// - Contains links and available options for flat-rate streaming, renting or buying.
-/// - Usually accessed by looking up a country (like "SE") in the `results` dictionary from `WatchProvidersResponse`
-struct WatchProviderRegion: Decodable {
-
+/// Availability for one region from TMDB watch providers response.
+/// A region may include stream (`flatrate`), rent, buy and optional ad/free entries.
+struct WatchProviderRegion: Decodable, Equatable {
     let link: String?
-    /// Providers where the movie is available to stream with a subscription (e.g. Netflix)
     let flatrate: [WatchProvider]?
     let rent: [WatchProvider]?
     let buy: [WatchProvider]?
+    let free: [WatchProvider]?
+    let ads: [WatchProvider]?
+
+    /// True if any of the app-visible categories has providers.
+    var hasCatalogOptions: Bool {
+        hasProviders(flatrate) || hasProviders(rent) || hasProviders(buy)
+    }
+
+    /// True if any TMDB category has providers.
+    var hasAnyOptions: Bool {
+        hasCatalogOptions || hasProviders(free) || hasProviders(ads)
+    }
+
+    /// Valid URL built from TMDB link field.
+    var linkURL: URL? {
+        guard let link, let url = URL(string: link) else { return nil }
+        return url
+    }
+
+    private func hasProviders(_ providers: [WatchProvider]?) -> Bool {
+        guard let providers else { return false }
+        return !providers.isEmpty
+    }
 }
 
-/// Represents a single watch provider (e.g., Netflix, Prime Video).
-///
-/// - Can be used in flat-rate, rent, or buy lists.
-/// - Also used globally via `/watch/providers/movie` to get all available providers.
-///
-/// - Endpoint:
-///   - [Get Watch Providers for a Movie](https://developer.themoviedb.org/reference/movie-watch-providers)
-///   - [Get All Watch Providers](https://developer.themoviedb.org/reference/watch-providers-movie-list)
-struct WatchProvider: Decodable, Identifiable, Equatable {
+/// Availability state after resolving a preferred region and fallbacks.
+struct WatchProviderAvailability: Equatable {
+    static let defaultFallbackRegionCode = "US"
 
+    let requestedRegionCode: String
+    let fallbackRegionCode: String
+    let resolvedRegionCode: String?
+    let source: WatchProviderRegionResolutionSource
+    let region: WatchProviderRegion?
+
+    var hasResolvedRegion: Bool {
+        resolvedRegionCode != nil && region != nil
+    }
+
+    var requestedRegionName: String {
+        Self.localizedRegionName(for: requestedRegionCode)
+    }
+
+    var fallbackRegionName: String {
+        Self.localizedRegionName(for: fallbackRegionCode)
+    }
+
+    var resolvedRegionName: String? {
+        guard let resolvedRegionCode else { return nil }
+        return Self.localizedRegionName(for: resolvedRegionCode)
+    }
+
+    var sourceLabel: String {
+        switch source {
+        case .requestedRegion:
+            return "Current region"
+        case .fallbackRegion:
+            return "Fallback region"
+        case .firstRegionWithCatalogOptions:
+            return "Best available region"
+        case .firstAvailableRegion:
+            return "Available region"
+        case .unavailable:
+            return "No region data"
+        }
+    }
+
+    static func unavailable(
+        requestedRegionCode: String,
+        fallbackRegionCode: String
+    ) -> WatchProviderAvailability {
+        WatchProviderAvailability(
+            requestedRegionCode: requestedRegionCode,
+            fallbackRegionCode: fallbackRegionCode,
+            resolvedRegionCode: nil,
+            source: .unavailable,
+            region: nil
+        )
+    }
+
+    private static func localizedRegionName(for regionCode: String) -> String {
+        Locale.current.localizedString(forRegionCode: regionCode)
+        ?? Locale(identifier: "en_US_POSIX").localizedString(forRegionCode: regionCode)
+        ?? regionCode
+    }
+}
+
+enum WatchProviderRegionResolutionSource: String, Equatable {
+    case requestedRegion
+    case fallbackRegion
+    case firstRegionWithCatalogOptions
+    case firstAvailableRegion
+    case unavailable
+}
+
+/// Represents one provider (e.g. Netflix, Prime Video).
+struct WatchProvider: Decodable, Identifiable, Equatable {
     let providerId: Int
     let providerName: String
     let logoPath: String?
 
     var id: Int { providerId }
+
+    var displayName: String {
+        let trimmed = providerName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "Unknown provider" : trimmed
+    }
+
     var logoURL: URL? {
         TMDBImageHelper.url(for: logoPath, size: .w92)
     }
+}
+
+extension WatchProviderRegion {
+    static let empty = WatchProviderRegion(
+        link: nil,
+        flatrate: nil,
+        rent: nil,
+        buy: nil,
+        free: nil,
+        ads: nil
+    )
 }

@@ -10,37 +10,41 @@ import SwiftUI
 struct WatchProviderCategoryButton: View {
     let category: WatchProviderCategory
     let isSelected: Bool
+    let hasContent: Bool
     let onTap: () -> Void
 
     var body: some View {
-        Button(
-            action: {
-                withAnimation(.easeInOut) {
-                    onTap()
-                }
-            },
-            label: {
-                Label {
-                    Text(category.rawValue)
-                        .font(.caption)
-                } icon: {
-                    Image(systemName: category.iconName)
-                        .font(.caption)
-                }
-                .padding(.vertical, 6)
-                .padding(.horizontal, 12)
-                .frame(minWidth: 60)
-                .background(isSelected ? Color.blue : Color(.systemGray5))
-                .foregroundColor(isSelected ? .white : .primary)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(Color.blue.opacity(0.3), lineWidth: isSelected ? 0 : 1)
-                )
-                .scaleEffect(isSelected ? 1.05 : 1.0)
-                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                onTap()
             }
-        )
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: category.iconName)
+                    .font(.caption)
+
+                Text(category.title)
+                    .font(.caption)
+
+                Circle()
+                    .fill(hasContent ? Color.green : Color.gray)
+                    .frame(width: 6, height: 6)
+                    .opacity(isSelected ? 0.9 : 0.7)
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .frame(minWidth: 72)
+            .background(isSelected ? Color.accentColor : Color(.systemGray5))
+            .foregroundStyle(isSelected ? Color.white : Color.primary)
+            .clipShape(Capsule())
+            .overlay {
+                Capsule()
+                    .stroke(Color.accentColor.opacity(isSelected ? 0 : 0.25), lineWidth: 1)
+            }
+            .opacity(isSelected || hasContent ? 1 : 0.8)
+            .scaleEffect(isSelected ? 1.02 : 1)
+        }
+        .buttonStyle(.plain)
     }
 }
 

@@ -104,7 +104,7 @@ final class MockMovieRepository: MovieProtocol {
 
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
         try await Task.sleep(nanoseconds: Delay.medium)
-        return MovieCreditsPreviewData.starWarsCredits()
+        return MovieCreditsPreviewData.starWarsCredits(movieId: movieId)
     }
 
     func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
@@ -117,9 +117,15 @@ final class MockMovieRepository: MovieProtocol {
         return SharedPreviewMovies.moviesList
     }
 
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
         try await Task.sleep(nanoseconds: Delay.short)
-        return PreviewData.mockWatchProviderRegion
+        return WatchProviderAvailability(
+            requestedRegionCode: "SE",
+            fallbackRegionCode: "US",
+            resolvedRegionCode: "SE",
+            source: .requestedRegion,
+            region: PreviewData.mockWatchProviderRegion
+        )
     }
 
     // MARK: - Person
