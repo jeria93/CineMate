@@ -27,9 +27,23 @@ import SwiftUI
 /// }
 /// ```
 struct TrailingIcon: Identifiable {
-    let id: UUID = UUID()
+    let id: String
     let systemName: String
     var isEnabled: Bool = true
     var accessibilityLabel: String?
     let action: () -> Void
+
+    init(
+        id: String? = nil,
+        systemName: String,
+        isEnabled: Bool = true,
+        accessibilityLabel: String? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.id = id ?? systemName
+        self.systemName = systemName
+        self.isEnabled = isEnabled
+        self.accessibilityLabel = accessibilityLabel
+        self.action = action
+    }
 }

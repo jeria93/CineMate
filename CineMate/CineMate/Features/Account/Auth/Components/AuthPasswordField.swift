@@ -52,14 +52,22 @@ private extension AuthPasswordField {
     }
 
     var clearIcon: TrailingIcon {
-        TrailingIcon(systemName: "xmark.circle.fill") {
+        TrailingIcon(
+            id: "clear-password",
+            systemName: "xmark.circle.fill",
+            accessibilityLabel: "Clear password"
+        ) {
             text = ""
             onCleared()
         }
     }
 
     var revealIcon: TrailingIcon {
-        TrailingIcon(systemName: revealIconName) {
+        TrailingIcon(
+            id: "toggle-password-visibility",
+            systemName: revealIconName,
+            accessibilityLabel: isRevealed ? "Hide password" : "Show password"
+        ) {
             isRevealed.toggle()
         }
     }

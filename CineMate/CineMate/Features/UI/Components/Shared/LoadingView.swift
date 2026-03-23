@@ -11,18 +11,21 @@ struct LoadingView: View {
     let title: String
 
     var body: some View {
-        VStack(spacing: 12) {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
-                .scaleEffect(1.5)
+        OverlayContainer(backdrop: .material) {
+            OverlayCard {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .scaleEffect(1.5)
+                    .accessibilityHidden(true)
 
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(title)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial)
-        .ignoresSafeArea()
     }
 }
 

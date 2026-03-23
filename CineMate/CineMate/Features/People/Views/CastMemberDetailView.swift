@@ -53,6 +53,7 @@ struct CastMemberDetailView: View {
         systemImage: "person.crop.circle.badge.exclamationmark",
         title: "Failed to load person",
         message: error,
+        layout: .inline,
         actionTitle: "Retry",
         onAction: { Task { await reload(forceRefresh: true) } }
       )
@@ -83,6 +84,7 @@ struct CastMemberDetailView: View {
         systemImage: "person.crop.circle.badge.exclamationmark",
         title: "No person details",
         message: "We couldn't load details for this person.",
+        layout: .inline,
         actionTitle: "Retry",
         onAction: { Task { await reload(forceRefresh: true) } }
       )

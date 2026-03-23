@@ -13,7 +13,6 @@ extension PreviewFactory {
 
     /// Fully populated DiscoverViewModel for default layout previews.
     static func discoverViewModel() -> DiscoverViewModel {
-        resetAllPreviewData()
         return configuredViewModel {
             $0.applyPreviewSections([
                 .topRated: SharedPreviewMovies.moviesList,
@@ -28,7 +27,6 @@ extension PreviewFactory {
 
     /// Shows DiscoverViewModel in a loading state.
     static func loadingDiscoverViewModel() -> DiscoverViewModel {
-        resetAllPreviewData()
         return configuredViewModel {
             $0.isLoading = true
         }
@@ -36,13 +34,11 @@ extension PreviewFactory {
 
     /// Empty state with no data loaded.
     static func emptyDiscoverViewModel() -> DiscoverViewModel {
-        resetAllPreviewData()
         return configuredViewModel()
     }
 
     /// Error state with a custom message.
     static func errorDiscoverViewModel() -> DiscoverViewModel {
-        resetAllPreviewData()
         return configuredViewModel {
             $0.error = .custom("Something went wrong")
         }
@@ -50,7 +46,6 @@ extension PreviewFactory {
 
     /// Only top-rated movies populated, useful for layout testing.
     static func oneSectionOnlyDiscoverViewModel() -> DiscoverViewModel {
-        resetAllPreviewData()
         return configuredViewModel {
             $0.applyPreviewSections([
                 .topRated: DiscoverPreviewData.movies
@@ -60,7 +55,6 @@ extension PreviewFactory {
 
     /// Discover screen showing only horror movies.
     static func horrorOnlyDiscoverViewModel() -> DiscoverViewModel {
-        resetAllPreviewData()
         return configuredViewModel {
             $0.applyPreviewSections([
                 .horror: DiscoverHorrorPreviewData.horrorMovies
@@ -70,7 +64,7 @@ extension PreviewFactory {
 
     /// Shared builder for consistent setup with mock repository.
     private static func configuredViewModel(_ configure: ((DiscoverViewModel) -> Void)? = nil) -> DiscoverViewModel {
-        let viewModel = DiscoverViewModel(repository: MockMovieRepository())
+        let viewModel = DiscoverViewModel(repository: repository)
         configure?(viewModel)
         return viewModel
     }

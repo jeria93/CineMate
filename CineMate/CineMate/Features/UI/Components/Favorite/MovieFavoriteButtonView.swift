@@ -37,13 +37,15 @@ struct HeartButton: View {
         Button(action: toggle) {
             Image(systemName: isOn ? "heart.fill" : "heart")
                 .foregroundStyle(isOn ? .red : .gray)
-                .font(.title2)
-                .padding(8)
+                .font(.title3.weight(.semibold))
+                .padding(SharedUI.Spacing.small)
                 .background(.ultraThinMaterial, in: Circle())
                 .opacity(isDisabled ? 0.7 : 1)
         }
         .buttonStyle(.plain)
         .disabled(isDisabled)
+        .accessibilityLabel(isOn ? "Remove from favorites" : "Add to favorites")
+        .accessibilityHint("Double tap to update favorites")
     }
 }
 

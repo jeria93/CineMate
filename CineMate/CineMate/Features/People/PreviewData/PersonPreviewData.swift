@@ -11,7 +11,7 @@ import Foundation
 enum PersonPreviewData {
 
     static let markHamill = PersonDetail(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.people, 1),
         name: "Mark Hamill",
         birthday: "1951-09-25",
         deathday: nil,
@@ -30,7 +30,7 @@ enum PersonPreviewData {
 
     static let movieCredits: [PersonMovieCredit] = [
         PersonMovieCredit(
-            id: PreviewID.next(),
+            id: PreviewID.scoped(.people, 101),
             title: "Star Wars: A New Hope",
             character: "Luke Skywalker",
             releaseDate: "1977-05-25",
@@ -38,7 +38,7 @@ enum PersonPreviewData {
             popularity: 95.0
         ),
         PersonMovieCredit(
-            id: PreviewID.next(),
+            id: PreviewID.scoped(.people, 102),
             title: "The Empire Strikes Back",
             character: "Luke Skywalker",
             releaseDate: "1980-05-21",
@@ -46,7 +46,7 @@ enum PersonPreviewData {
             popularity: 90.5
         ),
         PersonMovieCredit(
-            id: PreviewID.next(),
+            id: PreviewID.scoped(.people, 103),
             title: "Return of the Jedi",
             character: "Luke Skywalker",
             releaseDate: "1983-05-25",
@@ -56,7 +56,7 @@ enum PersonPreviewData {
     ]
 
     static let emptyDetail = PersonDetail(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.people, 999),
         name: "Unknown",
         birthday: nil,
         deathday: nil,

@@ -18,7 +18,7 @@ enum PersonMetaInfoPreviewData {
 
     /// Partially filled detail with only gender set, rest is missing.
     static let partial = PersonDetail(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.peopleComponents, 1),
         name: "Mystery Person",
         birthday: nil,
         deathday: nil,

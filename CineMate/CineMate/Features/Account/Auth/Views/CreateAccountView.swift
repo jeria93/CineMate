@@ -165,5 +165,6 @@ struct CreateAccountView: View {
 #Preview("Filled Valid") { CreateAccountView.previewFilledValid }
 #Preview("Password Mismatch") { CreateAccountView.previewPasswordMismatch }
 #Preview("Invalid Email") { CreateAccountView.previewInvalidEmail }
+#Preview("Terms Not Accepted") { CreateAccountView.previewTermsNotAccepted }
 #Preview("Is Authenticating") { CreateAccountView.previewIsAuthenticating }
 #Preview("Server Error") { CreateAccountView.previewServerError }

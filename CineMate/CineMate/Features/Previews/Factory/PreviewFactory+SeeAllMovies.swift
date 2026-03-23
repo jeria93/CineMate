@@ -7,24 +7,13 @@
 
 import Foundation
 
-/// Preview factory extension for creating mock states of `SeeAllMoviesViewModel`.
-/// Provides a set of common UI preview scenarios for SwiftUI views.
-///
-/// ### Usage
-/// ```swift
-/// SeeAllMoviesView(movieViewModel: .preview, title: "Popular Movies")
-/// SeeAllMoviesView(movieViewModel: .loading, title: "Loading…")
-/// SeeAllMoviesView(movieViewModel: .error, title: "Error")
-/// SeeAllMoviesView(movieViewModel: .empty, title: "Empty State")
-/// ```
 @MainActor
-extension SeeAllMoviesViewModel {
+extension PreviewFactory {
 
     /// A mock view model with populated movie list for previewing normal state.
-    static var preview: SeeAllMoviesViewModel {
-        PreviewID.reset()
+    static func seeAllMoviesPreviewViewModel() -> SeeAllMoviesViewModel {
         let vm = SeeAllMoviesViewModel(
-            repository: MockMovieRepository(),
+            repository: repository,
             filter: DiscoverFilter()
         )
         vm.movies = SharedPreviewMovies.moviesList
@@ -32,9 +21,9 @@ extension SeeAllMoviesViewModel {
     }
 
     /// A mock view model simulating a loading state (initial or paginated).
-    static var loading: SeeAllMoviesViewModel {
+    static func seeAllMoviesLoadingViewModel() -> SeeAllMoviesViewModel {
         let vm = SeeAllMoviesViewModel(
-            repository: MockMovieRepository(),
+            repository: repository,
             filter: DiscoverFilter()
         )
         vm.isLoading = true
@@ -42,9 +31,9 @@ extension SeeAllMoviesViewModel {
     }
 
     /// A mock view model simulating an error state with a message.
-    static var error: SeeAllMoviesViewModel {
+    static func seeAllMoviesErrorViewModel() -> SeeAllMoviesViewModel {
         let vm = SeeAllMoviesViewModel(
-            repository: MockMovieRepository(),
+            repository: repository,
             filter: DiscoverFilter()
         )
         vm.errorMessage = "Something went wrong. Please try again."
@@ -52,10 +41,19 @@ extension SeeAllMoviesViewModel {
     }
 
     /// A mock view model representing an empty state with no results.
-    static var empty: SeeAllMoviesViewModel {
+    static func seeAllMoviesEmptyViewModel() -> SeeAllMoviesViewModel {
         SeeAllMoviesViewModel(
-            repository: MockMovieRepository(),
+            repository: repository,
             filter: DiscoverFilter()
         )
     }
+}
+
+/// Backward-compatible conveniences used by existing `#Preview` declarations.
+@MainActor
+extension SeeAllMoviesViewModel {
+    static var preview: SeeAllMoviesViewModel { PreviewFactory.seeAllMoviesPreviewViewModel() }
+    static var loading: SeeAllMoviesViewModel { PreviewFactory.seeAllMoviesLoadingViewModel() }
+    static var error: SeeAllMoviesViewModel { PreviewFactory.seeAllMoviesErrorViewModel() }
+    static var empty: SeeAllMoviesViewModel { PreviewFactory.seeAllMoviesEmptyViewModel() }
 }

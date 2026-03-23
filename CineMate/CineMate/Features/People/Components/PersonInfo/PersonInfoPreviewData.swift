@@ -18,7 +18,7 @@ enum PersonInfoPreviewData {
 
     /// Partially filled detail with only name and birthday.
     static let partial = PersonDetail(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.peopleComponents, 2),
         name: "Mystery Person",
         birthday: "1980-01-01",
         deathday: nil,

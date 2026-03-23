@@ -13,8 +13,7 @@ import SwiftUI
 extension RelatedMovieCardView {
 
     static var preview: some View {
-        PreviewID.reset()
-        return RelatedMovieCardView(movie: SharedPreviewMovies.starWars)
+        RelatedMovieCardView(movie: SharedPreviewMovies.starWars)
             .padding()
             .background(Color(.systemBackground))
     }

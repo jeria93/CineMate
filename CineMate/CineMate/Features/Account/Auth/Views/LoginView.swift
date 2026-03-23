@@ -187,6 +187,7 @@ struct LoginView: View {
 // MARK: - Previews
 
 #Preview("Empty") { LoginView.previewEmpty }
+#Preview("Filled") { LoginView.previewFilled }
 #Preview("Error") { LoginView.previewError }
 #Preview("Authenticating") { LoginView.previewIsAuthenticating }
 

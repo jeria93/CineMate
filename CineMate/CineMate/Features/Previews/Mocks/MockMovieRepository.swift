@@ -104,7 +104,7 @@ final class MockMovieRepository: MovieProtocol {
 
     func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
         try await Task.sleep(nanoseconds: Delay.medium)
-        return MovieCreditsPreviewData.starWarsCredits()
+        return MovieCreditsPreviewData.starWarsCredits(movieId: movieId)
     }
 
     func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {

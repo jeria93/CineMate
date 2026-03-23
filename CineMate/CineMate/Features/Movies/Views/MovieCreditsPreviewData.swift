@@ -10,31 +10,30 @@ import Foundation
 /// Provides mock MovieCredits data for previews.
 enum MovieCreditsPreviewData {
 
-    static func starWarsCredits() -> MovieCredits {
-        PreviewID.reset()
+    static func starWarsCredits(movieId: Int = SharedPreviewMovies.starWars.id) -> MovieCredits {
         return MovieCredits(
-            id: PreviewID.next(),
+            id: movieId,
             cast: [
                 CastMember(
-                    id: PreviewID.next(),
+                    id: PreviewID.scoped(.movieCredits, 1),
                     name: "Mark Hamill",
                     character: "Luke Skywalker",
                     profilePath: "/2ZulC2Ccq1yv3pemusks6Zlfy2s.jpg"
                 ),
                 CastMember(
-                    id: PreviewID.next(),
+                    id: PreviewID.scoped(.movieCredits, 2),
                     name: "Harrison Ford",
                     character: "Han Solo",
                     profilePath: "/zVnHagUvXkR2StdOtquEwsiwSVt.jpg"
                 ),
                 CastMember(
-                    id: PreviewID.next(),
+                    id: PreviewID.scoped(.movieCredits, 3),
                     name: "Carrie Fisher",
                     character: "Princess Leia",
                     profilePath: "/awb4UqzT6meD3JiQlraIzAqcRtH.jpg"
                 ),
                 CastMember(
-                    id: PreviewID.next(),
+                    id: PreviewID.scoped(.movieCredits, 4),
                     name: "Chewbacca",
                     character: nil,
                     profilePath: nil
@@ -42,13 +41,13 @@ enum MovieCreditsPreviewData {
             ],
             crew: [
                 CrewMember(
-                    id: PreviewID.next(),
+                    id: PreviewID.scoped(.movieCredits, 101),
                     name: "George Lucas",
                     job: "Director",
                     profilePath: "/mDLDvsx8PaZoEThkBdyaG1JxPdf.jpg"
                 ),
                 CrewMember(
-                    id: PreviewID.next(),
+                    id: PreviewID.scoped(.movieCredits, 102),
                     name: "Gary Kurtz",
                     job: "Producer",
                     profilePath: "/q6tgPiNqzEOIYmHxMrpWoUirmmu.jpg"
@@ -57,21 +56,40 @@ enum MovieCreditsPreviewData {
         )
     }
 
-    static let emptyCredits = MovieCredits(id: 0, cast: [], crew: [])
+    static let emptyCredits = MovieCredits(
+        id: PreviewID.scoped(.movieCredits, 900),
+        cast: [],
+        crew: []
+    )
 
     static let onlyDirector = MovieCredits(
-        id: 1,
+        id: PreviewID.scoped(.movieCredits, 901),
         cast: [],
         crew: [
-            CrewMember(id: 1, name: "Christopher Nolan", job: "Director", profilePath: nil)
+            CrewMember(
+                id: PreviewID.scoped(.movieCredits, 201),
+                name: "Christopher Nolan",
+                job: "Director",
+                profilePath: nil
+            )
         ]
     )
 
     static let onlyCast = MovieCredits(
-        id: 2,
+        id: PreviewID.scoped(.movieCredits, 902),
         cast: [
-            CastMember(id: 1, name: "Actor A", character: nil, profilePath: nil),
-            CastMember(id: 2, name: "Actor B", character: nil, profilePath: nil)
+            CastMember(
+                id: PreviewID.scoped(.movieCredits, 301),
+                name: "Actor A",
+                character: nil,
+                profilePath: nil
+            ),
+            CastMember(
+                id: PreviewID.scoped(.movieCredits, 302),
+                name: "Actor B",
+                character: nil,
+                profilePath: nil
+            )
         ],
         crew: []
     )

@@ -36,7 +36,9 @@ struct WatchProviderItemView: View {
 
     @ViewBuilder
     private var logoView: some View {
-        if let logoURL = provider.logoURL {
+        if ProcessInfo.processInfo.isPreview {
+            fallbackLogo
+        } else if let logoURL = provider.logoURL {
             AsyncImage(url: logoURL) { phase in
                 switch phase {
                 case .empty:

@@ -32,25 +32,42 @@ extension UIViewController {
     /// }
     /// ```
     static var topMostViewController: UIViewController? {
-        // Active foreground scene
-        let scene = UIApplication.shared.connectedScenes
+        guard let root = activeWindow?.rootViewController else { return nil }
+        return resolveTopMost(from: root)
+    }
+
+    private static var activeWindow: UIWindow? {
+        let scenes = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
-            .first { $0.activationState == .foregroundActive }
 
-        // Key window (fallback to first)
-        let window = scene?.windows.first(where: { $0.isKeyWindow }) ?? scene?.windows.first
-        guard var top = window?.rootViewController else { return nil }
+        let preferredScene = scenes.first { $0.activationState == .foregroundActive }
+            ?? scenes.first { $0.activationState == .foregroundInactive }
+            ?? scenes.first
 
-        // Follow any presented chain
-        while let presented = top.presentedViewController { top = presented }
+        let windows = preferredScene?.windows ?? []
+        return windows.first(where: \.isKeyWindow) ?? windows.first
+    }
 
-        // Unwrap common containers
-        if let nav = top as? UINavigationController {
-            top = nav.visibleViewController ?? nav
-        } else if let tab = top as? UITabBarController {
-            top = tab.selectedViewController ?? tab
+    private static func resolveTopMost(from viewController: UIViewController) -> UIViewController {
+        if let presented = viewController.presentedViewController {
+            return resolveTopMost(from: presented)
         }
 
-        return top
+        if let navigation = viewController as? UINavigationController {
+            let next = navigation.visibleViewController ?? navigation.topViewController ?? navigation
+            return resolveTopMost(from: next)
+        }
+
+        if let tab = viewController as? UITabBarController {
+            let next = tab.selectedViewController ?? tab
+            return resolveTopMost(from: next)
+        }
+
+        if let split = viewController as? UISplitViewController,
+           let last = split.viewControllers.last {
+            return resolveTopMost(from: last)
+        }
+
+        return viewController
     }
 }

@@ -21,16 +21,18 @@ struct MovieLoaderHelper {
     ///   - currentMovies: The list of already loaded movies (mutable).
     ///   - newMovies: The list of newly fetched movies to process.
     ///   - seenIDs: A set tracking all movie IDs that have been loaded.
+    @discardableResult
     static func appendNewMovies(
         currentMovies: inout [Movie],
         newMovies: [Movie],
         seenIDs: inout Set<Int>
-    ) {
+    ) -> [Movie] {
         let filtered = newMovies
             .removingDuplicateIDs()
             .excluding(alreadySeenIDs: seenIDs)
 
         currentMovies.append(contentsOf: filtered)
-        filtered.forEach { seenIDs.insert($0.id) }
+        seenIDs.formUnion(filtered.map(\.id))
+        return filtered
     }
 }

@@ -299,10 +299,3 @@ extension FavoritePeopleViewModel {
         self.init(static: people)
     }
 }
-
-private extension Array where Element == PersonRef {
-    func removingDuplicateIDs() -> [PersonRef] {
-        Dictionary(grouping: self, by: \.id)
-            .compactMap { $0.value.first }
-    }
-}

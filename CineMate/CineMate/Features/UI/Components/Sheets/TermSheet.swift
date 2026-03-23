@@ -25,17 +25,17 @@ struct TermsSheet: View {
                         .lineSpacing(6)
                         .foregroundStyle(.white.opacity(0.92))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(20)
+                        .padding(SharedUI.Spacing.xLarge)
                         .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            RoundedRectangle(cornerRadius: SharedUI.Radius.sheet, style: .continuous)
                                 .fill(.ultraThinMaterial)
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    RoundedRectangle(cornerRadius: SharedUI.Radius.sheet, style: .continuous)
                                         .stroke(AuthTheme.cardStroke)
                                 )
                         )
                         .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, SharedUI.Spacing.xLarge)
                 }
                 .scrollIndicators(.never)
 
@@ -46,9 +46,9 @@ struct TermsSheet: View {
                 }
                 .buttonStyle(.pillWhite)
                 .frame(height: 48)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, SharedUI.Spacing.xLarge)
             }
-            .padding(.bottom, 16)
+            .padding(.bottom, SharedUI.Spacing.large)
         }
         .tint(AuthTheme.popcorn)
         .presentationDetents([.large])

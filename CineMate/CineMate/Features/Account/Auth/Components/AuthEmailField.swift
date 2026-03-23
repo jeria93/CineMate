@@ -51,7 +51,11 @@ private extension AuthEmailField {
     var icons: [TrailingIcon] {
         guard hasText && !isDisabled else { return [] }
         return [
-            TrailingIcon(systemName: "xmark.circle.fill") {
+            TrailingIcon(
+                id: "clear-email",
+                systemName: "xmark.circle.fill",
+                accessibilityLabel: "Clear email"
+            ) {
                 text = ""
                 onCleared()
             }

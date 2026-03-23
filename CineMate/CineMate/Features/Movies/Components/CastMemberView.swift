@@ -16,18 +16,7 @@ struct CastMemberView: View {
             nav.goToPerson(id: member.id)
         } label: {
             VStack(alignment: .center, spacing: 4) {
-                AsyncImage(url: member.profileURL) { phase in
-                    if let image = phase.image {
-                        image.resizable().scaledToFill()
-                    } else {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundStyle(.gray)
-                            .padding(8)
-                            .background(Color.gray.opacity(0.1))
-                    }
-                }
+                profileImage
                 .frame(width: 80, height: 80)
                 .clipShape(Circle())
 
@@ -48,6 +37,30 @@ struct CastMemberView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var profileImage: some View {
+        if ProcessInfo.processInfo.isPreview {
+            fallbackProfileImage
+        } else {
+            AsyncImage(url: member.profileURL) { phase in
+                if let image = phase.image {
+                    image.resizable().scaledToFill()
+                } else {
+                    fallbackProfileImage
+                }
+            }
+        }
+    }
+
+    private var fallbackProfileImage: some View {
+        Image(systemName: "person.circle.fill")
+            .resizable()
+            .scaledToFit()
+            .foregroundStyle(.gray)
+            .padding(8)
+            .background(Color.gray.opacity(0.1))
     }
 }
 

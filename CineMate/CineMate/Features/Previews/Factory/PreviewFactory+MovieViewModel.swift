@@ -91,4 +91,12 @@ extension PreviewFactory {
         vm.state = .loading
         return vm
     }
+
+    /// Error state for full-screen fallback previews.
+    static func movieDetailViewModelError() -> MovieDetailViewModel {
+        resetAllPreviewData()
+        let vm = MovieDetailViewModel(repository: repository)
+        vm.state = .failed("Failed to load movie details.")
+        return vm
+    }
 }

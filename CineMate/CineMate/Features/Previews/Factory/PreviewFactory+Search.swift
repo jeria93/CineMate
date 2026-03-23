@@ -18,8 +18,7 @@ extension PreviewFactory {
 
     /// Preview showing a successful search with mock results.
     static func searchViewModel() -> SearchViewModel {
-        PreviewID.reset()
-        return SearchViewModel(repository: MockMovieRepository())
+        SearchViewModel(repository: repository)
             ._previewInject(
                 query: "Star",
                 results: SharedPreviewMovies.moviesList,
@@ -32,7 +31,7 @@ extension PreviewFactory {
 
     /// Preview showing a valid query that returns no results.
     static func emptySearchViewModel() -> SearchViewModel {
-        SearchViewModel(repository: MockMovieRepository())
+        SearchViewModel(repository: repository)
             ._previewInject(
                 query: "Unknown",
                 results: [],
@@ -45,7 +44,7 @@ extension PreviewFactory {
 
     /// Preview showing a search in progress (loading state).
     static func loadingSearchViewModel() -> SearchViewModel {
-        SearchViewModel(repository: MockMovieRepository())
+        SearchViewModel(repository: repository)
             ._previewInject(
                 query: "Loading",
                 results: [],
@@ -58,7 +57,7 @@ extension PreviewFactory {
 
     /// Preview showing a simulated API/network error.
     static func errorSearchViewModel() -> SearchViewModel {
-        SearchViewModel(repository: MockMovieRepository())
+        SearchViewModel(repository: repository)
             ._previewInject(
                 query: "Error",
                 results: [],
@@ -71,7 +70,7 @@ extension PreviewFactory {
 
     /// Preview showing an invalid query with a validation message.
     static func invalidSearchViewModel() -> SearchViewModel {
-        SearchViewModel(repository: MockMovieRepository())
+        SearchViewModel(repository: repository)
             ._previewInject(
                 query: "?",
                 results: [],
@@ -85,7 +84,7 @@ extension PreviewFactory {
 
     /// Preview showing the initial idle state with an empty query.
     static func promptSearchViewModel() -> SearchViewModel {
-        SearchViewModel(repository: MockMovieRepository())
+        SearchViewModel(repository: repository)
             ._previewInject(
                 query: "",
                 results: [],

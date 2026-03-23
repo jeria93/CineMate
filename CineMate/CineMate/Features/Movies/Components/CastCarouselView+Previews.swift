@@ -13,7 +13,8 @@ extension CastCarouselView {
     @MainActor
     static var preview: some View {
         CastCarouselView(
-            cast: CastCarouselViewPreviewData.cast        )
+            cast: CastCarouselViewPreviewData.cast
+        )
         .padding()
         .background(Color(.systemBackground))
     }
@@ -23,7 +24,8 @@ extension CastCarouselView {
     @MainActor
     static var longList: some View {
         CastCarouselView(
-            cast: CastCarouselViewPreviewData.longCast        )
+            cast: CastCarouselViewPreviewData.longCast
+        )
         .padding()
         .background(Color(.systemBackground))
     }

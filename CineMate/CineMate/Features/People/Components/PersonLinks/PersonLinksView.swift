@@ -8,38 +8,61 @@
 import SwiftUI
 
 struct PersonLinksView: View {
-  let imdbURL: URL?
-  let tmdbURL: URL?
-  let instagramURL: URL?
-  let twitterURL: URL?
-  let facebookURL: URL?
+    let imdbURL: URL?
+    let tmdbURL: URL?
+    let instagramURL: URL?
+    let twitterURL: URL?
+    let facebookURL: URL?
 
-  var body: some View {
-    if hasAnyLinks {
-      HStack(spacing: 20) {
-        SocialLinkButtonView(url: imdbURL, assetName: "imdb")
-        SocialLinkButtonView(url: tmdbURL, assetName: "themoviedatabase")
-        SocialLinkButtonView(url: instagramURL, assetName: "instagram")
-        SocialLinkButtonView(url: twitterURL, assetName: "x")
-        SocialLinkButtonView(url: facebookURL, assetName: "facebook")
-        ShareLinkButtonView(url: tmdbURL)
-        Spacer()
-      }
-      .padding(.vertical)
-    } else {
-      Text("No external links available.")
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
-        .padding(.vertical, 4)
+    var body: some View {
+        if hasAnyLinks {
+            HStack(spacing: SharedUI.Spacing.xLarge) {
+                ForEach(socialButtons) { button in
+                    SocialLinkButtonView(
+                        url: button.url,
+                        assetName: button.assetName,
+                        accessibilityLabel: button.accessibilityLabel
+                    )
+                }
+                ShareLinkButtonView(url: tmdbURL)
+                Spacer()
+            }
+            .padding(.vertical)
+        } else {
+            Text("No external links available.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.vertical, SharedUI.Spacing.xSmall)
+        }
     }
-  }
 
-  private var hasAnyLinks: Bool {
-    imdbURL != nil || tmdbURL != nil || instagramURL != nil || twitterURL != nil
-      || facebookURL != nil
-  }
+    private var socialButtons: [SocialButtonItem] {
+        [
+            .init(id: "imdb", assetName: "imdb", accessibilityLabel: "Open IMDb", url: imdbURL),
+            .init(
+                id: "tmdb",
+                assetName: "themoviedatabase",
+                accessibilityLabel: "Open The Movie Database",
+                url: tmdbURL
+            ),
+            .init(id: "instagram", assetName: "instagram", accessibilityLabel: "Open Instagram", url: instagramURL),
+            .init(id: "x", assetName: "x", accessibilityLabel: "Open X", url: twitterURL),
+            .init(id: "facebook", assetName: "facebook", accessibilityLabel: "Open Facebook", url: facebookURL)
+        ]
+    }
+
+    private var hasAnyLinks: Bool {
+        socialButtons.contains { $0.url != nil } || tmdbURL != nil
+    }
 }
 
 #Preview("Social Media Links") {
-  PersonLinksView.preview
+    PersonLinksView.preview
+}
+
+private struct SocialButtonItem: Identifiable {
+    let id: String
+    let assetName: String
+    let accessibilityLabel: String
+    let url: URL?
 }

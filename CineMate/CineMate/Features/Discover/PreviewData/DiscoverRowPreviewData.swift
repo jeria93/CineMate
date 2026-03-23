@@ -17,7 +17,7 @@ enum DiscoverRowPreviewData {
 
     /// A movie without a poster image, used to preview fallback UI state.
     static let posterlessMovie = Movie(
-        id: PreviewID.next(),
+        id: PreviewID.scoped(.discover, 90),
         title: "Posterless Movie",
         overview: nil,
         posterPath: nil,

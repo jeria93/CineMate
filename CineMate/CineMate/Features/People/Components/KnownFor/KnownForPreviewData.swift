@@ -18,7 +18,7 @@ enum KnownForPreviewData {
     /// Partial list with minimal data and no poster.
     static let partial: [PersonMovieCredit] = [
         PersonMovieCredit(
-            id: PreviewID.next(),
+            id: PreviewID.scoped(.peopleComponents, 10),
             title: "Mysterious Adventure",
             character: nil,
             releaseDate: "2025-01-01",

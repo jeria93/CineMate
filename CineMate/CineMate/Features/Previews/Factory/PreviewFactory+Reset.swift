@@ -10,7 +10,7 @@ import Foundation
 /// Centralized reset method for all preview-related data
 extension PreviewFactory {
     static func resetAllPreviewData() {
-        PreviewID.reset()
+        // Deterministic preview IDs no longer require resetting mutable counters.
         _ = SharedPreviewMovies.moviesList
         _ = MovieCreditsPreviewData.starWarsCredits()
         _ = DiscoverPreviewData.movies

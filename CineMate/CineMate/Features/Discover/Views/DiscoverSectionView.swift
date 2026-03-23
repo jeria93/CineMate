@@ -33,7 +33,8 @@ struct DiscoverSectionView: View {
                 EmptyStateView(
                     systemImage: "film",
                     title: "No movies",
-                    message: "This section is empty right now."
+                    message: "This section is empty right now.",
+                    layout: .inline
                 )
                 .padding(.horizontal)
                 .padding(.bottom, 8)

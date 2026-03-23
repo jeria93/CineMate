@@ -55,8 +55,6 @@ struct RootView: View {
                         .allowsHitTesting(!isLocked)
                     if isLocked {
                         LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .ignoresSafeArea()
                             .zIndex(1)
                     }
                 }
@@ -74,8 +72,6 @@ struct RootView: View {
                     .allowsHitTesting(!isLocked)
                     if isLocked {
                         LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .ignoresSafeArea()
                             .zIndex(1)
                     }
                 }

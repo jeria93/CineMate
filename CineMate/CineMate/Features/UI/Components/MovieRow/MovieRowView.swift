@@ -14,30 +14,30 @@ struct MovieRowView: View {
     @EnvironmentObject private var navigator: AppNavigator
 
     var body: some View {
-        HStack(alignment: .top, spacing: 15) {
+        HStack(alignment: .top, spacing: SharedUI.Spacing.large) {
             rowTapTarget
 
             MovieFavoriteButtonView(movie: movie, favoriteViewModel: favoriteViewModel)
-                .padding(.top, 4)
+                .padding(.top, SharedUI.Spacing.xSmall)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, SharedUI.Spacing.small)
         .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .clipShape(RoundedRectangle(cornerRadius: SharedUI.Radius.medium, style: .continuous))
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 
     private var rowTapTarget: some View {
-        HStack(alignment: .top, spacing: 15) {
+        HStack(alignment: .top, spacing: SharedUI.Spacing.large) {
             PosterImageView(
                 url: movie.posterSmallURL,
                 title: movie.title,
-                width: 80,
-                height: 120
+                width: SharedUI.Size.posterCompact.width,
+                height: SharedUI.Size.posterCompact.height
             )
 
             MovieRowDetails(
                 movie: movie,
-                spacing: 5,
+                spacing: SharedUI.Spacing.small,
                 titleFont: .headline,
                 overviewFont: .subheadline,
                 showFullOverview: false

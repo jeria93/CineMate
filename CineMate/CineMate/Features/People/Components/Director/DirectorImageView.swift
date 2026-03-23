@@ -11,22 +11,35 @@ struct DirectorImageView: View {
     let url: URL?
 
     var body: some View {
-        AsyncImage(url: url) { phase in
-            if let image = phase.image {
-                image
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.gray)
-                    .padding(6)
-                    .background(Color.gray.opacity(0.1))
-            }
-        }
+        imageView
         .frame(width: 60, height: 60)
         .clipShape(Circle())
+    }
+
+    @ViewBuilder
+    private var imageView: some View {
+        if ProcessInfo.processInfo.isPreview {
+            fallbackImage
+        } else {
+            AsyncImage(url: url) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    fallbackImage
+                }
+            }
+        }
+    }
+
+    private var fallbackImage: some View {
+        Image(systemName: "person.circle.fill")
+            .resizable()
+            .scaledToFit()
+            .foregroundStyle(.gray)
+            .padding(6)
+            .background(Color.gray.opacity(0.1))
     }
 }
 

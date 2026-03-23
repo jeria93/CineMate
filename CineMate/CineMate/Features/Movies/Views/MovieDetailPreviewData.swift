@@ -39,7 +39,7 @@ enum MovieDetailPreviewData {
 
     static var emptyDetail: MovieDetail {
         MovieDetail(
-            id: PreviewID.next(),
+            id: PreviewID.scoped(.movieDetail, 900),
             title: "Untitled Movie",
             overview: nil,
             posterPath: nil,
