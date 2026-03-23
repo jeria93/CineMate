@@ -79,3 +79,15 @@ Recommended setup: Xcode 15.3+.
 - Preview architecture:
   - [`CineMate/Features/Previews/`](CineMate/Features/Previews/)
   - [`CineMate/Features/Account/Auth/PreviewData/`](CineMate/Features/Account/Auth/PreviewData/)
+
+## TMDB Attribution
+
+This product uses the TMDB API but is not endorsed or certified by TMDB.
+
+- TMDB API is free for non-commercial use with proper attribution.
+- Keep TMDB attribution visible in an in-app About/Credits section.
+- Use approved TMDB logos/branding if you display the TMDB mark.
+
+Links:
+- [TMDB Developer FAQ](https://developer.themoviedb.org/docs/faq)
+- [TMDB API Terms of Use](https://www.themoviedb.org/api-terms-of-use?language=en-US)
