@@ -13,7 +13,7 @@ struct PreviewBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding()
-            .background(Color(.systemBackground))
+            .background(Color.appBackground)
     }
 }
 

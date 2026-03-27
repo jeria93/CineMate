@@ -42,7 +42,7 @@ struct OverlayContainer<Content: View>: View {
         ZStack {
             switch backdrop {
             case .material:
-                Rectangle().fill(.ultraThinMaterial)
+                Rectangle().fill(Color.appBackground.opacity(0.88))
             case .dimmed(let opacity):
                 Color.black.opacity(opacity)
             case .none:

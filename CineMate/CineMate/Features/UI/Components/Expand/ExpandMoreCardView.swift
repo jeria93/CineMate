@@ -19,21 +19,25 @@ struct ExpandMoreCardView: View {
             label: {
                 VStack(alignment: .leading, spacing: 4) {
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.15))
+                        .fill(Color.appSurface)
                         .frame(width: 100, height: 150)
                         .overlay(
                             VStack(spacing: 4) {
                                 Text("+\(remaining)")
                                     .font(.caption)
-                                    .foregroundColor(.blue)
+                                    .foregroundStyle(Color.appPrimaryAction)
 
                                 Text("more")
                                     .font(.caption)
-                                    .foregroundColor(.blue)
+                                    .foregroundStyle(Color.appPrimaryAction)
 
                                 Image(systemName: "chevron.right")
-                                    .foregroundColor(.blue)
+                                    .foregroundStyle(Color.appPrimaryAction)
                             }
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
                         )
 
                     Text("")

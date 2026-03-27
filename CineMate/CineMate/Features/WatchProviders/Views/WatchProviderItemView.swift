@@ -43,15 +43,16 @@ struct WatchProviderItemView: View {
                 switch phase {
                 case .empty:
                     ProgressView()
+                        .tint(.appPrimaryAction)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color(UIColor.secondarySystemBackground))
+                        .background(Color.appSurface)
                 case .success(let image):
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .padding(6)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color(UIColor.secondarySystemBackground))
+                        .background(Color.appSurface)
                 case .failure:
                     fallbackLogo
                 @unknown default:
@@ -67,10 +68,10 @@ struct WatchProviderItemView: View {
         Image(systemName: "tv")
             .resizable()
             .scaledToFit()
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.appTextSecondary)
             .padding(12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(UIColor.secondarySystemBackground))
+            .background(Color.appSurface)
     }
 }
 

@@ -26,10 +26,12 @@ struct EmptyResultsView: View {
                 Text("Try a different movie title.")
                     .font(.subheadline)
                     .foregroundStyle(Color.appTextSecondary)
+
             }
             .multilineTextAlignment(.center)
             .padding()
             .background(
+
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(Color.appSurface.opacity(0.96))
             )

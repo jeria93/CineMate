@@ -10,23 +10,23 @@ import SwiftUI
 struct RelatedMoviesSection: View {
     let movies: [Movie]
     let movieViewModel: MovieViewModel?
-    
+
     private var uniqueMovies: [Movie] {
         movies.removingDuplicateIDs()
     }
-    
+
     init(movies: [Movie], movieViewModel: MovieViewModel? = nil) {
         self.movies = movies
         self.movieViewModel = movieViewModel
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("You might also like")
                 .font(.title2.bold())
                 .foregroundStyle(Color.appTextPrimary)
                 .padding(.horizontal)
-            
+
             if uniqueMovies.isEmpty {
                 HStack {
                     Image(systemName: "film")

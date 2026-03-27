@@ -66,4 +66,5 @@ extension Color {
     static let appTextSecondary = Color("App/TextSecondary")
     static let appPrimaryAction = Color("App/PrimaryAction")
     static let appPositive = Color("App/Positive")
+    static let appDestructive = Color("App/Destructive")
 }

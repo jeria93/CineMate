@@ -10,11 +10,11 @@ import SwiftUI
 /// A reusable view for showing validation feedback to the user.
 struct ValidationMessageView: View {
     let message: String
-    
+
     var body: some View {
         Text(message)
             .font(.footnote)
-            .foregroundColor(.red)
+            .foregroundStyle(Color.appTextSecondary)
             .multilineTextAlignment(.center)
             .padding(.horizontal)
             .padding(.top, 4)

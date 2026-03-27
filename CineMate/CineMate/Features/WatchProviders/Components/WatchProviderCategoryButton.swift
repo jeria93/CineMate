@@ -27,19 +27,19 @@ struct WatchProviderCategoryButton: View {
                     .font(.caption)
 
                 Circle()
-                    .fill(hasContent ? Color.green : Color.gray)
+                    .fill(hasContent ? Color.appPositive : Color.appTextSecondary)
                     .frame(width: 6, height: 6)
                     .opacity(isSelected ? 0.9 : 0.7)
             }
             .padding(.vertical, 6)
             .padding(.horizontal, 12)
             .frame(minWidth: 72)
-            .background(isSelected ? Color.accentColor : Color(.systemGray5))
-            .foregroundStyle(isSelected ? Color.white : Color.primary)
+            .background(isSelected ? Color.appPrimaryAction : Color.appSurface)
+            .foregroundStyle(isSelected ? Color.tmdbNavy : Color.appTextPrimary)
             .clipShape(Capsule())
             .overlay {
                 Capsule()
-                    .stroke(Color.accentColor.opacity(isSelected ? 0 : 0.25), lineWidth: 1)
+                    .stroke(Color.appPrimaryAction.opacity(isSelected ? 0 : 0.30), lineWidth: 1)
             }
             .opacity(isSelected || hasContent ? 1 : 0.8)
             .scaleEffect(isSelected ? 1.02 : 1)
