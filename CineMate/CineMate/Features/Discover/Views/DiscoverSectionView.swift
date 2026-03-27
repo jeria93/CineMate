@@ -17,13 +17,14 @@ struct DiscoverSectionView: View {
             HStack(spacing: 12) {
                 Text(title)
                     .font(.title2.bold())
+                    .foregroundStyle(Color.appTextPrimary)
 
                 Spacer()
 
                 Button("See all", action: onSeeAllTap)
                     .font(.subheadline.weight(.semibold))
                     .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appPrimaryAction)
             }
             .padding(.horizontal)
 

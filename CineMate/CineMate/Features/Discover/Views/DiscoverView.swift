@@ -15,6 +15,8 @@ struct DiscoverView: View {
 
     var body: some View {
         content
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("Discover")
             .task {
                 await viewModel.refreshCurrentSelection()
@@ -46,8 +48,13 @@ struct DiscoverView: View {
                 .overlay(alignment: .top) {
                     if viewModel.isLoading {
                         ProgressView()
+                            .tint(.appPrimaryAction)
                             .padding(10)
-                            .background(.thinMaterial, in: Capsule())
+                            .background(Color.appSurface.opacity(0.95), in: Capsule())
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.appPrimaryAction.opacity(0.25), lineWidth: 1)
+                            )
                             .padding(.top, 8)
                     }
                 }
@@ -56,9 +63,14 @@ struct DiscoverView: View {
                         Text(err.localizedDescription)
                             .font(.footnote)
                             .multilineTextAlignment(.center)
+                            .foregroundStyle(Color.appTextSecondary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(.ultraThinMaterial, in: Capsule())
+                            .background(Color.appSurface.opacity(0.95), in: Capsule())
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.appTextSecondary.opacity(0.20), lineWidth: 1)
+                            )
                             .padding(.bottom, 12)
                     }
                 }

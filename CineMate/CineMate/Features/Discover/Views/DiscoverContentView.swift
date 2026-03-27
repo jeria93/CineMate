@@ -45,6 +45,7 @@ struct DiscoverContentView: View {
                 }
                 .padding(.vertical)
             }
+            .background(Color.appBackground)
             // Auto scroll-to-top when selected genre changes
             .onChange(of: viewModel.selectedGenreId) { _, newValue in
                 guard lastSelectedGenreId != newValue else { return }

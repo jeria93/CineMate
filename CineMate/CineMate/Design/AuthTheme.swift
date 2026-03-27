@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-/// Auth-specific color tokens (cinema “curtain” + “popcorn” accent).
-/// Scope to auth screens,  if reused broadly, promote to app-wide design tokens.
+/// Auth-specific color tokens.
+/// These are layered on top of app-wide color assets to keep auth visuals consistent.
 enum AuthTheme {
-    static let curtainTop    = Color(red: 0.10, green: 0.02, blue: 0.05) // #1A000D
-    static let curtainBottom = Color(red: 0.24, green: 0.05, blue: 0.07) // #3D0C12
-    static let popcorn       = Color(red: 0.96, green: 0.77, blue: 0.09) // #F5C518
+    static let curtainTop = Color.tmdbNavy
+    static let curtainBottom = Color.tmdbBlue
+    static let popcorn = Color.appPrimaryAction
 
-    static let cardStroke    = Color.white.opacity(0.12)
+    static let cardStroke = Color.white.opacity(0.16)
     static let iconOnCurtain = Color.white.opacity(0.95)
 }
 
@@ -50,4 +50,20 @@ enum SharedUI {
         static let cardPadding: CGFloat = 18
         static let dimOpacity: CGFloat = 0.35
     }
+}
+
+/// App-wide semantic colors backed by Assets.xcassets tokens.
+extension Color {
+    // Raw TMDB brand colors
+    static let tmdbNavy = Color("Brand/TMDB/Navy")
+    static let tmdbBlue = Color("Brand/TMDB/Blue")
+    static let tmdbGreen = Color("Brand/TMDB/Green")
+
+    // Semantic app tokens
+    static let appBackground = Color("App/Background")
+    static let appSurface = Color("App/Surface")
+    static let appTextPrimary = Color("App/TextPrimary")
+    static let appTextSecondary = Color("App/TextSecondary")
+    static let appPrimaryAction = Color("App/PrimaryAction")
+    static let appPositive = Color("App/Positive")
 }

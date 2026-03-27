@@ -38,50 +38,11 @@ struct RootView: View {
     var body: some View {
         NavigationStack(path: $navigator.path) {
             TabView(selection: $selectedTab) {
-                // Movies tab
-                MovieListView(viewModel: movieVM, favoriteViewModel: favVM)
-                    .tabItem { Label("Movies", systemImage: "film") }
-                    .tag(MainTab.movies)
-
-                // Favorites tab
-                FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
-                    .tabItem { Label("Favorites", systemImage: "heart.fill") }
-                    .tag(MainTab.favorites)
-
-                // Discover tab with guest lock
-                ZStack {
-                    let isLocked = authViewModel.isGuest
-                    DiscoverView(viewModel: discoverVM)
-                        .allowsHitTesting(!isLocked)
-                    if isLocked {
-                        LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
-                            .zIndex(1)
-                    }
-                }
-                .tabItem { Label("Discover", systemImage: "safari") }
-                .tag(MainTab.discover)
-
-                // Search tab with guest lock
-                ZStack {
-                    let isLocked = authViewModel.isGuest
-                    SearchView(
-                        searchViewModel: searchVM,
-                        favoriteViewModel: favVM,
-                        isGuestMode: isLocked
-                    )
-                    .allowsHitTesting(!isLocked)
-                    if isLocked {
-                        LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
-                            .zIndex(1)
-                    }
-                }
-                .tabItem { Label("Search", systemImage: "magnifyingglass") }
-                .tag(MainTab.search)
-
-                // Account tab
-                AccountView(viewModel: authViewModel)
-                    .tabItem { Label("Account", systemImage: "person.crop.circle") }
-                    .tag(MainTab.auth)
+                moviesTab
+                favoritesTab
+                discoverTab
+                searchTab
+                accountTab
             }
             // Keep favorites listeners aligned with current auth session.
             .task(id: authViewModel.currentUID) {
@@ -110,6 +71,8 @@ struct RootView: View {
                 destination(for: route)
             }
         }
+        .tint(.appPrimaryAction)
+        .background(Color.appBackground.ignoresSafeArea())
         .onAppear {
             tabPaths[selectedTab] = navigator.path
         }
@@ -123,6 +86,56 @@ struct RootView: View {
 }
 
 extension RootView {
+    private var moviesTab: some View {
+        MovieListView(viewModel: movieVM, favoriteViewModel: favVM)
+            .tabItem { Label("Movies", systemImage: "film") }
+            .tag(MainTab.movies)
+    }
+
+    private var favoritesTab: some View {
+        FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
+            .tabItem { Label("Favorites", systemImage: "heart.fill") }
+            .tag(MainTab.favorites)
+    }
+
+    private var discoverTab: some View {
+        ZStack {
+            let isLocked = authViewModel.isGuest
+            DiscoverView(viewModel: discoverVM)
+                .allowsHitTesting(!isLocked)
+            if isLocked {
+                LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
+                    .zIndex(1)
+            }
+        }
+        .tabItem { Label("Discover", systemImage: "safari") }
+        .tag(MainTab.discover)
+    }
+
+    private var searchTab: some View {
+        ZStack {
+            let isLocked = authViewModel.isGuest
+            SearchView(
+                searchViewModel: searchVM,
+                favoriteViewModel: favVM,
+                isGuestMode: isLocked
+            )
+            .allowsHitTesting(!isLocked)
+            if isLocked {
+                LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
+                    .zIndex(1)
+            }
+        }
+        .tabItem { Label("Search", systemImage: "magnifyingglass") }
+        .tag(MainTab.search)
+    }
+
+    private var accountTab: some View {
+        AccountView(viewModel: authViewModel)
+            .tabItem { Label("Account", systemImage: "person.crop.circle") }
+            .tag(MainTab.auth)
+    }
+
     @ViewBuilder
     fileprivate func destination(for route: AppRoute) -> some View {
         switch route {
