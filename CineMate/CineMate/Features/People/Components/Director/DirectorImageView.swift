@@ -37,9 +37,9 @@ struct DirectorImageView: View {
         Image(systemName: "person.circle.fill")
             .resizable()
             .scaledToFit()
-            .foregroundStyle(.gray)
+            .foregroundStyle(Color.appTextSecondary)
             .padding(6)
-            .background(Color.gray.opacity(0.1))
+            .background(Color.appSurface)
     }
 }
 

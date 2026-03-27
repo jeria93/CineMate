@@ -15,21 +15,25 @@ struct SearchPromptView: View {
         VStack(spacing: 12) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 40))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
 
             Text("Search for movies")
                 .font(.headline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextPrimary)
 
             Text("Try titles like *Star Wars* or *Inception*.")
                 .font(.subheadline)
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.appTextSecondary)
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
-            .ultraThinMaterial,
-            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.appSurface.opacity(0.96))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
         )
         .padding()
     }

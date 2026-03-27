@@ -35,7 +35,7 @@ struct RelatedMovieCardView: View {
                     .font(.caption)
                     .fontWeight(.semibold)
                     .lineLimit(1)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.appTextPrimary)
             }
             .frame(width: SharedUI.Size.posterCard.width, alignment: .leading)
         }

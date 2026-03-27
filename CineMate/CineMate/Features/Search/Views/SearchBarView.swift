@@ -14,34 +14,41 @@ struct SearchBarView: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
 
             TextField(
                 isDisabled ? "Search is locked for guests" : "Search movies...",
                 text: $text
             )
-                .textInputAutocapitalization(.never)
-                .disableAutocorrection(true)
-                .disabled(isDisabled)
-                .onChange(of: text) {
-                    if text.hasPrefix(" ") {
-                        text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                    }
+            .textInputAutocapitalization(.never)
+            .disableAutocorrection(true)
+            .disabled(isDisabled)
+            .onChange(of: text) {
+                if text.hasPrefix(" ") {
+                    text = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 }
+            }
 
             if !text.isEmpty && !isDisabled {
                 Button {
                     withAnimation { text = "" }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                 }
                 .transition(.scale)
             }
         }
         .padding(12)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.appSurface.opacity(0.96))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
+        )
+        .shadow(color: Color.tmdbNavy.opacity(0.10), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
         .opacity(isDisabled ? 0.8 : 1)
     }

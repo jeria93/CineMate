@@ -15,7 +15,7 @@ struct KnownForScrollView: View {
     if movies.isEmpty {
       Text("No known-for titles available.")
         .font(.subheadline)
-        .foregroundStyle(.secondary)
+        .foregroundStyle(Color.appTextSecondary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
     } else {

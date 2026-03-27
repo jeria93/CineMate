@@ -10,16 +10,17 @@ import SwiftUI
 struct CastCarouselView: View {
     let cast: [CastMember]
     @State private var showAll = false
-
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("Cast")
                 .font(.headline)
-
+                .foregroundStyle(Color.appTextPrimary)
+            
             if cast.isEmpty {
                 HStack {
-                    Image(systemName: "person.2.fill").foregroundColor(.secondary)
-                    Text("No cast information available.").foregroundColor(.secondary)
+                    Image(systemName: "person.2.fill").foregroundStyle(Color.appTextSecondary)
+                    Text("No cast information available.").foregroundStyle(Color.appTextSecondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()

@@ -30,21 +30,23 @@ struct ErrorMessageView: View {
             OverlayCard {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 32))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(Color.appPrimaryAction)
                     .accessibilityHidden(true)
 
                 Text(title)
                     .font(.headline)
+                    .foregroundStyle(Color.appTextPrimary)
                     .multilineTextAlignment(.center)
 
                 Text(message)
                     .multilineTextAlignment(.center)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
 
                 if let onRetry {
                     Button(retryTitle, action: onRetry)
                         .buttonStyle(.borderedProminent)
+                        .tint(.appPrimaryAction)
                         .padding(.top, SharedUI.Spacing.small)
                         .accessibilityHint("Attempts to load the content again")
                 }

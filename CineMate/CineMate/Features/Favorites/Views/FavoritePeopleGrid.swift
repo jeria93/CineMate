@@ -43,7 +43,7 @@ struct FavoritePeopleGrid: View {
                     if let inlineError = viewModel.inlineErrorMessage {
                         Text(inlineError)
                             .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.appTextSecondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .gridCellColumns(cols.count)
                     }

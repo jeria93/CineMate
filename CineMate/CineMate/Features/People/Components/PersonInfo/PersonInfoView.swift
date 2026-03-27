@@ -15,12 +15,12 @@ struct PersonInfoView: View {
             if let birthday = detail.birthday {
                 Text("Born: \(birthday)")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
 
                 if let deathday = detail.deathday {
                     Text("Died: \(deathday)")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
 
                     if let livedYears = DateHelper.calculateYearsLived(
                         birthday: birthday,
@@ -28,27 +28,27 @@ struct PersonInfoView: View {
                     ) {
                         Text("Lived \(livedYears) years")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.appTextSecondary)
                     }
                 } else if let age = DateHelper.calculateAge(from: birthday) {
                     Text("Age: \(age)")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                 }
             } else {
                 Text("Birthday: Unknown")
                     .font(.subheadline)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color.appTextSecondary.opacity(0.7))
             }
 
             if let place = detail.placeOfBirth {
                 Text("Place of birth: \(place)")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
             } else {
                 Text("Place of birth: Unknown")
                     .font(.subheadline)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color.appTextSecondary.opacity(0.7))
             }
 
             if let bio = detail.biography, !bio.isEmpty {
@@ -56,7 +56,7 @@ struct PersonInfoView: View {
             } else {
                 Text("Biography not available.")
                     .font(.subheadline)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color.appTextSecondary.opacity(0.7))
                     .italic()
             }
         }

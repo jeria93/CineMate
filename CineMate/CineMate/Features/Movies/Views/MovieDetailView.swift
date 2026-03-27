@@ -45,7 +45,7 @@ struct MovieDetailView: View {
         self.favoriteViewModel = favoriteViewModel
 
         let resolvedDetailVM = detailViewModel
-            ?? MovieDetailViewModel(repository: movieViewModel.underlyingRepository)
+        ?? MovieDetailViewModel(repository: movieViewModel.underlyingRepository)
         _detailViewModel = StateObject(wrappedValue: resolvedDetailVM)
     }
 
@@ -81,13 +81,22 @@ struct MovieDetailView: View {
             guard !ProcessInfo.processInfo.isPreview else { return }
             await loadDetailScreen()
         }
+        .background(Color.appBackground.ignoresSafeArea())
         .navigationTitle(movie?.title ?? "Movie")
         .navigationBarTitleDisplayMode(.inline)
         .overlay {
             if detailViewModel.isLoading, movie != nil {
                 ProgressView("Loading details…")
+                    .tint(.appPrimaryAction)
                     .padding(16)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.appSurface.opacity(0.96))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(Color.appTextSecondary.opacity(0.20), lineWidth: 1)
+                    )
             }
         }
     }
@@ -152,7 +161,7 @@ struct MovieDetailView: View {
         } else if case .loaded = detailViewModel.state {
             Text("No recommendations available.")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 4)
         }
@@ -199,9 +208,10 @@ private struct MovieCreditsSection: View {
                         .font(.headline)
                     Text(errorMessage)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                     Button("Retry Credits", action: onRetry)
                         .buttonStyle(.bordered)
+                        .tint(.appPrimaryAction)
                 }
             } else if hasAnyCredits, let currentCredits {
                 MovieCreditsView(credits: currentCredits)
@@ -212,7 +222,7 @@ private struct MovieCreditsSection: View {
             } else if isCurrentMovie {
                 Text("No credits available.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
             }
         }
     }

@@ -22,14 +22,14 @@ struct MovieDetailActionBarView: View {
                 openURL(url)
             } label: {
                 Label("Trailer", systemImage: "play.rectangle.fill")
-                    .actionButtonStyle(.red)
+                    .actionButtonStyle(Color.appPrimaryAction)
             }
 
             shareButton
 
             Link(destination: movie.tmdbURL) {
                 Label("TMDB", systemImage: "link")
-                    .actionButtonStyle(.blue)
+                    .actionButtonStyle(Color.tmdbNavy)
             }
         }
         .padding(.top, 8)
@@ -43,19 +43,19 @@ struct MovieDetailActionBarView: View {
         if let shareItem {
             ShareLink(item: shareItem.url, preview: SharePreview(shareItem.title, image: Image(uiImage: shareItem.image))) {
                 Label("Share", systemImage: "square.and.arrow.up")
-                    .actionButtonStyle(.accentColor)
+                    .actionButtonStyle(Color.tmdbGreen)
             }
         } else {
             ShareLink(item: movie.tmdbURL) {
                 Label("Share", systemImage: "square.and.arrow.up")
-                    .actionButtonStyle(.accentColor)
+                    .actionButtonStyle(Color.tmdbGreen)
                     .opacity(isPreparingShareItem ? 0.75 : 1)
             }
             .overlay(alignment: .trailing) {
                 if isPreparingShareItem {
                     ProgressView()
                         .controlSize(.mini)
-                        .tint(.white)
+                        .tint(Color.tmdbNavy)
                         .padding(.trailing, 8)
                 }
             }
@@ -81,7 +81,7 @@ private extension Label where Title == Text, Icon == Image {
             .font(.caption)
             .fontWeight(.semibold)
             .padding(6)
-            .foregroundStyle(.white)
+            .foregroundStyle(Color.appSurface)
             .background(color)
             .clipShape(RoundedRectangle(cornerRadius: 8))
     }

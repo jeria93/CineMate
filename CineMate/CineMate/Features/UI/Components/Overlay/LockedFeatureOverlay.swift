@@ -75,13 +75,17 @@ struct OverlayCard<Content: View>: View {
         .frame(maxWidth: maxWidth)
         .background(
             RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
-                .fill(.ultraThinMaterial)
+                .fill(Color.appSurface.opacity(0.96))
         )
         .overlay(
             RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
-                .stroke(.quaternary, lineWidth: 1)
+                .stroke(Color.appTextSecondary.opacity(0.20), lineWidth: 1)
         )
-        .shadow(radius: 18, y: SharedUI.Spacing.small)
+        .shadow(
+            color: Color.tmdbNavy.opacity(0.14),
+            radius: 18,
+            y: SharedUI.Spacing.small
+        )
         .padding(.horizontal, SharedUI.Spacing.xxLarge)
     }
 }
@@ -109,22 +113,24 @@ struct LockedFeatureOverlay: View {
             OverlayCard {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
                     .accessibilityHidden(true)
 
                 Text(title)
                     .font(.headline)
+                    .foregroundStyle(Color.appTextPrimary)
                     .multilineTextAlignment(.center)
 
                 if let message {
                     Text(message)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                         .multilineTextAlignment(.center)
                 }
 
                 Button(ctaTitle, action: onCTA)
                     .buttonStyle(.borderedProminent)
+                    .tint(.appPrimaryAction)
             }
         }
         .contentShape(Rectangle())

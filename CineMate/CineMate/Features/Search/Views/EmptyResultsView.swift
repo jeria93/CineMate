@@ -12,28 +12,30 @@ struct EmptyResultsView: View {
 
     var body: some View {
         ZStack {
-            Color.clear
-                .background(.ultraThinMaterial)
-                .ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             VStack(spacing: 12) {
                 Image(systemName: "film")
                     .font(.system(size: 32))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
 
                 Text("No results for \"\(query)\"")
                     .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextPrimary)
 
                 Text("Try a different movie title.")
                     .font(.subheadline)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Color.appTextSecondary)
             }
             .multilineTextAlignment(.center)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(.ultraThinMaterial)
+                    .fill(Color.appSurface.opacity(0.96))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
             )
             .padding()
         }

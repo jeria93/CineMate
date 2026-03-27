@@ -9,18 +9,19 @@ import SwiftUI
 
 struct LoadingView: View {
     let title: String
-
+    
     var body: some View {
         OverlayContainer(backdrop: .material) {
             OverlayCard {
                 ProgressView()
                     .progressViewStyle(.circular)
+                    .tint(.appPrimaryAction)
                     .scaleEffect(1.5)
                     .accessibilityHidden(true)
-
+                
                 Text(title)
                     .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
                     .multilineTextAlignment(.center)
             }
             .accessibilityElement(children: .combine)
