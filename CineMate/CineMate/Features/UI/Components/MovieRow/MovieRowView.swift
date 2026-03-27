@@ -21,9 +21,13 @@ struct MovieRowView: View {
                 .padding(.top, SharedUI.Spacing.xSmall)
         }
         .padding(.vertical, SharedUI.Spacing.small)
-        .background(Color(.systemBackground))
+        .background(Color.appSurface)
+        .overlay(
+            RoundedRectangle(cornerRadius: SharedUI.Radius.medium, style: .continuous)
+                .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
+        )
         .clipShape(RoundedRectangle(cornerRadius: SharedUI.Radius.medium, style: .continuous))
-        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .shadow(color: Color.tmdbNavy.opacity(0.08), radius: 2, x: 0, y: 1)
     }
 
     private var rowTapTarget: some View {

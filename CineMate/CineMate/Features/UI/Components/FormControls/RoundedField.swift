@@ -69,11 +69,11 @@ struct RoundedField<Content: View>: View {
         }
         .background(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(.background)
+                .fill(Color.appSurface)
         )
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .strokeBorder(.quaternary, lineWidth: 1)
+                .strokeBorder(Color.appTextSecondary.opacity(0.22), lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
@@ -92,7 +92,7 @@ private struct RoundedFieldIconButton: View {
             Image(systemName: icon.systemName)
                 .font(.system(size: symbolPointSize, weight: .semibold))
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
                 .frame(width: tapTargetSize, height: tapTargetSize)
                 .contentShape(Rectangle())
         }

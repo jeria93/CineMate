@@ -28,9 +28,10 @@ struct WatchProviderListView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(selection.emptyTitle)
                     .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.appTextPrimary)
                 Text("Not available in \(regionLabel) right now.")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 4)

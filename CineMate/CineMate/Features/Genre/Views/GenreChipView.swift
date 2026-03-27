@@ -19,20 +19,23 @@ struct GenreChipView: View {
             .fontWeight(isSelected ? .semibold : .regular)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .foregroundStyle(isSelected ? .white : .primary)
+            .foregroundStyle(isSelected ? Color.tmdbNavy : Color.appTextPrimary)
             .background(
                 isSelected
-                ? AnyShapeStyle(LinearGradient(colors: [.blue, .indigo],
+                ? AnyShapeStyle(LinearGradient(colors: [.tmdbBlue, .tmdbGreen],
                                                startPoint: .topLeading,
                                                endPoint: .bottomTrailing))
-                : AnyShapeStyle(Color.gray.opacity(0.15))
+                : AnyShapeStyle(Color.appSurface)
             )
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .strokeBorder(isSelected ? Color.indigo.opacity(0.8) : .clear, lineWidth: 1.5)
+                    .strokeBorder(
+                        isSelected ? Color.tmdbNavy.opacity(0.35) : Color.appTextSecondary.opacity(0.20),
+                        lineWidth: 1.2
+                    )
             )
-            .shadow(color: .black.opacity(isSelected ? 0.15 : 0.05),
+            .shadow(color: Color.tmdbNavy.opacity(isSelected ? 0.18 : 0.06),
                     radius: isSelected ? 3 : 1,
                     x: 0, y: isSelected ? 2 : 1)
             .contentShape(Rectangle())

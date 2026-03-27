@@ -15,22 +15,22 @@ struct MovieCreditsView: View {
             if let director = credits.crew.first(where: { $0.job == "Director" })?.name {
                 Text("Directed by: \(director)")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
             } else {
                 Text("No director info.")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(Color.appTextSecondary)
             }
 
             if !credits.cast.isEmpty {
                 let castNames = credits.cast.prefix(3).map(\.name).joined(separator: ", ")
                 Text("Starring: \(castNames)")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
             } else {
                 Text("No cast info.")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(Color.appTextSecondary)
             }
         }
     }

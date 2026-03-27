@@ -13,8 +13,10 @@ struct TermsSheet: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
-                           startPoint: .top, endPoint: .bottom)
+            LinearGradient(
+                colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
+                startPoint: .top, endPoint: .bottom
+            )
             .ignoresSafeArea()
 
             VStack(spacing: 22) {
@@ -23,16 +25,20 @@ struct TermsSheet: View {
                 ScrollView {
                     Text(markdownAttributed)
                         .lineSpacing(6)
-                        .foregroundStyle(.white.opacity(0.92))
+                        .foregroundStyle(AuthTheme.iconOnCurtain.opacity(0.92))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(SharedUI.Spacing.xLarge)
                         .background(
-                            RoundedRectangle(cornerRadius: SharedUI.Radius.sheet, style: .continuous)
-                                .fill(.ultraThinMaterial)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: SharedUI.Radius.sheet, style: .continuous)
-                                        .stroke(AuthTheme.cardStroke)
+                            RoundedRectangle(
+                                cornerRadius: SharedUI.Radius.sheet, style: .continuous
+                            )
+                            .fill(Color.appSurface.opacity(0.18))
+                            .overlay(
+                                RoundedRectangle(
+                                    cornerRadius: SharedUI.Radius.sheet, style: .continuous
                                 )
+                                .stroke(AuthTheme.cardStroke)
+                            )
                         )
                         .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
                         .padding(.horizontal, SharedUI.Spacing.xLarge)
@@ -66,7 +72,7 @@ private struct TermsHeader: View {
         VStack(spacing: 10) {
             ZStack {
                 Circle()
-                    .fill(.ultraThinMaterial)
+                    .fill(Color.appSurface.opacity(0.16))
                     .frame(width: 64, height: 64)
                     .overlay(Circle().strokeBorder(AuthTheme.cardStroke))
                 Image(systemName: "doc.text")
@@ -76,8 +82,8 @@ private struct TermsHeader: View {
             }
             Text("Terms of Service")
                 .font(.title3.bold())
-                .foregroundStyle(.white)
-            
+                .foregroundStyle(AuthTheme.iconOnCurtain)
+
             Text("Please review before creating an account")
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.9))

@@ -15,11 +15,11 @@ struct AuthHeader: View {
     var body: some View {
         VStack(spacing: 10) {
             iconView
-            .accessibilityHidden(true)
+                .accessibilityHidden(true)
 
             Text("CineMate")
                 .font(.title2).bold()
-                .foregroundStyle(.white)
+                .foregroundStyle(AuthTheme.iconOnCurtain)
 
             Text("Sign in to continue")
                 .font(.subheadline)
@@ -31,7 +31,7 @@ struct AuthHeader: View {
     private var iconContent: some View {
         ZStack {
             Circle()
-                .fill(.ultraThinMaterial)
+                .fill(Color.appSurface.opacity(0.16))
                 .frame(width: 72, height: 72)
                 .overlay(Circle().strokeBorder(AuthTheme.cardStroke))
             Image(systemName: "film.fill")

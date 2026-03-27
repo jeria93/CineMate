@@ -15,27 +15,28 @@ struct MovieGenresView: View {
         if genres.isEmpty {
             Label("Genres not available", systemImage: "questionmark.app.dashed")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(genres) { genre in
                         Text(genre.name)
+                            .foregroundStyle(Color.appTextPrimary)
                             .font(.caption.weight(.semibold))
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(
                                 Capsule()
-                                    .fill(Color.accentColor.opacity(0.12))
+                                    .fill(Color.appPrimaryAction.opacity(0.15))
                             )
                             .overlay(
                                 Capsule()
-                                    .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+                                    .stroke(Color.appPrimaryAction.opacity(0.30), lineWidth: 1)
                             )
                             .contentShape(Capsule())
                             .onTapGesture {
                                 navigator.goToGenre(genre.name)
-//                                Byt ut till ChipView?
+                                //                                Byt ut till ChipView?
                             }
                     }
                 }
@@ -58,13 +59,13 @@ extension MovieGenresView {
     static var previewGenres: some View {
         MovieGenresView(genres: GenrePreviewData.genres)
             .padding()
-            .background(Color(.systemBackground))
+            .background(Color.appBackground)
     }
 
     /// Shows fallback UI when no genres are available
     static var previewEmpty: some View {
         MovieGenresView(genres: [])
             .padding()
-            .background(Color(.systemBackground))
+            .background(Color.appBackground)
     }
 }

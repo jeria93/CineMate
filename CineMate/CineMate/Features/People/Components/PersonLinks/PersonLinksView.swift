@@ -31,7 +31,7 @@ struct PersonLinksView: View {
         } else {
             Text("No external links available.")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
                 .padding(.vertical, SharedUI.Spacing.xSmall)
         }
     }

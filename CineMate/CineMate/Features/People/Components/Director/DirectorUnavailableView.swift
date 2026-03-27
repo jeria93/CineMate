@@ -14,18 +14,22 @@ struct DirectorUnavailableView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 60, height: 60)
-                .foregroundColor(.gray)
+                .foregroundStyle(Color.appTextSecondary)
 
             Text("No director information available.")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
 
             Spacer()
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(.ultraThinMaterial)
+        .background(Color.appSurface)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
@@ -39,6 +43,6 @@ extension DirectorUnavailableView {
     static var previewUnavailable: some View {
         DirectorUnavailableView()
             .padding()
-            .background(Color(.systemBackground))
+            .background(Color.appBackground)
     }
 }

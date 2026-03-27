@@ -23,7 +23,7 @@ struct AccountDangerZoneView: View {
 
                 Text("Delete your account and remove all data. This action cannot be undone")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
 
                 Button(role: .destructive) {
                     isShowingDeleteAlert = true
@@ -37,7 +37,7 @@ struct AccountDangerZoneView: View {
                     Button("Delete", role: .destructive) {
                         Task { await deleteAccount() }
                     }
-                    Button("Cancel", role: .cancel) { }
+                    Button("Cancel", role: .cancel) {}
                 } message: {
                     Text("This will permanently remove your account and data")
                 }

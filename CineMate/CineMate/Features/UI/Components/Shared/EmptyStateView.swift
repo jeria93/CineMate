@@ -12,14 +12,14 @@ struct EmptyStateView: View {
         case fullScreen
         case inline
     }
-
+    
     let systemImage: String
     let title: String
     let message: String
     let layout: Layout
     var actionTitle: String?
     var onAction: (() -> Void)?
-
+    
     init(
         systemImage: String,
         title: String,
@@ -35,7 +35,7 @@ struct EmptyStateView: View {
         self.actionTitle = actionTitle
         self.onAction = onAction
     }
-
+    
     var body: some View {
         Group {
             switch layout {
@@ -51,34 +51,36 @@ struct EmptyStateView: View {
                     .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
-                            .fill(.ultraThinMaterial)
+                            .fill(Color.appSurface.opacity(0.96))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: SharedUI.Radius.large, style: .continuous)
-                            .stroke(.quaternary, lineWidth: 1)
+                            .stroke(Color.appTextSecondary.opacity(0.20), lineWidth: 1)
                     )
             }
         }
     }
-
+    
     private var content: some View {
         VStack(spacing: SharedUI.Spacing.medium) {
             Image(systemName: systemImage)
                 .font(.system(size: 40))
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.appTextSecondary)
                 .accessibilityHidden(true)
-
+            
             Text(title)
                 .font(.headline)
-
+                .foregroundStyle(Color.appTextPrimary)
+            
             Text(message)
                 .multilineTextAlignment(.center)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
-
+                .foregroundStyle(Color.appTextSecondary)
+            
             if let actionTitle, let onAction {
                 Button(actionTitle, action: onAction)
                     .buttonStyle(.borderedProminent)
+                    .tint(.appPrimaryAction)
                     .padding(.top, SharedUI.Spacing.small)
             }
         }

@@ -14,7 +14,7 @@ struct CastMemberImageView: View {
     imageView
     .frame(width: 180, height: 180)
     .clipShape(Circle())
-    .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 1))
+    .overlay(Circle().stroke(Color.appTextSecondary.opacity(0.25), lineWidth: 1))
   }
 
   @ViewBuilder
@@ -27,8 +27,9 @@ struct CastMemberImageView: View {
         case .empty:
           ZStack {
             Circle()
-              .fill(Color.gray.opacity(0.12))
+              .fill(Color.appSurface)
             ProgressView()
+              .tint(.appPrimaryAction)
           }
 
         case .success(let image):
@@ -50,9 +51,9 @@ struct CastMemberImageView: View {
     Image(systemName: "person.circle.fill")
       .resizable()
       .scaledToFit()
-      .foregroundStyle(.gray)
+      .foregroundStyle(Color.appTextSecondary)
       .padding(12)
-      .background(Color.gray.opacity(0.1))
+      .background(Color.appSurface)
   }
 }
 

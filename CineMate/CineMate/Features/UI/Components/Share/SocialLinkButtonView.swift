@@ -26,7 +26,7 @@ struct SocialLinkButtonView: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.appTextPrimary)
                 }
             }
             .buttonStyle(.plain)

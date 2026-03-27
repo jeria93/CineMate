@@ -33,6 +33,7 @@ struct CastMemberDetailView: View {
       }
       .padding()
     }
+    .background(Color.appBackground.ignoresSafeArea())
     .navigationBarTitleDisplayMode(.inline)
     .task(id: member.id) {
       await reload()
@@ -100,7 +101,7 @@ struct CastMemberDetailView: View {
     if personViewModel.personMovies.isEmpty {
       Text("No filmography available.")
         .font(.subheadline)
-        .foregroundStyle(.secondary)
+        .foregroundStyle(Color.appTextSecondary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
     } else {
@@ -113,7 +114,7 @@ struct CastMemberDetailView: View {
     if let error = personViewModel.errorMessage, hasRenderableContent {
       Text(error)
         .font(.footnote)
-        .foregroundStyle(.secondary)
+        .foregroundStyle(Color.appTextSecondary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 4)
     }
@@ -128,6 +129,7 @@ struct CastMemberDetailView: View {
         Text(displayedName)
           .font(.title)
           .bold()
+          .foregroundStyle(Color.appTextPrimary)
 
         HeartButton(
           isOn: favoritePeopleVM.isFavorite(id: member.id),
@@ -140,7 +142,7 @@ struct CastMemberDetailView: View {
       if let displayedRole {
         Text("Role: \(displayedRole)")
           .font(.headline)
-          .foregroundStyle(.secondary)
+          .foregroundStyle(Color.appTextSecondary)
       }
     }
   }

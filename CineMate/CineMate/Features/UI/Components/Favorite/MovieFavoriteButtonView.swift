@@ -36,10 +36,17 @@ struct HeartButton: View {
     var body: some View {
         Button(action: toggle) {
             Image(systemName: isOn ? "heart.fill" : "heart")
-                .foregroundStyle(isOn ? .red : .gray)
+                .foregroundStyle(isOn ? Color.tmdbGreen : Color.appTextSecondary)
                 .font(.title3.weight(.semibold))
                 .padding(SharedUI.Spacing.small)
-                .background(.ultraThinMaterial, in: Circle())
+                .background(
+                    Circle()
+                        .fill(Color.appSurface.opacity(0.96))
+                )
+                .overlay(
+                    Circle()
+                        .stroke(Color.appTextSecondary.opacity(0.20), lineWidth: 1)
+                )
                 .opacity(isDisabled ? 0.7 : 1)
         }
         .buttonStyle(.plain)

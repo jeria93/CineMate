@@ -28,7 +28,7 @@ struct BiographyView: View {
                 // Fade effect only when truncated and not expanded
                 if shouldTruncate && !isExpanded {
                     LinearGradient(
-                        gradient: Gradient(colors: [.clear, .white]),
+                        gradient: Gradient(colors: [.clear, .appSurface]),
                         startPoint: .top,
                         endPoint: .bottom
                     )

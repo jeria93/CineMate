@@ -37,22 +37,23 @@ struct MovieDetailInfoView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text(titleText)
                 .font(.largeTitle.bold())
+                .foregroundStyle(Color.appTextPrimary)
 
             HStack(spacing: 10) {
                 if let releaseDateText {
                     Text("Release: \(releaseDateText)")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                 }
 
                 if let voteAverageValue {
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
-                            .foregroundColor(.yellow)
+                            .foregroundStyle(Color.appPositive)
                             .font(.caption)
                         Text(String(format: "%.1f", voteAverageValue))
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(Color.appTextSecondary)
                     }
                 }
             }
@@ -65,7 +66,7 @@ struct MovieDetailInfoView: View {
             if let overviewText, !overviewText.isEmpty {
                 Text(overviewText)
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
             }
 
             WatchProvidersView(
@@ -91,43 +92,43 @@ struct MovieDetailInfoView: View {
         if let runtime = detail.runtime {
             Text("Runtime: \(runtime / 60)h \(runtime % 60)m")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
 
         if !detail.productionCompanies.isEmpty {
             Text("Produced by: \(detail.productionCompanies.map { $0.name }.joined(separator: ", "))")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
 
         if !detail.productionCountries.isEmpty {
             Text("Countries: \(detail.productionCountries.map { $0.name }.joined(separator: ", "))")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
 
         if let budget = detail.budget, budget > 0 {
             Text("Budget: \(budget.formattedWithSeparator()) USD")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
 
         if let revenue = detail.revenue, revenue > 0 {
             Text("Revenue: \(revenue.formattedWithSeparator()) USD")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
 
         if let status = detail.status {
             Text("Status: \(status)")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
 
         if let homepageURL = detail.homepageURL {
             Link("Official Website", destination: homepageURL)
                 .font(.caption)
-                .foregroundColor(.blue)
+                .foregroundStyle(Color.appPrimaryAction)
         }
     }
 }

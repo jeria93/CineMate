@@ -15,9 +15,17 @@ private struct ToastBanner: View {
     var body: some View {
         Text(text)
             .font(.footnote).bold()
+            .foregroundStyle(Color.appTextPrimary)
             .padding(.horizontal, 12).padding(.vertical, 8)
-            .background(.ultraThinMaterial, in: Capsule())
-            .shadow(radius: 1)
+            .background(
+                Capsule()
+                    .fill(Color.appSurface.opacity(0.96))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(Color.appTextSecondary.opacity(0.22), lineWidth: 1)
+            )
+            .shadow(color: Color.tmdbNavy.opacity(0.14), radius: 2, y: 1)
             .transition(.move(edge: .top).combined(with: .opacity))
             .padding(.top, 8)
     }

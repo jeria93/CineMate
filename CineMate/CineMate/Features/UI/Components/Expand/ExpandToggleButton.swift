@@ -27,10 +27,10 @@ struct ExpandToggleButton: View {
                     Text(isExpanded ? expandedLabel : collapsedLabel)
                 }
                 .font(.caption)
-                .foregroundColor(.blue)
+                .foregroundStyle(Color.appPrimaryAction)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(Color.blue.opacity(0.1))
+                .background(Color.appPrimaryAction.opacity(0.14))
                 .cornerRadius(8)
                 .contentShape(Rectangle())
             }
@@ -70,5 +70,5 @@ struct ExpandToggleButton: View {
         ) {}
     }
     .padding()
-    .background(Color(.systemBackground))
+    .background(Color.appBackground)
 }

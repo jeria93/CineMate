@@ -19,11 +19,11 @@ struct CastMoreButtonView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 20, height: 20)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Color.appTextSecondary)
 
                 Text("More")
                     .font(.caption2)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Color.appTextSecondary)
             }
             .frame(width: 80, height: 80)
         }

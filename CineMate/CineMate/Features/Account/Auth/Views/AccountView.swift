@@ -26,7 +26,7 @@ struct AccountView: View {
                             Label("Signed in", systemImage: "person.crop.circle.fill")
                                 .font(.headline)
                             Text("User ID: \(uid.prefix(10))")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.appTextSecondary)
                                 .font(.footnote.monospaced())
                         }
                     } else {
@@ -34,7 +34,7 @@ struct AccountView: View {
                             Label("Signed out", systemImage: "person.crop.circle.badge.xmark")
                                 .font(.headline)
                             Text("Sign in to manage your account.")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.appTextSecondary)
                         }
                     }
                 }
@@ -45,7 +45,7 @@ struct AccountView: View {
                             Text("Sign-in method")
                             Spacer()
                             Text(authViewModel.authProviderDescription)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.appTextSecondary)
                                 .multilineTextAlignment(.trailing)
                         }
                     }
@@ -53,12 +53,13 @@ struct AccountView: View {
                     if authViewModel.isGuest {
                         Section("Guest account") {
                             Text("Create an account to unlock Discover and Search.")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.appTextSecondary)
 
                             Button("Create Account") {
                                 navigator.goToCreateAccount()
                             }
                             .buttonStyle(.borderedProminent)
+                            .tint(.appPrimaryAction)
                             .disabled(authViewModel.isAuthenticating)
                         }
                     }
@@ -68,6 +69,7 @@ struct AccountView: View {
                             authViewModel.signOut()
                         }
                         .buttonStyle(.borderedProminent)
+                        .tint(.appPrimaryAction)
                         .disabled(authViewModel.isAuthenticating)
                     }
 

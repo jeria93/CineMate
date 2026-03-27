@@ -18,7 +18,7 @@ struct GenreDetailView: View {
 
             Text("Genre: \(genreName)")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
         .padding()
         .navigationTitle(genreName)

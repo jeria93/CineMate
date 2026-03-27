@@ -40,7 +40,7 @@ struct FavoriteMoviesView: View {
                 if let inlineError = viewModel.inlineErrorMessage {
                     Text(inlineError)
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                 }
 
                 ForEach(viewModel.favoriteMovies) { movie in

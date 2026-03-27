@@ -24,14 +24,15 @@ struct AuthErrorBlock: View {
         VStack(spacing: 8) {
             Text(message)
                 .font(.footnote)
-                .foregroundStyle(.red)
+                .foregroundStyle(Color.appDestructive)
                 .multilineTextAlignment(.center)
-            
+
             if showResend {
                 Button("Resend verification email") {
                     onResend()
                 }
                 .buttonStyle(.bordered)
+                .tint(.appPrimaryAction)
             }
         }
         .transition(.opacity)

@@ -28,7 +28,7 @@ struct CastMemberView: View {
 
                 Text(member.displayCharacter)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(Color.appTextSecondary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .frame(height: 28)
@@ -58,9 +58,9 @@ struct CastMemberView: View {
         Image(systemName: "person.circle.fill")
             .resizable()
             .scaledToFit()
-            .foregroundStyle(.gray)
+            .foregroundStyle(Color.appTextSecondary)
             .padding(8)
-            .background(Color.gray.opacity(0.1))
+            .background(Color.appSurface)
     }
 }
 

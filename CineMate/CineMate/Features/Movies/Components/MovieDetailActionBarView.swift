@@ -22,14 +22,14 @@ struct MovieDetailActionBarView: View {
                 openURL(url)
             } label: {
                 Label("Trailer", systemImage: "play.rectangle.fill")
-                    .actionButtonStyle(.red)
+                    .actionButtonStyle(background: .appPrimaryAction, foreground: .tmdbNavy)
             }
 
             shareButton
 
             Link(destination: movie.tmdbURL) {
                 Label("TMDB", systemImage: "link")
-                    .actionButtonStyle(.blue)
+                    .actionButtonStyle(background: .tmdbNavy, foreground: .white)
             }
         }
         .padding(.top, 8)
@@ -41,21 +41,24 @@ struct MovieDetailActionBarView: View {
     @ViewBuilder
     private var shareButton: some View {
         if let shareItem {
-            ShareLink(item: shareItem.url, preview: SharePreview(shareItem.title, image: Image(uiImage: shareItem.image))) {
+            ShareLink(
+                item: shareItem.url,
+                preview: SharePreview(shareItem.title, image: Image(uiImage: shareItem.image))
+            ) {
                 Label("Share", systemImage: "square.and.arrow.up")
-                    .actionButtonStyle(.accentColor)
+                    .actionButtonStyle(background: .tmdbGreen, foreground: .tmdbNavy)
             }
         } else {
             ShareLink(item: movie.tmdbURL) {
                 Label("Share", systemImage: "square.and.arrow.up")
-                    .actionButtonStyle(.accentColor)
+                    .actionButtonStyle(background: .tmdbGreen, foreground: .tmdbNavy)
                     .opacity(isPreparingShareItem ? 0.75 : 1)
             }
             .overlay(alignment: .trailing) {
                 if isPreparingShareItem {
                     ProgressView()
                         .controlSize(.mini)
-                        .tint(.white)
+                        .tint(Color.tmdbNavy)
                         .padding(.trailing, 8)
                 }
             }
@@ -74,15 +77,15 @@ struct MovieDetailActionBarView: View {
     MovieDetailActionBarView.previewDefault
 }
 
-private extension Label where Title == Text, Icon == Image {
-    func actionButtonStyle(_ color: Color) -> some View {
+extension Label where Title == Text, Icon == Image {
+    fileprivate func actionButtonStyle(background: Color, foreground: Color) -> some View {
         self
             .frame(width: 90, height: 15)
             .font(.caption)
             .fontWeight(.semibold)
             .padding(6)
-            .foregroundStyle(.white)
-            .background(color)
+            .foregroundStyle(foreground)
+            .background(background)
             .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

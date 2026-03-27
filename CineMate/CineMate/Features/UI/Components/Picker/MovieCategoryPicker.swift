@@ -31,7 +31,7 @@ extension MovieCategoryPicker {
         StatefulPreviewWrapper(MovieCategory.popular) { binding in
             MovieCategoryPicker(selectedCategory: binding)
                 .padding()
-                .background(Color(.systemBackground))
+                .background(Color.appBackground)
         }
     }
 }

@@ -27,7 +27,7 @@ struct PersonMovieCardView: View {
         Text(movie.title ?? "Untitled")
           .font(.caption)
           .lineLimit(1)
-          .foregroundStyle(.primary)
+          .foregroundStyle(Color.appTextPrimary)
       }
       .frame(width: 100)
     }
@@ -54,12 +54,12 @@ struct PersonMovieCardView: View {
   private var fallbackPoster: some View {
     ZStack {
       Rectangle()
-        .fill(Color.gray.opacity(0.2))
+        .fill(Color.appSurface)
       Image(systemName: "film")
         .resizable()
         .scaledToFit()
         .frame(width: 30, height: 30)
-        .foregroundStyle(.gray)
+        .foregroundStyle(Color.appTextSecondary)
     }
   }
 }

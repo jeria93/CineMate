@@ -28,6 +28,7 @@ struct WatchProvidersView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Where to watch")
                 .font(.headline)
+                .foregroundStyle(Color.appTextPrimary)
 
             regionHeader
             contentView
@@ -40,9 +41,14 @@ struct WatchProvidersView: View {
                         Image(systemName: "arrow.up.right.square")
                     }
                     .font(.subheadline)
+                    .foregroundStyle(Color.appPrimaryAction)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)
-                    .background(Color(UIColor.secondarySystemBackground))
+                    .background(Color.appSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
@@ -67,25 +73,29 @@ struct WatchProvidersView: View {
                     let resolvedName = availability.resolvedRegionName ?? resolvedRegionCode
                     Text("\(availability.sourceLabel): \(resolvedName) (\(resolvedRegionCode))")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                 } else {
-                    Text("No watch-provider region data for \(availability.requestedRegionName) (\(availability.requestedRegionCode)).")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text(
+                        "No watch-provider region data for \(availability.requestedRegionName) (\(availability.requestedRegionCode))."
+                    )
+                    .font(.caption)
+                    .foregroundStyle(Color.appTextSecondary)
                 }
 
                 if availability.source != .requestedRegion {
-                    let requested = "\(availability.requestedRegionName) (\(availability.requestedRegionCode))"
-                    let fallback = "\(availability.fallbackRegionName) (\(availability.fallbackRegionCode))"
+                    let requested =
+                        "\(availability.requestedRegionName) (\(availability.requestedRegionCode))"
+                    let fallback =
+                        "\(availability.fallbackRegionName) (\(availability.fallbackRegionCode))"
                     Text("Requested: \(requested) · Fallback: \(fallback)")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.appTextSecondary)
                 }
             }
         } else if isLoading {
             Text("Resolving watch providers for your region…")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
     }
 
@@ -112,7 +122,8 @@ struct WatchProvidersView: View {
         } else {
             fallbackCard(
                 title: "No regional provider data",
-                message: "TMDB has no watch-provider data for your region or fallback region right now.",
+                message:
+                    "TMDB has no watch-provider data for your region or fallback region right now.",
                 iconName: "globe.badge.chevron.backward"
             )
         }
@@ -126,13 +137,18 @@ struct WatchProvidersView: View {
         VStack(alignment: .leading, spacing: 6) {
             Label(title, systemImage: iconName)
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.appTextPrimary)
             Text(message)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.appTextSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
-        .background(Color(UIColor.secondarySystemBackground))
+        .background(Color.appSurface)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(Color.appTextSecondary.opacity(0.18), lineWidth: 1)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }

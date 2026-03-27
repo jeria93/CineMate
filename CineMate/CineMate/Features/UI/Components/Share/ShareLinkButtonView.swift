@@ -37,7 +37,7 @@ struct ShareLinkButtonView: View {
                     Image(systemName: "square.and.arrow.up.circle")
                         .resizable()
                         .scaledToFit()
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.appTextPrimary)
                 }
             }
             .buttonStyle(.plain)
