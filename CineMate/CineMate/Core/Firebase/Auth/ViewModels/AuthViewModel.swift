@@ -92,7 +92,7 @@ final class AuthViewModel: ObservableObject {
     }
 
     /// Signs out current user.
-    func signOut() {
+    func signOut() async {
         // Preview state only
         if ProcessInfo.processInfo.isPreview {
             currentUID = nil
@@ -101,8 +101,16 @@ final class AuthViewModel: ObservableObject {
         }
 
         // Production call
+        guard let service else { return }
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+
         do {
-            try service?.signOut()
+            if service.isAnonymous {
+                _ = try await service.deleteCurrentAccountWithDataCleanup()
+            } else {
+                try service.signOut()
+            }
             currentUID = nil
             errorMessage = nil
         } catch {

@@ -65,26 +65,34 @@ struct AccountView: View {
                     }
 
                     Section("Actions") {
-                        Button("Sign out") {
-                            authViewModel.signOut()
+                        Button(authViewModel.isGuest ? "End guest session" : "Sign out") {
+                            Task {
+                                let wasGuest = authViewModel.isGuest
+                                await authViewModel.signOut()
+                                if wasGuest, authViewModel.errorMessage == nil {
+                                    toastCenter.show("Guest session ended")
+                                }
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(.appPrimaryAction)
                         .disabled(authViewModel.isAuthenticating)
                     }
 
-                    AccountDangerZoneView(
-                        authViewModel: authViewModel,
-                        onReauthenticationRequired: {
-                            toastCenter.show("Please sign in again to delete your account")
-                        },
-                        onDeleteSuccess: {
-                            toastCenter.show("Account deleted successfully")
-                        },
-                        onDeleteFailure: { message in
-                            toastCenter.show(message)
-                        }
-                    )
+                    if !authViewModel.isGuest {
+                        AccountDangerZoneView(
+                            authViewModel: authViewModel,
+                            onReauthenticationRequired: {
+                                toastCenter.show("Please sign in again to delete your account")
+                            },
+                            onDeleteSuccess: {
+                                toastCenter.show("Account deleted successfully")
+                            },
+                            onDeleteFailure: { message in
+                                toastCenter.show(message)
+                            }
+                        )
+                    }
                 }
             }
             .navigationTitle("Account")

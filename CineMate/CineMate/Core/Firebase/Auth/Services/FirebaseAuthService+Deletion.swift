@@ -37,16 +37,16 @@ extension FirebaseAuthService {
 
             // Anonymous users cannot reauthenticate in a useful way.
             if user.isAnonymous {
-                try? Auth.auth().signOut()
+                try? signOut()
                 return .success
             }
 
             // Sign out so the app can ask for login again.
-            try? Auth.auth().signOut()
+            try? signOut()
             return .requiresRecentLogin
         }
 
-        try Auth.auth().signOut()
+        try signOut()
         return .success
     }
 
@@ -81,7 +81,7 @@ extension FirebaseAuthService {
             if let last = lastSnapshot {
                 query = query.start(afterDocument: last)
             }
-
+            
             let snap = try await query.getDocuments()
             guard !snap.documents.isEmpty else { break }
 

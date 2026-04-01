@@ -81,15 +81,19 @@ struct LoginView: View {
 
                     OrDivider(text: "or continue with")
 
-                    GoogleSignInButton(
-                        scheme: colorScheme == .dark ? .dark : .light,
-                        style: .standard,
-                        state: viewModel.isAuthenticating ? .disabled : .normal
-                    ) { Task { await viewModel.signInWithGoogle() } }
-                        .frame(height: 48)
-                        .frame(maxWidth: .infinity)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+                    HStack {
+                        Spacer()
+                        GoogleSignInButton(
+                            scheme: colorScheme == .dark ? .dark : .light,
+                            style: .icon,
+                            state: viewModel.isAuthenticating ? .disabled : .normal
+                        ) { Task { await viewModel.signInWithGoogle() } }
+                            .frame(width: 48, height: 48)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+                            .accessibilityLabel("Sign in with Google")
+                        Spacer()
+                    }
 
                     Button {
                         Task { await viewModel.continueAsGuest() }

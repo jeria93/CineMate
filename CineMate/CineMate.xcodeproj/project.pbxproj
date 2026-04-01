@@ -450,7 +450,6 @@
 		03CE4A412E0F214F00D70F70 /* PersonMetaInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMetaInfoView.swift; sourceTree = "<group>"; };
 		03CE4A432E0F246500D70F70 /* DateHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
 		03CE4A452E0F283800D70F70 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
-		03D073502E60FCFC003EBED8 /* GoogleService-Info.example.plist.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.example.plist.plist"; sourceTree = "<group>"; };
 		03D5E2312E4C915100AAB2D3 /* FavoritePeopleGrid+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoritePeopleGrid+Previews.swift"; sourceTree = "<group>"; };
 		03D5E2352E4CCC0000AAB2D3 /* PersonCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCardView.swift; sourceTree = "<group>"; };
 		03D6636D2E698CF800BBC0E8 /* FirebaseAuthService+ProviderInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseAuthService+ProviderInfo.swift"; sourceTree = "<group>"; };
@@ -583,7 +582,6 @@
 				034EAB9A2E69A25B00932E10 /* Design */,
 				030612252DF4BEB40013F7AF /* CineMateApp.swift */,
 				030E469D2DFDA7DD00285FE7 /* Secrets.example.plist */,
-				03D073502E60FCFC003EBED8 /* GoogleService-Info.example.plist.plist */,
 				030BC5462DFB6AA300D1F96F /* Info.plist */,
 				03BBD24A2F5F0ABF00454453 /* .gitignore */,
 			);
