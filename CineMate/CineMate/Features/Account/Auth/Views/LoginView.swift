@@ -16,6 +16,7 @@ struct LoginView: View {
     private let onRegister: () -> Void
 
     @State private var showResetSheet = false
+    @State private var showTerms = false
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
 
@@ -80,6 +81,33 @@ struct LoginView: View {
                     .disabled(viewModel.isAuthenticating)
 
                     OrDivider(text: "or continue with")
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("I accept the terms and conditions")
+                            .font(.callout.weight(.semibold))
+                            .foregroundStyle(AuthTheme.popcorn)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.trailing, 56)
+                            .overlay(alignment: .trailing) {
+                                Toggle("", isOn: $viewModel.acceptedGoogleTerms)
+                                    .labelsHidden()
+                                    .tint(AuthTheme.popcorn)
+                                    .disabled(viewModel.isAuthenticating)
+                            }
+
+                        Button("View terms") {
+                            showTerms = true
+                        }
+                        .buttonStyle(.plain)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(AuthTheme.popcorn)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+
+                    if let hint = viewModel.googleTermsHelperText {
+                        ValidationMessageView(message: hint)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
                     GoogleSignInButton(
                         scheme: colorScheme == .dark ? .dark : .light,
@@ -148,10 +176,16 @@ struct LoginView: View {
         .sheet(isPresented: $showResetSheet) {
             ResetPasswordSheet().environmentObject(toastCenter)
         }
+        .sheet(isPresented: $showTerms) {
+            TermsSheet(markdown: TermsContent.termsMarkdown)
+        }
         .onChange(of: viewModel.email) { _, _ in
             viewModel.clearError()
         }
         .onChange(of: viewModel.password) { _, _ in
+            viewModel.clearError()
+        }
+        .onChange(of: viewModel.acceptedGoogleTerms) { _, _ in
             viewModel.clearError()
         }
         .tint(AuthTheme.popcorn)
