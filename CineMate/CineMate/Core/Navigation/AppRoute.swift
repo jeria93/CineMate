@@ -6,6 +6,14 @@
 //
 
 import Foundation
+
+/// Defines which data source a "See all" screen should use.
+enum SeeAllMoviesSource: Hashable {
+    case discover(DiscoverFilter)
+    case category(MovieCategory)
+    case nowPlaying
+}
+
 /// AppRoute
 /// ---------
 /// All destinations that can be pushed onto the shared `NavigationStack`.
@@ -15,7 +23,7 @@ enum AppRoute: Hashable {
     case movie(id: Int)
     case person(id: Int)
     case genre(name: String)
-    case seeAllMovies(title: String, filter: DiscoverFilter)
+    case seeAllMovies(title: String, source: SeeAllMoviesSource)
     case createAccount
 }
 
