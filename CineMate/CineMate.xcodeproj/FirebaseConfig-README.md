@@ -1,28 +1,30 @@
-// Firebase konfiguration
+# Firebase Configuration
 
-// Den här filen förklarar hur du ska hantera Firebase-konfigurationen i projektet.
+This file explains how the Firebase plist should be handled in this project.
 
-// Vad har jag gjort nu?
-// - Skapat en platshållarfil med namnet `GoogleService-Info.example.plist.plist` för att släcka den röda referensen i Xcode.
-// - Den här filen ska INTE användas i produktion eller byggas in i appen.
+## Valid Path In Repo
 
-// Rätt sätt framåt
-// 1. Hämta din riktiga `GoogleService-Info.plist` från Firebase Console (Project settings → Your apps → iOS app).
-// 2. Lägg filen i projektet (dra in i Xcode):
-//    - Kryssa i "Copy items if needed".
-//    - Bocka i din app’s Target Membership.
-// 3. Se till att `GoogleService-Info.example.plist` (exempelfilen) inte är inkluderad i target.
-// 4. Om du inte vill ha dubbeländelse i repo, byt namn på exempelfilen till `GoogleService-Info.example.plist` och uppdatera Xcode-referensen.
+Place your real `GoogleService-Info.plist` here:
 
-// Valfri säkerhetskontroll i Build Phase
-// Lägg till ett Run Script i Build Phases för att få ett tydligt fel om filen saknas:
+`CineMate/Core/Config/GoogleService-Info.plist`
 
-/*
-FILE="${SRCROOT}/PATH/TILL/GoogleService-Info.plist"
+This file is git-ignored and should not be committed.
+
+## Setup
+
+1. Download `GoogleService-Info.plist` from Firebase Console (Project settings -> Your apps -> iOS app).
+2. Place the file in `CineMate/Core/Config/`.
+3. Ensure the file is included in the app target in Xcode.
+4. Verify that the URL scheme in `CineMate/Info.plist` matches `REVERSED_CLIENT_ID` from the plist.
+
+## Optional Build Check
+
+Add a Run Script in Build Phases to fail clearly when the plist is missing:
+
+```sh
+FILE="${SRCROOT}/CineMate/Core/Config/GoogleService-Info.plist"
 if [ ! -f "$FILE" ]; then
-  echo "error: Missing GoogleService-Info.plist. Ladda ner från Firebase Console och lägg den på $FILE"
+  echo "error: Missing GoogleService-Info.plist. Download it from Firebase Console and place it at $FILE"
   exit 1
 fi
-*/
-
-// Tips: Lägg aldrig upp din riktiga `GoogleService-Info.plist` i publika repos. Använd privata repos eller CI-hemligheter.
+```
