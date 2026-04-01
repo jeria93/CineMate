@@ -37,8 +37,6 @@ final class LoginViewModel: ObservableObject {
     @Published var isAuthenticating = false
     @Published private(set) var appError: AuthAppError?
     @Published var hasTriedSubmit = false
-    @Published private(set) var hasTriedGoogleSignIn = false
-    @Published var acceptedGoogleTerms = false
     @Published private(set) var activeAction: Action?
 
     // MARK: - Dependencies
@@ -53,12 +51,6 @@ final class LoginViewModel: ObservableObject {
     var canSubmit: Bool { isEmailValid && isPasswordValid && !isAuthenticating }
     var emailHelperText: String? { AuthValidator.emailHelperText(email: email, hasTriedSubmit: hasTriedSubmit) }
     var passwordHelperText: String? { AuthValidator.passwordHelperText(password: password, hasTriedSubmit: hasTriedSubmit) }
-    var googleTermsHelperText: String? {
-        AuthValidator.termsHelperText(
-            acceptedTerms: acceptedGoogleTerms,
-            hasTriedSubmit: hasTriedGoogleSignIn
-        )
-    }
     var shouldOfferResendVerification: Bool { appError == .emailNotVerified }
     var loadingTitle: String { activeAction?.loadingTitle ?? "Authenticating..." }
 
@@ -153,9 +145,6 @@ extension LoginViewModel {
     /// User cancel does not show an error.
     func signInWithGoogle() async {
         guard let service else { return }
-        hasTriedGoogleSignIn = true
-        guard acceptedGoogleTerms else { return }
-
         guard let presenter = UIViewController.topMostViewController else {
             appError = .unknown("Unable to present sign-in UI.")
             return

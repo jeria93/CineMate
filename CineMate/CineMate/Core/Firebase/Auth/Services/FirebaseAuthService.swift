@@ -74,7 +74,7 @@ final class FirebaseAuthService {
         
         try await result.user.reload()
         if !result.user.isEmailVerified {
-            try Auth.auth().signOut()
+            try signOut()
             throw EmailNotVerifiedError()
         }
         return result.user.uid
@@ -89,10 +89,10 @@ final class FirebaseAuthService {
         do {
             try await sendVerificationEmail(to: user)
         } catch {
-            try? Auth.auth().signOut()
+            try? signOut()
             throw error
         }
-        try Auth.auth().signOut()
+        try signOut()
     }
     
     /// Sends verification email to current user.
