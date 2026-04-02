@@ -158,11 +158,11 @@ extension RootView {
         case .genre(let name):
             GenreDetailView(genreName: name)
 
-        case .seeAllMovies(let title, let filter):
+        case .seeAllMovies(let title, let source):
             SeeAllMoviesView(
                 viewModel: SeeAllMoviesViewModel(
                     repository: movieVM.underlyingRepository,
-                    filter: filter
+                    source: source
                 ),
                 title: title
             )

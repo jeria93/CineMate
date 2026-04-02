@@ -14,7 +14,7 @@ extension PreviewFactory {
     static func seeAllMoviesPreviewViewModel() -> SeeAllMoviesViewModel {
         let vm = SeeAllMoviesViewModel(
             repository: repository,
-            filter: DiscoverFilter()
+            source: .discover(DiscoverFilter())
         )
         vm.movies = SharedPreviewMovies.moviesList
         return vm
@@ -24,7 +24,7 @@ extension PreviewFactory {
     static func seeAllMoviesLoadingViewModel() -> SeeAllMoviesViewModel {
         let vm = SeeAllMoviesViewModel(
             repository: repository,
-            filter: DiscoverFilter()
+            source: .discover(DiscoverFilter())
         )
         vm.isLoading = true
         return vm
@@ -34,7 +34,7 @@ extension PreviewFactory {
     static func seeAllMoviesErrorViewModel() -> SeeAllMoviesViewModel {
         let vm = SeeAllMoviesViewModel(
             repository: repository,
-            filter: DiscoverFilter()
+            source: .discover(DiscoverFilter())
         )
         vm.errorMessage = "Something went wrong. Please try again."
         return vm
@@ -44,7 +44,7 @@ extension PreviewFactory {
     static func seeAllMoviesEmptyViewModel() -> SeeAllMoviesViewModel {
         SeeAllMoviesViewModel(
             repository: repository,
-            filter: DiscoverFilter()
+            source: .discover(DiscoverFilter())
         )
     }
 }

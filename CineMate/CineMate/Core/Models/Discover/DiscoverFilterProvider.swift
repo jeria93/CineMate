@@ -59,6 +59,7 @@ enum DiscoverFilterProvider {
                 sortOption: .voteAverageDesc,
                 withGenres: genres,
                 minVoteAverage: 7.0,
+                minVoteCount: 200,
                 includeAdult: false
             )
         case .popular:

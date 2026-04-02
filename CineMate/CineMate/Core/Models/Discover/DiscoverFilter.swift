@@ -15,6 +15,7 @@ struct DiscoverFilter: Equatable, Hashable {
     var primaryReleaseDateGTE: String?
     var primaryReleaseDateLTE: String?
     var minVoteAverage: Double?
+    var minVoteCount: Int?
     var language: String?
     var includeAdult: Bool = false
     var page: Int = 1
@@ -64,6 +65,10 @@ private extension DiscoverFilter {
             items.append(.init(name: DiscoverQueryKey.minVoteAverage, value: "\(minVoteAverage)"))
         }
 
+        if let minVoteCount {
+            items.append(.init(name: DiscoverQueryKey.minVoteCount, value: "\(minVoteCount)"))
+        }
+
         if let language {
             items.append(.init(name: DiscoverQueryKey.language, value: language))
         }
@@ -102,6 +107,7 @@ enum DiscoverQueryKey {
     static let primaryReleaseDateGTE = "primary_release_date.gte"
     static let primaryReleaseDateLTE = "primary_release_date.lte"
     static let minVoteAverage = "vote_average.gte"
+    static let minVoteCount = "vote_count.gte"
     static let language = "language"
     static let includeAdult = "include_adult"
     static let page = "page"

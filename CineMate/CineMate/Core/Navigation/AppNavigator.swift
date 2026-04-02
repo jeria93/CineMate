@@ -44,8 +44,8 @@ final class AppNavigator: ObservableObject {
     }
     
     /// Navigate to a full list screen from a discover section.
-    func goToSeeAllMovies(title: String, filter: DiscoverFilter) {
-        pushOrReplace(.seeAllMovies(title: title, filter: filter))
+    func goToSeeAllMovies(title: String, source: SeeAllMoviesSource) {
+        pushOrReplace(.seeAllMovies(title: title, source: source))
     }
     
     /// Pop one level from the navigation stack.

@@ -75,8 +75,8 @@ final class MovieRepository: MovieProtocol {
     }
 
     // MARK: - Misc
-    func fetchNowPlayingMovies() async throws -> [Movie] {
-        try await service.fetchNowPlayingMovies()
+    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
+        try await service.fetchNowPlayingMovies(page: page, region: region)
     }
 
     func fetchGenres() async throws -> [Genre] {

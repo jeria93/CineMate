@@ -74,8 +74,8 @@ final class DiscoverViewModel: ObservableObject {
         await loadSections(for: selectedGenreId, forceReload: forceReload)
     }
 
-    func seeAllFilter(for section: DiscoverSectionKind) -> DiscoverFilter {
-        DiscoverFilterProvider.filter(for: section, selectedGenreId: selectedGenreId)
+    func seeAllSource(for section: DiscoverSectionKind) -> SeeAllMoviesSource {
+        sectionSource(for: section, genreId: selectedGenreId)
     }
 
     func applyPreviewSections(_ sectionMovies: [DiscoverSectionKind: [Movie]]) {
@@ -156,8 +156,39 @@ final class DiscoverViewModel: ObservableObject {
     }
 
     private func fetchMovies(for section: DiscoverSectionKind, genreId: Int?) async throws -> [Movie] {
+        let source = sectionSource(for: section, genreId: genreId)
+        switch source {
+        case .discover(let filter):
+            return try await repository.discoverMovies(filters: filter.queryItems)
+        case .category(let category):
+            let result = try await repository.fetchMovies(category: category, page: 1)
+            return result.results
+        case .nowPlaying:
+            let result = try await repository.fetchNowPlayingMovies(page: 1, region: nil)
+            return result.results
+        }
+    }
+
+    private func sectionSource(for section: DiscoverSectionKind, genreId: Int?) -> SeeAllMoviesSource {
+        if genreId == nil {
+            switch section {
+            case .topRated:
+                return .category(.topRated)
+            case .popular:
+                return .category(.popular)
+            case .nowPlaying:
+                return .nowPlaying
+            case .trending:
+                return .category(.trending)
+            case .upcoming:
+                return .category(.upcoming)
+            case .horror:
+                break
+            }
+        }
+
         let filter = DiscoverFilterProvider.filter(for: section, selectedGenreId: genreId)
-        return try await repository.discoverMovies(filters: filter.queryItems)
+        return .discover(filter)
     }
 
     private func commitLoadedSections(

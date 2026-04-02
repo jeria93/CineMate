@@ -37,7 +37,7 @@ struct DiscoverContentView: View {
                             onSeeAllTap: {
                                 navigator.goToSeeAllMovies(
                                     title: section.title,
-                                    filter: viewModel.seeAllFilter(for: section.kind)
+                                    source: viewModel.seeAllSource(for: section.kind)
                                 )
                             }
                         )

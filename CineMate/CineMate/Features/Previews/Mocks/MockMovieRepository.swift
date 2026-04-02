@@ -157,9 +157,30 @@ final class MockMovieRepository: MovieProtocol {
     }
 
     // MARK: - Misc
-    func fetchNowPlayingMovies() async throws -> [Movie] {
+    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
         try await Task.sleep(nanoseconds: Delay.long)
-        return SharedPreviewMovies.moviesList.reversed()
+
+        let allMovies = Array(SharedPreviewMovies.moviesList.reversed())
+        let pageSize = 3
+        let safePage = max(1, page)
+        let startIndex = (safePage - 1) * pageSize
+
+        let pageResults: [Movie]
+        if startIndex < allMovies.count {
+            let endIndex = min(startIndex + pageSize, allMovies.count)
+            pageResults = Array(allMovies[startIndex..<endIndex])
+        } else {
+            pageResults = []
+        }
+
+        let totalPages = max(1, Int(ceil(Double(allMovies.count) / Double(pageSize))))
+
+        return MovieResult(
+            page: safePage,
+            results: pageResults,
+            totalPages: totalPages,
+            totalResults: allMovies.count
+        )
     }
 
     func fetchGenres() async throws -> [Genre] {
