@@ -96,7 +96,7 @@ enum AuthAppError: LocalizedError, Equatable {
         case .noCurrentUser:
             return .unknown("No signed-in account found")
         case .unexpectedSignedInUser:
-            return .unknown("Sign out before creating a new account")
+            return .unknown("Sign out and try again")
         }
     }
 

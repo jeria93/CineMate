@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: only the signed-in owner.
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Allow a user to read/write their own user doc.
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // Allow reads/writes for anything under the user's subtree.
+    match /users/{uid}/{document=**} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // Everything else denied by default.
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
