@@ -399,6 +399,152 @@ private actor DiscoverRoutingRepository: MovieProtocol {
     }
 }
 
+@MainActor
+final class GenreDetailViewModelEndpointTests: XCTestCase {
+    func testRefreshUsesGenreScopedHighlightAndListQueries() async {
+        let repository = GenreDetailRoutingRepository()
+        let viewModel = GenreDetailViewModel(genreId: 28, repository: repository)
+
+        await viewModel.refresh()
+        let calls = await repository.snapshot()
+
+        XCTAssertEqual(calls.count, 4)
+        XCTAssertTrue(calls.allSatisfy { queryValue(DiscoverQueryKey.withGenres, in: $0) == "28" })
+
+        let topRatedCall = calls.first {
+            queryValue(DiscoverQueryKey.sortBy, in: $0) == SortOption.voteAverageDesc.rawValue &&
+            queryValue(DiscoverQueryKey.minVoteCount, in: $0) == "200"
+        }
+        XCTAssertNotNil(topRatedCall)
+
+        let newReleaseCall = calls.first {
+            queryValue(DiscoverQueryKey.sortBy, in: $0) == SortOption.releaseDateDesc.rawValue &&
+            queryValue(DiscoverQueryKey.primaryReleaseDateGTE, in: $0) != nil &&
+            queryValue(DiscoverQueryKey.primaryReleaseDateLTE, in: $0) != nil
+        }
+        XCTAssertNotNil(newReleaseCall)
+    }
+
+    func testTopRatedSortAppliesVoteQualityGuards() async throws {
+        let repository = GenreDetailRoutingRepository()
+        let viewModel = GenreDetailViewModel(genreId: 35, repository: repository)
+
+        viewModel.selectedSort = .topRated
+        await viewModel.retryAllMovies()
+
+        let calls = await repository.snapshot()
+        XCTAssertEqual(calls.count, 1)
+
+        let query = try XCTUnwrap(calls.first)
+        XCTAssertEqual(queryValue(DiscoverQueryKey.withGenres, in: query), "35")
+        XCTAssertEqual(queryValue(DiscoverQueryKey.sortBy, in: query), SortOption.voteAverageDesc.rawValue)
+        XCTAssertEqual(queryValue(DiscoverQueryKey.minVoteCount, in: query), "200")
+        XCTAssertEqual(queryValue(DiscoverQueryKey.minVoteAverage, in: query), "6.0")
+        XCTAssertNotNil(queryValue(DiscoverQueryKey.primaryReleaseDateLTE, in: query))
+    }
+
+    func testNewestSortExcludesFutureReleaseDates() async throws {
+        let repository = GenreDetailRoutingRepository()
+        let viewModel = GenreDetailViewModel(genreId: 18, repository: repository)
+
+        viewModel.selectedSort = .newest
+        await viewModel.retryAllMovies()
+
+        let calls = await repository.snapshot()
+        XCTAssertEqual(calls.count, 1)
+
+        let query = try XCTUnwrap(calls.first)
+        XCTAssertEqual(queryValue(DiscoverQueryKey.withGenres, in: query), "18")
+        XCTAssertEqual(queryValue(DiscoverQueryKey.sortBy, in: query), SortOption.releaseDateDesc.rawValue)
+        XCTAssertNotNil(queryValue(DiscoverQueryKey.primaryReleaseDateLTE, in: query))
+        XCTAssertNil(queryValue(DiscoverQueryKey.primaryReleaseDateGTE, in: query))
+    }
+
+    private func queryValue(_ name: String, in queryItems: [URLQueryItem]) -> String? {
+        queryItems.first(where: { $0.name == name })?.value
+    }
+}
+
+private actor GenreDetailRoutingRepository: MovieProtocol {
+    private enum RepositoryError: Error {
+        case unimplemented
+    }
+
+    private var discoverCalls: [[URLQueryItem]] = []
+    private var nextMovieID = 10_000
+
+    func snapshot() -> [[URLQueryItem]] {
+        discoverCalls
+    }
+
+    func fetchMovies(category: MovieCategory, page: Int) async throws -> MovieResult {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
+        throw RepositoryError.unimplemented
+    }
+
+    func searchMovies(query: String, page: Int) async throws -> MovieResult {
+        throw RepositoryError.unimplemented
+    }
+
+    func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
+        discoverCalls.append(filters)
+        return [makeMovie(title: "Discover \(discoverCalls.count)")]
+    }
+
+    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchGenres() async throws -> [Genre] {
+        []
+    }
+
+    private func makeMovie(title: String) -> Movie {
+        defer { nextMovieID += 1 }
+        return Movie(
+            id: nextMovieID,
+            title: title,
+            overview: nil,
+            posterPath: nil,
+            backdropPath: nil,
+            releaseDate: nil,
+            voteAverage: nil,
+            genres: nil
+        )
+    }
+}
+
 private func categoryKey(_ category: MovieCategory) -> String {
     switch category {
     case .popular:
