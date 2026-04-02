@@ -51,7 +51,7 @@ actor SearchTestRepository: MovieProtocol {
         throw SearchTestError.unimplemented
     }
 
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderRegion {
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
         throw SearchTestError.unimplemented
     }
 

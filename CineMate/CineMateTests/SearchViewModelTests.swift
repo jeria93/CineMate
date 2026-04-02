@@ -197,3 +197,206 @@ final class SearchViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state, .results)
     }
 }
+
+@MainActor
+final class DiscoverViewModelRoutingTests: XCTestCase {
+    func testSelectedGenreRoutesAllSectionsThroughDiscover() async {
+        let repository = DiscoverRoutingRepository()
+        let viewModel = DiscoverViewModel(repository: repository)
+
+        viewModel.selectedGenreId = 35 // Comedy
+        await viewModel.filterSections()
+
+        let snapshot = await repository.snapshot()
+
+        XCTAssertEqual(snapshot.categoryCalls.count, 0)
+        XCTAssertEqual(snapshot.nowPlayingCallCount, 0)
+        XCTAssertEqual(snapshot.discoverCalls.count, DiscoverSectionKind.allCases.count)
+
+        let genreValues = snapshot.discoverCalls.compactMap { queryItems in
+            queryItems.first(where: { $0.name == DiscoverQueryKey.withGenres })?.value
+        }
+
+        XCTAssertEqual(genreValues.count, DiscoverSectionKind.allCases.count)
+        XCTAssertEqual(genreValues.filter { $0.contains("35") }.count, DiscoverSectionKind.allCases.count)
+
+        let horrorGenreValue = genreValues.first { value in
+            value.contains("27") && value.contains("35")
+        }
+        XCTAssertNotNil(horrorGenreValue)
+    }
+
+    func testNoGenreUsesDedicatedEndpointsAndDiscoverOnlyForHorror() async {
+        let repository = DiscoverRoutingRepository()
+        let viewModel = DiscoverViewModel(repository: repository)
+
+        await viewModel.fetchAllSections(forceReload: true)
+        let snapshot = await repository.snapshot()
+
+        XCTAssertEqual(snapshot.nowPlayingCallCount, 1)
+        XCTAssertEqual(snapshot.discoverCalls.count, 1)
+
+        let categories = snapshot.categoryCalls.map(categoryKey).sorted()
+        XCTAssertEqual(
+            categories,
+            [
+                categoryKey(.popular),
+                categoryKey(.topRated),
+                categoryKey(.trending),
+                categoryKey(.upcoming)
+            ].sorted()
+        )
+
+        let horrorCall = snapshot.discoverCalls.first
+        let horrorGenres = horrorCall?.first(where: { $0.name == DiscoverQueryKey.withGenres })?.value
+        XCTAssertEqual(horrorGenres, "27")
+    }
+
+    func testSeeAllSourceUsesDiscoverWhenGenreIsSelected() {
+        let repository = DiscoverRoutingRepository()
+        let viewModel = DiscoverViewModel(repository: repository)
+
+        viewModel.selectedGenreId = 28 // Action
+        let source = viewModel.seeAllSource(for: .topRated)
+
+        guard case .discover(let filter) = source else {
+            return XCTFail("Expected discover source for selected genre.")
+        }
+        XCTAssertEqual(filter.withGenres, [28])
+    }
+
+    func testSeeAllSourceUsesCategoryOrNowPlayingWithoutGenre() {
+        let repository = DiscoverRoutingRepository()
+        let viewModel = DiscoverViewModel(repository: repository)
+
+        if case .category(let category) = viewModel.seeAllSource(for: .topRated) {
+            XCTAssertEqual(category, .topRated)
+        } else {
+            XCTFail("Expected category source for top rated without genre.")
+        }
+
+        if case .nowPlaying = viewModel.seeAllSource(for: .nowPlaying) {
+            XCTAssertTrue(true)
+        } else {
+            XCTFail("Expected nowPlaying source without genre.")
+        }
+
+        if case .discover(let filter) = viewModel.seeAllSource(for: .horror) {
+            XCTAssertEqual(filter.withGenres, [27])
+        } else {
+            XCTFail("Expected discover source for horror without genre.")
+        }
+    }
+}
+
+private actor DiscoverRoutingRepository: MovieProtocol {
+    struct Snapshot {
+        let discoverCalls: [[URLQueryItem]]
+        let categoryCalls: [MovieCategory]
+        let nowPlayingCallCount: Int
+    }
+
+    private enum RepositoryError: Error {
+        case unimplemented
+    }
+
+    private var discoverCalls: [[URLQueryItem]] = []
+    private var categoryCalls: [MovieCategory] = []
+    private var nowPlayingCallCount = 0
+    private var nextMovieID = 1
+
+    func snapshot() -> Snapshot {
+        Snapshot(
+            discoverCalls: discoverCalls,
+            categoryCalls: categoryCalls,
+            nowPlayingCallCount: nowPlayingCallCount
+        )
+    }
+
+    func fetchMovies(category: MovieCategory, page: Int) async throws -> MovieResult {
+        categoryCalls.append(category)
+        return MovieResult(
+            page: page,
+            results: [makeMovie(title: "\(category.displayName) \(page)")],
+            totalPages: 2,
+            totalResults: 2
+        )
+    }
+
+    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
+        throw RepositoryError.unimplemented
+    }
+
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
+        throw RepositoryError.unimplemented
+    }
+
+    func searchMovies(query: String, page: Int) async throws -> MovieResult {
+        throw RepositoryError.unimplemented
+    }
+
+    func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
+        discoverCalls.append(filters)
+        return [makeMovie(title: "Discover \(discoverCalls.count)")]
+    }
+
+    func fetchNowPlayingMovies() async throws -> [Movie] {
+        nowPlayingCallCount += 1
+        return [makeMovie(title: "Now Playing")]
+    }
+
+    func fetchGenres() async throws -> [Genre] {
+        []
+    }
+
+    private func makeMovie(title: String) -> Movie {
+        defer { nextMovieID += 1 }
+        return Movie(
+            id: nextMovieID,
+            title: title,
+            overview: nil,
+            posterPath: nil,
+            backdropPath: nil,
+            releaseDate: nil,
+            voteAverage: nil,
+            genres: nil
+        )
+    }
+}
+
+private func categoryKey(_ category: MovieCategory) -> String {
+    switch category {
+    case .popular:
+        return "popular"
+    case .topRated:
+        return "topRated"
+    case .trending:
+        return "trending"
+    case .upcoming:
+        return "upcoming"
+    }
+}
