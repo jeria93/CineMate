@@ -224,6 +224,12 @@ final class DiscoverViewModelRoutingTests: XCTestCase {
             value.contains("27") && value.contains("35")
         }
         XCTAssertNotNil(horrorGenreValue)
+
+        let topRatedQuery = snapshot.discoverCalls.first { queryItems in
+            queryItems.first(where: { $0.name == DiscoverQueryKey.sortBy })?.value == SortOption.voteAverageDesc.rawValue
+        }
+        let minVoteCount = topRatedQuery?.first(where: { $0.name == DiscoverQueryKey.minVoteCount })?.value
+        XCTAssertEqual(minVoteCount, "200")
     }
 
     func testNoGenreUsesDedicatedEndpointsAndDiscoverOnlyForHorror() async {
@@ -364,9 +370,14 @@ private actor DiscoverRoutingRepository: MovieProtocol {
         return [makeMovie(title: "Discover \(discoverCalls.count)")]
     }
 
-    func fetchNowPlayingMovies() async throws -> [Movie] {
+    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
         nowPlayingCallCount += 1
-        return [makeMovie(title: "Now Playing")]
+        return MovieResult(
+            page: max(1, page),
+            results: [makeMovie(title: "Now Playing \(page)")],
+            totalPages: 2,
+            totalResults: 2
+        )
     }
 
     func fetchGenres() async throws -> [Genre] {

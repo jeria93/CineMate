@@ -88,7 +88,7 @@ actor SearchTestRepository: MovieProtocol {
         throw SearchTestError.unimplemented
     }
 
-    func fetchNowPlayingMovies() async throws -> [Movie] {
+    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
         throw SearchTestError.unimplemented
     }
 

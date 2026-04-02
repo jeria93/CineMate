@@ -19,7 +19,7 @@ protocol MovieProtocol {
     func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo]
     func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie]
     func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability
-
+    
     // MARK: - Person / Search / Discover
     func fetchPersonDetail(for personId: Int) async throws -> PersonDetail
     func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit]
@@ -30,6 +30,13 @@ protocol MovieProtocol {
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie]
 
     // MARK: - Misc
-    func fetchNowPlayingMovies() async throws -> [Movie]
+    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult
     func fetchGenres() async throws -> [Genre]
+}
+
+extension MovieProtocol {
+    /// Convenience helper for callers that only need the first now-playing page.
+    func fetchNowPlayingMovies() async throws -> [Movie] {
+        try await fetchNowPlayingMovies(page: 1, region: nil).results
+    }
 }

@@ -132,8 +132,8 @@ final class TMDBService {
     }
 
     // MARK: - Misc
-    func fetchNowPlayingMovies() async throws -> [Movie] {
-        try await requestMovieList(endpoint: .nowPlaying)
+    func fetchNowPlayingMovies(page: Int = 1, region: String? = nil) async throws -> MovieResult {
+        try await pagedRequest(endpoint: .nowPlaying, page: page, region: region)
     }
 
     func fetchGenres() async throws -> [Genre] {

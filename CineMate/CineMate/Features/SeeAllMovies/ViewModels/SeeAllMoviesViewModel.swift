@@ -153,12 +153,11 @@ final class SeeAllMoviesViewModel: ObservableObject {
             )
 
         case .nowPlaying:
-            guard page == 1 else {
-                return PageFetchResult(movies: [], totalPages: 1)
-            }
-
-            let nowPlayingMovies = try await repository.fetchNowPlayingMovies()
-            return PageFetchResult(movies: nowPlayingMovies, totalPages: 1)
+            let result = try await repository.fetchNowPlayingMovies(page: page, region: nil)
+            return PageFetchResult(
+                movies: result.results,
+                totalPages: max(page, result.totalPages)
+            )
         }
     }
 
@@ -171,7 +170,7 @@ final class SeeAllMoviesViewModel: ObservableObject {
         case .discover, .category:
             return page + (cachedMovies.isEmpty ? 0 : 1)
         case .nowPlaying:
-            return 1
+            return page + (cachedMovies.isEmpty ? 0 : 1)
         }
     }
 

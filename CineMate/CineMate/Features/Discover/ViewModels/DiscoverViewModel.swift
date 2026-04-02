@@ -164,7 +164,8 @@ final class DiscoverViewModel: ObservableObject {
             let result = try await repository.fetchMovies(category: category, page: 1)
             return result.results
         case .nowPlaying:
-            return try await repository.fetchNowPlayingMovies()
+            let result = try await repository.fetchNowPlayingMovies(page: 1, region: nil)
+            return result.results
         }
     }
 
