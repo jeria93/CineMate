@@ -102,6 +102,21 @@ final class FirebaseAuthService {
         guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
         try await sendVerificationEmail(to: user)
     }
+
+    /// Re-authenticates with email/password, sends verification email, then signs out.
+    /// Designed for the signed-out login flow after an unverified sign-in attempt.
+    func resendVerificationEmail(email: String, password: String) async throws {
+        guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
+        let auth = Auth.auth()
+        guard auth.currentUser == nil else { throw AuthServiceError.unexpectedSignedInUser }
+
+        let result = try await auth.signIn(withEmail: email, password: password)
+        defer { try? signOutCurrentUser(auth: auth) }
+
+        try await result.user.reload()
+        guard !result.user.isEmailVerified else { return }
+        try await sendVerificationEmail(to: result.user)
+    }
     
     /// Sends password reset email.
     func sendPasswordReset(email: String) async throws {

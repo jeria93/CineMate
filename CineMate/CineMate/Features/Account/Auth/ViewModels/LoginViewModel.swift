@@ -47,10 +47,10 @@ final class LoginViewModel: ObservableObject {
     // MARK: - Derived UI (helpers for the view)
     var errorMessage: String? { appError?.errorDescription }
     var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
-    var isPasswordValid: Bool { AuthValidator.isValidPassword(password) }
+    var isPasswordValid: Bool { AuthValidator.isValidLoginPassword(password) }
     var canSubmit: Bool { isEmailValid && isPasswordValid && !isAuthenticating }
     var emailHelperText: String? { AuthValidator.emailHelperText(email: email, hasTriedSubmit: hasTriedSubmit) }
-    var passwordHelperText: String? { AuthValidator.passwordHelperText(password: password, hasTriedSubmit: hasTriedSubmit) }
+    var passwordHelperText: String? { AuthValidator.loginPasswordHelperText(password: password, hasTriedSubmit: hasTriedSubmit) }
     var shouldOfferResendVerification: Bool { appError == .emailNotVerified }
     var loadingTitle: String { activeAction?.loadingTitle ?? "Authenticating..." }
 
@@ -97,10 +97,17 @@ final class LoginViewModel: ObservableObject {
     @discardableResult
     func resendVerification() async -> Bool {
         guard let service else { return false }
+        email = AuthValidator.sanitizedEmail(from: email)
+        password = AuthValidator.sanitizedPassword(from: password)
+        guard !email.isEmpty, !password.isEmpty else {
+            appError = .invalidCredentials
+            return false
+        }
+
         startAction(.resendVerification)
         defer { finishAction() }
         do {
-            try await service.resendVerificationEmail()
+            try await service.resendVerificationEmail(email: email, password: password)
             appError = nil
             return true
         } catch {
