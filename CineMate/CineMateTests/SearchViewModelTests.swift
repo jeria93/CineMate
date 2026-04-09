@@ -295,15 +295,67 @@ final class DiscoverViewModelRoutingTests: XCTestCase {
     }
 }
 
-private actor DiscoverRoutingRepository: MovieProtocol {
+private protocol UnimplementedMovieRepository: MovieProtocol {}
+
+private extension UnimplementedMovieRepository {
+    func fetchMovies(category: MovieCategory, page: Int) async throws -> MovieResult {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
+        throw SearchTestError.unimplemented
+    }
+
+    func searchMovies(query: String, page: Int) async throws -> MovieResult {
+        throw SearchTestError.unimplemented
+    }
+
+    func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
+        throw SearchTestError.unimplemented
+    }
+
+    func fetchGenres() async throws -> [Genre] {
+        []
+    }
+}
+
+private actor DiscoverRoutingRepository: UnimplementedMovieRepository {
     struct Snapshot {
         let discoverCalls: [[URLQueryItem]]
         let categoryCalls: [MovieCategory]
         let nowPlayingCallCount: Int
-    }
-
-    private enum RepositoryError: Error {
-        case unimplemented
     }
 
     private var discoverCalls: [[URLQueryItem]] = []
@@ -323,79 +375,30 @@ private actor DiscoverRoutingRepository: MovieProtocol {
         categoryCalls.append(category)
         return MovieResult(
             page: page,
-            results: [makeMovie(title: "\(category.displayName) \(page)")],
+            results: [SearchTestMovieFactory.movie(id: takeNextMovieID(), title: "\(category.displayName) \(page)")],
             totalPages: 2,
             totalResults: 2
         )
     }
 
-    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
-        throw RepositoryError.unimplemented
-    }
-
-    func searchMovies(query: String, page: Int) async throws -> MovieResult {
-        throw RepositoryError.unimplemented
-    }
-
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
         discoverCalls.append(filters)
-        return [makeMovie(title: "Discover \(discoverCalls.count)")]
+        return [SearchTestMovieFactory.movie(id: takeNextMovieID(), title: "Discover \(discoverCalls.count)")]
     }
 
     func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
         nowPlayingCallCount += 1
         return MovieResult(
             page: max(1, page),
-            results: [makeMovie(title: "Now Playing \(page)")],
+            results: [SearchTestMovieFactory.movie(id: takeNextMovieID(), title: "Now Playing \(page)")],
             totalPages: 2,
             totalResults: 2
         )
     }
 
-    func fetchGenres() async throws -> [Genre] {
-        []
-    }
-
-    private func makeMovie(title: String) -> Movie {
+    private func takeNextMovieID() -> Int {
         defer { nextMovieID += 1 }
-        return Movie(
-            id: nextMovieID,
-            title: title,
-            overview: nil,
-            posterPath: nil,
-            backdropPath: nil,
-            releaseDate: nil,
-            voteAverage: nil,
-            genres: nil
-        )
+        return nextMovieID
     }
 }
 
@@ -465,11 +468,7 @@ final class GenreDetailViewModelEndpointTests: XCTestCase {
     }
 }
 
-private actor GenreDetailRoutingRepository: MovieProtocol {
-    private enum RepositoryError: Error {
-        case unimplemented
-    }
-
+private actor GenreDetailRoutingRepository: UnimplementedMovieRepository {
     private var discoverCalls: [[URLQueryItem]] = []
     private var nextMovieID = 10_000
 
@@ -477,71 +476,14 @@ private actor GenreDetailRoutingRepository: MovieProtocol {
         discoverCalls
     }
 
-    func fetchMovies(category: MovieCategory, page: Int) async throws -> MovieResult {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchMovieDetails(for movieId: Int) async throws -> MovieDetail {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchMovieCredits(for movieId: Int) async throws -> MovieCredits {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchMovieVideos(for movieId: Int) async throws -> [MovieVideo] {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchRecommendedMovies(for movieId: Int) async throws -> [Movie] {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchWatchProviders(for movieId: Int) async throws -> WatchProviderAvailability {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchPersonDetail(for personId: Int) async throws -> PersonDetail {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchPersonMovieCredits(for personId: Int) async throws -> [PersonMovieCredit] {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchPersonExternalIDs(for personId: Int) async throws -> PersonExternalIDs {
-        throw RepositoryError.unimplemented
-    }
-
-    func searchMovies(query: String, page: Int) async throws -> MovieResult {
-        throw RepositoryError.unimplemented
-    }
-
     func discoverMovies(filters: [URLQueryItem]) async throws -> [Movie] {
         discoverCalls.append(filters)
-        return [makeMovie(title: "Discover \(discoverCalls.count)")]
+        return [SearchTestMovieFactory.movie(id: takeNextMovieID(), title: "Discover \(discoverCalls.count)")]
     }
 
-    func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
-        throw RepositoryError.unimplemented
-    }
-
-    func fetchGenres() async throws -> [Genre] {
-        []
-    }
-
-    private func makeMovie(title: String) -> Movie {
+    private func takeNextMovieID() -> Int {
         defer { nextMovieID += 1 }
-        return Movie(
-            id: nextMovieID,
-            title: title,
-            overview: nil,
-            posterPath: nil,
-            backdropPath: nil,
-            releaseDate: nil,
-            voteAverage: nil,
-            genres: nil
-        )
+        return nextMovieID
     }
 }
 

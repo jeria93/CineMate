@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// A filter model for building query parameters used with TMDB's `/discover/movie` endpoint.
+/// Filter values for TMDB discover requests.
 struct DiscoverFilter: Equatable, Hashable {
     var sortOption: SortOption = .popularityDesc
     var withGenres: [Int] = []
@@ -20,17 +20,17 @@ struct DiscoverFilter: Equatable, Hashable {
     var includeAdult: Bool = false
     var page: Int = 1
 
-    /// Builds an array of URLQueryItems to be used in network requests to TMDB.
+    /// Query items for the discover request.
     var queryItems: [URLQueryItem] {
         buildQueryItems()
     }
 
-    /// Builds query items and appends extra items (for endpoint-specific additions).
+    /// Returns the base query items plus extra items.
     func queryItems(adding additionalItems: [URLQueryItem]) -> [URLQueryItem] {
-        buildQueryItems() + sanitize(additionalItems)
+        buildQueryItems() + additionalItems.sanitizedForRequest()
     }
 
-    /// Returns a copy of this filter updated with the provided page.
+    /// Returns a copy with a safe page number.
     func withPage(_ page: Int) -> DiscoverFilter {
         var updated = self
         updated.page = max(1, page)
@@ -78,23 +78,7 @@ private extension DiscoverFilter {
         }
 
         items.append(.init(name: DiscoverQueryKey.page, value: "\(page)"))
-
-        return sanitize(items)
-    }
-
-    func sanitize(_ items: [URLQueryItem]) -> [URLQueryItem] {
-        items.compactMap { item in
-            let name = item.name.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !name.isEmpty else { return nil }
-
-            guard let rawValue = item.value else {
-                return URLQueryItem(name: name, value: nil)
-            }
-
-            let value = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !value.isEmpty else { return nil }
-            return URLQueryItem(name: name, value: value)
-        }
+        return items.sanitizedForRequest()
     }
 }
 

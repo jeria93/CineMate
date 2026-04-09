@@ -8,9 +8,9 @@
 import SwiftUI
 
 private extension MovieViewModel {
-    /// Preview instance seeded with a single stub from the given credit.
+    /// Preview model with one cached movie stub.
     static func previewWithStub(from credit: PersonMovieCredit) -> MovieViewModel {
-        let vm = MovieViewModel()
+        let vm = MovieViewModel(repository: PreviewFactory.repository)
         if let stub = credit.asMovie {
             vm.cacheStub(stub)
         }
@@ -19,40 +19,40 @@ private extension MovieViewModel {
 }
 
 extension PersonMovieCardView {
-    /// Preview with a full movie credit and stub injection so navigation detail has something immediately.
+    /// Full preview state.
     static var preview: some View {
         let movieCredit = PersonMovieCardPreviewData.standard
         let movieVM = MovieViewModel.previewWithStub(from: movieCredit)
-
+        
         return PersonMovieCardView(movie: movieCredit, movieViewModel: movieVM)
             .padding()
             .background(Color(.systemBackground))
             .withPreviewNavigation()
     }
-
-    /// Preview where posterPath is missing (fallback image shown).
+    
+    /// Missing poster state.
     static var previewMissingPoster: some View {
         let movieCredit = PersonMovieCardPreviewData.missingPoster
         let movieVM = MovieViewModel.previewWithStub(from: movieCredit)
-
+        
         return PersonMovieCardView(movie: movieCredit, movieViewModel: movieVM)
             .padding()
             .background(Color(.systemBackground))
             .withPreviewNavigation()
     }
-
-    /// Preview where title is nil (fallback "Untitled" shown).
+    
+    /// Missing title state.
     static var previewMissingTitle: some View {
         let movieCredit = PersonMovieCardPreviewData.missingTitle
         let movieVM = MovieViewModel.previewWithStub(from: movieCredit)
-
+        
         return PersonMovieCardView(movie: movieCredit, movieViewModel: movieVM)
             .padding()
             .background(Color(.systemBackground))
             .withPreviewNavigation()
     }
-
-    /// Variant without providing a MovieViewModel (no stub injection).
+    
+    /// Preview without a movie stub.
     static var previewWithoutStub: some View {
         PersonMovieCardView(movie: PersonMovieCardPreviewData.standard, movieViewModel: nil)
             .padding()

@@ -7,26 +7,25 @@
 
 import SwiftUI
 
-/// **AccountView+Previews**
-/// Convenience, named previews for common Account states.
+/// Preview states for `AccountView`.
 extension AccountView {
-    /// Preview: user signed out.
+    /// Signed out state.
     static var previewSignedOut: some View {
-        AccountView(viewModel: PreviewFactory.accountSignedOut()).withPreviewToasts()
+        AccountView(viewModel: PreviewFactory.accountSignedOut()).withPreviewEnvironment()
     }
 
-    /// Preview: user signed in (shows short UID).
+    /// Signed in state.
     static var previewSignedIn: some View {
-        AccountView(viewModel: PreviewFactory.accountSignedIn()).withPreviewToasts()
+        AccountView(viewModel: PreviewFactory.accountSignedIn()).withPreviewEnvironment()
     }
 
-    /// Preview: error state (auth failure message).
+    /// Error state.
     static var previewError: some View {
-        AccountView(viewModel: PreviewFactory.accountError()).withPreviewToasts()
+        AccountView(viewModel: PreviewFactory.accountError()).withPreviewEnvironment()
     }
 
-    /// Preview: authenticating (inline loading UI).
+    /// Loading state.
     static var previewIsAuthenticating: some View {
-        AccountView(viewModel: PreviewFactory.accountIsAuthenticating()).withPreviewToasts()
+        AccountView(viewModel: PreviewFactory.accountIsAuthenticating()).withPreviewEnvironment()
     }
 }

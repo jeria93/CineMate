@@ -8,20 +8,20 @@
 import SwiftUI
 import GoogleSignInSwift
 
-/// Login screen for email password, Google, and guest sign in.
+/// Sign in screen for email, Google, and guest access.
 struct LoginView: View {
     @ObservedObject private var viewModel: LoginViewModel
     @EnvironmentObject private var toastCenter: ToastCenter
     @Environment(\.colorScheme) private var colorScheme
     private let onRegister: () -> Void
-
+    
     @State private var showResetSheet = false
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
     private let authProviderButtonSize: CGFloat = 48
     private let authProviderCornerRadius: CGFloat = 12
     private let contentMaxWidth: CGFloat = 380
-
+    
     init(
         viewModel: LoginViewModel,
         onRegister: @escaping () -> Void = {}
@@ -29,20 +29,22 @@ struct LoginView: View {
         _viewModel = .init(wrappedValue: viewModel)
         self.onRegister = onRegister
     }
-
+    
     var body: some View {
         ZStack {
             LinearGradient(colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
                            startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
             AuthTheme.curtainContrastOverlay.ignoresSafeArea()
-
+            
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
                     loginHeader
                         .padding(.top, 12)
-
-                    VStack(alignment: .leading, spacing: 16) {
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .leading, spacing: 24) {
                         AuthEmailField(
                             text: $viewModel.email,
                             isDisabled: viewModel.isAuthenticating,
@@ -54,7 +56,7 @@ struct LoginView: View {
                             ValidationMessageView(message: hint, palette: .curtain)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
-
+                        
                         AuthPasswordField(
                             text: $viewModel.password,
                             isDisabled: viewModel.isAuthenticating,
@@ -67,14 +69,14 @@ struct LoginView: View {
                             ValidationMessageView(message: hint, palette: .curtain)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
-
+                        
                         Button("Forgot password?") { showResetSheet = true }
                             .buttonStyle(.plain)
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(AuthTheme.linkOnCurtain)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                             .disabled(viewModel.isAuthenticating)
-
+                        
                         Button { Task { await viewModel.login() } } label: {
                             Text("Sign in").fontWeight(.semibold).frame(maxWidth: .infinity)
                         }
@@ -82,7 +84,7 @@ struct LoginView: View {
                         .controlSize(.large)
                         .frame(height: 48)
                         .disabled(viewModel.isAuthenticating)
-
+                        
                         if let message = viewModel.errorMessage {
                             AuthErrorBlock(
                                 message: message,
@@ -97,9 +99,9 @@ struct LoginView: View {
                                 }
                             }
                         }
-
+                        
                         OrDivider(text: "or continue with")
-
+                        
                         HStack(spacing: 16) {
                             GoogleSignInButton(
                                 scheme: colorScheme == .dark ? .dark : .light,
@@ -115,7 +117,7 @@ struct LoginView: View {
                                 )
                                 .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
                                 .accessibilityLabel("Sign in with Google")
-
+                            
                             Button {
                                 Task { await viewModel.continueAsGuest() }
                             } label: {
@@ -145,7 +147,7 @@ struct LoginView: View {
                             .accessibilityLabel("Continue as guest")
                         }
                         .frame(maxWidth: .infinity)
-
+                        
                         Text("Use Google for your account, or continue as guest without signing up.")
                             .font(.caption)
                             .foregroundStyle(AuthTheme.textOnCurtainSecondary)
@@ -155,10 +157,7 @@ struct LoginView: View {
                     }
                     .frame(maxWidth: contentMaxWidth)
                     .padding(.horizontal, 20)
-
-                    registerPrompt
-                        .frame(maxWidth: contentMaxWidth)
-                        .padding(.horizontal, 20)
+                    
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 16)
@@ -184,8 +183,15 @@ struct LoginView: View {
             viewModel.clearError()
         }
         .tint(AuthTheme.popcorn)
+        .safeAreaInset(edge: .bottom) {
+            registerPrompt
+                .frame(maxWidth: contentMaxWidth)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 10)
+        }
     }
-
+    
     @ViewBuilder
     private var loginHeader: some View {
 #if DEBUG
@@ -194,7 +200,7 @@ struct LoginView: View {
         AuthHeader()
 #endif
     }
-
+    
     private var registerPrompt: some View {
         HStack(spacing: 6) {
             Text("Don’t have an account?")
@@ -209,7 +215,7 @@ struct LoginView: View {
         .font(.footnote)
         .frame(maxWidth: .infinity)
     }
-
+    
 #if DEBUG
     private func applyDebugCredentials() {
         guard let email = DebugLoginCredentials.email,
@@ -238,10 +244,10 @@ struct LoginView: View {
 #if DEBUG
 private enum DebugLoginCredentials {
     private static let environment = ProcessInfo.processInfo.environment
-
+    
     static var email: String? { sanitize(environment["DEBUG_LOGIN_EMAIL"]) }
     static var password: String? { sanitize(environment["DEBUG_LOGIN_PASSWORD"]) }
-
+    
     private static func sanitize(_ value: String?) -> String? {
         guard let value else { return nil }
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
