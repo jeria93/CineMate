@@ -13,7 +13,7 @@ enum AuthAppError: LocalizedError, Equatable {
 
     case emailNotVerified
     case invalidEmail
-    case invalidCredentials      // wrong password or user not found
+    case invalidCredentials
     case emailInUse
     case weakPassword
     case network
@@ -53,7 +53,7 @@ enum AuthAppError: LocalizedError, Equatable {
         if case .cancelled = self { return true } else { return false }
     }
 
-    /// Maps any error into an `AuthAppError`.
+    /// Maps any error to an app auth error.
     static func mapToAppError(_ error: Error) -> AuthAppError {
         if error is PreviewAuthError { return .preview }
         if error is EmailNotVerifiedError { return .emailNotVerified }
@@ -69,6 +69,13 @@ enum AuthAppError: LocalizedError, Equatable {
         }
         if nsError.domain == "com.google.GIDSignIn" {
             return .googleSignInFailed
+        }
+
+        // Firebase sometimes returns this message in a wrapped error domain.
+        // Treat it as invalid credentials for a clearer UI message.
+        let normalizedDescription = nsError.localizedDescription.lowercased()
+        if normalizedDescription.contains("supplied auth credential is malformed or has expired") {
+            return .invalidCredentials
         }
 
         guard nsError.domain == AuthErrorDomain,
@@ -88,6 +95,10 @@ enum AuthAppError: LocalizedError, Equatable {
             return .unknown("No signed-in account found")
         case .noCurrentUserEmail:
             return .unknown("No email address found for this account")
+        case .emailChangeUnavailable:
+            return .unknown("Email change is only available for email accounts")
+        case .emailUnchanged:
+            return .unknown("Enter a different email address")
         case .passwordResetUnavailable:
             return .unknown("Password reset is only available for email accounts")
         case .unexpectedSignedInUser:
@@ -138,6 +149,10 @@ enum AuthServiceError: Error {
     case noCurrentUser
     /// Current user has no email in Firebase Auth.
     case noCurrentUserEmail
+    /// Current provider does not support email change.
+    case emailChangeUnavailable
+    /// The new email is the same as the current email.
+    case emailUnchanged
     /// Current provider does not support password reset.
     case passwordResetUnavailable
     /// Create account was called while a regular user is signed in.

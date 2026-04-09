@@ -8,49 +8,47 @@
 import Foundation
 import SwiftUI
 
-/// Auth state used by account and sign in screens.
+/// Auth state for account and sign in screens.
 @MainActor
 final class AuthViewModel: ObservableObject {
-    
+
     // MARK: - UI State
-    
+
     /// Current user ID. Nil means signed out.
     @Published var currentUID: String?
-    
+
     /// True while an auth task is running.
     @Published var isAuthenticating = false
-    
+
     /// Error text shown by the UI.
     @Published var errorMessage: String?
-    
+
     // MARK: - Dependencies
-    
+
     /// Auth service. Nil only in preview init.
     private let service: FirebaseAuthService?
-    
+
     // MARK: - Derived
-    
+
     var isSignedIn: Bool { currentUID != nil }
-    
+
     /// True when the current user is a guest account.
     var isGuest: Bool {
         if ProcessInfo.processInfo.isPreview { return false }
         return service?.isAnonymous ?? false
     }
-    
+
     // MARK: - Init (Production)
-    
-    /// Production init.
+
     init(service: FirebaseAuthService) {
         self.service = service
         if !ProcessInfo.processInfo.isPreview {
             currentUID = service.currentUserID
         }
     }
-    
+
     // MARK: - Init (Preview)
-    
-    /// Preview init with static values.
+
     init(
         simulatedUID: String? = nil,
         previewError: String? = nil,
@@ -61,9 +59,9 @@ final class AuthViewModel: ObservableObject {
         self.errorMessage = previewError
         self.isAuthenticating = previewIsAuthenticating
     }
-    
+
     // MARK: - Actions
-    
+
     /// Starts guest sign in.
     func signInAsGuest() async {
         if ProcessInfo.processInfo.isPreview {
@@ -71,7 +69,7 @@ final class AuthViewModel: ObservableObject {
             currentUID = currentUID ?? AuthPreviewData.demoUID
             return
         }
-        
+
         guard let service else { return }
         isAuthenticating = true
         defer { isAuthenticating = false }
@@ -83,7 +81,7 @@ final class AuthViewModel: ObservableObject {
             errorMessage = AuthAppError.userMessage(for: error)
         }
     }
-    
+
     /// Signs out the current user.
     func signOut() async {
         if ProcessInfo.processInfo.isPreview {
@@ -91,11 +89,11 @@ final class AuthViewModel: ObservableObject {
             errorMessage = nil
             return
         }
-        
+
         guard let service else { return }
         isAuthenticating = true
         defer { isAuthenticating = false }
-        
+
         do {
             if service.isAnonymous {
                 _ = try await service.deleteCurrentAccountWithDataCleanup()
@@ -110,33 +108,80 @@ final class AuthViewModel: ObservableObject {
     }
 }
 
+// MARK: - Email change API
+
+extension AuthViewModel {
+
+    /// Result for email change action.
+    enum ChangeEmailResult {
+        case verificationSent(email: String)
+        case unavailable
+        case needsRecentLogin
+        case failure(String)
+    }
+
+    /// Sends an email change verification link to the new address.
+    func sendChangeEmailVerification(to newEmail: String) async -> ChangeEmailResult {
+        if ProcessInfo.processInfo.isPreview { return .failure("Unavailable in previews") }
+        guard let service, currentUID != nil else { return .failure("No current user") }
+        guard service.canChangeEmail else { return .unavailable }
+
+        let normalizedNewEmail = AuthValidator.sanitizedEmail(from: newEmail)
+        guard AuthValidator.isValidEmail(normalizedNewEmail) else {
+            return .failure(AuthValidator.Message.invalidEmail)
+        }
+
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+
+        do {
+            try await service.sendChangeEmailVerification(to: normalizedNewEmail)
+            errorMessage = nil
+            logAuth("changeEmail verificationSent email=\(maskedEmail(normalizedNewEmail))")
+            return .verificationSent(email: normalizedNewEmail)
+        } catch {
+            if service.isRecentLoginRequired(error) {
+                errorMessage = nil
+                logAuth("changeEmail needsRecentLogin")
+                return .needsRecentLogin
+            }
+            let message = AuthAppError.userMessage(for: error)
+            errorMessage = message
+            logAuth("changeEmail failed message=\(message)")
+            return .failure(message)
+        }
+    }
+}
+
 // MARK: - Password reset API
 
 extension AuthViewModel {
-    
+
     /// Result for password reset action.
     enum PasswordResetResult {
         case sent(email: String)
         case unavailable
         case failure(String)
     }
-    
+
     /// Sends a password reset email for the signed in account.
     func sendPasswordResetForCurrentUser() async -> PasswordResetResult {
         if ProcessInfo.processInfo.isPreview { return .failure("Unavailable in previews") }
         guard let service, currentUID != nil else { return .failure("No current user") }
         guard service.canSendPasswordReset else { return .unavailable }
-        
+
         isAuthenticating = true
         defer { isAuthenticating = false }
-        
+
         do {
             let email = try await service.sendPasswordResetToCurrentUserEmail()
             errorMessage = nil
+            logAuth("passwordReset sent email=\(maskedEmail(email))")
             return .sent(email: email)
         } catch {
             let message = AuthAppError.userMessage(for: error)
             errorMessage = message
+            logAuth("passwordReset failed message=\(message)")
             return .failure(message)
         }
     }
@@ -145,23 +190,23 @@ extension AuthViewModel {
 // MARK: - Deletion API
 
 extension AuthViewModel {
-    
+
     /// Result for delete account action.
     enum DeleteAccountResult {
         case success
         case needsRecentLogin
         case failure(String)
     }
-    
+
     func deleteCurrentAccount() async -> DeleteAccountResult {
         if ProcessInfo.processInfo.isPreview { return .failure("Unavailable in previews") }
         guard let service = self.service, currentUID != nil else {
             return .failure("No current user")
         }
-        
+
         isAuthenticating = true
         defer { isAuthenticating = false }
-        
+
         do {
             let result = try await service.deleteCurrentAccountWithDataCleanup()
             switch result {
@@ -192,7 +237,7 @@ extension AuthViewModel {
         }
         return service?.authProviderDescription ?? "Signed out"
     }
-    
+
     /// Email shown on the account screen.
     var currentUserEmail: String? {
         if ProcessInfo.processInfo.isPreview {
@@ -200,10 +245,35 @@ extension AuthViewModel {
         }
         return service?.currentUserEmail
     }
-    
+
     /// True when this account supports password reset emails.
     var canSendPasswordReset: Bool {
         if ProcessInfo.processInfo.isPreview { return currentUID != nil }
         return service?.canSendPasswordReset ?? false
+    }
+
+    /// True when this account supports email change.
+    var canChangeEmail: Bool {
+        if ProcessInfo.processInfo.isPreview { return currentUID != nil }
+        return service?.canChangeEmail ?? false
+    }
+}
+
+// MARK: - Debug logging
+
+private extension AuthViewModel {
+    func maskedEmail(_ email: String) -> String {
+        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let atIndex = trimmed.firstIndex(of: "@") else { return "***" }
+        let name = String(trimmed[..<atIndex])
+        let domain = String(trimmed[trimmed.index(after: atIndex)...])
+        let first = name.first.map(String.init) ?? ""
+        return "\(first)***@\(domain)"
+    }
+
+    func logAuth(_ message: String) {
+#if DEBUG
+        print("[App][Auth][ViewModel] \(message)")
+#endif
     }
 }

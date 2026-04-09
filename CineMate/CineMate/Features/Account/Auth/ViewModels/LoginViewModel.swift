@@ -82,15 +82,21 @@ final class LoginViewModel: ObservableObject {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
         guard canSubmit, let service else { return }
+        logAuth("login start email=\(maskedEmail(email))")
 
         startAction(.emailPassword)
         defer { finishAction() }
         do {
             let uid = try await service.signIn(email: email, password: password)
             appError = nil
+            logAuth("login success uid=\(uid.prefix(8)) email=\(maskedEmail(email))")
             onSuccess(uid)
         } catch {
-            appError = AuthAppError.mapToAppError(error)
+            let mapped = AuthAppError.mapToAppError(error)
+            appError = mapped
+            logAuth(
+                "login failed email=\(maskedEmail(email)) mapped=\(mapped.errorDescription ?? "unknown") \(describe(error: error))"
+            )
         }
     }
 
@@ -141,6 +147,26 @@ final class LoginViewModel: ObservableObject {
     private func finishAction() {
         activeAction = nil
         isAuthenticating = false
+    }
+
+    private func describe(error: Error) -> String {
+        let nsError = error as NSError
+        return "domain=\(nsError.domain) code=\(nsError.code) message=\(nsError.localizedDescription)"
+    }
+
+    private func maskedEmail(_ email: String) -> String {
+        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let atIndex = trimmed.firstIndex(of: "@") else { return "***" }
+        let name = String(trimmed[..<atIndex])
+        let domain = String(trimmed[trimmed.index(after: atIndex)...])
+        let first = name.first.map(String.init) ?? ""
+        return "\(first)***@\(domain)"
+    }
+
+    private func logAuth(_ message: String) {
+#if DEBUG
+        print("[App][Auth][LoginVM] \(message)")
+#endif
     }
 }
 
