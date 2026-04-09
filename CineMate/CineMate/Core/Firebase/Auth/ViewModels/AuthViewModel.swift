@@ -8,53 +8,48 @@
 import Foundation
 import SwiftUI
 
-/// Main auth state view model.
-/// Owns signed in state, loading state, and auth actions.
+/// Auth state used by account and sign in screens.
 @MainActor
 final class AuthViewModel: ObservableObject {
-
-    // MARK: - UI State (observable & writable)
-
-    /// Current user id.
-    /// Nil means signed out.
+    
+    // MARK: - UI State
+    
+    /// Current user ID. Nil means signed out.
     @Published var currentUID: String?
-
-    /// True while an auth action runs.
+    
+    /// True while an auth task is running.
     @Published var isAuthenticating = false
-
-    /// Error text for UI.
+    
+    /// Error text shown by the UI.
     @Published var errorMessage: String?
-
-    // MARK: - Dependencies (production only)
-
-    /// Auth service.
-    /// Nil only in preview init.
+    
+    // MARK: - Dependencies
+    
+    /// Auth service. Nil only in preview init.
     private let service: FirebaseAuthService?
-
+    
     // MARK: - Derived
-
+    
     var isSignedIn: Bool { currentUID != nil }
-
-    /// True when current user is guest.
-    /// Always false in previews.
+    
+    /// True when the current user is a guest account.
     var isGuest: Bool {
         if ProcessInfo.processInfo.isPreview { return false }
         return service?.isAnonymous ?? false
     }
-
+    
     // MARK: - Init (Production)
-
+    
     /// Production init.
-    /// Reads current uid from the service.
     init(service: FirebaseAuthService) {
         self.service = service
         if !ProcessInfo.processInfo.isPreview {
             currentUID = service.currentUserID
         }
     }
-
+    
     // MARK: - Init (Preview)
-
+    
     /// Preview init with static values.
     init(
         simulatedUID: String? = nil,
@@ -66,19 +61,17 @@ final class AuthViewModel: ObservableObject {
         self.errorMessage = previewError
         self.isAuthenticating = previewIsAuthenticating
     }
-
+    
     // MARK: - Actions
-
-    /// Starts guest sign in flow.
+    
+    /// Starts guest sign in.
     func signInAsGuest() async {
-        // Preview state only
         if ProcessInfo.processInfo.isPreview {
-            guard errorMessage == nil else { return } // keep the “Error” preview intact
+            guard errorMessage == nil else { return }
             currentUID = currentUID ?? AuthPreviewData.demoUID
             return
         }
-
-        // Production call
+        
         guard let service else { return }
         isAuthenticating = true
         defer { isAuthenticating = false }
@@ -90,21 +83,19 @@ final class AuthViewModel: ObservableObject {
             errorMessage = AuthAppError.userMessage(for: error)
         }
     }
-
-    /// Signs out current user.
+    
+    /// Signs out the current user.
     func signOut() async {
-        // Preview state only
         if ProcessInfo.processInfo.isPreview {
             currentUID = nil
             errorMessage = nil
             return
         }
-
-        // Production call
+        
         guard let service else { return }
         isAuthenticating = true
         defer { isAuthenticating = false }
-
+        
         do {
             if service.isAnonymous {
                 _ = try await service.deleteCurrentAccountWithDataCleanup()
@@ -119,26 +110,58 @@ final class AuthViewModel: ObservableObject {
     }
 }
 
+// MARK: - Password reset API
+
+extension AuthViewModel {
+    
+    /// Result for password reset action.
+    enum PasswordResetResult {
+        case sent(email: String)
+        case unavailable
+        case failure(String)
+    }
+    
+    /// Sends a password reset email for the signed in account.
+    func sendPasswordResetForCurrentUser() async -> PasswordResetResult {
+        if ProcessInfo.processInfo.isPreview { return .failure("Unavailable in previews") }
+        guard let service, currentUID != nil else { return .failure("No current user") }
+        guard service.canSendPasswordReset else { return .unavailable }
+        
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+        
+        do {
+            let email = try await service.sendPasswordResetToCurrentUserEmail()
+            errorMessage = nil
+            return .sent(email: email)
+        } catch {
+            let message = AuthAppError.userMessage(for: error)
+            errorMessage = message
+            return .failure(message)
+        }
+    }
+}
+
 // MARK: - Deletion API
 
 extension AuthViewModel {
-
+    
     /// Result for delete account action.
     enum DeleteAccountResult {
         case success
         case needsRecentLogin
         case failure(String)
     }
-
+    
     func deleteCurrentAccount() async -> DeleteAccountResult {
         if ProcessInfo.processInfo.isPreview { return .failure("Unavailable in previews") }
         guard let service = self.service, currentUID != nil else {
             return .failure("No current user")
         }
-
+        
         isAuthenticating = true
         defer { isAuthenticating = false }
-
+        
         do {
             let result = try await service.deleteCurrentAccountWithDataCleanup()
             switch result {
@@ -162,11 +185,25 @@ extension AuthViewModel {
 // MARK: - Read-only auth info
 
 extension AuthViewModel {
-    /// Provider label for account screen.
+    /// Provider label for the account screen.
     var authProviderDescription: String {
         if ProcessInfo.processInfo.isPreview {
             return currentUID == nil ? "Signed out" : "Preview user"
         }
         return service?.authProviderDescription ?? "Signed out"
+    }
+    
+    /// Email shown on the account screen.
+    var currentUserEmail: String? {
+        if ProcessInfo.processInfo.isPreview {
+            return currentUID == nil ? nil : "preview@example.com"
+        }
+        return service?.currentUserEmail
+    }
+    
+    /// True when this account supports password reset emails.
+    var canSendPasswordReset: Bool {
+        if ProcessInfo.processInfo.isPreview { return currentUID != nil }
+        return service?.canSendPasswordReset ?? false
     }
 }

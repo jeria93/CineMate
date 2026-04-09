@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Account screen with session info, provider info, actions, and danger zone.
+/// Account screen with session info and account actions.
 struct AccountView: View {
     @ObservedObject private var authViewModel: AuthViewModel
     @EnvironmentObject private var navigator: AppNavigator
@@ -61,6 +61,35 @@ struct AccountView: View {
                             .buttonStyle(.borderedProminent)
                             .tint(.appPrimaryAction)
                             .disabled(authViewModel.isAuthenticating)
+                        }
+                    }
+
+                    if !authViewModel.isGuest {
+                        Section("Security") {
+                            if authViewModel.canSendPasswordReset {
+                                if let email = authViewModel.currentUserEmail {
+                                    Text("Reset links are sent to \(email).")
+                                        .foregroundStyle(Color.appTextSecondary)
+                                }
+
+                                Button("Change password") {
+                                    Task {
+                                        switch await authViewModel.sendPasswordResetForCurrentUser() {
+                                        case .sent(let email):
+                                            toastCenter.show("Password reset link sent to \(email)")
+                                        case .unavailable:
+                                            toastCenter.show("Password reset is only available for email sign-in")
+                                        case .failure(let message):
+                                            toastCenter.show(message)
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .disabled(authViewModel.isAuthenticating)
+                            } else {
+                                Text("Password reset is only available for email accounts.")
+                                    .foregroundStyle(Color.appTextSecondary)
+                            }
                         }
                     }
 

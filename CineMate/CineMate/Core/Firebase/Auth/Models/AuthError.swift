@@ -8,24 +8,22 @@
 import Foundation
 import FirebaseAuth
 
-/// App level auth errors for the UI.
-/// This type maps Firebase and Google errors to short user messages.
+/// Auth errors used by the UI.
 enum AuthAppError: LocalizedError, Equatable {
 
-    // Core error cases we present in the UI
     case emailNotVerified
     case invalidEmail
-    case invalidCredentials      // wrong password OR user not found
+    case invalidCredentials      // wrong password or user not found
     case emailInUse
     case weakPassword
     case network
-    case accountDisabled         // disabled in backend
-    case tooManyRequests         // throttled/abuse protection
-    case providerMismatch        // account exists with a different sign-in method
+    case accountDisabled
+    case tooManyRequests
+    case providerMismatch
     case reauthenticationRequired
     case providerUnavailable
     case googleSignInFailed
-    case cancelled               // user cancelled a web/Google sign-in flow
+    case cancelled
     case preview
     case unknown(String)
 
@@ -55,12 +53,8 @@ enum AuthAppError: LocalizedError, Equatable {
         if case .cancelled = self { return true } else { return false }
     }
 
-    /// Maps any Error to an AuthAppError.
-    /// App specific errors are checked first.
-    /// Then network and Firebase errors are checked.
-    /// Unknown errors fall back to unknown with the original message.
+    /// Maps any error into an `AuthAppError`.
     static func mapToAppError(_ error: Error) -> AuthAppError {
-        // 1) Our sentinels
         if error is PreviewAuthError { return .preview }
         if error is EmailNotVerifiedError { return .emailNotVerified }
         if error is UserCancelledSignInError { return .cancelled }
@@ -69,7 +63,6 @@ enum AuthAppError: LocalizedError, Equatable {
             return mapServiceError(serviceError)
         }
 
-        // 2) Generic network
         let nsError = error as NSError
         if nsError.domain == NSURLErrorDomain {
             return .network
@@ -78,10 +71,8 @@ enum AuthAppError: LocalizedError, Equatable {
             return .googleSignInFailed
         }
 
-        // 3) Firebase Auth mapping
         guard nsError.domain == AuthErrorDomain,
               let authErrorCode = AuthErrorCode(_bridgedNSError: nsError) else {
-            // 4) Fallback
             return .unknown(nsError.localizedDescription)
         }
         return mapFirebaseAuthError(authErrorCode)
@@ -95,6 +86,10 @@ enum AuthAppError: LocalizedError, Equatable {
         switch error {
         case .noCurrentUser:
             return .unknown("No signed-in account found")
+        case .noCurrentUserEmail:
+            return .unknown("No email address found for this account")
+        case .passwordResetUnavailable:
+            return .unknown("Password reset is only available for email accounts")
         case .unexpectedSignedInUser:
             return .unknown("Sign out and try again")
         }
@@ -122,25 +117,29 @@ enum AuthAppError: LocalizedError, Equatable {
     }
 }
 
-/// Used in previews to block real auth calls.
+/// Preview only error for blocked auth calls.
 struct PreviewAuthError: LocalizedError {
     var errorDescription: String? { "Auth is unavailable in Xcode Previews." }
 }
 
-/// Used when the user must verify email before sign in.
+/// Error for unverified email sign in.
 struct EmailNotVerifiedError: LocalizedError {
     var errorDescription: String? { "Please verify your email before signing in." }
 }
 
-/// Used when the user cancels a third party sign in flow.
+/// Error for cancelled third party sign in.
 struct UserCancelledSignInError: LocalizedError {
     var errorDescription: String? { "Sign-in was cancelled." }
 }
 
 /// Service level auth errors.
 enum AuthServiceError: Error {
-    /// There is no current user.
+    /// No current user.
     case noCurrentUser
-    /// Create account was called while a non guest user is already signed in.
+    /// Current user has no email in Firebase Auth.
+    case noCurrentUserEmail
+    /// Current provider does not support password reset.
+    case passwordResetUnavailable
+    /// Create account was called while a regular user is signed in.
     case unexpectedSignedInUser
 }

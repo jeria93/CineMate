@@ -10,30 +10,46 @@ import FirebaseAuth
 import GoogleSignIn
 import UIKit
 
-/// Small auth service used by auth view models.
-/// In previews it does not call Firebase.
+/// Auth service for sign in and account actions.
+/// In previews it throws preview errors instead of calling Firebase.
 final class FirebaseAuthService {
     
     // MARK: - State & Identity
     
-    /// True when current user is anonymous.
-    /// In previews this is always false.
+    /// True when the current user is a guest account.
     var isAnonymous: Bool {
         guard !ProcessInfo.processInfo.isPreview else { return false }
         return Auth.auth().currentUser?.isAnonymous == true
     }
     
-    /// Current user uid if signed in.
-    /// In previews this is always nil.
+    /// Current user ID when signed in.
     var currentUserID: String? {
         guard !ProcessInfo.processInfo.isPreview else { return nil }
         return Auth.auth().currentUser?.uid
     }
     
+    /// Current user email when available.
+    var currentUserEmail: String? {
+        guard !ProcessInfo.processInfo.isPreview else { return nil }
+        let email = Auth.auth().currentUser?.email?.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let email, !email.isEmpty else { return nil }
+        return email
+    }
+    
+    /// True when the current account can receive a password reset email.
+    /// The account must use email and password sign in.
+    var canSendPasswordReset: Bool {
+        guard !ProcessInfo.processInfo.isPreview else { return false }
+        guard let user = Auth.auth().currentUser, !user.isAnonymous else { return false }
+        let providers = user.providerData.map(\.providerID)
+        guard providers.contains("password") else { return false }
+        return !(user.email ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
     // MARK: - Session
     
-    /// Returns a signed in uid.
-    /// If no user exists it signs in as anonymous.
+    /// Returns the signed in user ID.
+    /// If no user exists, it starts a guest session.
     func isLoggedIn() async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         if let uid = currentUserID { return uid }
@@ -41,8 +57,8 @@ final class FirebaseAuthService {
         return result.user.uid
     }
     
-    /// Starts an anonymous session and returns uid.
-    /// If a normal user is active it signs out first.
+    /// Starts a guest session and returns the user ID.
+    /// If a regular user is active, it signs out first.
     func signInAnonymously() async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         let auth = Auth.auth()
@@ -56,8 +72,7 @@ final class FirebaseAuthService {
         return res.user.uid
     }
     
-    /// Signs out current user.
-    /// In previews this does nothing.
+    /// Signs out the current user.
     func signOut() throws {
         guard !ProcessInfo.processInfo.isPreview else { return }
         try signOutCurrentUser(auth: Auth.auth())
@@ -66,8 +81,7 @@ final class FirebaseAuthService {
     // MARK: - Email/Password
     
     /// Signs in with email and password.
-    /// It also checks email verification.
-    /// Unverified users are signed out and get EmailNotVerifiedError.
+    /// Unverified users are signed out and return `EmailNotVerifiedError`.
     func signIn(email: String, password: String) async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         let result = try await Auth.auth().signIn(withEmail: email, password: password)
@@ -80,8 +94,8 @@ final class FirebaseAuthService {
         return result.user.uid
     }
     
-    /// Creates or upgrades to email account.
-    /// It sends verification email and signs out.
+    /// Creates an email account or upgrades a guest account.
+    /// Sends a verification email and then signs out.
     func createOrUpgradeEmailAccountRequiringVerification(email: String, password: String) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         
@@ -95,38 +109,56 @@ final class FirebaseAuthService {
         try signOut()
     }
     
-    /// Sends verification email to current user.
-    /// Throws when no current user exists.
+    /// Sends a verification email to the current user.
     func resendVerificationEmail() async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
         try await sendVerificationEmail(to: user)
     }
-
-    /// Re-authenticates with email/password, sends verification email, then signs out.
-    /// Designed for the signed-out login flow after an unverified sign-in attempt.
+    
+    /// Signs in with email and password, sends verification email, then signs out.
+    /// Used after an unverified sign in attempt.
     func resendVerificationEmail(email: String, password: String) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         let auth = Auth.auth()
         guard auth.currentUser == nil else { throw AuthServiceError.unexpectedSignedInUser }
-
+        
         let result = try await auth.signIn(withEmail: email, password: password)
         defer { try? signOutCurrentUser(auth: auth) }
-
+        
         try await result.user.reload()
         guard !result.user.isEmailVerified else { return }
         try await sendVerificationEmail(to: result.user)
     }
     
-    /// Sends password reset email.
+    /// Sends a password reset email to the given address.
     func sendPasswordReset(email: String) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         try await Auth.auth().sendPasswordReset(withEmail: email)
     }
     
+    /// Sends a password reset email to the current user email.
+    /// Works only for email and password accounts.
+    /// - Returns: The email address that received the reset email.
+    func sendPasswordResetToCurrentUserEmail() async throws -> String {
+        guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
+        guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
+        
+        let providers = user.providerData.map(\.providerID)
+        guard providers.contains("password") else {
+            throw AuthServiceError.passwordResetUnavailable
+        }
+        
+        let email = (user.email ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !email.isEmpty else { throw AuthServiceError.noCurrentUserEmail }
+        
+        try await Auth.auth().sendPasswordReset(withEmail: email)
+        return email
+    }
+    
     // MARK: - Private
     
-    /// Signs out Firebase and clears any cached Google session.
+    /// Signs out Firebase and clears cached Google session.
     private func signOutCurrentUser(auth: Auth) throws {
         try auth.signOut()
         GIDSignIn.sharedInstance.signOut()
@@ -161,10 +193,8 @@ final class FirebaseAuthService {
 
 extension FirebaseAuthService {
     
-    /// Runs Google sign in and returns Firebase uid.
-    /// The presenter is used by Google ui flow.
-    /// If an anonymous user is active, the Google credential is linked
-    /// to preserve the existing uid and user data.
+    /// Runs Google sign in and returns the Firebase user ID.
+    /// If a guest user is active, it links Google to keep the same account ID.
     func signInWithGoogle(from viewController: UIViewController, using client: GoogleAuthClient) async throws -> String {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         

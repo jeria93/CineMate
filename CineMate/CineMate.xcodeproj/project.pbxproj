@@ -11,7 +11,6 @@
 		03046E482E1311AD0024AD46 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E472E1311AD0024AD46 /* Genre.swift */; };
 		03046E4A2E1315A40024AD46 /* Genre+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E492E1315A40024AD46 /* Genre+Preview.swift */; };
 		03046E4C2E13202D0024AD46 /* GenreDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E4B2E13202D0024AD46 /* GenreDetailView.swift */; };
-		0A9F3C022E7600A400A1B2C3 /* GenreDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */; };
 		030552682E64502400DE475F /* FeatureGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030552672E64502400DE475F /* FeatureGate.swift */; };
 		030599722E1EF9AC00626215 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030599712E1EF9AC00626215 /* DiscoverViewModel.swift */; };
 		030599742E1F04DA00626215 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030599732E1F04DA00626215 /* DiscoverView.swift */; };
@@ -254,6 +253,7 @@
 		03FE32342E07394C00C9B356 /* PersonDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32332E07394C00C9B356 /* PersonDetail.swift */; };
 		03FE32362E07414400C9B356 /* PersonViewModel+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32352E07414400C9B356 /* PersonViewModel+Preview.swift */; };
 		03FE32382E07416900C9B356 /* PersonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32372E07416900C9B356 /* PersonViewModel.swift */; };
+		0A9F3C022E7600A400A1B2C3 /* GenreDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */; };
 		9A1F1B3F2F01000100A1B2C3 /* SearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3C2F01000100A1B2C3 /* SearchViewModelTests.swift */; };
 		9A1F1B402F01000100A1B2C3 /* SearchValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */; };
 		9A1F1B412F01000100A1B2C3 /* SearchTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */; };
@@ -275,7 +275,6 @@
 		03046E472E1311AD0024AD46 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		03046E492E1315A40024AD46 /* Genre+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Genre+Preview.swift"; sourceTree = "<group>"; };
 		03046E4B2E13202D0024AD46 /* GenreDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDetailView.swift; sourceTree = "<group>"; };
-		0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDetailViewModel.swift; sourceTree = "<group>"; };
 		030552672E64502400DE475F /* FeatureGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureGate.swift; sourceTree = "<group>"; };
 		030599712E1EF9AC00626215 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		030599732E1F04DA00626215 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
@@ -518,6 +517,7 @@
 		03FE32332E07394C00C9B356 /* PersonDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetail.swift; sourceTree = "<group>"; };
 		03FE32352E07414400C9B356 /* PersonViewModel+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonViewModel+Preview.swift"; sourceTree = "<group>"; };
 		03FE32372E07416900C9B356 /* PersonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonViewModel.swift; sourceTree = "<group>"; };
+		0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDetailViewModel.swift; sourceTree = "<group>"; };
 		9A1F1B342F01000100A1B2C3 /* CineMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CineMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A1F1B3C2F01000100A1B2C3 /* SearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModelTests.swift; sourceTree = "<group>"; };
 		9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchValidatorTests.swift; sourceTree = "<group>"; };
@@ -2090,7 +2090,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2120,7 +2120,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
