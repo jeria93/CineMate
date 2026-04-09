@@ -13,9 +13,13 @@ enum AuthTheme {
     static let curtainTop = Color.tmdbNavy
     static let curtainBottom = Color.tmdbBlue
     static let popcorn = Color.appPrimaryAction
-
+    static let curtainContrastOverlay = Color.black.opacity(0.16)
+    
     static let cardStroke = Color.white.opacity(0.16)
     static let iconOnCurtain = Color.white.opacity(0.95)
+    static let textOnCurtainPrimary = Color.white.opacity(0.97)
+    static let textOnCurtainSecondary = Color.white.opacity(0.90)
+    static let linkOnCurtain = Color.white.opacity(0.98)
 }
 
 /// Shared spacing, corner-radius and size tokens used by reusable UI components.
@@ -28,14 +32,14 @@ enum SharedUI {
         static let xLarge: CGFloat = 20
         static let xxLarge: CGFloat = 24
     }
-
+    
     enum Radius {
         static let small: CGFloat = 8
         static let medium: CGFloat = 12
         static let large: CGFloat = 14
         static let sheet: CGFloat = 16
     }
-
+    
     enum Size {
         static let iconButton: CGFloat = 32
         static let fieldIconTapTarget: CGFloat = 32
@@ -44,7 +48,7 @@ enum SharedUI {
         static let posterGrid = CGSize(width: 120, height: 180)
         static let posterLarge = CGSize(width: 300, height: 450)
     }
-
+    
     enum Overlay {
         static let cardMaxWidth: CGFloat = 320
         static let cardPadding: CGFloat = 18
@@ -58,7 +62,7 @@ extension Color {
     static let tmdbNavy = Color("Brand/TMDB/Navy")
     static let tmdbBlue = Color("Brand/TMDB/Blue")
     static let tmdbGreen = Color("Brand/TMDB/Green")
-
+    
     // Semantic app tokens
     static let appBackground = Color("App/Background")
     static let appSurface = Color("App/Surface")
