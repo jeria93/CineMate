@@ -27,8 +27,13 @@ struct ChangeEmailSheet: View {
         !confirmEmail.isEmpty && confirmEmail == newEmail
     }
 
+    private var isSameAsCurrentEmail: Bool {
+        guard let currentEmail else { return false }
+        return AuthValidator.sanitizedEmail(from: currentEmail) == AuthValidator.sanitizedEmail(from: newEmail)
+    }
+
     private var canSubmit: Bool {
-        isNewEmailValid && isConfirmMatch && !isSubmitting && cooldownRemainingSeconds == 0
+        isNewEmailValid && isConfirmMatch && !isSameAsCurrentEmail && !isSubmitting && cooldownRemainingSeconds == 0
     }
 
     var body: some View {
@@ -57,6 +62,11 @@ struct ChangeEmailSheet: View {
 
                     if (hasTriedSubmit || !newEmail.isEmpty) && !isNewEmailValid {
                         Text(AuthValidator.Message.invalidEmail)
+                            .foregroundStyle(.red)
+                    }
+
+                    if (hasTriedSubmit || !newEmail.isEmpty) && isSameAsCurrentEmail {
+                        Text("New email must be different from current email")
                             .foregroundStyle(.red)
                     }
 
