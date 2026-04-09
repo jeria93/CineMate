@@ -12,13 +12,14 @@ struct AccountView: View {
     @ObservedObject private var authViewModel: AuthViewModel
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
+    @Environment(\.scenePhase) private var scenePhase
     @State private var isShowingChangeEmailAlert = false
     @State private var pendingNewEmail = ""
-    
+
     init(viewModel: AuthViewModel) {
         self._authViewModel = ObservedObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
         ZStack {
             Form {
@@ -40,7 +41,7 @@ struct AccountView: View {
                         }
                     }
                 }
-                
+
                 if authViewModel.isSignedIn {
                     Section("Provider") {
                         HStack {
@@ -51,12 +52,12 @@ struct AccountView: View {
                                 .multilineTextAlignment(.trailing)
                         }
                     }
-                    
+
                     if authViewModel.isGuest {
                         Section("Guest account") {
                             Text("Create an account to unlock Discover and Search.")
                                 .foregroundStyle(Color.appTextSecondary)
-                            
+
                             Button("Create Account") {
                                 navigator.goToCreateAccount()
                             }
@@ -65,7 +66,7 @@ struct AccountView: View {
                             .disabled(authViewModel.isAuthenticating)
                         }
                     }
-                    
+
                     if !authViewModel.isGuest {
                         Section("Email") {
                             if let email = authViewModel.currentUserEmail {
@@ -77,7 +78,7 @@ struct AccountView: View {
                                         .multilineTextAlignment(.trailing)
                                 }
                             }
-                            
+
                             if authViewModel.canChangeEmail {
                                 Button("Change email") {
                                     pendingNewEmail = authViewModel.currentUserEmail ?? ""
@@ -91,7 +92,7 @@ struct AccountView: View {
                             }
                         }
                     }
-                    
+
                     if !authViewModel.isGuest {
                         Section("Security") {
                             if authViewModel.canSendPasswordReset {
@@ -99,7 +100,7 @@ struct AccountView: View {
                                     Text("Reset links are sent to \(email).")
                                         .foregroundStyle(Color.appTextSecondary)
                                 }
-                                
+
                                 Button("Change password") {
                                     Task {
                                         switch await authViewModel.sendPasswordResetForCurrentUser() {
@@ -120,7 +121,7 @@ struct AccountView: View {
                             }
                         }
                     }
-                    
+
                     Section("Actions") {
                         Button(authViewModel.isGuest ? "End guest session" : "Sign out") {
                             Task {
@@ -135,7 +136,7 @@ struct AccountView: View {
                         .tint(.appPrimaryAction)
                         .disabled(authViewModel.isAuthenticating)
                     }
-                    
+
                     if !authViewModel.isGuest {
                         AccountDangerZoneView(
                             authViewModel: authViewModel,
@@ -156,6 +157,9 @@ struct AccountView: View {
             .disabled(authViewModel.isAuthenticating)
             .alert("Change email", isPresented: $isShowingChangeEmailAlert) {
                 TextField("New email", text: $pendingNewEmail)
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
                 Button("Cancel", role: .cancel) {}
                 Button("Send verification link") {
                     Task { await sendChangeEmailVerification() }
@@ -164,7 +168,13 @@ struct AccountView: View {
             } message: {
                 Text("We will send a verification link to your new email address.")
             }
-            
+            .onChange(of: pendingNewEmail) { _, newValue in
+                let sanitized = sanitizeChangeEmailInput(newValue)
+                if sanitized != newValue {
+                    pendingNewEmail = sanitized
+                }
+            }
+
             if let error = authViewModel.errorMessage {
                 ErrorMessageView(
                     title: "Authentication Error",
@@ -176,8 +186,12 @@ struct AccountView: View {
             }
         }
         .animation(.default, value: authViewModel.errorMessage != nil)
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task { await authViewModel.refreshCurrentUserFromServer() }
+        }
     }
-    
+
     @MainActor
     private func sendChangeEmailVerification() async {
         switch await authViewModel.sendChangeEmailVerification(to: pendingNewEmail) {
@@ -190,6 +204,10 @@ struct AccountView: View {
         case .failure(let message):
             toastCenter.show(message)
         }
+    }
+
+    private func sanitizeChangeEmailInput(_ value: String) -> String {
+        AuthValidator.sanitizedEmail(from: value).filter(\.isASCII)
     }
 }
 

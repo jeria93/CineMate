@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FirebaseAuth
 
 /// Auth state for account and sign in screens.
 @MainActor
@@ -106,6 +107,21 @@ final class AuthViewModel: ObservableObject {
             errorMessage = AuthAppError.userMessage(for: error)
         }
     }
+
+    /// Reloads auth user data from server and refreshes local account info.
+    func refreshCurrentUserFromServer() async {
+        if ProcessInfo.processInfo.isPreview { return }
+        guard let service, currentUID != nil else { return }
+
+        do {
+            try await service.reloadCurrentUser()
+            currentUID = service.currentUserID
+            logAuth("refreshCurrentUser success uid=\(currentUID?.prefix(8) ?? "none")")
+        } catch {
+            currentUID = service.currentUserID
+            logAuth("refreshCurrentUser failed \(describe(error: error))")
+        }
+    }
 }
 
 // MARK: - Email change API
@@ -145,9 +161,9 @@ extension AuthViewModel {
                 logAuth("changeEmail needsRecentLogin")
                 return .needsRecentLogin
             }
-            let message = AuthAppError.userMessage(for: error)
+            let message = mapChangeEmailErrorMessage(for: error)
             errorMessage = message
-            logAuth("changeEmail failed message=\(message)")
+            logAuth("changeEmail failed message=\(message) \(describe(error: error))")
             return .failure(message)
         }
     }
@@ -262,6 +278,33 @@ extension AuthViewModel {
 // MARK: - Debug logging
 
 private extension AuthViewModel {
+    func mapChangeEmailErrorMessage(for error: Error) -> String {
+        let nsError = error as NSError
+        let normalizedDescription = nsError.localizedDescription.lowercased()
+        if normalizedDescription.contains("supplied auth credential is malformed or has expired") {
+            return "Please sign in again to change your email"
+        }
+
+        if nsError.domain == AuthErrorDomain,
+           let authErrorCode = AuthErrorCode(_bridgedNSError: nsError) {
+            switch authErrorCode {
+            case .invalidCredential, .requiresRecentLogin, .userTokenExpired:
+                return "Please sign in again to change your email"
+            case .invalidEmail:
+                return AuthValidator.Message.invalidEmail
+            default:
+                break
+            }
+        }
+
+        return AuthAppError.userMessage(for: error)
+    }
+
+    func describe(error: Error) -> String {
+        let nsError = error as NSError
+        return "domain=\(nsError.domain) code=\(nsError.code) message=\(nsError.localizedDescription)"
+    }
+
     func maskedEmail(_ email: String) -> String {
         let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let atIndex = trimmed.firstIndex(of: "@") else { return "***" }

@@ -83,6 +83,20 @@ final class FirebaseAuthService {
         try signOutCurrentUser(auth: Auth.auth())
     }
 
+    /// Reloads the current Firebase user from the server.
+    func reloadCurrentUser() async throws {
+        guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
+        guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
+
+        do {
+            try await user.reload()
+            logAuth("reloadCurrentUser success uid=\(user.uid.prefix(8))")
+        } catch {
+            logAuth("reloadCurrentUser failed \(describe(error: error))")
+            throw error
+        }
+    }
+
     // MARK: - Email/Password
 
     /// Signs in with email and password.
