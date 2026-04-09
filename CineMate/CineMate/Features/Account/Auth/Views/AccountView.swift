@@ -7,16 +7,18 @@
 
 import SwiftUI
 
-/// Account screen with session info, provider info, actions, and danger zone.
+/// Account screen with session info and account actions.
 struct AccountView: View {
     @ObservedObject private var authViewModel: AuthViewModel
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
-
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isShowingChangeEmailSheet = false
+    
     init(viewModel: AuthViewModel) {
         self._authViewModel = ObservedObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         ZStack {
             Form {
@@ -38,7 +40,7 @@ struct AccountView: View {
                         }
                     }
                 }
-
+                
                 if authViewModel.isSignedIn {
                     Section("Provider") {
                         HStack {
@@ -49,12 +51,12 @@ struct AccountView: View {
                                 .multilineTextAlignment(.trailing)
                         }
                     }
-
+                    
                     if authViewModel.isGuest {
                         Section("Guest account") {
                             Text("Create an account to unlock Discover and Search.")
                                 .foregroundStyle(Color.appTextSecondary)
-
+                            
                             Button("Create Account") {
                                 navigator.goToCreateAccount()
                             }
@@ -63,7 +65,61 @@ struct AccountView: View {
                             .disabled(authViewModel.isAuthenticating)
                         }
                     }
-
+                    
+                    if !authViewModel.isGuest {
+                        Section("Email") {
+                            if let email = authViewModel.currentUserEmail {
+                                HStack {
+                                    Text("Current email")
+                                    Spacer()
+                                    Text(email)
+                                        .foregroundStyle(Color.appTextSecondary)
+                                        .multilineTextAlignment(.trailing)
+                                }
+                            }
+                            
+                            if authViewModel.canChangeEmail {
+                                Button("Change email") {
+                                    isShowingChangeEmailSheet = true
+                                }
+                                .buttonStyle(.bordered)
+                                .disabled(authViewModel.isAuthenticating)
+                            } else {
+                                Text("Email change is only available for email accounts.")
+                                    .foregroundStyle(Color.appTextSecondary)
+                            }
+                        }
+                    }
+                    
+                    if !authViewModel.isGuest {
+                        Section("Security") {
+                            if authViewModel.canSendPasswordReset {
+                                if let email = authViewModel.currentUserEmail {
+                                    Text("Reset links are sent to \(email).")
+                                        .foregroundStyle(Color.appTextSecondary)
+                                }
+                                
+                                Button("Change password") {
+                                    Task {
+                                        switch await authViewModel.sendPasswordResetForCurrentUser() {
+                                        case .sent(let email):
+                                            toastCenter.show("Password reset link sent to \(email)")
+                                        case .unavailable:
+                                            toastCenter.show("Password reset is only available for email sign-in")
+                                        case .failure(let message):
+                                            toastCenter.show(message)
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .disabled(authViewModel.isAuthenticating)
+                            } else {
+                                Text("Password reset is only available for email accounts.")
+                                    .foregroundStyle(Color.appTextSecondary)
+                            }
+                        }
+                    }
+                    
                     Section("Actions") {
                         Button(authViewModel.isGuest ? "End guest session" : "Sign out") {
                             Task {
@@ -78,7 +134,7 @@ struct AccountView: View {
                         .tint(.appPrimaryAction)
                         .disabled(authViewModel.isAuthenticating)
                     }
-
+                    
                     if !authViewModel.isGuest {
                         AccountDangerZoneView(
                             authViewModel: authViewModel,
@@ -97,7 +153,18 @@ struct AccountView: View {
             }
             .navigationTitle("Account")
             .disabled(authViewModel.isAuthenticating)
-
+            .sheet(isPresented: $isShowingChangeEmailSheet) {
+                ChangeEmailSheet(
+                    currentEmail: authViewModel.currentUserEmail,
+                    onSubmit: { newEmail in
+                        await authViewModel.sendChangeEmailVerification(to: newEmail)
+                    },
+                    onResult: { result in
+                        handleChangeEmailResult(result)
+                    }
+                )
+            }
+            
             if let error = authViewModel.errorMessage {
                 ErrorMessageView(
                     title: "Authentication Error",
@@ -109,6 +176,25 @@ struct AccountView: View {
             }
         }
         .animation(.default, value: authViewModel.errorMessage != nil)
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task { await authViewModel.refreshCurrentUserFromServer() }
+        }
+    }
+    
+    private func handleChangeEmailResult(_ result: AuthViewModel.ChangeEmailResult) {
+        switch result {
+        case .verificationSent(let email):
+            toastCenter.show("Verification link sent to \(email)")
+        case .unavailable:
+            toastCenter.show("Email change is only available for email sign-in")
+        case .cooldown(let seconds):
+            toastCenter.show("Please wait \(seconds) seconds before sending another link")
+        case .needsRecentLogin:
+            toastCenter.show("Please sign in again to change your email")
+        case .failure(let message):
+            toastCenter.show(message)
+        }
     }
 }
 

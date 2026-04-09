@@ -11,7 +11,6 @@
 		03046E482E1311AD0024AD46 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E472E1311AD0024AD46 /* Genre.swift */; };
 		03046E4A2E1315A40024AD46 /* Genre+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E492E1315A40024AD46 /* Genre+Preview.swift */; };
 		03046E4C2E13202D0024AD46 /* GenreDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03046E4B2E13202D0024AD46 /* GenreDetailView.swift */; };
-		0A9F3C022E7600A400A1B2C3 /* GenreDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */; };
 		030552682E64502400DE475F /* FeatureGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030552672E64502400DE475F /* FeatureGate.swift */; };
 		030599722E1EF9AC00626215 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030599712E1EF9AC00626215 /* DiscoverViewModel.swift */; };
 		030599742E1F04DA00626215 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030599732E1F04DA00626215 /* DiscoverView.swift */; };
@@ -179,6 +178,7 @@
 		03CB4AAA2E18761C0080EE84 /* FavoriteMoviesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB4AA92E18761C0080EE84 /* FavoriteMoviesView.swift */; };
 		03CB4AAC2E1876390080EE84 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB4AAB2E1876390080EE84 /* SearchView.swift */; };
 		03CB4AAE2E1876500080EE84 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB4AAD2E1876500080EE84 /* AccountView.swift */; };
+		A1B2C3D52F70000100ABCDEF /* ChangeEmailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */; };
 		03CC7E242E22F3070045E678 /* DiscoverHorrorPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC7E232E22F3070045E678 /* DiscoverHorrorPreviewData.swift */; };
 		03CC7E262E22F4F30045E678 /* DiscoverContentView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC7E252E22F4F30045E678 /* DiscoverContentView+Previews.swift */; };
 		03CCDE882E5E4136004F3848 /* View+Focus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CCDE872E5E4136004F3848 /* View+Focus.swift */; };
@@ -254,6 +254,7 @@
 		03FE32342E07394C00C9B356 /* PersonDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32332E07394C00C9B356 /* PersonDetail.swift */; };
 		03FE32362E07414400C9B356 /* PersonViewModel+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32352E07414400C9B356 /* PersonViewModel+Preview.swift */; };
 		03FE32382E07416900C9B356 /* PersonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE32372E07416900C9B356 /* PersonViewModel.swift */; };
+		0A9F3C022E7600A400A1B2C3 /* GenreDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */; };
 		9A1F1B3F2F01000100A1B2C3 /* SearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3C2F01000100A1B2C3 /* SearchViewModelTests.swift */; };
 		9A1F1B402F01000100A1B2C3 /* SearchValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */; };
 		9A1F1B412F01000100A1B2C3 /* SearchTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */; };
@@ -275,7 +276,6 @@
 		03046E472E1311AD0024AD46 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		03046E492E1315A40024AD46 /* Genre+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Genre+Preview.swift"; sourceTree = "<group>"; };
 		03046E4B2E13202D0024AD46 /* GenreDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDetailView.swift; sourceTree = "<group>"; };
-		0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDetailViewModel.swift; sourceTree = "<group>"; };
 		030552672E64502400DE475F /* FeatureGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureGate.swift; sourceTree = "<group>"; };
 		030599712E1EF9AC00626215 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		030599732E1F04DA00626215 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
@@ -445,6 +445,7 @@
 		03CB4AA92E18761C0080EE84 /* FavoriteMoviesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteMoviesView.swift; sourceTree = "<group>"; };
 		03CB4AAB2E1876390080EE84 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		03CB4AAD2E1876500080EE84 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailSheet.swift; sourceTree = "<group>"; };
 		03CC7E232E22F3070045E678 /* DiscoverHorrorPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverHorrorPreviewData.swift; sourceTree = "<group>"; };
 		03CC7E252E22F4F30045E678 /* DiscoverContentView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverContentView+Previews.swift"; sourceTree = "<group>"; };
 		03CCDE872E5E4136004F3848 /* View+Focus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Focus.swift"; sourceTree = "<group>"; };
@@ -518,6 +519,7 @@
 		03FE32332E07394C00C9B356 /* PersonDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetail.swift; sourceTree = "<group>"; };
 		03FE32352E07414400C9B356 /* PersonViewModel+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonViewModel+Preview.swift"; sourceTree = "<group>"; };
 		03FE32372E07416900C9B356 /* PersonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonViewModel.swift; sourceTree = "<group>"; };
+		0A9F3C012E7600A400A1B2C3 /* GenreDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDetailViewModel.swift; sourceTree = "<group>"; };
 		9A1F1B342F01000100A1B2C3 /* CineMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CineMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A1F1B3C2F01000100A1B2C3 /* SearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModelTests.swift; sourceTree = "<group>"; };
 		9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchValidatorTests.swift; sourceTree = "<group>"; };
@@ -901,6 +903,7 @@
 				032BAF812E53AFC7001077A8 /* LoginView.swift */,
 				0397B36F2E5517E400065408 /* CreateAccountView.swift */,
 				03CB4AAD2E1876500080EE84 /* AccountView.swift */,
+				A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */,
 				036E06AB2E5B97B6006BBA92 /* ResetPasswordSheet.swift */,
 			);
 			path = Views;
@@ -1820,6 +1823,7 @@
 				030289CA2E52768B00F8AF00 /* FirebaseAuthService.swift in Sources */,
 				033277EF2E15BF5700E5A226 /* WatchProviderListView+Previews.swift in Sources */,
 				03CB4AAE2E1876500080EE84 /* AccountView.swift in Sources */,
+				A1B2C3D52F70000100ABCDEF /* ChangeEmailSheet.swift in Sources */,
 				0305997A2E1F05A500626215 /* DiscoverView+Previews.swift in Sources */,
 				03E090DB2E25A2AE00ECBF5F /* GenreChipView+Previews.swift in Sources */,
 				03F3AD8D2E11C1FA00B63AA2 /* ShareLinkButtonView.swift in Sources */,
@@ -2090,7 +2094,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2120,7 +2124,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
