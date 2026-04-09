@@ -7,22 +7,8 @@
 
 import Foundation
 
-/// **MockMovieRepository**
-///
-/// Provides mocked movie data with simulated network delays for previews and testing.
-///
-/// ### Responsibilities
-/// - Simulate TMDB API calls without real network usage
-/// - Introduce small delays to mimic realistic async behavior
-/// - Provide predictable static data for all endpoints
-///
-/// ### Usage
-/// ```swift
-/// let repository = MockMovieRepository()
-/// Task {
-///     let movies = try await repository.fetchMovies(category: .popular, page: 1)
-/// }
-/// ```
+/// Mock repository for previews and tests.
+/// Returns fixed data with short delays.
 final class MockMovieRepository: MovieProtocol {
 
     func searchMovies(query: String, page: Int) async throws -> MovieResult {
@@ -37,30 +23,11 @@ final class MockMovieRepository: MovieProtocol {
                 $0.title.lowercased().contains(normalizedQuery)
             }
         }
-
-        let pageSize = 6
-        let safePage = max(1, page)
-        let startIndex = (safePage - 1) * pageSize
-        let pageResults: [Movie]
-        if startIndex < allMovies.count {
-            let endIndex = min(startIndex + pageSize, allMovies.count)
-            pageResults = Array(allMovies[startIndex..<endIndex])
-        } else {
-            pageResults = []
-        }
-
-        let totalPages = max(1, Int(ceil(Double(allMovies.count) / Double(pageSize))))
-
-        return MovieResult(
-            page: safePage,
-            results: pageResults,
-            totalPages: totalPages,
-            totalResults: allMovies.count
-        )
+        return pagedResult(from: allMovies, page: page, pageSize: 6)
     }
 
     // MARK: - Mock Delay Configuration
-    /// Centralized mock delays for consistent simulation
+    /// Small delays for preview and test flows.
     private enum Delay {
         static let veryShort: UInt64 = 150_000_000 // 0.15s - UI quick feedback
         static let short: UInt64 = 200_000_000     // 0.2s  - lightweight fetch
@@ -72,28 +39,7 @@ final class MockMovieRepository: MovieProtocol {
     // MARK: - Paging
     func fetchMovies(category: MovieCategory, page: Int) async throws -> MovieResult {
         try await Task.sleep(nanoseconds: Delay.veryLong)
-
-        let allMovies = SharedPreviewMovies.moviesList
-        let pageSize = 3
-        let safePage = max(1, page)
-        let startIndex = (safePage - 1) * pageSize
-
-        let pageResults: [Movie]
-        if startIndex < allMovies.count {
-            let endIndex = min(startIndex + pageSize, allMovies.count)
-            pageResults = Array(allMovies[startIndex..<endIndex])
-        } else {
-            pageResults = []
-        }
-
-        let totalPages = max(1, Int(ceil(Double(allMovies.count) / Double(pageSize))))
-
-        return MovieResult(
-            page: safePage,
-            results: pageResults,
-            totalPages: totalPages,
-            totalResults: allMovies.count
-        )
+        return pagedResult(from: SharedPreviewMovies.moviesList, page: page, pageSize: 3)
     }
 
     // MARK: - Movies
@@ -159,32 +105,27 @@ final class MockMovieRepository: MovieProtocol {
     // MARK: - Misc
     func fetchNowPlayingMovies(page: Int, region: String?) async throws -> MovieResult {
         try await Task.sleep(nanoseconds: Delay.long)
-
-        let allMovies = Array(SharedPreviewMovies.moviesList.reversed())
-        let pageSize = 3
-        let safePage = max(1, page)
-        let startIndex = (safePage - 1) * pageSize
-
-        let pageResults: [Movie]
-        if startIndex < allMovies.count {
-            let endIndex = min(startIndex + pageSize, allMovies.count)
-            pageResults = Array(allMovies[startIndex..<endIndex])
-        } else {
-            pageResults = []
-        }
-
-        let totalPages = max(1, Int(ceil(Double(allMovies.count) / Double(pageSize))))
-
-        return MovieResult(
-            page: safePage,
-            results: pageResults,
-            totalPages: totalPages,
-            totalResults: allMovies.count
-        )
+        return pagedResult(from: Array(SharedPreviewMovies.moviesList.reversed()), page: page, pageSize: 3)
     }
 
     func fetchGenres() async throws -> [Genre] {
         try await Task.sleep(nanoseconds: Delay.short)
         return GenrePreviewData.genres
+    }
+
+    private func pagedResult(from movies: [Movie], page: Int, pageSize: Int) -> MovieResult {
+        let safePageSize = max(1, pageSize)
+        let safePage = max(1, page)
+        let startIndex = (safePage - 1) * safePageSize
+        let endIndex = min(startIndex + safePageSize, movies.count)
+        let pageResults = startIndex < movies.count ? Array(movies[startIndex..<endIndex]) : []
+        let totalPages = max(1, (movies.count + safePageSize - 1) / safePageSize)
+
+        return MovieResult(
+            page: safePage,
+            results: pageResults,
+            totalPages: totalPages,
+            totalResults: movies.count
+        )
     }
 }

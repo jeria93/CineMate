@@ -8,9 +8,9 @@
 import SwiftUI
 
 private extension MovieViewModel {
-    /// Preview instance seeded with stubs from person’s known-for credits.
+    /// Preview model with cached movie stubs.
     static var previewWithStubs: MovieViewModel {
-        let vm = MovieViewModel()
+        let vm = MovieViewModel(repository: PreviewFactory.repository)
         for credit in PersonPreviewData.movieCredits {
             if let stub = credit.asMovie {
                 vm.cacheStub(stub)
@@ -31,7 +31,7 @@ extension KnownForScrollView {
         .background(Color(.systemBackground))
         .withPreviewNavigation()
     }
-
+    
     static var previewEmpty: some View {
         KnownForScrollView(
             movies: [],
@@ -41,7 +41,7 @@ extension KnownForScrollView {
         .background(Color(.systemBackground))
         .withPreviewNavigation()
     }
-
+    
     static var previewPartial: some View {
         let partial = [
             PersonMovieCredit(
@@ -62,7 +62,7 @@ extension KnownForScrollView {
         .background(Color(.systemBackground))
         .withPreviewNavigation()
     }
-
+    
     static var previewOverflow: some View {
         let manyMovies = (1...25).map { index in
             PersonMovieCredit(

@@ -11,7 +11,7 @@ import SwiftUI
 @MainActor
 extension PreviewFactory {
 
-    /// Cast view model with mock credits.
+    /// Cast view model with preview credits.
     static func castViewModel() -> CastViewModel {
         let vm = CastViewModel(repository: repository)
         vm.seedPreviewCredits(
@@ -20,17 +20,14 @@ extension PreviewFactory {
         return vm
     }
 
-    /// Cast member detail preview in a navigation stack.
+    /// Cast member detail preview.
     static func castMemberDetailView() -> some View {
-        let nav = AppNavigator()
-        return NavigationStack {
-            CastMemberDetailView(
-                member: CastMemberPreviewData.markHamill,
-                personViewModel: .preview,
-                favoritePeopleVM: favoritePeopleDefaultVM(),
-                movieViewModel: movieListViewModel()
-            )
-        }
-        .environmentObject(nav)
+        CastMemberDetailView(
+            member: CastMemberPreviewData.markHamill,
+            personViewModel: .preview,
+            favoritePeopleVM: favoritePeopleDefaultVM(),
+            movieViewModel: movieListViewModel()
+        )
+        .withPreviewNavigation()
     }
 }
