@@ -155,8 +155,13 @@ extension RootView {
                 movieViewModel: movieVM
             )
 
-        case .genre(let name):
-            GenreDetailView(genreName: name)
+        case .genre(let id, let name):
+            GenreDetailView(
+                genreId: id,
+                genreName: name,
+                repository: movieVM.underlyingRepository
+            )
+            .id(id)
 
         case .seeAllMovies(let title, let source):
             SeeAllMoviesView(

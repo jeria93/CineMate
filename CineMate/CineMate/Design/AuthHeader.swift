@@ -21,9 +21,6 @@ struct AuthHeader: View {
                 .font(.title2).bold()
                 .foregroundStyle(AuthTheme.iconOnCurtain)
 
-            Text("Sign in to continue")
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.9))
         }
         .padding(.top, 4)
     }
@@ -34,6 +31,7 @@ struct AuthHeader: View {
                 .fill(Color.appSurface.opacity(0.16))
                 .frame(width: 72, height: 72)
                 .overlay(Circle().strokeBorder(AuthTheme.cardStroke))
+
             Image(systemName: "film.fill")
                 .font(.system(size: 28, weight: .bold))
                 .symbolRenderingMode(.hierarchical)
@@ -52,4 +50,52 @@ struct AuthHeader: View {
     }
 }
 
-#Preview { AuthHeader() }
+#Preview("Default") {
+    AuthHeaderPreviewCanvas {
+        AuthHeader()
+    }
+}
+
+#Preview("Long Press") {
+    AuthHeaderLongPressPreview()
+}
+
+private struct AuthHeaderPreviewCanvas<Content: View>: View {
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            AuthTheme.curtainContrastOverlay.ignoresSafeArea()
+
+            content()
+                .padding(.horizontal, 20)
+                .padding(.top, 28)
+                .padding(.bottom, 16)
+        }
+        .frame(height: 260)
+    }
+}
+
+private struct AuthHeaderLongPressPreview: View {
+    @State private var didTrigger = false
+
+    var body: some View {
+        AuthHeaderPreviewCanvas {
+            VStack(spacing: 12) {
+                AuthHeader {
+                    didTrigger = true
+                }
+
+                Text(didTrigger ? "Long press detected." : "Long-press icon to test callback.")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(AuthTheme.textOnCurtainSecondary)
+            }
+        }
+    }
+}

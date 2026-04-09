@@ -22,7 +22,7 @@ enum SeeAllMoviesSource: Hashable {
 enum AppRoute: Hashable {
     case movie(id: Int)
     case person(id: Int)
-    case genre(name: String)
+    case genre(id: Int, name: String)
     case seeAllMovies(title: String, source: SeeAllMoviesSource)
     case createAccount
 }
@@ -54,8 +54,8 @@ extension AppRoute: CustomStringConvertible {
             return "movie(id: \(id))"
         case .person(let id):
             return "person(id: \(id))"
-        case .genre(let name):
-            return "genre(name: \(name))"
+        case .genre(let id, let name):
+            return "genre(id: \(id), name: \(name))"
         case .seeAllMovies(let title, _):
             return "seeAllMovies(title: \(title))"
         case .createAccount:

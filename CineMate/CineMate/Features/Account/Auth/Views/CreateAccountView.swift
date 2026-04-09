@@ -27,6 +27,7 @@ struct CreateAccountView: View {
                 startPoint: .top, endPoint: .bottom
             )
             .ignoresSafeArea()
+            AuthTheme.curtainContrastOverlay.ignoresSafeArea()
             
             VStack(spacing: 22) {
                 AuthHeader()
@@ -44,7 +45,7 @@ struct CreateAccountView: View {
                         isFocused: $emailFocused
                     )
                     if let text = createViewModel.emailHelperText {
-                        ValidationMessageView(message: text)
+                        ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
@@ -62,7 +63,7 @@ struct CreateAccountView: View {
                         isFocused: $passwordFocused
                     )
                     if let text = createViewModel.passwordHelperText {
-                        ValidationMessageView(message: text)
+                        ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
@@ -77,20 +78,20 @@ struct CreateAccountView: View {
                         isFocused: $confirmFocused
                     )
                     if let text = createViewModel.confirmHelperText {
-                        ValidationMessageView(message: text)
+                        ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
                     VStack(alignment: .leading, spacing: 10) {
                         Text("I accept the terms and conditions")
                             .font(.callout.weight(.semibold))
-                            .foregroundStyle(AuthTheme.popcorn)
+                            .foregroundStyle(AuthTheme.textOnCurtainPrimary)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.trailing, 56)
                             .overlay(alignment: .trailing) {
                                 Toggle("", isOn: $createViewModel.acceptedTerms)
                                     .labelsHidden()
-                                    .tint(AuthTheme.popcorn)
+                                    .tint(AuthTheme.linkOnCurtain)
                                     .disabled(createViewModel.isAuthenticating)
                             }
                         
@@ -99,12 +100,13 @@ struct CreateAccountView: View {
                         }
                         .buttonStyle(.plain)
                         .font(.footnote.weight(.semibold))
-                        .foregroundStyle(AuthTheme.popcorn)
+                        .foregroundStyle(AuthTheme.linkOnCurtain)
+                        .underline()
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                     
                     if let text = createViewModel.termsHelperText {
-                        ValidationMessageView(message: text)
+                        ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     

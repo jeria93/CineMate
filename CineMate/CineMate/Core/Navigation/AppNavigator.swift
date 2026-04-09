@@ -23,9 +23,9 @@ final class AppNavigator: ObservableObject {
         pushOrReplace(.createAccount)
     }
     
-    /// Navigate to a genre screen by name.
-    func goToGenre(_ name: String) {
-        pushOrReplace(.genre(name: name))
+    /// Navigate to a genre screen by ID + name.
+    func goToGenre(id: Int, name: String) {
+        pushOrReplace(.genre(id: id, name: name))
     }
     
     /// Navigate to a movie by its ID.

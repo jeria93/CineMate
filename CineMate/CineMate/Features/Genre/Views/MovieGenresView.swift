@@ -35,8 +35,7 @@ struct MovieGenresView: View {
                             )
                             .contentShape(Capsule())
                             .onTapGesture {
-                                navigator.goToGenre(genre.name)
-                                //                                Byt ut till ChipView?
+                                navigator.goToGenre(id: genre.id, name: genre.name)
                             }
                     }
                 }
