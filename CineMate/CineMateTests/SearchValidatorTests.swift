@@ -48,6 +48,17 @@ final class SearchValidatorTests: XCTestCase {
             XCTFail("Expected .invalidCharacters")
         }
     }
+
+    func testSanitizedInputRemovesLeadingSpacesAndEmoji() {
+        let sanitized = SearchValidator.sanitizedInput("   Star🙂 Wars")
+        XCTAssertEqual(sanitized, "Star Wars")
+    }
+
+    func testSanitizedInputCapsLength() {
+        let longQuery = String(repeating: "a", count: 80)
+        let sanitized = SearchValidator.sanitizedInput(longQuery)
+        XCTAssertEqual(sanitized.count, SearchValidator.maxLength)
+    }
 }
 
 final class AuthValidatorTests: XCTestCase {
@@ -59,7 +70,7 @@ final class AuthValidatorTests: XCTestCase {
     func testEmailValidationAllowsExpectedCharacters() {
         XCTAssertTrue(AuthValidator.isValidEmail("user_name-1+tag@example-domain.com"))
     }
-    
+
     func testSanitizedPasswordRemovesEmojiAndSmartQuotesAndTrimsEdges() {
         let sanitized = AuthValidator.sanitizedPassword(from: "  Abc🙂123“x”!  ")
         XCTAssertEqual(sanitized, "Abc123x!")

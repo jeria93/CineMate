@@ -21,11 +21,13 @@ struct SearchBarView: View {
                 text: $text
             )
             .textInputAutocapitalization(.never)
-            .disableAutocorrection(true)
+            .autocorrectionDisabled(true)
+            .submitLabel(.search)
             .disabled(isDisabled)
-            .onChange(of: text) {
-                if text.hasPrefix(" ") {
-                    text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            .onChange(of: text) { _, newValue in
+                let sanitized = SearchValidator.sanitizedInput(newValue)
+                if sanitized != newValue {
+                    text = sanitized
                 }
             }
 

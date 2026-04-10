@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Represents the outcome of a search query validation.
+/// Validation result for a search query.
 enum SearchValidationResult {
     case valid(trimmed: String)
     case empty
@@ -16,11 +16,32 @@ enum SearchValidationResult {
     case invalidCharacters
 }
 
-/// A utility for validating search queries before they are sent to the API.
+/// Rules for search input.
 struct SearchValidator {
-    /// Validates a given query string and returns a `SearchValidationResult`.
-    /// - Parameter query: The user input to validate.
-    /// - Returns: A validation result with either `.valid(trimmed:)` or a failure case.
+    static let minLength = 2
+    static let maxLength = 50
+
+    private static let allowedCharacterSet = CharacterSet.letters
+        .union(.decimalDigits)
+        .union(.whitespaces)
+        .union(CharacterSet(charactersIn: "-':&!?,."))
+
+    /// Cleans search text while typing.
+    /// Keeps allowed characters, removes leading spaces, and limits length.
+    static func sanitizedInput(_ input: String) -> String {
+        let filteredScalars = input.unicodeScalars.filter { scalar in
+            allowedCharacterSet.contains(scalar)
+        }
+        let filtered = String(String.UnicodeScalarView(filteredScalars))
+        let withoutLeadingSpaces = filtered.replacingOccurrences(
+            of: #"^\s+"#,
+            with: "",
+            options: .regularExpression
+        )
+        return String(withoutLeadingSpaces.prefix(maxLength))
+    }
+
+    /// Validates query text used for search requests.
     static func validate(_ query: String) -> SearchValidationResult {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -30,18 +51,13 @@ struct SearchValidator {
 
         let normalized = normalizeWhitespaces(in: trimmed)
 
-        guard normalized.count >= 2 else {
-            return .tooShort(minLength: 2)
+        guard normalized.count >= minLength else {
+            return .tooShort(minLength: minLength)
         }
 
-        guard normalized.count <= 50 else {
-            return .tooLong(maxLength: 50)
+        guard normalized.count <= maxLength else {
+            return .tooLong(maxLength: maxLength)
         }
-
-        let allowedCharacterSet = CharacterSet.letters
-            .union(.decimalDigits)
-            .union(.whitespaces)
-            .union(CharacterSet(charactersIn: "-':&!?,."))
 
         if normalized.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
             return .invalidCharacters
