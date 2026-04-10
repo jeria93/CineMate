@@ -8,8 +8,7 @@
 import Foundation
 import UIKit
 
-/// View model for LoginView.
-/// Handles login form state, loading, and errors.
+/// State and actions for the login screen.
 @MainActor
 final class LoginViewModel: ObservableObject {
 
@@ -29,22 +28,22 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Form state (bound to UI)
+    // MARK: - Form state
     @Published var email = ""
     @Published var password = ""
 
-    // MARK: - UI state (loading/errors)
+    // MARK: - UI state
     @Published var isAuthenticating = false
     @Published private(set) var appError: AuthAppError?
     @Published var hasTriedSubmit = false
     @Published private(set) var activeAction: Action?
 
     // MARK: - Dependencies
-    private let service: FirebaseAuthService?          // nil in previews
-    private let googleClient: GoogleAuthClient         // defaults to live
-    private let onSuccess: (String) -> Void            // returns Firebase UID
+    private let service: FirebaseAuthService?
+    private let googleClient: GoogleAuthClient
+    private let onSuccess: (String) -> Void
 
-    // MARK: - Derived UI (helpers for the view)
+    // MARK: - Derived state
     var errorMessage: String? { appError?.errorDescription }
     var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
     var isPasswordValid: Bool { AuthValidator.isValidLoginPassword(password) }
@@ -65,8 +64,7 @@ final class LoginViewModel: ObservableObject {
         self.onSuccess = onSuccess
     }
 
-    /// Preview init.
-    /// Uses preview client and no live service.
+    /// Preview initializer.
     init(previewEmail: String = "", previewIsAuthenticating: Bool = false, previewError: String? = nil) {
         self.service = nil
         self.googleClient = PreviewGoogleAuthClient()
@@ -81,6 +79,7 @@ final class LoginViewModel: ObservableObject {
     func login() async {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
+        password = AuthValidator.sanitizedPassword(from: password)
         guard canSubmit, let service else { return }
         logAuth("login start email=\(maskedEmail(email))")
 
@@ -174,8 +173,8 @@ final class LoginViewModel: ObservableObject {
 
 extension LoginViewModel {
 
-    /// Runs Google sign in flow.
-    /// User cancel does not show an error.
+    /// Starts Google sign in.
+    /// User cancel keeps the screen silent.
     func signInWithGoogle() async {
         guard let service else { return }
         guard let presenter = UIViewController.topMostViewController else {

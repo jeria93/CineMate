@@ -49,12 +49,14 @@ struct ChangeEmailSheet: View {
 
                 Section("New email") {
                     TextField("New email", text: $newEmail)
+                        .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .disabled(isSubmitting)
 
                     TextField("Confirm new email", text: $confirmEmail)
+                        .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
@@ -136,7 +138,7 @@ struct ChangeEmailSheet: View {
     }
 
     private func sanitizeEmailInput(_ value: String) -> String {
-        AuthValidator.sanitizedEmail(from: value).filter(\.isASCII)
+        AuthValidator.sanitizedEmail(from: value)
     }
 
     private func startCooldown(seconds: Int) {

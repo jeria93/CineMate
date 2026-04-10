@@ -39,13 +39,13 @@ struct AuthPasswordField: View {
     }
 }
 
-// MARK: - Internals (private helpers)
+// MARK: - Helpers
 private extension AuthPasswordField {
     var hasText: Bool { !text.isEmpty }
 
     var revealIconName: String { isRevealed ? "eye.slash.fill" : "eye.fill" }
 
-    /// Trailing icons (clear + reveal) when enabled and non-empty.
+    /// Shows clear and reveal icons only when text exists.
     var trailingIcons: [TrailingIcon] {
         guard hasText && !isDisabled else { return [] }
         return [clearIcon, revealIcon]
@@ -72,7 +72,7 @@ private extension AuthPasswordField {
         }
     }
 
-    /// Chooses between `TextField` and `SecureField` based on `isRevealed`.
+    /// Uses TextField when revealed and SecureField when hidden.
     @ViewBuilder
     var passwordField: some View {
         if isRevealed {
@@ -83,20 +83,21 @@ private extension AuthPasswordField {
     }
 }
 
-// MARK: - Content type / keyboard policy
+// MARK: - Input traits
 private extension View {
-    /// Applies contentType/keyboard for the given `AuthPasswordField.Mode`.
+    /// Applies text traits for each password mode.
     @ViewBuilder
     func applyContentType(mode: AuthPasswordField.Mode) -> some View {
+        let baseInputPolicy = self
+            .keyboardType(.asciiCapable)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled(true)
+
         switch mode {
         case .login:
-            self.textContentType(.password)
+            baseInputPolicy.textContentType(.password)
         case .create:
-            self
-                .textContentType(nil)
-                .keyboardType(.asciiCapable)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled(true)
+            baseInputPolicy.textContentType(nil)
         }
     }
 }
