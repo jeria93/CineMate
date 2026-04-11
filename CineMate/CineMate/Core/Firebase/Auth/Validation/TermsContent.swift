@@ -8,9 +8,11 @@
 import Foundation
 
 enum TermsContent {
+    static let currentVersion = "2026-04-10"
+
     /// Short markdown for the “View terms” sheet.
     static let termsMarkdown = """
-    **Last updated:** 2026-04-10
+    **Last updated:** \(currentVersion)
     
     ## About
     CineMate uses Firebase Auth for sign-in and TMDB for movie data and images.

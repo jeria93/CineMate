@@ -94,7 +94,9 @@ final class CreateAccountViewModel: ObservableObject {
         do {
             try await service.createOrUpgradeEmailAccountRequiringVerification(
                 email: email,
-                password: password
+                password: password,
+                acceptedTermsVersion: TermsContent.currentVersion,
+                appVersion: appVersionForLegalAudit
             )
             appError = nil
             onVerificationEmailSent()
@@ -105,5 +107,11 @@ final class CreateAccountViewModel: ObservableObject {
 
     func clearError() {
         appError = nil
+    }
+
+    private var appVersionForLegalAudit: String? {
+        let raw = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let trimmed = raw?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (trimmed?.isEmpty == false) ? trimmed : nil
     }
 }
