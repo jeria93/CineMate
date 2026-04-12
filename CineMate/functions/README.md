@@ -6,6 +6,7 @@ This folder contains backend cleanup automation for account deletion.
 
 - `cleanupUserDataOnDelete` runs when a Firebase Auth user is deleted.
 - It recursively deletes `/users/{uid}` and all nested subcollections.
+- Firestore rules tests check terms enforcement for user data writes.
 
 ## First-time setup
 
@@ -15,6 +16,12 @@ This folder contains backend cleanup automation for account deletion.
    - `npm install`
 3. Deploy:
    - `npm run deploy`
+
+## Firestore rules tests
+
+- Run emulator tests:
+  - `npm run test:rules`
+- This starts the Firestore emulator, runs the rules test suite, and stops the emulator.
 
 ## Notes
 

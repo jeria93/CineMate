@@ -25,6 +25,9 @@ final class AuthViewModel: ObservableObject {
     /// Error text shown by the UI.
     @Published var errorMessage: String?
     
+    /// Saved terms acceptance metadata for this account.
+    @Published private(set) var termsAcceptance: TermsAcceptanceSnapshot?
+    
     /// End time for change email cooldown.
     private var changeEmailCooldownUntil: Date?
     
@@ -72,6 +75,7 @@ final class AuthViewModel: ObservableObject {
         if ProcessInfo.processInfo.isPreview {
             guard errorMessage == nil else { return }
             currentUID = currentUID ?? AuthPreviewData.demoUID
+            termsAcceptance = nil
             return
         }
         
@@ -81,6 +85,7 @@ final class AuthViewModel: ObservableObject {
         do {
             let uid = try await service.signInAnonymously()
             currentUID = uid
+            termsAcceptance = nil
             errorMessage = nil
         } catch {
             errorMessage = AuthAppError.userMessage(for: error)
@@ -91,6 +96,7 @@ final class AuthViewModel: ObservableObject {
     func signOut() async {
         if ProcessInfo.processInfo.isPreview {
             currentUID = nil
+            termsAcceptance = nil
             errorMessage = nil
             changeEmailCooldownUntil = nil
             return
@@ -107,6 +113,7 @@ final class AuthViewModel: ObservableObject {
                 try service.signOut()
             }
             currentUID = nil
+            termsAcceptance = nil
             errorMessage = nil
             changeEmailCooldownUntil = nil
         } catch {
@@ -117,7 +124,14 @@ final class AuthViewModel: ObservableObject {
     /// Reloads auth user data from server and refreshes local account info.
     func refreshCurrentUserFromServer() async {
         if ProcessInfo.processInfo.isPreview { return }
-        guard let service, currentUID != nil else { return }
+        guard let service else {
+            termsAcceptance = nil
+            return
+        }
+        guard currentUID != nil else {
+            termsAcceptance = nil
+            return
+        }
         
         do {
             try await service.reloadCurrentUser()
@@ -127,6 +141,7 @@ final class AuthViewModel: ObservableObject {
             currentUID = service.currentUserID
             logAuth("refreshCurrentUser failed \(describe(error: error))")
         }
+        await refreshTermsAcceptance()
     }
 }
 
@@ -246,11 +261,13 @@ extension AuthViewModel {
             switch result {
             case .success:
                 self.currentUID = nil
+                self.termsAcceptance = nil
                 self.errorMessage = nil
                 self.changeEmailCooldownUntil = nil
                 return .success
             case .requiresRecentLogin:
                 self.currentUID = nil
+                self.termsAcceptance = nil
                 self.errorMessage = nil
                 self.changeEmailCooldownUntil = nil
                 return .needsRecentLogin
@@ -292,6 +309,45 @@ extension AuthViewModel {
     var canChangeEmail: Bool {
         if ProcessInfo.processInfo.isPreview { return currentUID != nil }
         return service?.canChangeEmail ?? false
+    }
+    
+    /// Accepted terms version shown on the account screen.
+    var acceptedTermsVersionText: String? {
+        termsAcceptance?.termsVersion
+    }
+    
+    /// Accepted timestamp shown on the account screen.
+    var acceptedTermsAtText: String? {
+        guard let date = termsAcceptance?.acceptedAt else { return nil }
+        return date.formatted(date: .abbreviated, time: .shortened)
+    }
+    
+    /// App version used when the user accepted terms.
+    var acceptedTermsAppVersionText: String? {
+        termsAcceptance?.appVersion
+    }
+    
+    /// One-line legal summary shown on the account screen.
+    var acceptedTermsSummaryText: String? {
+        guard let version = termsAcceptance?.termsVersion else { return nil }
+        if let acceptedAt = termsAcceptance?.acceptedAt {
+            return "You accepted version \(version) on \(formattedTermsDate(acceptedAt))."
+        }
+        return "You accepted version \(version)."
+    }
+    
+    /// True when the saved terms version is older than the current app terms.
+    var isAcceptedTermsOutdated: Bool {
+        guard let acceptedVersion = termsAcceptance?.termsVersion else { return false }
+        guard acceptedVersion != TermsContent.currentVersion else { return false }
+        
+        guard
+            let acceptedDate = termsVersionDate(from: acceptedVersion),
+            let currentDate = termsVersionDate(from: TermsContent.currentVersion)
+        else {
+            return true
+        }
+        return acceptedDate < currentDate
     }
 }
 
@@ -338,5 +394,99 @@ private extension AuthViewModel {
 #if DEBUG
         print("[App][Auth][ViewModel] \(message)")
 #endif
+    }
+    
+    var appVersionForLegalAudit: String? {
+        let raw = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let trimmed = raw?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (trimmed?.isEmpty == false) ? trimmed : nil
+    }
+    
+    func termsVersionDate(from raw: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: raw.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+    
+    func formattedTermsDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
+}
+
+// MARK: - Legal metadata API
+
+extension AuthViewModel {
+    /// Result for accepting latest terms on the account screen.
+    enum AcceptTermsResult {
+        case saved
+        case unavailable
+        case failure(String)
+    }
+    
+    /// Stores the current terms version for the signed in user.
+    func acceptCurrentTermsVersion() async -> AcceptTermsResult {
+        if ProcessInfo.processInfo.isPreview {
+            termsAcceptance = TermsAcceptanceSnapshot(
+                termsVersion: TermsContent.currentVersion,
+                acceptedAt: Date(),
+                appVersion: "Preview"
+            )
+            return .saved
+        }
+        
+        guard let service, currentUID != nil, !service.isAnonymous else {
+            return .unavailable
+        }
+        
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+        
+        do {
+            try await service.storeTermsAcceptanceForCurrentUser(
+                termsVersion: TermsContent.currentVersion,
+                appVersion: appVersionForLegalAudit
+            )
+            termsAcceptance = try await service.loadTermsAcceptanceForCurrentUser()
+            errorMessage = nil
+            return .saved
+        } catch {
+            let message = AuthAppError.userMessage(for: error)
+            errorMessage = message
+            return .failure(message)
+        }
+    }
+    
+    /// Loads saved terms acceptance metadata for the current user.
+    func refreshTermsAcceptance() async {
+        if ProcessInfo.processInfo.isPreview {
+            termsAcceptance = currentUID == nil
+            ? nil
+            : TermsAcceptanceSnapshot(
+                termsVersion: TermsContent.currentVersion,
+                acceptedAt: Date(),
+                appVersion: "Preview"
+            )
+            return
+        }
+        
+        guard let service, currentUID != nil, !service.isAnonymous else {
+            termsAcceptance = nil
+            return
+        }
+        
+        do {
+            termsAcceptance = try await service.loadTermsAcceptanceForCurrentUser()
+        } catch {
+            termsAcceptance = nil
+            logAuth("refreshTermsAcceptance failed \(describe(error: error))")
+        }
     }
 }
