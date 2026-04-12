@@ -9,10 +9,17 @@ import Foundation
 
 enum TermsContent {
     static let currentVersion = "2026-04-10"
-
+    
     /// Short markdown for the “View terms” sheet.
     static let termsMarkdown = """
     **Last updated:** \(currentVersion)
+    
+    ## What changed
+    This version adds direct links to TMDB API Terms and TMDB Terms.
+    
+    This version clarifies TMDB attribution requirements with the TMDB FAQ link.
+    
+    This version updates legal wording for data usage and support.
     
     ## About
     CineMate uses Firebase Auth for sign-in and TMDB for movie data and images.

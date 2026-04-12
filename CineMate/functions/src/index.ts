@@ -2,6 +2,9 @@ import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
 
+import { onTermsVersionPublished } from "./legal/onTermsVersionPublished.js";
+import { processTermsEmailJobs } from "./legal/processTermsEmailJobs.js";
+
 initializeApp();
 
 export const cleanupUserDataOnDelete = functions
@@ -26,3 +29,5 @@ export const cleanupUserDataOnDelete = functions
     }
   }
 );
+
+export { onTermsVersionPublished, processTermsEmailJobs };
