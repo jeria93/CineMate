@@ -27,9 +27,12 @@ This folder contains backend cleanup automation for account deletion.
 
 - `onTermsVersionPublished` listens to `legal/terms_versions/{version}`
 - It updates `legal/config/current`
-- For major versions it creates a pending batch in `legal/terms_email_batches/{version}`
-- `processTermsEmailJobs` runs every 5 minutes and logs pending batch count
-- `emailProvider.ts` is a stub for future provider integration
+- For major versions it creates jobs in `legal/terms_email_jobs` and a pending batch in `legal/terms_email_batches/{version}`
+- `processTermsEmailJobs` runs every 5 minutes and moves jobs from queued to sent or retry or failed
+- `emailProvider.ts` supports dry run by default
+- Set `TERMS_EMAIL_DRY_RUN=false` and `TERMS_EMAIL_WEBHOOK_URL` to enable real delivery
+- Optional `TERMS_EMAIL_WEBHOOK_AUTH` adds Bearer auth to webhook requests
+- Optional `APP_TERMS_URL` overrides the terms link used in email payloads
 
 ## Notes
 
