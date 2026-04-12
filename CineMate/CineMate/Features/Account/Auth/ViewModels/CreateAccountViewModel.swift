@@ -17,16 +17,17 @@ final class CreateAccountViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
     @Published var acceptedTerms: Bool = false
-
+    @Published var acceptedPrivacyPolicy: Bool = false
+    
     // MARK: - UI state
     @Published var isAuthenticating: Bool = false
     @Published var hasTriedSubmit: Bool = false
     @Published private(set) var appError: AuthAppError?
-
+    
     // MARK: - Dependencies
     private let service: FirebaseAuthService?
     private let onVerificationEmailSent: () -> Void
-
+    
     // MARK: - Derived
     var errorMessage: String? { appError?.errorDescription }
     var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
@@ -37,9 +38,13 @@ final class CreateAccountViewModel: ObservableObject {
     }
     var canSubmit: Bool { !isAuthenticating }
     private var isFormValid: Bool {
-        isEmailValid && isPasswordValid && isPasswordMatch && acceptedTerms
+        isEmailValid
+        && isPasswordValid
+        && isPasswordMatch
+        && acceptedTerms
+        && acceptedPrivacyPolicy
     }
-
+    
     // MARK: - Helper texts
     var emailHelperText: String? { AuthValidator.emailHelperText(email: email, hasTriedSubmit: hasTriedSubmit) }
     var passwordHelperText: String? { AuthValidator.passwordHelperText(password: password, hasTriedSubmit: hasTriedSubmit) }
@@ -51,7 +56,13 @@ final class CreateAccountViewModel: ObservableObject {
         )
     }
     var termsHelperText: String? { AuthValidator.termsHelperText(acceptedTerms: acceptedTerms, hasTriedSubmit: hasTriedSubmit) }
-
+    var privacyPolicyHelperText: String? {
+        AuthValidator.privacyPolicyHelperText(
+            acceptedPrivacyPolicy: acceptedPrivacyPolicy,
+            hasTriedSubmit: hasTriedSubmit
+        )
+    }
+    
     // MARK: - Init
     init(
         service: FirebaseAuthService,
@@ -60,7 +71,7 @@ final class CreateAccountViewModel: ObservableObject {
         self.service = service
         self.onVerificationEmailSent = onVerificationEmailSent
     }
-
+    
     /// Preview init with static values.
     init(
         previewEmail: String = "",
@@ -73,9 +84,9 @@ final class CreateAccountViewModel: ObservableObject {
         self.isAuthenticating = previewIsAuthenticating
         self.appError = previewErrorMessage.map { .unknown($0) }
     }
-
+    
     // MARK: - Actions
-
+    
     /// Validates and submits the form.
     func submit() async {
         hasTriedSubmit = true
@@ -83,14 +94,14 @@ final class CreateAccountViewModel: ObservableObject {
         let sanitized = AuthValidator.sanitizedPasswordPair(password: password, confirmPassword: confirmPassword)
         password = sanitized.password
         confirmPassword = sanitized.confirmPassword
-
+        
         guard let service else { return }
         guard isFormValid else { return }
-
+        
         isAuthenticating = true
         appError = nil
         defer { isAuthenticating = false }
-
+        
         do {
             try await service.createOrUpgradeEmailAccountRequiringVerification(
                 email: email,
@@ -104,11 +115,11 @@ final class CreateAccountViewModel: ObservableObject {
             appError = AuthAppError.mapToAppError(error)
         }
     }
-
+    
     func clearError() {
         appError = nil
     }
-
+    
     private var appVersionForLegalAudit: String? {
         let raw = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         let trimmed = raw?.trimmingCharacters(in: .whitespacesAndNewlines)

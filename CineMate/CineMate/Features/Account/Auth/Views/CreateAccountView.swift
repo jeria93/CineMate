@@ -10,16 +10,16 @@ import SwiftUI
 /// Create account screen for both new users and guest upgrade.
 struct CreateAccountView: View {
     @ObservedObject private var createViewModel: CreateAccountViewModel
-    
-    @State private var showTerms = false
+
+    @State private var activeLegalSheet: LegalSheet?
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
     @FocusState private var confirmFocused: Bool
-    
+
     init(createViewModel: CreateAccountViewModel) {
         self._createViewModel = ObservedObject(wrappedValue: createViewModel)
     }
-    
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -28,10 +28,10 @@ struct CreateAccountView: View {
             )
             .ignoresSafeArea()
             AuthTheme.curtainContrastOverlay.ignoresSafeArea()
-            
+
             VStack(spacing: 22) {
                 AuthHeader()
-                
+
                 VStack(alignment: .leading, spacing: 16) {
                     // Email
                     AuthEmailField(
@@ -48,7 +48,7 @@ struct CreateAccountView: View {
                         ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
+
                     // Password
                     AuthPasswordField(
                         title: "Password",
@@ -66,7 +66,7 @@ struct CreateAccountView: View {
                         ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
+
                     // Confirm password
                     AuthPasswordField(
                         title: "Confirm Password",
@@ -81,35 +81,29 @@ struct CreateAccountView: View {
                         ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("I accept the terms and conditions")
-                            .font(.callout.weight(.semibold))
-                            .foregroundStyle(AuthTheme.textOnCurtainPrimary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.trailing, 56)
-                            .overlay(alignment: .trailing) {
-                                Toggle("", isOn: $createViewModel.acceptedTerms)
-                                    .labelsHidden()
-                                    .tint(AuthTheme.linkOnCurtain)
-                                    .disabled(createViewModel.isAuthenticating)
-                            }
-                        
-                        Button("View terms") {
-                            showTerms = true
-                        }
-                        .buttonStyle(.plain)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(AuthTheme.linkOnCurtain)
-                        .underline()
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-                    
+
+                    legalConsentRow(
+                        title: "I accept the Terms of Service",
+                        linkTitle: "View terms",
+                        isAccepted: $createViewModel.acceptedTerms,
+                        onLinkTap: { activeLegalSheet = .terms }
+                    )
                     if let text = createViewModel.termsHelperText {
                         ValidationMessageView(message: text, palette: .curtain)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
+
+                    legalConsentRow(
+                        title: "I accept the Privacy Policy",
+                        linkTitle: "View privacy policy",
+                        isAccepted: $createViewModel.acceptedPrivacyPolicy,
+                        onLinkTap: { activeLegalSheet = .privacyPolicy }
+                    )
+                    if let text = createViewModel.privacyPolicyHelperText {
+                        ValidationMessageView(message: text, palette: .curtain)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
                     // Submit (smart)
                     Button {
                         Task { await createViewModel.submit() }
@@ -122,18 +116,18 @@ struct CreateAccountView: View {
                     .controlSize(.large)
                     .frame(height: 48)
                     .disabled(!createViewModel.canSubmit)
-                    
+
                     // Server error
                     if let message = createViewModel.errorMessage {
                         AuthErrorBlock(message: message)
                     }
                 }
                 .padding(.horizontal, 20)
-                
+
                 Spacer(minLength: 8)
             }
             .padding(.bottom, 16)
-            
+
             // Loading overlay
             if createViewModel.isAuthenticating {
                 LoadingView(title: "Creating account…")
@@ -141,8 +135,13 @@ struct CreateAccountView: View {
             }
         }
         .tint(AuthTheme.popcorn)
-        .sheet(isPresented: $showTerms) {
-            TermsSheet(markdown: TermsContent.termsMarkdown)
+        .sheet(item: $activeLegalSheet) { document in
+            TermsSheet(
+                markdown: document.markdown,
+                title: document.title,
+                subtitle: document.subtitle,
+                iconSystemName: document.iconSystemName
+            )
         }
         .task {
             try? await Task.sleep(nanoseconds: 120_000_000)
@@ -159,6 +158,80 @@ struct CreateAccountView: View {
         }
         .onChange(of: createViewModel.acceptedTerms) { _, _ in
             createViewModel.clearError()
+        }
+        .onChange(of: createViewModel.acceptedPrivacyPolicy) { _, _ in
+            createViewModel.clearError()
+        }
+    }
+
+    private func legalConsentRow(
+        title: String,
+        linkTitle: String,
+        isAccepted: Binding<Bool>,
+        onLinkTap: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(AuthTheme.textOnCurtainPrimary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.trailing, 56)
+                .overlay(alignment: .trailing) {
+                    Toggle("", isOn: isAccepted)
+                        .labelsHidden()
+                        .tint(AuthTheme.linkOnCurtain)
+                        .disabled(createViewModel.isAuthenticating)
+                }
+
+            Button(linkTitle, action: onLinkTap)
+                .buttonStyle(.plain)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(AuthTheme.linkOnCurtain)
+                .underline()
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+    }
+
+    private enum LegalSheet: String, Identifiable {
+        case terms
+        case privacyPolicy
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .terms:
+                return "Terms of Service"
+            case .privacyPolicy:
+                return "Privacy Policy"
+            }
+        }
+
+        var subtitle: String {
+            switch self {
+            case .terms:
+                return "Please review before creating an account"
+            case .privacyPolicy:
+                return "Please review before creating an account"
+            }
+        }
+
+        var iconSystemName: String {
+            switch self {
+            case .terms:
+                return "doc.text"
+            case .privacyPolicy:
+                return "lock.doc"
+            }
+        }
+
+        var markdown: String {
+            switch self {
+            case .terms:
+                return TermsContent.termsMarkdown
+            case .privacyPolicy:
+                return TermsContent.privacyPolicyMarkdown
+            }
         }
     }
 }

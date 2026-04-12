@@ -9,6 +9,7 @@ import Foundation
 
 enum TermsContent {
     static let currentVersion = "2026-04-10"
+    static let privacyPolicyVersion = currentVersion
     
     /// Short markdown for the “View terms” sheet.
     static let termsMarkdown = """
@@ -52,6 +53,46 @@ enum TermsContent {
     Using the app means you accept changes to these terms.
     
     ## Support
+    **Contact:** Open a GitHub Issue on the project repository.
+    """
+    
+    /// Short markdown for the privacy policy sheet.
+    static let privacyPolicyMarkdown = """
+    **Last updated:** \(privacyPolicyVersion)
+    
+    ## About
+    CineMate uses Firebase Auth for sign-in and TMDB for movie data and images.
+    
+    ## Data We Store
+    We store only data needed to run the app.
+    This includes email, user ID, and favorites.
+    
+    ## Passwords
+    Passwords are handled by Firebase Auth.
+    CineMate does not store raw passwords.
+    
+    ## Why We Store Data
+    We use your data to create your account, keep you signed in, and sync your favorites.
+    
+    ## Data Sharing
+    We do not sell personal data.
+    We only share data with service providers needed to run the app.
+    
+    ## Security
+    All network requests use HTTPS.
+    
+    ## Your Choices
+    You can request account deletion in app settings.
+    Removing your account removes stored user data from CineMate services.
+    
+    ## TMDB
+    TMDB provides movie metadata and images.
+    TMDB has its own privacy and data rules.
+    
+    ## Updates
+    We may update this policy when legal or product needs change.
+    
+    ## Contact
     **Contact:** Open a GitHub Issue on the project repository.
     """
 }
