@@ -8,53 +8,56 @@
 import SwiftUI
 
 /// Preview factory for `CreateAccountView`.
-/// Builds small, offline `CreateAccountViewModel` samples for common states
-/// (empty, valid, invalid, loading, server error). No network calls.
+/// Builds small local `CreateAccountViewModel` samples for common states.
 @MainActor
 extension PreviewFactory {
 
-    /// Empty form — all fields blank, no validation shown.
+    /// Empty form with no validation messages.
     static func createEmpty() -> CreateAccountViewModel {
         CreateAccountViewModel(previewEmail: "")
     }
 
-    /// Valid form — email/passwords OK and terms accepted; submit enabled.
+    /// Valid form with accepted terms and privacy policy.
     static func createFilledValid() -> CreateAccountViewModel {
         let createViewModel = CreateAccountViewModel(previewEmail: CreateAccountPreviewData.validEmail)
         createViewModel.password = CreateAccountPreviewData.strongPassword
         createViewModel.confirmPassword = CreateAccountPreviewData.strongPassword
         createViewModel.acceptedTerms = true
+        createViewModel.acceptedPrivacyPolicy = true
         return createViewModel
     }
 
-    /// Passwords mismatch — shows field-level error for confirmation.
+    /// Password mismatch preview.
     static func createPasswordMismatch() -> CreateAccountViewModel {
         let createViewModel = CreateAccountViewModel(previewEmail: CreateAccountPreviewData.validEmail)
         createViewModel.password = CreateAccountPreviewData.strongPassword
         createViewModel.confirmPassword = CreateAccountPreviewData.weakPassword
         createViewModel.acceptedTerms = true
+        createViewModel.acceptedPrivacyPolicy = true
         return createViewModel
     }
 
-    /// Invalid email — triggers email validation to fail.
+    /// Invalid email preview.
     static func createInvalidEmail() -> CreateAccountViewModel {
         let createViewModel = CreateAccountViewModel(previewEmail: CreateAccountPreviewData.invalidEmail)
         createViewModel.password = CreateAccountPreviewData.strongPassword
         createViewModel.confirmPassword = CreateAccountPreviewData.strongPassword
         createViewModel.acceptedTerms = true
+        createViewModel.acceptedPrivacyPolicy = true
         return createViewModel
     }
 
-    /// Loading state — spinner visible; inputs and submit disabled.
+    /// Loading state with disabled inputs.
     static func createIsAuthenticating() -> CreateAccountViewModel {
         let createViewModel = CreateAccountViewModel(previewEmail: CreateAccountPreviewData.validEmail, previewIsAuthenticating: true)
         createViewModel.password = CreateAccountPreviewData.strongPassword
         createViewModel.confirmPassword = CreateAccountPreviewData.strongPassword
         createViewModel.acceptedTerms = true
+        createViewModel.acceptedPrivacyPolicy = true
         return createViewModel
     }
 
-    /// Server error — sets `errorMessage` (e.g. “email already in use”).
+    /// Server error preview.
     static func makeServerError() -> CreateAccountViewModel {
         let createViewModel = CreateAccountViewModel(
             previewEmail: CreateAccountPreviewData.validEmail,
@@ -64,15 +67,17 @@ extension PreviewFactory {
         createViewModel.password = CreateAccountPreviewData.strongPassword
         createViewModel.confirmPassword = CreateAccountPreviewData.strongPassword
         createViewModel.acceptedTerms = true
+        createViewModel.acceptedPrivacyPolicy = true
         return createViewModel
     }
 
-    /// Terms not accepted — shows helper text; simulates a failed submit.
+    /// Terms not accepted preview.
     static func previewTermsNotAccepted() -> CreateAccountViewModel {
         let createViewModel = CreateAccountViewModel(previewEmail: CreateAccountPreviewData.validEmail)
         createViewModel.password = CreateAccountPreviewData.strongPassword
         createViewModel.confirmPassword = CreateAccountPreviewData.strongPassword
         createViewModel.acceptedTerms = false
+        createViewModel.acceptedPrivacyPolicy = true
         createViewModel.hasTriedSubmit = true
         return createViewModel
     }

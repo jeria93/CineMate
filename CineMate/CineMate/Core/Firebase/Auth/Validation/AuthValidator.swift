@@ -24,6 +24,7 @@ enum AuthValidator {
         static let missingPassword = "Enter your password"
         static let passwordMismatch = "Passwords don't match"
         static let termsRequired = "You must accept the terms to continue"
+        static let privacyPolicyRequired = "You must accept the privacy policy to continue"
     }
 
     // MARK: - Character policy
@@ -104,5 +105,9 @@ enum AuthValidator {
 
     static func termsHelperText(acceptedTerms: Bool, hasTriedSubmit: Bool) -> String? {
         !acceptedTerms && hasTriedSubmit ? Message.termsRequired : nil
+    }
+
+    static func privacyPolicyHelperText(acceptedPrivacyPolicy: Bool, hasTriedSubmit: Bool) -> String? {
+        !acceptedPrivacyPolicy && hasTriedSubmit ? Message.privacyPolicyRequired : nil
     }
 }

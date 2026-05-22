@@ -9,23 +9,42 @@ import SwiftUI
 
 struct TermsSheet: View {
     let markdown: String
+    let title: String
+    let subtitle: String
+    let iconSystemName: String
     @Environment(\.dismiss) private var dismiss
-
+    
+    init(
+        markdown: String,
+        title: String = "Terms of Service",
+        subtitle: String = "Please review before creating an account",
+        iconSystemName: String = "doc.text"
+    ) {
+        self.markdown = markdown
+        self.title = title
+        self.subtitle = subtitle
+        self.iconSystemName = iconSystemName
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             let horizontalInset = max(SharedUI.Spacing.medium, min(SharedUI.Spacing.large, geometry.size.width * 0.04))
-
+            
             ZStack {
                 LinearGradient(
                     colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
                     startPoint: .top, endPoint: .bottom
                 )
                 .ignoresSafeArea()
-
+                
                 VStack(spacing: SharedUI.Spacing.large) {
-                    TermsHeader()
-                        .padding(.top, SharedUI.Spacing.small)
-
+                    TermsHeader(
+                        iconSystemName: iconSystemName,
+                        title: title,
+                        subtitle: subtitle
+                    )
+                    .padding(.top, SharedUI.Spacing.small)
+                    
                     ScrollView {
                         VStack(alignment: .leading, spacing: SharedUI.Spacing.large) {
                             ForEach(Array(termsBlocks.enumerated()), id: \.offset) { _, block in
@@ -54,7 +73,7 @@ struct TermsSheet: View {
                         .padding(.vertical, SharedUI.Spacing.xSmall)
                     }
                     .scrollIndicators(.never)
-
+                    
                     Button {
                         dismiss()
                     } label: {
@@ -76,7 +95,7 @@ struct TermsSheet: View {
             .presentationDragIndicator(.visible)
         }
     }
-
+    
     private var termsBlocks: [TermsBlock] {
         TermsMarkdownParser.parse(markdown)
     }

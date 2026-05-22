@@ -8,9 +8,10 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing"
-import { doc, setDoc, serverTimestamp } from "firebase/firestore"
+import { deleteDoc, doc, setDoc, serverTimestamp } from "firebase/firestore"
 
 const CURRENT_TERMS_VERSION = "2026-04-10"
+const CURRENT_PRIVACY_VERSION = "2026-04-10"
 
 let testEnv: RulesTestEnvironment
 
@@ -22,10 +23,12 @@ async function seedTermsAcceptance(
   uid: string,
   {
     termsVersion = CURRENT_TERMS_VERSION,
+    privacyVersion = CURRENT_PRIVACY_VERSION,
     includeAcceptedAt = true,
     appVersion = "1.0.0",
   }: {
     termsVersion?: string
+    privacyVersion?: string
     includeAcceptedAt?: boolean
     appVersion?: string
   } = {}
@@ -34,6 +37,7 @@ async function seedTermsAcceptance(
     const db = context.firestore()
     const data: Record<string, unknown> = {
       termsVersion,
+      privacyVersion,
       appVersion,
     }
     if (includeAcceptedAt) {
@@ -73,7 +77,61 @@ test("owner can write acceptance metadata on own user document", async () => {
       doc(db, "users", uid),
       {
         termsVersion: CURRENT_TERMS_VERSION,
+        privacyVersion: CURRENT_PRIVACY_VERSION,
         acceptedAt: serverTimestamp(),
+        appVersion: "2.4.1",
+      },
+      { merge: true }
+    )
+  )
+})
+
+test("owner cannot create user document with non legal fields", async () => {
+  const uid = "alice"
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid),
+      {
+        termsVersion: CURRENT_TERMS_VERSION,
+        privacyVersion: CURRENT_PRIVACY_VERSION,
+        acceptedAt: serverTimestamp(),
+        appVersion: "2.4.1",
+        role: "admin",
+      },
+      { merge: true }
+    )
+  )
+})
+
+test("owner cannot update non legal fields on own user document", async () => {
+  const uid = "alice"
+  await seedTermsAcceptance(uid)
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid),
+      {
+        role: "admin",
+      },
+      { merge: true }
+    )
+  )
+})
+
+test("owner cannot write acceptance metadata with client timestamp", async () => {
+  const uid = "alice"
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid),
+      {
+        termsVersion: CURRENT_TERMS_VERSION,
+        privacyVersion: CURRENT_PRIVACY_VERSION,
+        acceptedAt: new Date("2026-04-10T00:00:00Z"),
         appVersion: "2.4.1",
       },
       { merge: true }
@@ -134,9 +192,71 @@ test("owner cannot write favorites when accepted terms version is stale", async 
   )
 })
 
+test("owner can delete favorites when accepted terms version is stale", async () => {
+  const uid = "alice"
+  await seedTermsAcceptance(uid, { termsVersion: "2026-01-01" })
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    const db = context.firestore()
+    await setDoc(doc(db, "users", uid, "favorites", "1"), {
+      id: 1,
+      title: "Movie A",
+      createdAt: new Date("2026-04-10T00:00:00Z"),
+    })
+  })
+  const db = ownerDb(uid)
+
+  await assertSucceeds(deleteDoc(doc(db, "users", uid, "favorites", "1")))
+})
+
+test("owner cannot write favorites when accepted privacy version is stale", async () => {
+  const uid = "alice"
+  await seedTermsAcceptance(uid, { privacyVersion: "2026-01-01" })
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid, "favorites", "1"),
+      {
+        id: 1,
+        title: "Movie A",
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    )
+  )
+})
+
 test("owner cannot write favorites when acceptedAt is missing", async () => {
   const uid = "alice"
   await seedTermsAcceptance(uid, { includeAcceptedAt: false })
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid, "favorites", "1"),
+      {
+        id: 1,
+        title: "Movie A",
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    )
+  )
+})
+
+test("owner cannot write favorites when privacyVersion is missing", async () => {
+  const uid = "alice"
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    const db = context.firestore()
+    await setDoc(
+      doc(db, "users", uid),
+      {
+        termsVersion: CURRENT_TERMS_VERSION,
+        acceptedAt: new Date("2026-04-10T00:00:00Z"),
+      },
+      { merge: true }
+    )
+  })
   const db = ownerDb(uid)
 
   await assertFails(
