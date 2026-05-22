@@ -259,6 +259,8 @@
 		9A1F1B412F01000100A1B2C3 /* SearchTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */; };
 		9A1F1B422F01000100A1B2C3 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1F1B432F01000100A1B2C3 /* XCTest.framework */; };
 		A1B2C3D52F70000100ABCDEF /* ChangeEmailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */; };
+		A1B2D0012F7600010010ABCD /* GoogleLegalAcceptanceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2D0022F7600010010ABCD /* GoogleLegalAcceptanceSheet.swift */; };
+		A1B2D0032F7600010010ABCD /* DebugLoginCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2D0042F7600010010ABCD /* DebugLoginCredentials.swift */; };
 		B1C2D3002FA1000100A1A1A1 /* TermsMarkdownParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3032FA1000100A1A1A1 /* TermsMarkdownParser.swift */; };
 		B1C2D3012FA1000100A1A1A1 /* TermsBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3042FA1000100A1A1A1 /* TermsBlockView.swift */; };
 		B1C2D3022FA1000100A1A1A1 /* TermsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3052FA1000100A1A1A1 /* TermsHeader.swift */; };
@@ -528,6 +530,8 @@
 		9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTestDoubles.swift; sourceTree = "<group>"; };
 		9A1F1B432F01000100A1B2C3 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailSheet.swift; sourceTree = "<group>"; };
+		A1B2D0022F7600010010ABCD /* GoogleLegalAcceptanceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleLegalAcceptanceSheet.swift; sourceTree = "<group>"; };
+		A1B2D0042F7600010010ABCD /* DebugLoginCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLoginCredentials.swift; sourceTree = "<group>"; };
 		B1C2D3032FA1000100A1A1A1 /* TermsMarkdownParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsMarkdownParser.swift; sourceTree = "<group>"; };
 		B1C2D3042FA1000100A1A1A1 /* TermsBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsBlockView.swift; sourceTree = "<group>"; };
 		B1C2D3052FA1000100A1A1A1 /* TermsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsHeader.swift; sourceTree = "<group>"; };
@@ -907,6 +911,7 @@
 			isa = PBXGroup;
 			children = (
 				032BAF812E53AFC7001077A8 /* LoginView.swift */,
+				A1B2D0022F7600010010ABCD /* GoogleLegalAcceptanceSheet.swift */,
 				0397B36F2E5517E400065408 /* CreateAccountView.swift */,
 				03CB4AAD2E1876500080EE84 /* AccountView.swift */,
 				A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */,
@@ -1129,8 +1134,17 @@
 				0390F7DB2E5DE36400E89B82 /* ViewModels */,
 				0390F7DC2E5DE36F00E89B82 /* Components */,
 				03DCB0602E5603910071C3B2 /* PreviewData */,
+				A1B2D0052F7600010010ABCD /* Debug */,
 			);
 			path = Auth;
+			sourceTree = "<group>";
+		};
+		A1B2D0052F7600010010ABCD /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2D0042F7600010010ABCD /* DebugLoginCredentials.swift */,
+			);
+			path = Debug;
 			sourceTree = "<group>";
 		};
 		0390F7DB2E5DE36400E89B82 /* ViewModels */ = {
@@ -1792,6 +1806,8 @@
 				03FC25DD2E06A24000AACB5E /* MovieViewModel+Preview.swift in Sources */,
 				0397B3702E5517E400065408 /* CreateAccountView.swift in Sources */,
 				032BAF822E53AFC7001077A8 /* LoginView.swift in Sources */,
+				A1B2D0012F7600010010ABCD /* GoogleLegalAcceptanceSheet.swift in Sources */,
+				A1B2D0032F7600010010ABCD /* DebugLoginCredentials.swift in Sources */,
 				03BAD6A92E298A710035F1F5 /* PersonMetaInfoPreviewData.swift in Sources */,
 				03F3AD972E11E16500B63AA2 /* PersonInfoView+Previews.swift in Sources */,
 				031392032E1AAA0F0047ED6B /* PreviewFactory+Search.swift in Sources */,
