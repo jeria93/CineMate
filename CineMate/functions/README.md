@@ -1,40 +1,32 @@
-# Firebase Functions (User Cleanup)
+# Firebase Rules Tests
 
-This folder contains backend cleanup automation for account deletion.
+This folder is only used for Firestore rules tests.
 
-## What it does
+## Active Backend
 
-- `cleanupUserDataOnDelete` runs when a Firebase Auth user is deleted.
-- It recursively deletes `/users/{uid}` and all nested subcollections.
-- Firestore rules tests check terms enforcement for user data writes.
+- No Cloud Functions are deployed from this project.
+- Account deletion uses local cleanup for known user data collections.
+- Firestore rules require current `termsVersion`, `privacyVersion`, and `acceptedAt` before protected writes.
+- Owners can delete their own user data even when legal acceptance is missing or outdated.
 
-## First-time setup
+## Setup
 
-1. Set your Firebase project id in `.firebaserc`.
-2. Install dependencies:
+1. Set the Firebase project id in `.firebaserc`.
+2. Install test dependencies:
    - `cd functions`
    - `npm install`
-3. Deploy:
-   - `npm run deploy`
 
-## Firestore rules tests
+## Tests
 
-- Run emulator tests:
+- Run Firestore rules tests:
   - `npm run test:rules`
-- This starts the Firestore emulator, runs the rules test suite, and stops the emulator.
+- This starts the Firestore emulator, runs the rules suite, and stops the emulator.
 
-## Terms notification scaffold
+## Legal Release Checklist
 
-- `onTermsVersionPublished` listens to `legal/terms_versions/{version}`
-- It updates `legal/config/current`
-- For major versions it creates jobs in `legal/terms_email_jobs` and a pending batch in `legal/terms_email_batches/{version}`
-- `processTermsEmailJobs` runs every 5 minutes and moves jobs from queued to sent or retry or failed
-- `emailProvider.ts` supports dry run by default
-- Set `TERMS_EMAIL_DRY_RUN=false` and `TERMS_EMAIL_WEBHOOK_URL` to enable real delivery
-- Optional `TERMS_EMAIL_WEBHOOK_AUTH` adds Bearer auth to webhook requests
-- Optional `APP_TERMS_URL` overrides the terms link used in email payloads
-
-## Notes
-
-- Cleanup happens asynchronously after auth account deletion.
-- The iOS app no longer deletes Firestore data locally during account deletion.
+1. Check that `TermsContent.currentVersion` and `TermsContent.privacyPolicyVersion` match `firestore.rules`.
+2. Check that Terms and Privacy sheets show the correct `Last updated` date.
+3. Run `npm run test:rules`.
+4. Deploy updated Firestore rules:
+   - `firebase deploy --only firestore:rules --project cinemate-bec9f`
+5. Confirm `firebase functions:list --project cinemate-bec9f` is empty.

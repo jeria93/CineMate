@@ -8,7 +8,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing"
-import { doc, setDoc, serverTimestamp } from "firebase/firestore"
+import { deleteDoc, doc, setDoc, serverTimestamp } from "firebase/firestore"
 
 const CURRENT_TERMS_VERSION = "2026-04-10"
 const CURRENT_PRIVACY_VERSION = "2026-04-10"
@@ -137,6 +137,22 @@ test("owner cannot write favorites when accepted terms version is stale", async 
       { merge: true }
     )
   )
+})
+
+test("owner can delete favorites when accepted terms version is stale", async () => {
+  const uid = "alice"
+  await seedTermsAcceptance(uid, { termsVersion: "2026-01-01" })
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    const db = context.firestore()
+    await setDoc(doc(db, "users", uid, "favorites", "1"), {
+      id: 1,
+      title: "Movie A",
+      createdAt: new Date("2026-04-10T00:00:00Z"),
+    })
+  })
+  const db = ownerDb(uid)
+
+  await assertSucceeds(deleteDoc(doc(db, "users", uid, "favorites", "1")))
 })
 
 test("owner cannot write favorites when accepted privacy version is stale", async () => {

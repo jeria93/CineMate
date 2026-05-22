@@ -11,8 +11,7 @@ import FirebaseFirestore
 
 /// Delete helpers for FirebaseAuthService.
 /// Handles auth account delete and recent login cases.
-/// User Firestore cleanup should be handled by a backend Cloud Function on user delete.
-/// Until backend deploy is active, this file keeps a local best-effort cleanup fallback.
+/// Firestore cleanup runs locally for known user collections.
 extension FirebaseAuthService {
 
     // MARK: - Public API
@@ -23,14 +22,13 @@ extension FirebaseAuthService {
     }
 
     /// Deletes current user data and account.
-    /// It deletes the Firebase user.
-    /// Firestore cleanup should be performed server-side by backend automation.
-    /// A temporary local fallback cleanup runs after successful account deletion.
     /// Returns requiresRecentLogin when Firebase needs fresh login.
     func deleteCurrentAccountWithDataCleanup() async throws -> AccountDeletionResult {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
         let uid = user.uid
+
+        try await deleteUserData(uid: uid)
 
         do {
             try await user.delete()
@@ -38,18 +36,8 @@ extension FirebaseAuthService {
             guard isRecentLoginRequired(error) else { throw error }
 
             // Sign out so the app can ask for login again.
-            // No Firestore data has been deleted at this point.
             try? signOut()
             return .requiresRecentLogin
-        }
-
-        // Temporary fallback: local cleanup after successful auth deletion.
-        // This keeps data hygiene while backend function deployment is pending.
-        // If this fails, we still return success because auth account is gone.
-        do {
-            try await deleteUserData(uid: uid)
-        } catch {
-            logDeletion("local fallback cleanup failed for uid=\(uid): \(error.localizedDescription)")
         }
 
         // SDK may already clear session after delete; treat local sign-out as best-effort.
@@ -63,10 +51,9 @@ extension FirebaseAuthService {
         return AuthErrorCode(rawValue: ns.code) == .requiresRecentLogin
     }
 
-    // MARK: - Temporary local cleanup fallback
+    // MARK: - Local cleanup
 
     /// Deletes known Firestore data under users uid.
-    /// This is a temporary fallback while backend cleanup is not yet deployed.
     fileprivate func deleteUserData(uid: String) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
 
