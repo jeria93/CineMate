@@ -17,6 +17,7 @@ final class LoginViewModel: ObservableObject {
         case google
         case guest
         case resendVerification
+        case googleLegalAcceptance
 
         var loadingTitle: String {
             switch self {
@@ -24,6 +25,7 @@ final class LoginViewModel: ObservableObject {
             case .google: "Signing in with Google..."
             case .guest: "Starting guest session..."
             case .resendVerification: "Sending verification email..."
+            case .googleLegalAcceptance: "Saving acceptance..."
             }
         }
     }
@@ -37,11 +39,16 @@ final class LoginViewModel: ObservableObject {
     @Published private(set) var appError: AuthAppError?
     @Published var hasTriedSubmit = false
     @Published private(set) var activeAction: Action?
+    @Published var isGoogleLegalAcceptanceRequired = false
+    @Published var acceptedGoogleTerms = false
+    @Published var acceptedGooglePrivacyPolicy = false
+    @Published var hasTriedGoogleLegalSubmit = false
 
     // MARK: - Dependencies
     private let service: FirebaseAuthService?
     private let googleClient: GoogleAuthClient
     private let onSuccess: (String) -> Void
+    private var pendingGoogleUID: String?
 
     // MARK: - Derived state
     var errorMessage: String? { appError?.errorDescription }
@@ -52,6 +59,21 @@ final class LoginViewModel: ObservableObject {
     var passwordHelperText: String? { AuthValidator.loginPasswordHelperText(password: password, hasTriedSubmit: hasTriedSubmit) }
     var shouldOfferResendVerification: Bool { appError == .emailNotVerified }
     var loadingTitle: String { activeAction?.loadingTitle ?? "Authenticating..." }
+    var canSubmitGoogleLegalAcceptance: Bool {
+        acceptedGoogleTerms && acceptedGooglePrivacyPolicy && !isAuthenticating
+    }
+    var googleTermsHelperText: String? {
+        AuthValidator.termsHelperText(
+            acceptedTerms: acceptedGoogleTerms,
+            hasTriedSubmit: hasTriedGoogleLegalSubmit
+        )
+    }
+    var googlePrivacyPolicyHelperText: String? {
+        AuthValidator.privacyPolicyHelperText(
+            acceptedPrivacyPolicy: acceptedGooglePrivacyPolicy,
+            hasTriedSubmit: hasTriedGoogleLegalSubmit
+        )
+    }
 
     // MARK: - Init
     init(
@@ -187,11 +209,89 @@ extension LoginViewModel {
 
         do {
             let uid = try await service.signInWithGoogle(from: presenter, using: googleClient)
+            if try await requiresLegalAcceptanceAfterGoogleSignIn(service: service) {
+                prepareGoogleLegalAcceptance(for: uid)
+                appError = nil
+                return
+            }
             appError = nil
             onSuccess(uid)
         } catch {
             let mapped = AuthAppError.mapToAppError(error)
             if !mapped.isUserCancellation { appError = mapped }
         }
+    }
+
+    /// Stores required legal acceptance after Google sign-in, then completes app sign-in.
+    func acceptGoogleLegalTerms() async {
+        hasTriedGoogleLegalSubmit = true
+        guard canSubmitGoogleLegalAcceptance else { return }
+        guard let service, let pendingGoogleUID else {
+            appError = .unknown("Unable to complete Google sign-in.")
+            return
+        }
+
+        startAction(.googleLegalAcceptance)
+        defer { finishAction() }
+
+        do {
+            try await service.storeTermsAcceptanceForCurrentUser(
+                termsVersion: TermsContent.currentVersion,
+                privacyVersion: TermsContent.privacyPolicyVersion,
+                appVersion: appVersionForLegalAudit
+            )
+            _ = try await service.loadTermsAcceptanceForCurrentUser()
+            let uid = pendingGoogleUID
+            finishGoogleLegalAcceptance()
+            appError = nil
+            onSuccess(uid)
+        } catch {
+            appError = AuthAppError.mapToAppError(error)
+        }
+    }
+
+    func clearGoogleLegalError() {
+        appError = nil
+    }
+
+    func cancelGoogleLegalAcceptance() {
+        do {
+            try service?.signOut()
+            finishGoogleLegalAcceptance()
+            appError = nil
+        } catch {
+            appError = AuthAppError.mapToAppError(error)
+        }
+    }
+
+    private func prepareGoogleLegalAcceptance(for uid: String) {
+        pendingGoogleUID = uid
+        acceptedGoogleTerms = false
+        acceptedGooglePrivacyPolicy = false
+        hasTriedGoogleLegalSubmit = false
+        isGoogleLegalAcceptanceRequired = true
+    }
+
+    private func finishGoogleLegalAcceptance() {
+        pendingGoogleUID = nil
+        acceptedGoogleTerms = false
+        acceptedGooglePrivacyPolicy = false
+        hasTriedGoogleLegalSubmit = false
+        isGoogleLegalAcceptanceRequired = false
+    }
+
+    private func requiresLegalAcceptanceAfterGoogleSignIn(service: FirebaseAuthService) async throws -> Bool {
+        guard let acceptance = try await service.loadTermsAcceptanceForCurrentUser() else {
+            return true
+        }
+        return acceptance.termsVersion != TermsContent.currentVersion
+        || acceptance.privacyVersion != TermsContent.privacyPolicyVersion
+        || acceptance.acceptedAt == nil
+    }
+
+    private var appVersionForLegalAudit: String? {
+        let raw = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let trimmed = raw?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (trimmed?.isEmpty == false) ? trimmed : nil
     }
 }
