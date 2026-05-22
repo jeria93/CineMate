@@ -170,25 +170,25 @@ struct CreateAccountView: View {
         isAccepted: Binding<Bool>,
         onLinkTap: @escaping () -> Void
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.callout.weight(.semibold))
-                .foregroundStyle(AuthTheme.textOnCurtainPrimary)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.trailing, 56)
-                .overlay(alignment: .trailing) {
-                    Toggle("", isOn: isAccepted)
-                        .labelsHidden()
-                        .tint(AuthTheme.linkOnCurtain)
-                        .disabled(createViewModel.isAuthenticating)
-                }
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 12) {
+                Text(title)
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(AuthTheme.textOnCurtainPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Toggle("", isOn: isAccepted)
+                    .labelsHidden()
+                    .tint(AuthTheme.linkOnCurtain)
+                    .disabled(createViewModel.isAuthenticating)
+            }
 
             Button(linkTitle, action: onLinkTap)
                 .buttonStyle(.plain)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(AuthTheme.linkOnCurtain)
                 .underline()
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

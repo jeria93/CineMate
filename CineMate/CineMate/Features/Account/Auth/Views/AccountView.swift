@@ -15,7 +15,6 @@ struct AccountView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var isShowingChangeEmailSheet = false
     @State private var isShowingTermsSheet = false
-    @State private var hasReviewedUpdates = false
 
     init(viewModel: AuthViewModel) {
         self._authViewModel = ObservedObject(wrappedValue: viewModel)
@@ -99,41 +98,8 @@ struct AccountView: View {
                                 Text(summary)
                                     .foregroundStyle(Color.appTextSecondary)
                             } else {
-                                Text("No saved terms acceptance for this account yet.")
+                                Text("No saved legal acceptance for this account yet.")
                                     .foregroundStyle(Color.appTextSecondary)
-                            }
-
-                            if authViewModel.isAcceptedTermsOutdated {
-                                Button {
-                                    let wasReviewed = hasReviewedUpdates
-                                    hasReviewedUpdates = true
-                                    if !wasReviewed {
-                                        toastCenter.show("Review complete. You can accept the update.")
-                                    }
-                                    isShowingTermsSheet = true
-                                } label: {
-                                    Label(
-                                        hasReviewedUpdates ? "Reviewed" : "Review updates",
-                                        systemImage: hasReviewedUpdates ? "checkmark.circle.fill" : "exclamationmark.triangle.fill"
-                                    )
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(hasReviewedUpdates ? Color.appTextSecondary : .orange)
-                                }
-                                .buttonStyle(.plain)
-                            } else if authViewModel.acceptedTermsSummaryText != nil {
-                                Label("Up to date", systemImage: "checkmark.seal.fill")
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(.green)
-                            }
-
-                            if let appVersion = authViewModel.acceptedTermsAppVersionText {
-                                HStack {
-                                    Text("App version")
-                                    Spacer()
-                                    Text(appVersion)
-                                        .foregroundStyle(Color.appTextSecondary)
-                                        .multilineTextAlignment(.trailing)
-                                }
                             }
 
                             Button("View terms") {
@@ -143,9 +109,7 @@ struct AccountView: View {
                             .disabled(authViewModel.isAuthenticating)
 
                             if authViewModel.isAcceptedTermsOutdated || authViewModel.acceptedTermsSummaryText == nil {
-                                let requiresReviewBeforeAccept = authViewModel.isAcceptedTermsOutdated && !hasReviewedUpdates
-
-                                Button(authViewModel.isAcceptedTermsOutdated ? "Accept update" : "Accept latest terms") {
+                                Button("Accept latest") {
                                     Task {
                                         let result = await authViewModel.acceptCurrentTermsVersion()
                                         handleAcceptTermsResult(result)
@@ -153,15 +117,7 @@ struct AccountView: View {
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .tint(.appPrimaryAction)
-                                .disabled(
-                                    authViewModel.isAuthenticating || requiresReviewBeforeAccept
-                                )
-
-                                if requiresReviewBeforeAccept {
-                                    Text("Review required before accepting.")
-                                        .font(.footnote)
-                                        .foregroundStyle(Color.appTextSecondary)
-                                }
+                                .disabled(authViewModel.isAuthenticating)
                             }
                         }
 
@@ -258,13 +214,6 @@ struct AccountView: View {
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             Task { await authViewModel.refreshCurrentUserFromServer() }
-        }
-        .onChange(of: authViewModel.isAcceptedTermsOutdated) { _, isOutdated in
-            if isOutdated {
-                hasReviewedUpdates = false
-            } else {
-                hasReviewedUpdates = true
-            }
         }
     }
 

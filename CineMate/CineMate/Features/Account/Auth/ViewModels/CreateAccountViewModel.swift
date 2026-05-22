@@ -107,6 +107,7 @@ final class CreateAccountViewModel: ObservableObject {
                 email: email,
                 password: password,
                 acceptedTermsVersion: TermsContent.currentVersion,
+                acceptedPrivacyVersion: TermsContent.privacyPolicyVersion,
                 appVersion: appVersionForLegalAudit
             )
             appError = nil

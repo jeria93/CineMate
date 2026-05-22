@@ -315,6 +315,11 @@ extension AuthViewModel {
     var acceptedTermsVersionText: String? {
         termsAcceptance?.termsVersion
     }
+
+    /// Accepted privacy version shown on the account screen.
+    var acceptedPrivacyVersionText: String? {
+        termsAcceptance?.privacyVersion
+    }
     
     /// Accepted timestamp shown on the account screen.
     var acceptedTermsAtText: String? {
@@ -322,32 +327,33 @@ extension AuthViewModel {
         return date.formatted(date: .abbreviated, time: .shortened)
     }
     
-    /// App version used when the user accepted terms.
-    var acceptedTermsAppVersionText: String? {
-        termsAcceptance?.appVersion
-    }
-    
     /// One-line legal summary shown on the account screen.
     var acceptedTermsSummaryText: String? {
-        guard let version = termsAcceptance?.termsVersion else { return nil }
-        if let acceptedAt = termsAcceptance?.acceptedAt {
-            return "You accepted version \(version) on \(formattedTermsDate(acceptedAt))."
+        guard let acceptance = termsAcceptance else { return nil }
+        guard let privacyVersion = acceptance.privacyVersion else {
+            if let acceptedAt = acceptance.acceptedAt {
+                return "You accepted terms \(acceptance.termsVersion) on \(formattedTermsDate(acceptedAt))."
+            }
+            return "You accepted terms \(acceptance.termsVersion)."
         }
-        return "You accepted version \(version)."
+        if let acceptedAt = acceptance.acceptedAt {
+            return "You accepted terms \(acceptance.termsVersion) and privacy \(privacyVersion) on \(formattedTermsDate(acceptedAt))."
+        }
+        return "You accepted terms \(acceptance.termsVersion) and privacy \(privacyVersion)."
     }
     
     /// True when the saved terms version is older than the current app terms.
     var isAcceptedTermsOutdated: Bool {
-        guard let acceptedVersion = termsAcceptance?.termsVersion else { return false }
-        guard acceptedVersion != TermsContent.currentVersion else { return false }
-        
-        guard
-            let acceptedDate = termsVersionDate(from: acceptedVersion),
-            let currentDate = termsVersionDate(from: TermsContent.currentVersion)
-        else {
-            return true
-        }
-        return acceptedDate < currentDate
+        guard let acceptance = termsAcceptance else { return false }
+        let termsOutdated = isVersionOutdated(
+            acceptedVersion: acceptance.termsVersion,
+            currentVersion: TermsContent.currentVersion
+        )
+        let privacyOutdated = isVersionOutdated(
+            acceptedVersion: acceptance.privacyVersion,
+            currentVersion: TermsContent.privacyPolicyVersion
+        )
+        return termsOutdated || privacyOutdated
     }
 }
 
@@ -410,6 +416,24 @@ private extension AuthViewModel {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.date(from: raw.trimmingCharacters(in: .whitespacesAndNewlines))
     }
+
+    func isVersionOutdated(acceptedVersion: String?, currentVersion: String) -> Bool {
+        guard
+            let acceptedVersion,
+            !acceptedVersion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        else {
+            return true
+        }
+
+        guard acceptedVersion != currentVersion else { return false }
+        guard
+            let acceptedDate = termsVersionDate(from: acceptedVersion),
+            let currentDate = termsVersionDate(from: currentVersion)
+        else {
+            return true
+        }
+        return acceptedDate < currentDate
+    }
     
     func formattedTermsDate(_ date: Date) -> String {
         let formatter = DateFormatter()
@@ -436,6 +460,7 @@ extension AuthViewModel {
         if ProcessInfo.processInfo.isPreview {
             termsAcceptance = TermsAcceptanceSnapshot(
                 termsVersion: TermsContent.currentVersion,
+                privacyVersion: TermsContent.privacyPolicyVersion,
                 acceptedAt: Date(),
                 appVersion: "Preview"
             )
@@ -452,6 +477,7 @@ extension AuthViewModel {
         do {
             try await service.storeTermsAcceptanceForCurrentUser(
                 termsVersion: TermsContent.currentVersion,
+                privacyVersion: TermsContent.privacyPolicyVersion,
                 appVersion: appVersionForLegalAudit
             )
             termsAcceptance = try await service.loadTermsAcceptanceForCurrentUser()
@@ -471,6 +497,7 @@ extension AuthViewModel {
             ? nil
             : TermsAcceptanceSnapshot(
                 termsVersion: TermsContent.currentVersion,
+                privacyVersion: TermsContent.privacyPolicyVersion,
                 acceptedAt: Date(),
                 appVersion: "Preview"
             )

@@ -128,9 +128,6 @@
 		036E06B22E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */; };
 		036E06B42E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */; };
 		0371433A2E7200F200A35E04 /* TermSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037143392E7200F200A35E04 /* TermSheet.swift */; };
-		B1C2D3002FA1000100A1A1A1 /* TermsMarkdownParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3032FA1000100A1A1A1 /* TermsMarkdownParser.swift */; };
-		B1C2D3012FA1000100A1A1A1 /* TermsBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3042FA1000100A1A1A1 /* TermsBlockView.swift */; };
-		B1C2D3022FA1000100A1A1A1 /* TermsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3052FA1000100A1A1A1 /* TermsHeader.swift */; };
 		03757F132E60F2A800C5C2C1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */; };
 		0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */; };
 		0384BD6D2E11318D00790AA5 /* PersonLinksView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */; };
@@ -181,7 +178,6 @@
 		03CB4AAA2E18761C0080EE84 /* FavoriteMoviesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB4AA92E18761C0080EE84 /* FavoriteMoviesView.swift */; };
 		03CB4AAC2E1876390080EE84 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB4AAB2E1876390080EE84 /* SearchView.swift */; };
 		03CB4AAE2E1876500080EE84 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB4AAD2E1876500080EE84 /* AccountView.swift */; };
-		A1B2C3D52F70000100ABCDEF /* ChangeEmailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */; };
 		03CC7E242E22F3070045E678 /* DiscoverHorrorPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC7E232E22F3070045E678 /* DiscoverHorrorPreviewData.swift */; };
 		03CC7E262E22F4F30045E678 /* DiscoverContentView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC7E252E22F4F30045E678 /* DiscoverContentView+Previews.swift */; };
 		03CCDE882E5E4136004F3848 /* View+Focus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CCDE872E5E4136004F3848 /* View+Focus.swift */; };
@@ -262,6 +258,10 @@
 		9A1F1B402F01000100A1B2C3 /* SearchValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */; };
 		9A1F1B412F01000100A1B2C3 /* SearchTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */; };
 		9A1F1B422F01000100A1B2C3 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1F1B432F01000100A1B2C3 /* XCTest.framework */; };
+		A1B2C3D52F70000100ABCDEF /* ChangeEmailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */; };
+		B1C2D3002FA1000100A1A1A1 /* TermsMarkdownParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3032FA1000100A1A1A1 /* TermsMarkdownParser.swift */; };
+		B1C2D3012FA1000100A1A1A1 /* TermsBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3042FA1000100A1A1A1 /* TermsBlockView.swift */; };
+		B1C2D3022FA1000100A1A1A1 /* TermsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3052FA1000100A1A1A1 /* TermsHeader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -397,9 +397,6 @@
 		036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+ResetPassword.swift"; sourceTree = "<group>"; };
 		036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ResetPasswordSheet+Previews.swift"; sourceTree = "<group>"; };
 		037143392E7200F200A35E04 /* TermSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermSheet.swift; sourceTree = "<group>"; };
-		B1C2D3032FA1000100A1A1A1 /* TermsMarkdownParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsMarkdownParser.swift; sourceTree = "<group>"; };
-		B1C2D3042FA1000100A1A1A1 /* TermsBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsBlockView.swift; sourceTree = "<group>"; };
-		B1C2D3052FA1000100A1A1A1 /* TermsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsHeader.swift; sourceTree = "<group>"; };
 		03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGenresView.swift; sourceTree = "<group>"; };
 		0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonLinksView+Previews.swift"; sourceTree = "<group>"; };
@@ -451,7 +448,6 @@
 		03CB4AA92E18761C0080EE84 /* FavoriteMoviesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteMoviesView.swift; sourceTree = "<group>"; };
 		03CB4AAB2E1876390080EE84 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		03CB4AAD2E1876500080EE84 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
-		A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailSheet.swift; sourceTree = "<group>"; };
 		03CC7E232E22F3070045E678 /* DiscoverHorrorPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverHorrorPreviewData.swift; sourceTree = "<group>"; };
 		03CC7E252E22F4F30045E678 /* DiscoverContentView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverContentView+Previews.swift"; sourceTree = "<group>"; };
 		03CCDE872E5E4136004F3848 /* View+Focus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Focus.swift"; sourceTree = "<group>"; };
@@ -531,6 +527,10 @@
 		9A1F1B3D2F01000100A1B2C3 /* SearchValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchValidatorTests.swift; sourceTree = "<group>"; };
 		9A1F1B3E2F01000100A1B2C3 /* SearchTestDoubles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTestDoubles.swift; sourceTree = "<group>"; };
 		9A1F1B432F01000100A1B2C3 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		A1B2C3D42F70000100ABCDEF /* ChangeEmailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailSheet.swift; sourceTree = "<group>"; };
+		B1C2D3032FA1000100A1A1A1 /* TermsMarkdownParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsMarkdownParser.swift; sourceTree = "<group>"; };
+		B1C2D3042FA1000100A1A1A1 /* TermsBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsBlockView.swift; sourceTree = "<group>"; };
+		B1C2D3052FA1000100A1A1A1 /* TermsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsHeader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

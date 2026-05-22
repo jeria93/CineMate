@@ -14,6 +14,7 @@ import UIKit
 /// Snapshot of stored terms acceptance for one user.
 struct TermsAcceptanceSnapshot: Equatable {
     let termsVersion: String
+    let privacyVersion: String?
     let acceptedAt: Date?
     let appVersion: String?
 }
@@ -26,6 +27,7 @@ final class FirebaseAuthService {
 
     private enum TermsAcceptanceField {
         static let termsVersion = "termsVersion"
+        static let privacyVersion = "privacyVersion"
         static let acceptedAt = "acceptedAt"
         static let appVersion = "appVersion"
     }
@@ -145,20 +147,20 @@ final class FirebaseAuthService {
     func createOrUpgradeEmailAccountRequiringVerification(
         email: String,
         password: String,
-        acceptedTermsVersion: String? = nil,
+        acceptedTermsVersion: String,
+        acceptedPrivacyVersion: String,
         appVersion: String? = nil
     ) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
 
         let user = try await createOrUpgradeEmailAccount(email: email, password: password)
         do {
-            if let acceptedTermsVersion {
-                try await storeTermsAcceptance(
-                    for: user.uid,
-                    termsVersion: acceptedTermsVersion,
-                    appVersion: appVersion
-                )
-            }
+            try await storeTermsAcceptance(
+                for: user.uid,
+                termsVersion: acceptedTermsVersion,
+                privacyVersion: acceptedPrivacyVersion,
+                appVersion: appVersion
+            )
             try await sendVerificationEmail(to: user)
         } catch {
             try? signOut()
@@ -170,11 +172,17 @@ final class FirebaseAuthService {
     /// Stores current terms acceptance for the signed in user.
     func storeTermsAcceptanceForCurrentUser(
         termsVersion: String,
+        privacyVersion: String,
         appVersion: String? = nil
     ) async throws {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
         guard let uid = currentUserID else { throw AuthServiceError.noCurrentUser }
-        try await storeTermsAcceptance(for: uid, termsVersion: termsVersion, appVersion: appVersion)
+        try await storeTermsAcceptance(
+            for: uid,
+            termsVersion: termsVersion,
+            privacyVersion: privacyVersion,
+            appVersion: appVersion
+        )
     }
 
     /// Loads stored terms acceptance for the signed in user.
@@ -313,9 +321,14 @@ final class FirebaseAuthService {
     private func storeTermsAcceptance(
         for uid: String,
         termsVersion: String,
+        privacyVersion: String,
         appVersion: String?
     ) async throws {
-        let payload = makeTermsAcceptancePayload(termsVersion: termsVersion, appVersion: appVersion)
+        let payload = makeTermsAcceptancePayload(
+            termsVersion: termsVersion,
+            privacyVersion: privacyVersion,
+            appVersion: appVersion
+        )
 
         try await FirestorePaths
             .userDoc(uid: uid, in: Firestore.firestore())
@@ -328,9 +341,12 @@ final class FirebaseAuthService {
             .getDocument()
 
         guard let data = snapshot.data() else { return nil }
-        let version = (data[TermsAcceptanceField.termsVersion] as? String)?
+        let termsVersion = (data[TermsAcceptanceField.termsVersion] as? String)?
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let version, !version.isEmpty else { return nil }
+        guard let termsVersion, !termsVersion.isEmpty else { return nil }
+        let privacyVersion = (data[TermsAcceptanceField.privacyVersion] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedPrivacyVersion = (privacyVersion?.isEmpty == false) ? privacyVersion : nil
 
         let acceptedAtDate = (data[TermsAcceptanceField.acceptedAt] as? Timestamp)?.dateValue()
         let storedAppVersion = (data[TermsAcceptanceField.appVersion] as? String)?
@@ -338,7 +354,8 @@ final class FirebaseAuthService {
         let normalizedAppVersion = (storedAppVersion?.isEmpty == false) ? storedAppVersion : nil
 
         return TermsAcceptanceSnapshot(
-            termsVersion: version,
+            termsVersion: termsVersion,
+            privacyVersion: normalizedPrivacyVersion,
             acceptedAt: acceptedAtDate,
             appVersion: normalizedAppVersion
         )
@@ -346,10 +363,12 @@ final class FirebaseAuthService {
 
     private func makeTermsAcceptancePayload(
         termsVersion: String,
+        privacyVersion: String,
         appVersion: String?
     ) -> [String: Any] {
         var payload: [String: Any] = [
             TermsAcceptanceField.termsVersion: termsVersion,
+            TermsAcceptanceField.privacyVersion: privacyVersion,
             TermsAcceptanceField.acceptedAt: FieldValue.serverTimestamp()
         ]
         if let appVersion, !appVersion.isEmpty {
