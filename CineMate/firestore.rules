@@ -25,14 +25,43 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(uid)).data.acceptedAt is timestamp;
     }
 
-    // Allow a user to read/write their own user doc.
+    function legalAcceptanceFields() {
+      return ["termsVersion", "privacyVersion", "acceptedAt", "appVersion"];
+    }
+
+    function requiredLegalAcceptanceFields() {
+      return ["termsVersion", "privacyVersion", "acceptedAt"];
+    }
+
+    function hasValidLegalAcceptanceValues(data) {
+      return data.keys().hasAll(requiredLegalAcceptanceFields())
+        && data.termsVersion == currentTermsVersion()
+        && data.privacyVersion == currentPrivacyVersion()
+        && data.acceptedAt == request.time
+        && (!("appVersion" in data) || data.appVersion is string);
+    }
+
+    function createsOnlyLegalAcceptanceFields() {
+      return request.resource.data.keys().hasOnly(legalAcceptanceFields())
+        && hasValidLegalAcceptanceValues(request.resource.data);
+    }
+
+    function updatesOnlyLegalAcceptanceFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(legalAcceptanceFields())
+        && hasValidLegalAcceptanceValues(request.resource.data);
+    }
+
+    // Allow a user to read/delete their own user doc.
+    // Client writes are limited to legal acceptance metadata.
     match /users/{uid} {
-      allow read, write: if isOwner(uid);
+      allow read, delete: if isOwner(uid);
+      allow create: if isOwner(uid) && createsOnlyLegalAcceptanceFields();
+      allow update: if isOwner(uid) && updatesOnlyLegalAcceptanceFields();
     }
 
     // Allow reads for the owner.
     // Allow writes only after accepting current legal versions.
-    match /users/{uid}/{document=**} {
+    match /users/{uid}/{collection}/{document=**} {
       allow read: if isOwner(uid);
       allow delete: if isOwner(uid);
       allow create, update: if isOwner(uid) && hasAcceptedCurrentLegalVersions(uid);

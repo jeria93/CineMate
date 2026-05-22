@@ -4,6 +4,13 @@
 # Xcode
 DerivedData/
 *.xcworkspace
+!CineMate/CineMate.xcodeproj/project.xcworkspace/
+CineMate/CineMate.xcodeproj/project.xcworkspace/*
+!CineMate/CineMate.xcodeproj/project.xcworkspace/xcshareddata/
+CineMate/CineMate.xcodeproj/project.xcworkspace/xcshareddata/*
+!CineMate/CineMate.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+CineMate/CineMate.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
+!CineMate/CineMate.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 *.xcuserstate
 *.xcscmblueprint
 *.xcresult
@@ -22,7 +29,6 @@ Build/
 .build/
 .swiftpm/
 Packages/
-Package.resolved
 
 # CocoaPods
 Pods/

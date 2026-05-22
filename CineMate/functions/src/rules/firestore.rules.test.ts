@@ -86,6 +86,59 @@ test("owner can write acceptance metadata on own user document", async () => {
   )
 })
 
+test("owner cannot create user document with non legal fields", async () => {
+  const uid = "alice"
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid),
+      {
+        termsVersion: CURRENT_TERMS_VERSION,
+        privacyVersion: CURRENT_PRIVACY_VERSION,
+        acceptedAt: serverTimestamp(),
+        appVersion: "2.4.1",
+        role: "admin",
+      },
+      { merge: true }
+    )
+  )
+})
+
+test("owner cannot update non legal fields on own user document", async () => {
+  const uid = "alice"
+  await seedTermsAcceptance(uid)
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid),
+      {
+        role: "admin",
+      },
+      { merge: true }
+    )
+  )
+})
+
+test("owner cannot write acceptance metadata with client timestamp", async () => {
+  const uid = "alice"
+  const db = ownerDb(uid)
+
+  await assertFails(
+    setDoc(
+      doc(db, "users", uid),
+      {
+        termsVersion: CURRENT_TERMS_VERSION,
+        privacyVersion: CURRENT_PRIVACY_VERSION,
+        acceptedAt: new Date("2026-04-10T00:00:00Z"),
+        appVersion: "2.4.1",
+      },
+      { merge: true }
+    )
+  )
+})
+
 test("owner cannot write favorites before accepting current terms", async () => {
   const uid = "alice"
   const db = ownerDb(uid)
