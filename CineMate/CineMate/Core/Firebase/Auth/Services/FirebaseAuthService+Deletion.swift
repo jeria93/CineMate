@@ -16,6 +16,10 @@ extension FirebaseAuthService {
 
     // MARK: - Public API
 
+    /// Conservative freshness window used before destructive client-side cleanup.
+    /// Firebase may reject account deletion when the user's last sign-in is not recent.
+    private static let recentLoginWindow: TimeInterval = 5 * 60
+
     enum AccountDeletionResult {
         case success
         case requiresRecentLogin
@@ -28,11 +32,22 @@ extension FirebaseAuthService {
         guard let user = Auth.auth().currentUser else { throw AuthServiceError.noCurrentUser }
         let uid = user.uid
 
-        try await deleteUserData(uid: uid)
+        guard isRecentEnoughForDeletion(user) else {
+            try? signOut()
+            return .requiresRecentLogin
+        }
+
+        let backup = try await deleteUserData(uid: uid)
 
         do {
             try await user.delete()
         } catch {
+            do {
+                try await restoreUserData(from: backup)
+            } catch {
+                logDeletion("restore failed after delete account error \(describe(error: error))")
+            }
+
             guard isRecentLoginRequired(error) else { throw error }
 
             // Sign out so the app can ask for login again.
@@ -53,20 +68,38 @@ extension FirebaseAuthService {
 
     // MARK: - Local cleanup
 
+    private struct DeletedDocument {
+        let reference: DocumentReference
+        let data: [String: Any]
+    }
+
     /// Deletes known Firestore data under users uid.
-    fileprivate func deleteUserData(uid: String) async throws {
+    @discardableResult
+    private func deleteUserData(uid: String) async throws -> [DeletedDocument] {
         guard !ProcessInfo.processInfo.isPreview else { throw PreviewAuthError() }
 
         // Clear known subcollections in small batches, then remove the user doc.
-        try await deleteAllDocuments(in: FirestorePaths.userFavorites(uid: uid))
-        try await deleteAllDocuments(in: FirestorePaths.userFavoritePeople(uid: uid))
-        try await FirestorePaths.userDoc(uid: uid).delete()
+        var deleted: [DeletedDocument] = []
+        deleted += try await deleteAllDocuments(in: FirestorePaths.userFavorites(uid: uid))
+        deleted += try await deleteAllDocuments(in: FirestorePaths.userFavoritePeople(uid: uid))
+
+        let userDoc = FirestorePaths.userDoc(uid: uid)
+        let userSnapshot = try await userDoc.getDocument()
+        if let data = userSnapshot.data() {
+            deleted.append(DeletedDocument(reference: userDoc, data: data))
+        }
+        try await userDoc.delete()
+        return deleted
     }
 
     /// Deletes all docs in a collection in small batches.
     /// Keeps memory stable and stays under Firestore batch limits.
-    private func deleteAllDocuments(in collection: CollectionReference, batchSize: Int = 200) async throws {
+    private func deleteAllDocuments(
+        in collection: CollectionReference,
+        batchSize: Int = 200
+    ) async throws -> [DeletedDocument] {
         var lastSnapshot: QueryDocumentSnapshot?
+        var deleted: [DeletedDocument] = []
 
         while true {
             var query: Query = collection.limit(to: batchSize)
@@ -79,6 +112,7 @@ extension FirebaseAuthService {
 
             let batch = collection.firestore.batch()
             for doc in snap.documents {
+                deleted.append(DeletedDocument(reference: doc.reference, data: doc.data()))
                 batch.deleteDocument(doc.reference)
             }
             try await batch.commit()
@@ -86,6 +120,34 @@ extension FirebaseAuthService {
             lastSnapshot = snap.documents.last
             try Task.checkCancellation()
         }
+
+        return deleted
+    }
+
+    private func restoreUserData(from deleted: [DeletedDocument], batchSize: Int = 200) async throws {
+        guard !deleted.isEmpty else { return }
+
+        for start in stride(from: 0, to: deleted.count, by: batchSize) {
+            let end = min(start + batchSize, deleted.count)
+            guard let firestore = deleted[start..<end].first?.reference.firestore else { continue }
+            let batch = firestore.batch()
+
+            for item in deleted[start..<end] {
+                batch.setData(item.data, forDocument: item.reference)
+            }
+            try await batch.commit()
+        }
+    }
+
+    private func isRecentEnoughForDeletion(_ user: User) -> Bool {
+        if user.isAnonymous { return true }
+        guard let lastSignInDate = user.metadata.lastSignInDate else { return false }
+        return Date().timeIntervalSince(lastSignInDate) <= Self.recentLoginWindow
+    }
+
+    private func describe(error: Error) -> String {
+        let nsError = error as NSError
+        return "domain=\(nsError.domain) code=\(nsError.code) message=\(nsError.localizedDescription)"
     }
 
     private func logDeletion(_ message: String) {
