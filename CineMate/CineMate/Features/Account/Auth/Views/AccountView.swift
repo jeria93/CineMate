@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-/// Account screen with session info and account actions.
+/// Account container that orchestrates account sections, sheets, and async auth actions.
+/// Child section views stay presentation-focused while this view owns navigation and toast flows.
 struct AccountView: View {
     @ObservedObject private var authViewModel: AuthViewModel
     @EnvironmentObject private var navigator: AppNavigator
@@ -23,134 +24,70 @@ struct AccountView: View {
     var body: some View {
         ZStack {
             Form {
-                Section("Session") {
-                    if let uid = authViewModel.currentUID {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Label("Signed in", systemImage: "person.crop.circle.fill")
-                                .font(.headline)
-                            Text("User ID: \(uid.prefix(10))")
-                                .foregroundStyle(Color.appTextSecondary)
-                                .font(.footnote.monospaced())
-                        }
-                    } else {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Label("Signed out", systemImage: "person.crop.circle.badge.xmark")
-                                .font(.headline)
-                            Text("Sign in to manage your account.")
-                                .foregroundStyle(Color.appTextSecondary)
-                        }
-                    }
+                Section {
+                    AccountSummarySectionView(
+                        title: accountSummaryTitle,
+                        detail: accountSummaryDetail,
+                        iconSystemName: accountSummaryIcon,
+                        providerDescription: authViewModel.authProviderDescription,
+                        userID: authViewModel.currentUID.map { String($0.prefix(10)) }
+                    )
                 }
 
                 if authViewModel.isSignedIn {
-                    Section("Provider") {
-                        HStack {
-                            Text("Sign-in method")
-                            Spacer()
-                            Text(authViewModel.authProviderDescription)
-                                .foregroundStyle(Color.appTextSecondary)
-                                .multilineTextAlignment(.trailing)
-                        }
-                    }
-
                     if authViewModel.isGuest {
-                        Section("Guest account") {
-                            Text("Create an account to unlock Discover and Search.")
-                                .foregroundStyle(Color.appTextSecondary)
-
-                            Button("Create Account") {
+                        GuestAccountSectionView(
+                            isAuthenticating: authViewModel.isAuthenticating,
+                            onCreateAccount: {
                                 navigator.goToCreateAccount()
                             }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.appPrimaryAction)
-                            .disabled(authViewModel.isAuthenticating)
-                        }
+                        )
                     }
 
                     if !authViewModel.isGuest {
-                        Section("Email") {
-                            if let email = authViewModel.currentUserEmail {
-                                HStack {
-                                    Text("Current email")
-                                    Spacer()
-                                    Text(email)
-                                        .foregroundStyle(Color.appTextSecondary)
-                                        .multilineTextAlignment(.trailing)
+                        AccountSecuritySectionView(
+                            currentEmail: authViewModel.currentUserEmail,
+                            canChangeEmail: authViewModel.canChangeEmail,
+                            canSendPasswordReset: authViewModel.canSendPasswordReset,
+                            isAuthenticating: authViewModel.isAuthenticating,
+                            onChangeEmail: {
+                                isShowingChangeEmailSheet = true
+                            },
+                            onChangePassword: {
+                                Task {
+                                    switch await authViewModel.sendPasswordResetForCurrentUser() {
+                                    case .sent(let email):
+                                        toastCenter.show("Password reset link sent to \(email).")
+                                    case .unavailable:
+                                        toastCenter.show("Password reset is only available for email sign in.")
+                                    case .failure(let message):
+                                        toastCenter.show(message)
+                                    }
                                 }
                             }
+                        )
 
-                            if authViewModel.canChangeEmail {
-                                Button("Change email") {
-                                    isShowingChangeEmailSheet = true
-                                }
-                                .buttonStyle(.bordered)
-                                .disabled(authViewModel.isAuthenticating)
-                            } else {
-                                Text("Email change is only available for email accounts.")
-                                    .foregroundStyle(Color.appTextSecondary)
-                            }
-                        }
-                    }
-
-                    if !authViewModel.isGuest {
-                        Section("Legal") {
-                            if let summary = authViewModel.acceptedTermsSummaryText {
-                                Text(summary)
-                                    .foregroundStyle(Color.appTextSecondary)
-                            } else {
-                                Text("No saved legal acceptance for this account yet.")
-                                    .foregroundStyle(Color.appTextSecondary)
-                            }
-
-                            Button("View terms") {
+                        AccountLegalSectionView(
+                            summaryText: authViewModel.acceptedTermsSummaryText,
+                            shouldShowAcceptLatest: authViewModel.isAcceptedTermsOutdated
+                            || authViewModel.acceptedTermsSummaryText == nil,
+                            isAuthenticating: authViewModel.isAuthenticating,
+                            onViewTerms: {
                                 isShowingTermsSheet = true
-                            }
-                            .buttonStyle(.bordered)
-                            .disabled(authViewModel.isAuthenticating)
-
-                            if authViewModel.isAcceptedTermsOutdated || authViewModel.acceptedTermsSummaryText == nil {
-                                Button("Accept latest") {
-                                    Task {
-                                        let result = await authViewModel.acceptCurrentTermsVersion()
-                                        handleAcceptTermsResult(result)
-                                    }
+                            },
+                            onAcceptLatest: {
+                                Task {
+                                    let result = await authViewModel.acceptCurrentTermsVersion()
+                                    handleAcceptTermsResult(result)
                                 }
-                                .buttonStyle(.borderedProminent)
-                                .tint(.appPrimaryAction)
-                                .disabled(authViewModel.isAuthenticating)
                             }
-                        }
-
-                        Section("Security") {
-                            if authViewModel.canSendPasswordReset {
-                                if let email = authViewModel.currentUserEmail {
-                                    Text("Reset links are sent to \(email).")
-                                        .foregroundStyle(Color.appTextSecondary)
-                                }
-
-                                Button("Change password") {
-                                    Task {
-                                        switch await authViewModel.sendPasswordResetForCurrentUser() {
-                                        case .sent(let email):
-                                            toastCenter.show("Password reset link sent to \(email).")
-                                        case .unavailable:
-                                            toastCenter.show("Password reset is only available for email sign in.")
-                                        case .failure(let message):
-                                            toastCenter.show(message)
-                                        }
-                                    }
-                                }
-                                .buttonStyle(.bordered)
-                                .disabled(authViewModel.isAuthenticating)
-                            } else {
-                                Text("Password reset is only available for email accounts.")
-                                    .foregroundStyle(Color.appTextSecondary)
-                            }
-                        }
+                        )
                     }
 
-                    Section("Actions") {
-                        Button(authViewModel.isGuest ? "End guest session" : "Sign out") {
+                    AccountSessionSectionView(
+                        isGuest: authViewModel.isGuest,
+                        isAuthenticating: authViewModel.isAuthenticating,
+                        onSignOut: {
                             Task {
                                 let wasGuest = authViewModel.isGuest
                                 await authViewModel.signOut()
@@ -159,10 +96,7 @@ struct AccountView: View {
                                 }
                             }
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.appPrimaryAction)
-                        .disabled(authViewModel.isAuthenticating)
-                    }
+                    )
 
                     if !authViewModel.isGuest {
                         AccountDangerZoneView(
@@ -217,6 +151,35 @@ struct AccountView: View {
         }
     }
 
+    private var accountSummaryTitle: String {
+        if let email = authViewModel.currentUserEmail, !email.isEmpty {
+            return email
+        }
+        if authViewModel.isGuest {
+            return "Guest account"
+        }
+        return authViewModel.isSignedIn ? "Signed in" : "Signed out"
+    }
+
+    private var accountSummaryDetail: String? {
+        if authViewModel.isGuest {
+            return "Create an account to manage your details and unlock more features."
+        }
+        if authViewModel.isSignedIn {
+            return "Manage your email, security, and legal settings."
+        }
+        return "Sign in to manage your account."
+    }
+
+    private var accountSummaryIcon: String {
+        if authViewModel.isGuest {
+            return "person.crop.circle.badge.questionmark"
+        }
+        return authViewModel.isSignedIn
+        ? "person.crop.circle.fill"
+        : "person.crop.circle.badge.xmark"
+    }
+
     private func handleChangeEmailResult(_ result: AuthViewModel.ChangeEmailResult) {
         switch result {
         case .verificationSent(let email):
@@ -231,7 +194,8 @@ struct AccountView: View {
             toastCenter.show(message)
         }
     }
-
+    
+    /// Maps terms acceptance results to short user-facing feedback.
     private func handleAcceptTermsResult(_ result: AuthViewModel.AcceptTermsResult) {
         switch result {
         case .saved:

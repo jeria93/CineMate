@@ -105,6 +105,11 @@
 		035CB2C02E51CA6500892271 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035CB2BF2E51CA6500892271 /* AuthViewModel.swift */; };
 		03618C2F2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C2E2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift */; };
 		03618C312E68E79D00D75D10 /* AccountDangerZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C302E68E79D00D75D10 /* AccountDangerZoneView.swift */; };
+		03618C332E6F100100D75D10 /* AccountSummarySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C322E6F100100D75D10 /* AccountSummarySectionView.swift */; };
+		03618C352E6F100200D75D10 /* GuestAccountSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C342E6F100200D75D10 /* GuestAccountSectionView.swift */; };
+		03618C372E6F100300D75D10 /* AccountSecuritySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C362E6F100300D75D10 /* AccountSecuritySectionView.swift */; };
+		03618C392E6F100400D75D10 /* AccountLegalSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C382E6F100400D75D10 /* AccountLegalSectionView.swift */; };
+		03618C3B2E6F100500D75D10 /* AccountSessionSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C3A2E6F100500D75D10 /* AccountSessionSectionView.swift */; };
 		03623F232E2D6E6E00066528 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03623F222E2D6E6E00066528 /* PreviewHelpers.swift */; };
 		03652CE52DFC56830031DCAD /* MovieDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03652CE42DFC56830031DCAD /* MovieDetail.swift */; };
 		036623782E2065CD008FDE2E /* DiscoverPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036623772E2065CD008FDE2E /* DiscoverPreviewData.swift */; };
@@ -376,6 +381,11 @@
 		035CB2BF2E51CA6500892271 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		03618C2E2E68DB1100D75D10 /* FirebaseAuthService+Deletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FirebaseAuthService+Deletion.swift"; sourceTree = "<group>"; };
 		03618C302E68E79D00D75D10 /* AccountDangerZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDangerZoneView.swift; sourceTree = "<group>"; };
+		03618C322E6F100100D75D10 /* AccountSummarySectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSummarySectionView.swift; sourceTree = "<group>"; };
+		03618C342E6F100200D75D10 /* GuestAccountSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuestAccountSectionView.swift; sourceTree = "<group>"; };
+		03618C362E6F100300D75D10 /* AccountSecuritySectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSecuritySectionView.swift; sourceTree = "<group>"; };
+		03618C382E6F100400D75D10 /* AccountLegalSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLegalSectionView.swift; sourceTree = "<group>"; };
+		03618C3A2E6F100500D75D10 /* AccountSessionSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSessionSectionView.swift; sourceTree = "<group>"; };
 		03623F222E2D6E6E00066528 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 		03652CE42DFC56830031DCAD /* MovieDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetail.swift; sourceTree = "<group>"; };
 		036623772E2065CD008FDE2E /* DiscoverPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPreviewData.swift; sourceTree = "<group>"; };
@@ -1160,6 +1170,11 @@
 		0390F7DC2E5DE36F00E89B82 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				03618C322E6F100100D75D10 /* AccountSummarySectionView.swift */,
+				03618C342E6F100200D75D10 /* GuestAccountSectionView.swift */,
+				03618C362E6F100300D75D10 /* AccountSecuritySectionView.swift */,
+				03618C382E6F100400D75D10 /* AccountLegalSectionView.swift */,
+				03618C3A2E6F100500D75D10 /* AccountSessionSectionView.swift */,
 				0390F7DE2E5DE78200E89B82 /* AuthEmailField.swift */,
 				0390F7E02E5DE79300E89B82 /* AuthPasswordField.swift */,
 				0390F7E22E5DE7AA00E89B82 /* AuthErrorBlock.swift */,
@@ -1903,6 +1918,11 @@
 				03CD89D32E225C39004862AE /* DiscoverContentView.swift in Sources */,
 				03920A692E24F15B00804B06 /* SeeAllMoviesViewModel.swift in Sources */,
 				035CB2C02E51CA6500892271 /* AuthViewModel.swift in Sources */,
+				03618C332E6F100100D75D10 /* AccountSummarySectionView.swift in Sources */,
+				03618C352E6F100200D75D10 /* GuestAccountSectionView.swift in Sources */,
+				03618C372E6F100300D75D10 /* AccountSecuritySectionView.swift in Sources */,
+				03618C392E6F100400D75D10 /* AccountLegalSectionView.swift in Sources */,
+				03618C3B2E6F100500D75D10 /* AccountSessionSectionView.swift in Sources */,
 				0390F7DF2E5DE78200E89B82 /* AuthEmailField.swift in Sources */,
 				03618C312E68E79D00D75D10 /* AccountDangerZoneView.swift in Sources */,
 				03DCB0642E5604890071C3B2 /* PreviewFactory+CreateAccount.swift in Sources */,
