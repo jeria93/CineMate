@@ -12,28 +12,28 @@ import SwiftUI
 struct AccountView: View {
     @ObservedObject private var authViewModel: AuthViewModel
     @EnvironmentObject private var navigator: AppNavigator
-    @EnvironmentObject private var toastCenter: ToastCenter
+    @EnvironmentObject var toastCenter: ToastCenter
     @Environment(\.scenePhase) private var scenePhase
     @State private var isShowingChangeEmailSheet = false
     @State private var isShowingTermsSheet = false
-
+    
     init(viewModel: AuthViewModel) {
         self._authViewModel = ObservedObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         ZStack {
             Form {
                 Section {
                     AccountSummarySectionView(
-                        title: accountSummaryTitle,
-                        detail: accountSummaryDetail,
-                        iconSystemName: accountSummaryIcon,
-                        providerDescription: authViewModel.authProviderDescription,
-                        userID: authViewModel.currentUID.map { String($0.prefix(10)) }
+                        title: accountSummaryContent.title,
+                        detail: accountSummaryContent.detail,
+                        iconSystemName: accountSummaryContent.iconSystemName,
+                        providerDescription: accountSummaryContent.providerDescription,
+                        userID: accountSummaryContent.userID
                     )
                 }
-
+                
                 if authViewModel.isSignedIn {
                     if authViewModel.isGuest {
                         GuestAccountSectionView(
@@ -43,7 +43,7 @@ struct AccountView: View {
                             }
                         )
                     }
-
+                    
                     if !authViewModel.isGuest {
                         AccountSecuritySectionView(
                             currentEmail: authViewModel.currentUserEmail,
@@ -66,7 +66,7 @@ struct AccountView: View {
                                 }
                             }
                         )
-
+                        
                         AccountLegalSectionView(
                             summaryText: authViewModel.acceptedTermsSummaryText,
                             shouldShowAcceptLatest: authViewModel.isAcceptedTermsOutdated
@@ -83,7 +83,7 @@ struct AccountView: View {
                             }
                         )
                     }
-
+                    
                     AccountSessionSectionView(
                         isGuest: authViewModel.isGuest,
                         isAuthenticating: authViewModel.isAuthenticating,
@@ -97,7 +97,7 @@ struct AccountView: View {
                             }
                         }
                     )
-
+                    
                     if !authViewModel.isGuest {
                         AccountDangerZoneView(
                             authViewModel: authViewModel,
@@ -130,7 +130,7 @@ struct AccountView: View {
             .sheet(isPresented: $isShowingTermsSheet) {
                 TermsSheet(markdown: TermsContent.termsMarkdown)
             }
-
+            
             if let error = authViewModel.errorMessage {
                 ErrorMessageView(
                     title: "Authentication Error",
@@ -150,61 +150,15 @@ struct AccountView: View {
             Task { await authViewModel.refreshCurrentUserFromServer() }
         }
     }
-
-    private var accountSummaryTitle: String {
-        if let email = authViewModel.currentUserEmail, !email.isEmpty {
-            return email
-        }
-        if authViewModel.isGuest {
-            return "Guest account"
-        }
-        return authViewModel.isSignedIn ? "Signed in" : "Signed out"
-    }
-
-    private var accountSummaryDetail: String? {
-        if authViewModel.isGuest {
-            return "Create an account to manage your details and unlock more features."
-        }
-        if authViewModel.isSignedIn {
-            return "Manage your email, security, and legal settings."
-        }
-        return "Sign in to manage your account."
-    }
-
-    private var accountSummaryIcon: String {
-        if authViewModel.isGuest {
-            return "person.crop.circle.badge.questionmark"
-        }
-        return authViewModel.isSignedIn
-        ? "person.crop.circle.fill"
-        : "person.crop.circle.badge.xmark"
-    }
-
-    private func handleChangeEmailResult(_ result: AuthViewModel.ChangeEmailResult) {
-        switch result {
-        case .verificationSent(let email):
-            toastCenter.show("Verification link sent to \(email).")
-        case .unavailable:
-            toastCenter.show("Email change is only available for email sign in.")
-        case .cooldown(let seconds):
-            toastCenter.show("Wait \(seconds) seconds before sending another link.")
-        case .needsRecentLogin:
-            toastCenter.show("Please sign in again to change your email.")
-        case .failure(let message):
-            toastCenter.show(message)
-        }
-    }
     
-    /// Maps terms acceptance results to short user-facing feedback.
-    private func handleAcceptTermsResult(_ result: AuthViewModel.AcceptTermsResult) {
-        switch result {
-        case .saved:
-            toastCenter.show("Accepted terms version \(TermsContent.currentVersion).")
-        case .unavailable:
-            toastCenter.show("Terms acceptance not available for this account.")
-        case .failure(let message):
-            toastCenter.show(message)
-        }
+    private var accountSummaryContent: AccountSummaryContent {
+        AccountSummaryContent(
+            isSignedIn: authViewModel.isSignedIn,
+            isGuest: authViewModel.isGuest,
+            currentUserEmail: authViewModel.currentUserEmail,
+            providerDescription: authViewModel.authProviderDescription,
+            currentUID: authViewModel.currentUID
+        )
     }
 }
 
