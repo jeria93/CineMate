@@ -14,6 +14,11 @@ struct AccountSecuritySectionView: View {
     let canChangeEmail: Bool
     let canSendPasswordReset: Bool
     let isAuthenticating: Bool
+    let changeEmailFeedbackMessage: String?
+    let changeEmailFeedbackColor: Color?
+    let passwordResetFeedbackMessage: String?
+    let passwordResetFeedbackColor: Color?
+    let isSendingPasswordReset: Bool
     let onChangeEmail: () -> Void
     let onChangePassword: () -> Void
     
@@ -33,6 +38,13 @@ struct AccountSecuritySectionView: View {
                 Button("Change email", action: onChangeEmail)
                     .buttonStyle(.bordered)
                     .disabled(isAuthenticating)
+                
+                if let changeEmailFeedbackMessage, let changeEmailFeedbackColor {
+                    Text(changeEmailFeedbackMessage)
+                        .font(.footnote)
+                        .foregroundStyle(changeEmailFeedbackColor)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             } else {
                 Text("Email change is only available for email accounts.")
                     .foregroundStyle(Color.appTextSecondary)
@@ -44,9 +56,25 @@ struct AccountSecuritySectionView: View {
                         .foregroundStyle(Color.appTextSecondary)
                 }
                 
-                Button("Change password", action: onChangePassword)
-                    .buttonStyle(.bordered)
-                    .disabled(isAuthenticating)
+                Button(action: onChangePassword) {
+                    if isSendingPasswordReset {
+                        HStack(spacing: SharedUI.Spacing.small) {
+                            ProgressView()
+                            Text("Sending reset link...")
+                        }
+                    } else {
+                        Text("Change password")
+                    }
+                }
+                .buttonStyle(.bordered)
+                .disabled(isAuthenticating)
+                
+                if let passwordResetFeedbackMessage, let passwordResetFeedbackColor {
+                    Text(passwordResetFeedbackMessage)
+                        .font(.footnote)
+                        .foregroundStyle(passwordResetFeedbackColor)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             } else {
                 Text("Password reset is only available for email accounts.")
                     .foregroundStyle(Color.appTextSecondary)

@@ -12,6 +12,9 @@ struct AccountLegalSectionView: View {
     let summaryText: String?
     let shouldShowAcceptLatest: Bool
     let isAuthenticating: Bool
+    let feedbackMessage: String?
+    let feedbackColor: Color?
+    let isAcceptingLatestTerms: Bool
     let onViewTerms: () -> Void
     let onAcceptLatest: () -> Void
     
@@ -30,10 +33,26 @@ struct AccountLegalSectionView: View {
                 .disabled(isAuthenticating)
             
             if shouldShowAcceptLatest {
-                Button("Accept latest", action: onAcceptLatest)
-                    .buttonStyle(.borderedProminent)
-                    .tint(.appPrimaryAction)
-                    .disabled(isAuthenticating)
+                Button(action: onAcceptLatest) {
+                    if isAcceptingLatestTerms {
+                        HStack(spacing: SharedUI.Spacing.small) {
+                            ProgressView()
+                            Text("Saving acceptance...")
+                        }
+                    } else {
+                        Text("Accept latest")
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.appPrimaryAction)
+                .disabled(isAuthenticating)
+            }
+            
+            if let feedbackMessage, let feedbackColor {
+                Text(feedbackMessage)
+                    .font(.footnote)
+                    .foregroundStyle(feedbackColor)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

@@ -8,21 +8,26 @@
 import SwiftUI
 
 /// Feedback helpers kept outside the main view file.
-/// They map async account results to short toast messages without changing view state ownership.
+/// They map async account results to local section feedback without changing view state ownership.
 extension AccountView {
     /// Maps change email results to short user-facing feedback.
     func handleChangeEmailResult(_ result: AuthViewModel.ChangeEmailResult) {
         switch result {
         case .verificationSent(let email):
-            toastCenter.show("Verification link sent to \(email).")
+            changeEmailFeedback = .success("Verification link sent to \(email).")
+            authViewModel.errorMessage = nil
         case .unavailable:
-            toastCenter.show("Email change is only available for email sign in.")
+            changeEmailFeedback = .error("Email change is only available for email sign in.")
+            authViewModel.errorMessage = nil
         case .cooldown(let seconds):
-            toastCenter.show("Wait \(seconds) seconds before sending another link.")
+            changeEmailFeedback = .error("Wait \(seconds) seconds before sending another link.")
+            authViewModel.errorMessage = nil
         case .needsRecentLogin:
-            toastCenter.show("Please sign in again to change your email.")
+            changeEmailFeedback = .error("Please sign in again to change your email.")
+            authViewModel.errorMessage = nil
         case .failure(let message):
-            toastCenter.show(message)
+            changeEmailFeedback = .error(message)
+            authViewModel.errorMessage = nil
         }
     }
     
@@ -30,11 +35,14 @@ extension AccountView {
     func handleAcceptTermsResult(_ result: AuthViewModel.AcceptTermsResult) {
         switch result {
         case .saved:
-            toastCenter.show("Accepted terms version \(TermsContent.currentVersion).")
+            legalFeedback = .success("Accepted terms version \(TermsContent.currentVersion).")
+            authViewModel.errorMessage = nil
         case .unavailable:
-            toastCenter.show("Terms acceptance not available for this account.")
+            legalFeedback = .error("Terms acceptance not available for this account.")
+            authViewModel.errorMessage = nil
         case .failure(let message):
-            toastCenter.show(message)
+            legalFeedback = .error(message)
+            authViewModel.errorMessage = nil
         }
     }
 }

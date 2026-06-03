@@ -10,12 +10,17 @@ import SwiftUI
 /// Account container that orchestrates account sections, sheets, and async auth actions.
 /// Child section views stay presentation-focused while this view owns navigation and toast flows.
 struct AccountView: View {
-    @ObservedObject private var authViewModel: AuthViewModel
+    @ObservedObject var authViewModel: AuthViewModel
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject var toastCenter: ToastCenter
     @Environment(\.scenePhase) private var scenePhase
     @State private var isShowingChangeEmailSheet = false
     @State private var isShowingTermsSheet = false
+    @State var changeEmailFeedback: AccountInlineFeedback?
+    @State var passwordResetFeedback: AccountInlineFeedback?
+    @State var legalFeedback: AccountInlineFeedback?
+    @State var isSendingPasswordReset = false
+    @State var isAcceptingLatestTerms = false
     
     init(viewModel: AuthViewModel) {
         self._authViewModel = ObservedObject(wrappedValue: viewModel)
@@ -34,6 +39,17 @@ struct AccountView: View {
                     )
                 }
                 
+                if let errorMessage = authViewModel.errorMessage, changeEmailFeedback == nil, passwordResetFeedback == nil, legalFeedback == nil {
+                    Section {
+                        AccountErrorMessageView(
+                            message: errorMessage,
+                            onDismiss: {
+                                authViewModel.errorMessage = nil
+                            }
+                        )
+                    }
+                }
+                
                 if authViewModel.isSignedIn {
                     if authViewModel.isGuest {
                         GuestAccountSectionView(
@@ -49,19 +65,32 @@ struct AccountView: View {
                             currentEmail: authViewModel.currentUserEmail,
                             canChangeEmail: authViewModel.canChangeEmail,
                             canSendPasswordReset: authViewModel.canSendPasswordReset,
-                            isAuthenticating: authViewModel.isAuthenticating,
+                            isAuthenticating: isSendingPasswordReset,
+                            changeEmailFeedbackMessage: changeEmailFeedback?.message,
+                            changeEmailFeedbackColor: changeEmailFeedback?.color,
+                            passwordResetFeedbackMessage: passwordResetFeedback?.message,
+                            passwordResetFeedbackColor: passwordResetFeedback?.color,
+                            isSendingPasswordReset: isSendingPasswordReset,
                             onChangeEmail: {
+                                changeEmailFeedback = nil
                                 isShowingChangeEmailSheet = true
                             },
                             onChangePassword: {
                                 Task {
+                                    isSendingPasswordReset = true
+                                    passwordResetFeedback = nil
+                                    defer { isSendingPasswordReset = false }
+                                    
                                     switch await authViewModel.sendPasswordResetForCurrentUser() {
                                     case .sent(let email):
-                                        toastCenter.show("Password reset link sent to \(email).")
+                                        passwordResetFeedback = .success("Password reset link sent to \(email).")
+                                        authViewModel.errorMessage = nil
                                     case .unavailable:
-                                        toastCenter.show("Password reset is only available for email sign in.")
+                                        passwordResetFeedback = .error("Password reset is only available for email sign in.")
+                                        authViewModel.errorMessage = nil
                                     case .failure(let message):
-                                        toastCenter.show(message)
+                                        passwordResetFeedback = .error(message)
+                                        authViewModel.errorMessage = nil
                                     }
                                 }
                             }
@@ -71,12 +100,19 @@ struct AccountView: View {
                             summaryText: authViewModel.acceptedTermsSummaryText,
                             shouldShowAcceptLatest: authViewModel.isAcceptedTermsOutdated
                             || authViewModel.acceptedTermsSummaryText == nil,
-                            isAuthenticating: authViewModel.isAuthenticating,
+                            isAuthenticating: isAcceptingLatestTerms,
+                            feedbackMessage: legalFeedback?.message,
+                            feedbackColor: legalFeedback?.color,
+                            isAcceptingLatestTerms: isAcceptingLatestTerms,
                             onViewTerms: {
                                 isShowingTermsSheet = true
                             },
                             onAcceptLatest: {
                                 Task {
+                                    isAcceptingLatestTerms = true
+                                    legalFeedback = nil
+                                    defer { isAcceptingLatestTerms = false }
+                                    
                                     let result = await authViewModel.acceptCurrentTermsVersion()
                                     handleAcceptTermsResult(result)
                                 }
@@ -115,7 +151,6 @@ struct AccountView: View {
                 }
             }
             .navigationTitle("Account")
-            .disabled(authViewModel.isAuthenticating)
             .sheet(isPresented: $isShowingChangeEmailSheet) {
                 ChangeEmailSheet(
                     currentEmail: authViewModel.currentUserEmail,
@@ -129,16 +164,6 @@ struct AccountView: View {
             }
             .sheet(isPresented: $isShowingTermsSheet) {
                 TermsSheet(markdown: TermsContent.termsMarkdown)
-            }
-            
-            if let error = authViewModel.errorMessage {
-                ErrorMessageView(
-                    title: "Authentication Error",
-                    message: error,
-                    onRetry: { authViewModel.errorMessage = nil }
-                )
-                .transition(.opacity)
-                .zIndex(1)
             }
         }
         .animation(.default, value: authViewModel.errorMessage != nil)
