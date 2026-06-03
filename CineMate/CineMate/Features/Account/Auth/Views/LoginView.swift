@@ -14,14 +14,14 @@ struct LoginView: View {
     @EnvironmentObject private var toastCenter: ToastCenter
     @Environment(\.colorScheme) private var colorScheme
     private let onRegister: () -> Void
-
+    
     @State private var showResetSheet = false
     @FocusState private var emailFocused: Bool
     @FocusState private var passwordFocused: Bool
     private let authProviderButtonSize: CGFloat = 48
     private let authProviderCornerRadius: CGFloat = 12
     private let contentMaxWidth: CGFloat = 380
-
+    
     init(
         viewModel: LoginViewModel,
         onRegister: @escaping () -> Void = {}
@@ -29,50 +29,50 @@ struct LoginView: View {
         _viewModel = .init(wrappedValue: viewModel)
         self.onRegister = onRegister
     }
-
+    
     var body: some View {
         ZStack {
             LinearGradient(colors: [AuthTheme.curtainTop, AuthTheme.curtainBottom],
                            startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
             AuthTheme.curtainContrastOverlay.ignoresSafeArea()
-
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    loginHeader
-                        .padding(.top, 12)
-
-                    Spacer()
-
-                    VStack(alignment: .leading, spacing: 24) {
-                        AuthEmailField(
-                            text: $viewModel.email,
-                            isDisabled: viewModel.isAuthenticating,
-                            submitLabel: .next,
-                            onSubmit: { passwordFocused = true },
-                            isFocused: $emailFocused
-                        )
-                        if let hint = viewModel.emailHelperText {
-                            ValidationMessageView(message: hint, palette: .curtain)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-
-                        AuthPasswordField(
-                            text: $viewModel.password,
-                            isDisabled: viewModel.isAuthenticating,
-                            mode: .login,
-                            submitLabel: .go,
-                            onSubmit: {
-                                clearFieldFocus()
-                                Task { await viewModel.login() }
-                            },
-                            isFocused: $passwordFocused
-                        )
-                        if let hint = viewModel.passwordHelperText {
-                            ValidationMessageView(message: hint, palette: .curtain)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-
+            
+            VStack(spacing: 24) {
+                loginHeader
+                    .padding(.top, 28)
+                
+                Spacer()
+                
+                VStack(alignment: .leading, spacing: 24) {
+                    AuthEmailField(
+                        text: $viewModel.email,
+                        isDisabled: viewModel.isAuthenticating,
+                        submitLabel: .next,
+                        onSubmit: { passwordFocused = true },
+                        isFocused: $emailFocused
+                    )
+                    if let hint = viewModel.emailHelperText {
+                        ValidationMessageView(message: hint, palette: .curtain)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    
+                    AuthPasswordField(
+                        text: $viewModel.password,
+                        isDisabled: viewModel.isAuthenticating,
+                        mode: .login,
+                        submitLabel: .go,
+                        onSubmit: {
+                            clearFieldFocus()
+                            Task { await viewModel.login() }
+                        },
+                        isFocused: $passwordFocused
+                    )
+                    if let hint = viewModel.passwordHelperText {
+                        ValidationMessageView(message: hint, palette: .curtain)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: SharedUI.Spacing.medium) {
                         Button("Forgot password?") {
                             clearFieldFocus()
                             showResetSheet = true
@@ -82,7 +82,7 @@ struct LoginView: View {
                         .foregroundStyle(AuthTheme.linkOnCurtain)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .disabled(viewModel.isAuthenticating)
-
+                        
                         Button {
                             clearFieldFocus()
                             Task { await viewModel.login() }
@@ -93,7 +93,7 @@ struct LoginView: View {
                         .controlSize(.large)
                         .frame(height: 48)
                         .disabled(viewModel.isAuthenticating)
-
+                        
                         if let message = viewModel.errorMessage {
                             AuthErrorBlock(
                                 message: message,
@@ -108,75 +108,74 @@ struct LoginView: View {
                                 }
                             }
                         }
-
-                        OrDivider(text: "or continue with")
-
-                        HStack(spacing: 16) {
-                            GoogleSignInButton(
-                                scheme: colorScheme == .dark ? .dark : .light,
-                                style: .icon,
-                                state: viewModel.isAuthenticating ? .disabled : .normal
-                            ) {
-                                clearFieldFocus()
-                                Task { await viewModel.signInWithGoogle() }
-                            }
-                            .frame(width: authProviderButtonSize, height: authProviderButtonSize)
-                            .clipShape(
-                                RoundedRectangle(
-                                    cornerRadius: authProviderCornerRadius,
-                                    style: .continuous
-                                )
-                            )
-                            .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
-                            .accessibilityLabel("Sign in with Google")
-
-                            Button {
-                                clearFieldFocus()
-                                Task { await viewModel.continueAsGuest() }
-                            } label: {
-                                Image(systemName: "person.crop.circle.badge.questionmark")
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundStyle(Color.tmdbNavy)
-                                    .frame(width: authProviderButtonSize, height: authProviderButtonSize)
-                                    .background(
-                                        RoundedRectangle(
-                                            cornerRadius: authProviderCornerRadius,
-                                            style: .continuous
-                                        )
-                                        .fill(Color.white)
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(
-                                            cornerRadius: authProviderCornerRadius,
-                                            style: .continuous
-                                        )
-                                        .stroke(Color.white.opacity(0.78), lineWidth: 1)
-                                    )
-                                    .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
-                            }
-                            .buttonStyle(.plain)
-                            .frame(width: authProviderButtonSize, height: authProviderButtonSize)
-                            .disabled(viewModel.isAuthenticating)
-                            .accessibilityLabel("Continue as guest")
-                        }
-                        .frame(maxWidth: .infinity)
-
-                        Text("Use Google for your account, or continue as guest without signing up.")
-                            .font(.caption)
-                            .foregroundStyle(AuthTheme.textOnCurtainSecondary)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 2)
                     }
-                    .frame(maxWidth: contentMaxWidth)
-                    .padding(.horizontal, 20)
-
+                    
+                    OrDivider(text: "or continue with")
+                    
+                    HStack(spacing: 16) {
+                        GoogleSignInButton(
+                            scheme: colorScheme == .dark ? .dark : .light,
+                            style: .icon,
+                            state: viewModel.isAuthenticating ? .disabled : .normal
+                        ) {
+                            clearFieldFocus()
+                            Task { await viewModel.signInWithGoogle() }
+                        }
+                        .frame(width: authProviderButtonSize, height: authProviderButtonSize)
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: authProviderCornerRadius,
+                                style: .continuous
+                            )
+                        )
+                        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+                        .accessibilityLabel("Sign in with Google")
+                        
+                        Button {
+                            clearFieldFocus()
+                            Task { await viewModel.continueAsGuest() }
+                        } label: {
+                            Image(systemName: "person.crop.circle.badge.questionmark")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundStyle(Color.tmdbNavy)
+                                .frame(width: authProviderButtonSize, height: authProviderButtonSize)
+                                .background(
+                                    RoundedRectangle(
+                                        cornerRadius: authProviderCornerRadius,
+                                        style: .continuous
+                                    )
+                                    .fill(Color.white)
+                                )
+                                .overlay(
+                                    RoundedRectangle(
+                                        cornerRadius: authProviderCornerRadius,
+                                        style: .continuous
+                                    )
+                                    .stroke(Color.white.opacity(0.78), lineWidth: 1)
+                                )
+                                .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(width: authProviderButtonSize, height: authProviderButtonSize)
+                        .disabled(viewModel.isAuthenticating)
+                        .accessibilityLabel("Continue as guest")
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Text("Use Google for your account, or continue as guest without signing up.")
+                        .font(.caption)
+                        .foregroundStyle(AuthTheme.textOnCurtainSecondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 2)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+                .frame(maxWidth: contentMaxWidth)
+                .padding(.horizontal, 20)
+                
+                Spacer()
             }
-            .scrollDismissesKeyboard(.interactively)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .padding(.bottom, 20)
             .contentShape(Rectangle())
             .simultaneousGesture(
                 TapGesture().onEnded {
@@ -214,7 +213,7 @@ struct LoginView: View {
                 .padding(.bottom, 10)
         }
     }
-
+    
     @ViewBuilder
     private var loginHeader: some View {
 #if DEBUG
@@ -223,7 +222,7 @@ struct LoginView: View {
         AuthHeader()
 #endif
     }
-
+    
     private var registerPrompt: some View {
         HStack(spacing: 6) {
             Text("Don’t have an account?")
@@ -241,12 +240,12 @@ struct LoginView: View {
         .font(.footnote)
         .frame(maxWidth: .infinity)
     }
-
+    
     private func clearFieldFocus() {
         emailFocused = false
         passwordFocused = false
     }
-
+    
 #if DEBUG
     private func applyDebugCredentials() {
         guard let email = DebugLoginCredentials.email,

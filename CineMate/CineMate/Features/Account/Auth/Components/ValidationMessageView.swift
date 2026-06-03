@@ -30,8 +30,9 @@ struct ValidationMessageView: View {
         Text(message)
             .font(.footnote)
             .foregroundStyle(textColor)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal)
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, SharedUI.Spacing.medium)
             .padding(.top, 4)
     }
 }
