@@ -11,7 +11,7 @@ struct LoadingView: View {
     let title: String
     
     var body: some View {
-        OverlayContainer(backdrop: .material) {
+        OverlayContainer(backdrop: .dimmed(0.18)) {
             OverlayCard {
                 ProgressView()
                     .progressViewStyle(.circular)

@@ -15,6 +15,7 @@ import SwiftUI
 final class AppNavigator: ObservableObject {
     /// The current navigation path that SwiftUI observes.
     @Published var path: [AppRoute] = []
+    private var deferredResetTask: Task<Void, Never>?
     
     // MARK: - Public navigation helpers
     
@@ -62,6 +63,19 @@ final class AppNavigator: ObservableObject {
     /// Clear the entire navigation stack (e.g., when switching tabs).
     func reset(reason: String = "manual") {
         replacePath(with: [], reason: reason)
+    }
+    
+    /// Clears the navigation stack on the next main-actor turn.
+    /// This avoids mutating `NavigationStack` state in the same frame as
+    /// higher-level root view transitions such as auth-gate swaps.
+    func resetDeferred(reason: String = "manual") {
+        deferredResetTask?.cancel()
+        deferredResetTask = Task { @MainActor [weak self] in
+            await Task.yield()
+            guard let self, !Task.isCancelled else { return }
+            self.reset(reason: reason)
+            self.deferredResetTask = nil
+        }
     }
     
     /// Replace the entire navigation path with a new one.

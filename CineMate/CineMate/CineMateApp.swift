@@ -32,13 +32,13 @@ import AppIntents
 struct CineMate: App {
     // Global enum-based navigation (bound to `NavigationStack` in RootView)
     @StateObject private var navigator = AppNavigator()
-
+    
     // Lightweight global toast service
     @StateObject private var toastCenter = ToastCenter()
-
+    
     // Shared services (network/auth)
     private let authService: FirebaseAuthService
-
+    
     // Long-lived view models (owned by the App)
     @StateObject private var movieViewModel: MovieViewModel
     @StateObject private var castViewModel: CastViewModel
@@ -48,18 +48,18 @@ struct CineMate: App {
     @StateObject private var personViewModel: PersonViewModel
     @StateObject private var favoritePeopleViewModel: FavoritePeopleViewModel
     @StateObject private var authViewModel: AuthViewModel
-
+    
     /// Build the DI graph (services -> view models).
     /// `@StateObject` ensures each VM is created once and reused.
     init() {
         // Order is enforced once at app-level bootstrap.
         AppBootstrap.ensureConfigured()
-
+        
         let repo = MovieRepository()
         let auth = FirebaseAuthService()
         let authVM = AuthViewModel(service: auth)
         self.authService = auth
-
+        
         // Create VMs that depend on the shared services
         _movieViewModel          = StateObject(wrappedValue: MovieViewModel(repository: repo))
         _castViewModel           = StateObject(wrappedValue: CastViewModel(repository: repo))
@@ -77,7 +77,7 @@ struct CineMate: App {
             wrappedValue: FavoriteMoviesViewModel(authService: auth)
         )
     }
-
+    
     var body: some Scene {
         WindowGroup {
             appRoot
@@ -90,7 +90,7 @@ struct CineMate: App {
                 .handleGoogleSignInURL()
         }
     }
-
+    
     @ViewBuilder
     private var appRoot: some View {
         switch authGateState {
@@ -100,11 +100,11 @@ struct CineMate: App {
             SignedOutRootView(authService: authService, onSignedIn: handleSignIn)
         }
     }
-
+    
     private var authGateState: AuthGateState {
         authViewModel.currentUID == nil ? .signedOut : .signedIn
     }
-
+    
     private var signedInRoot: some View {
         RootView(
             movieVM: movieViewModel,
@@ -118,7 +118,7 @@ struct CineMate: App {
             authService: authService
         )
     }
-
+    
     private func handleSignIn(_ uid: String) {
         authViewModel.errorMessage = nil
         authViewModel.isAuthenticating = false
@@ -126,18 +126,18 @@ struct CineMate: App {
             authViewModel.currentUID = uid
         }
     }
-
+    
     private func handleSessionTransition(from oldUID: String?, to newUID: String?) {
         let fromSignedIn = oldUID != nil
         let toSignedIn = newUID != nil
         guard fromSignedIn != toSignedIn else { return }
-
+        
         let fromState = fromSignedIn ? "signedIn" : "signedOut"
         let toState = toSignedIn ? "signedIn" : "signedOut"
         log("auth gate transition \(fromState) -> \(toState)")
-        navigator.reset(reason: "auth gate transition \(fromState) -> \(toState)")
+        navigator.resetDeferred(reason: "auth gate transition \(fromState) -> \(toState)")
     }
-
+    
     private func log(_ message: String) {
 #if DEBUG
         print("[App][Nav][AuthGate] \(message)")
@@ -158,16 +158,16 @@ private struct SignedOutRootView: View {
     @EnvironmentObject private var toastCenter: ToastCenter
     @State private var path: [SignedOutRoute] = []
     @StateObject private var loginViewModel: LoginViewModel
-
+    
     private let authService: FirebaseAuthService
-
+    
     init(authService: FirebaseAuthService, onSignedIn: @escaping (String) -> Void) {
         self.authService = authService
         _loginViewModel = StateObject(
             wrappedValue: LoginViewModel(service: authService, onSuccess: onSignedIn)
         )
     }
-
+    
     var body: some View {
         NavigationStack(path: $path) {
             LoginView(
@@ -198,25 +198,25 @@ private struct SignedOutRootView: View {
 private enum AppBootstrap {
     private static let lock = NSLock()
     private static var didRun = false
-
+    
     static func ensureConfigured() {
         guard !ProcessInfo.processInfo.isPreview else { return }
-
+        
         lock.lock()
         defer { lock.unlock() }
-
+        
         guard !didRun else {
             log("bootstrap skipped (already completed)")
             return
         }
-
+        
         log("bootstrap start")
         FirebaseBootstrap.ensureConfigured()
         GoogleSignInBootstrap.ensureConfigured()
         didRun = true
         log("bootstrap complete")
     }
-
+    
     private static func log(_ message: String) {
 #if DEBUG
         print("[App][Bootstrap] \(message)")
