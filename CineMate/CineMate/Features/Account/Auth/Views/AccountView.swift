@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
+import UIKit
 
-/// Owns account navigation, sheet presentation, and local feedback for async auth actions.
+/// Owns account navigation, sheet presentation, copy actions, server refresh, and local feedback.
 /// Child section views stay presentation-focused.
 struct AccountView: View {
     @ObservedObject var authViewModel: AuthViewModel
@@ -21,6 +22,8 @@ struct AccountView: View {
     @State var legalFeedback: AccountInlineFeedback?
     @State var isSendingPasswordReset = false
     @State var isAcceptingLatestTerms = false
+    @State private var isRefreshingAccount = false
+    @State private var lastAccountRefreshDate: Date?
 
     init(viewModel: AuthViewModel) {
         self._authViewModel = ObservedObject(wrappedValue: viewModel)
@@ -35,7 +38,15 @@ struct AccountView: View {
                         detail: accountSummaryContent.detail,
                         iconSystemName: accountSummaryContent.iconSystemName,
                         providerDescription: accountSummaryContent.providerDescription,
-                        userID: accountSummaryContent.userID
+                        userID: accountSummaryContent.userID,
+                        copyEmail: copyableEmail,
+                        copyUserID: authViewModel.currentUID,
+                        onCopyEmail: { value in
+                            copyToPasteboard(value, toastMessage: "Email copied.")
+                        },
+                        onCopyUserID: { value in
+                            copyToPasteboard(value, toastMessage: "User ID copied.")
+                        }
                     )
                 }
 
@@ -90,7 +101,9 @@ struct AccountView: View {
 
                                     switch await authViewModel.sendPasswordResetForCurrentUser() {
                                     case .sent(let email):
-                                        passwordResetFeedback = .success("Password reset link sent to \(email).")
+                                        passwordResetFeedback = .success(
+                                            "Password reset link sent to \(email). Check your inbox."
+                                        )
                                         authViewModel.errorMessage = nil
                                     case .unavailable:
                                         passwordResetFeedback = .error("Password reset is only available for email sign in.")
@@ -111,6 +124,7 @@ struct AccountView: View {
                             ),
                             acceptedTermsVersionText: authViewModel.acceptedTermsVersionText,
                             acceptedPrivacyVersionText: authViewModel.acceptedPrivacyVersionText,
+                            lastCheckedText: accountLastCheckedText,
                             shouldShowAcceptLatest: authViewModel.isAcceptedTermsOutdated
                             || authViewModel.acceptedTermsSummaryText == nil,
                             isAuthenticating: isAcceptingLatestTerms,
@@ -164,6 +178,26 @@ struct AccountView: View {
                 }
             }
             .navigationTitle("Account")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task { await refreshAccountState(showToast: true) }
+                    } label: {
+                        if isRefreshingAccount {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Label("Refresh account", systemImage: "arrow.clockwise")
+                        }
+                    }
+                    .disabled(
+                        isRefreshingAccount
+                        || authViewModel.isAuthenticating
+                        || !authViewModel.isSignedIn
+                    )
+                    .accessibilityLabel("Refresh account")
+                }
+            }
             .sheet(isPresented: $isShowingChangeEmailSheet) {
                 ChangeEmailSheet(
                     currentEmail: authViewModel.currentUserEmail,
@@ -181,11 +215,11 @@ struct AccountView: View {
         }
         .animation(.default, value: authViewModel.errorMessage != nil)
         .task(id: authViewModel.currentUID) {
-            await authViewModel.refreshTermsAcceptance()
+            await refreshAccountState(showToast: false)
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
-            Task { await authViewModel.refreshCurrentUserFromServer() }
+            Task { await refreshAccountState(showToast: false) }
         }
     }
 
@@ -197,6 +231,41 @@ struct AccountView: View {
             providerDescription: authViewModel.authProviderDescription,
             currentUID: authViewModel.currentUID
         )
+    }
+
+    private var copyableEmail: String? {
+        guard let email = authViewModel.currentUserEmail?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !email.isEmpty else {
+            return nil
+        }
+        return email
+    }
+
+    private var accountLastCheckedText: String? {
+        lastAccountRefreshDate?.formatted(date: .abbreviated, time: .shortened)
+    }
+
+    /// Refreshes server-backed account state while avoiding duplicate refresh tasks.
+    @MainActor
+    private func refreshAccountState(showToast: Bool) async {
+        guard authViewModel.isSignedIn else { return }
+        guard !isRefreshingAccount else { return }
+
+        isRefreshingAccount = true
+        defer { isRefreshingAccount = false }
+
+        await authViewModel.refreshCurrentUserFromServer()
+        lastAccountRefreshDate = Date()
+
+        if showToast {
+            toastCenter.show("Account refreshed.")
+        }
+    }
+
+    @MainActor
+    private func copyToPasteboard(_ value: String, toastMessage: String) {
+        UIPasteboard.general.string = value
+        toastCenter.show(toastMessage)
     }
 }
 

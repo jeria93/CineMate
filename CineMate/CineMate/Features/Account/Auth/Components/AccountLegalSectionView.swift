@@ -7,11 +7,12 @@
 
 import SwiftUI
 
-/// Shows legal acceptance status, stored versions, and local feedback for terms actions.
+/// Shows legal acceptance status, stored versions, refresh metadata, and local feedback.
 struct AccountLegalSectionView: View {
     let status: AccountLegalStatus
     let acceptedTermsVersionText: String?
     let acceptedPrivacyVersionText: String?
+    let lastCheckedText: String?
     let shouldShowAcceptLatest: Bool
     let isAuthenticating: Bool
     let feedbackMessage: String?
@@ -40,6 +41,10 @@ struct AccountLegalSectionView: View {
                 
                 if let acceptedAtText = status.acceptedAtText {
                     metadataRow(title: "Accepted", value: acceptedAtText)
+                }
+                
+                if let lastCheckedText {
+                    metadataRow(title: "Last checked", value: lastCheckedText)
                 }
             }
             

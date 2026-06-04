@@ -14,7 +14,7 @@ extension AccountView {
     func handleChangeEmailResult(_ result: AuthViewModel.ChangeEmailResult) {
         switch result {
         case .verificationSent(let email):
-            changeEmailFeedback = .success("Verification link sent to \(email).")
+            changeEmailFeedback = .success("Verification link sent to \(email). Check your inbox.")
             authViewModel.errorMessage = nil
         case .unavailable:
             changeEmailFeedback = .error("Email change is only available for email sign in.")
@@ -35,7 +35,7 @@ extension AccountView {
     func handleAcceptTermsResult(_ result: AuthViewModel.AcceptTermsResult) {
         switch result {
         case .saved:
-            legalFeedback = .success("Accepted terms version \(TermsContent.currentVersion).")
+            legalFeedback = .success("Legal status updated to terms \(TermsContent.currentVersion).")
             authViewModel.errorMessage = nil
         case .unavailable:
             legalFeedback = .error("Terms acceptance not available for this account.")
