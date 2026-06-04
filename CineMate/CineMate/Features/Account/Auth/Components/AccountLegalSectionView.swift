@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-/// Legal acceptance section for viewing current status and accepting newer terms.
+/// Shows legal acceptance status, stored versions, and local feedback for terms actions.
 struct AccountLegalSectionView: View {
-    let summaryText: String?
+    let status: AccountLegalStatus
+    let acceptedTermsVersionText: String?
+    let acceptedPrivacyVersionText: String?
     let shouldShowAcceptLatest: Bool
     let isAuthenticating: Bool
     let feedbackMessage: String?
@@ -20,12 +22,25 @@ struct AccountLegalSectionView: View {
     
     var body: some View {
         Section("Legal") {
-            if let summaryText {
-                Text(summaryText)
-                    .foregroundStyle(Color.appTextSecondary)
-            } else {
-                Text("No saved legal acceptance for this account yet.")
-                    .foregroundStyle(Color.appTextSecondary)
+            statusHeader(
+                title: status.title,
+                detail: status.detail,
+                iconSystemName: status.iconSystemName,
+                tint: status.tint
+            )
+            
+            VStack(alignment: .leading, spacing: SharedUI.Spacing.xSmall) {
+                if let acceptedTermsVersionText {
+                    metadataRow(title: "Terms", value: acceptedTermsVersionText)
+                }
+                
+                if let acceptedPrivacyVersionText {
+                    metadataRow(title: "Privacy", value: acceptedPrivacyVersionText)
+                }
+                
+                if let acceptedAtText = status.acceptedAtText {
+                    metadataRow(title: "Accepted", value: acceptedAtText)
+                }
             }
             
             Button("View terms", action: onViewTerms)
@@ -44,7 +59,7 @@ struct AccountLegalSectionView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.appPrimaryAction)
+                .tint(Color.appPrimaryAction)
                 .disabled(isAuthenticating)
             }
             
@@ -54,6 +69,50 @@ struct AccountLegalSectionView: View {
                     .foregroundStyle(feedbackColor)
                     .fixedSize(horizontal: false, vertical: true)
             }
+        }
+    }
+}
+
+private extension AccountLegalSectionView {
+    @ViewBuilder
+    func statusHeader(
+        title: String,
+        detail: String,
+        iconSystemName: String,
+        tint: Color
+    ) -> some View {
+        HStack(alignment: .top, spacing: SharedUI.Spacing.medium) {
+            Image(systemName: iconSystemName)
+                .font(.title3)
+                .foregroundStyle(tint)
+                .frame(width: SharedUI.Size.iconButton)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.appTextPrimary)
+                
+                Text(detail)
+                    .font(.footnote)
+                    .foregroundStyle(Color.appTextSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func metadataRow(title: String, value: String) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(title)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(Color.appTextSecondary)
+            
+            Spacer(minLength: SharedUI.Spacing.large)
+            
+            Text(value)
+                .font(.footnote)
+                .foregroundStyle(Color.appTextPrimary)
+                .multilineTextAlignment(.trailing)
         }
     }
 }

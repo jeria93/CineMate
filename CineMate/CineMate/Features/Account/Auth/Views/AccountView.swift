@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-/// Account container that orchestrates account sections, sheets, and async auth actions.
-/// Child section views stay presentation-focused while this view owns navigation and toast flows.
+/// Owns account navigation, sheet presentation, and local feedback for async auth actions.
+/// Child section views stay presentation-focused.
 struct AccountView: View {
     @ObservedObject var authViewModel: AuthViewModel
     @EnvironmentObject private var navigator: AppNavigator
@@ -21,11 +21,11 @@ struct AccountView: View {
     @State var legalFeedback: AccountInlineFeedback?
     @State var isSendingPasswordReset = false
     @State var isAcceptingLatestTerms = false
-    
+
     init(viewModel: AuthViewModel) {
         self._authViewModel = ObservedObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
         ZStack {
             Form {
@@ -38,8 +38,11 @@ struct AccountView: View {
                         userID: accountSummaryContent.userID
                     )
                 }
-                
-                if let errorMessage = authViewModel.errorMessage, changeEmailFeedback == nil, passwordResetFeedback == nil, legalFeedback == nil {
+
+                if let errorMessage = authViewModel.errorMessage,
+                   changeEmailFeedback == nil,
+                   passwordResetFeedback == nil,
+                   legalFeedback == nil {
                     Section {
                         AccountErrorMessageView(
                             message: errorMessage,
@@ -49,7 +52,7 @@ struct AccountView: View {
                         )
                     }
                 }
-                
+
                 if authViewModel.isSignedIn {
                     if authViewModel.isGuest {
                         GuestAccountSectionView(
@@ -59,10 +62,14 @@ struct AccountView: View {
                             }
                         )
                     }
-                    
+
                     if !authViewModel.isGuest {
                         AccountSecuritySectionView(
                             currentEmail: authViewModel.currentUserEmail,
+                            status: AccountSecurityStatus(
+                                canChangeEmail: authViewModel.canChangeEmail,
+                                canSendPasswordReset: authViewModel.canSendPasswordReset
+                            ),
                             canChangeEmail: authViewModel.canChangeEmail,
                             canSendPasswordReset: authViewModel.canSendPasswordReset,
                             isAuthenticating: isSendingPasswordReset,
@@ -80,7 +87,7 @@ struct AccountView: View {
                                     isSendingPasswordReset = true
                                     passwordResetFeedback = nil
                                     defer { isSendingPasswordReset = false }
-                                    
+
                                     switch await authViewModel.sendPasswordResetForCurrentUser() {
                                     case .sent(let email):
                                         passwordResetFeedback = .success("Password reset link sent to \(email).")
@@ -95,9 +102,15 @@ struct AccountView: View {
                                 }
                             }
                         )
-                        
+
                         AccountLegalSectionView(
-                            summaryText: authViewModel.acceptedTermsSummaryText,
+                            status: AccountLegalStatus(
+                                summaryText: authViewModel.acceptedTermsSummaryText,
+                                acceptedAtText: authViewModel.acceptedTermsAtText,
+                                isOutdated: authViewModel.isAcceptedTermsOutdated
+                            ),
+                            acceptedTermsVersionText: authViewModel.acceptedTermsVersionText,
+                            acceptedPrivacyVersionText: authViewModel.acceptedPrivacyVersionText,
                             shouldShowAcceptLatest: authViewModel.isAcceptedTermsOutdated
                             || authViewModel.acceptedTermsSummaryText == nil,
                             isAuthenticating: isAcceptingLatestTerms,
@@ -112,14 +125,14 @@ struct AccountView: View {
                                     isAcceptingLatestTerms = true
                                     legalFeedback = nil
                                     defer { isAcceptingLatestTerms = false }
-                                    
+
                                     let result = await authViewModel.acceptCurrentTermsVersion()
                                     handleAcceptTermsResult(result)
                                 }
                             }
                         )
                     }
-                    
+
                     AccountSessionSectionView(
                         isGuest: authViewModel.isGuest,
                         isAuthenticating: authViewModel.isAuthenticating,
@@ -133,7 +146,7 @@ struct AccountView: View {
                             }
                         }
                     )
-                    
+
                     if !authViewModel.isGuest {
                         AccountDangerZoneView(
                             authViewModel: authViewModel,
@@ -175,7 +188,7 @@ struct AccountView: View {
             Task { await authViewModel.refreshCurrentUserFromServer() }
         }
     }
-    
+
     private var accountSummaryContent: AccountSummaryContent {
         AccountSummaryContent(
             isSignedIn: authViewModel.isSignedIn,
