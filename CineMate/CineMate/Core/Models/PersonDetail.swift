@@ -10,6 +10,23 @@ import Foundation
 /// Detailed information about a person (e.g. actor, director).
 /// Endpoint: https://developer.themoviedb.org/reference/person-details
 struct PersonDetail: Codable, Identifiable {
+    private enum Gender: Int {
+        case notSpecified = 0
+        case female = 1
+        case male = 2
+
+        var displayText: String {
+            switch self {
+            case .female:
+                return "Female"
+            case .male:
+                return "Male"
+            case .notSpecified:
+                return "Not specified"
+            }
+        }
+    }
+
     let id: Int
     let name: String
     let birthday: String?
@@ -36,12 +53,7 @@ struct PersonDetail: Codable, Identifiable {
     }
 
     var safeGenderText: String? {
-        switch gender {
-        case 1: return "Female"
-        case 2: return "Male"
-        case 0: return "Not specified"
-        default: return nil
-        }
+        gender.flatMap { Gender(rawValue: $0)?.displayText }
     }
 
     var hasAliases: Bool {

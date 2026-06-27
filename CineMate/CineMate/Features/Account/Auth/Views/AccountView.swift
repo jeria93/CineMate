@@ -76,19 +76,15 @@ struct AccountView: View {
 
                     if !authViewModel.isGuest {
                         AccountSecuritySectionView(
-                            currentEmail: authViewModel.currentUserEmail,
-                            status: AccountSecurityStatus(
+                            model: AccountSecuritySectionModel(
+                                currentEmail: authViewModel.currentUserEmail,
                                 canChangeEmail: authViewModel.canChangeEmail,
-                                canSendPasswordReset: authViewModel.canSendPasswordReset
+                                canSendPasswordReset: authViewModel.canSendPasswordReset,
+                                isAuthenticating: isSendingPasswordReset,
+                                isSendingPasswordReset: isSendingPasswordReset,
+                                changeEmailFeedback: changeEmailFeedback,
+                                passwordResetFeedback: passwordResetFeedback
                             ),
-                            canChangeEmail: authViewModel.canChangeEmail,
-                            canSendPasswordReset: authViewModel.canSendPasswordReset,
-                            isAuthenticating: isSendingPasswordReset,
-                            changeEmailFeedbackMessage: changeEmailFeedback?.message,
-                            changeEmailFeedbackColor: changeEmailFeedback?.color,
-                            passwordResetFeedbackMessage: passwordResetFeedback?.message,
-                            passwordResetFeedbackColor: passwordResetFeedback?.color,
-                            isSendingPasswordReset: isSendingPasswordReset,
                             onChangeEmail: {
                                 changeEmailFeedback = nil
                                 isShowingChangeEmailSheet = true
@@ -117,20 +113,21 @@ struct AccountView: View {
                         )
 
                         AccountLegalSectionView(
-                            status: AccountLegalStatus(
-                                summaryText: authViewModel.acceptedTermsSummaryText,
-                                acceptedAtText: authViewModel.acceptedTermsAtText,
-                                isOutdated: authViewModel.isAcceptedTermsOutdated
+                            model: AccountLegalSectionModel(
+                                status: AccountLegalStatus(
+                                    summaryText: authViewModel.acceptedTermsSummaryText,
+                                    acceptedAtText: authViewModel.acceptedTermsAtText,
+                                    isOutdated: authViewModel.isAcceptedTermsOutdated
+                                ),
+                                acceptedTermsVersionText: authViewModel.acceptedTermsVersionText,
+                                acceptedPrivacyVersionText: authViewModel.acceptedPrivacyVersionText,
+                                lastCheckedText: accountLastCheckedText,
+                                shouldShowAcceptLatest: authViewModel.isAcceptedTermsOutdated
+                                || authViewModel.acceptedTermsSummaryText == nil,
+                                isAuthenticating: isAcceptingLatestTerms,
+                                isAcceptingLatestTerms: isAcceptingLatestTerms,
+                                feedback: legalFeedback
                             ),
-                            acceptedTermsVersionText: authViewModel.acceptedTermsVersionText,
-                            acceptedPrivacyVersionText: authViewModel.acceptedPrivacyVersionText,
-                            lastCheckedText: accountLastCheckedText,
-                            shouldShowAcceptLatest: authViewModel.isAcceptedTermsOutdated
-                            || authViewModel.acceptedTermsSummaryText == nil,
-                            isAuthenticating: isAcceptingLatestTerms,
-                            feedbackMessage: legalFeedback?.message,
-                            feedbackColor: legalFeedback?.color,
-                            isAcceptingLatestTerms: isAcceptingLatestTerms,
                             onViewTerms: {
                                 isShowingTermsSheet = true
                             },

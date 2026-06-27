@@ -117,6 +117,8 @@
 		03618C432E6F3A0200D75D10 /* AccountInlineFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C422E6F3A0200D75D10 /* AccountInlineFeedback.swift */; };
 		03618C452E6F4A0100D75D10 /* AccountLegalStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C442E6F4A0100D75D10 /* AccountLegalStatus.swift */; };
 		03618C472E6F4A0200D75D10 /* AccountSecurityStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03618C462E6F4A0200D75D10 /* AccountSecurityStatus.swift */; };
+		D4A000002F8A000100BEE001 /* AccountLegalSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A000012F8A000100BEE001 /* AccountLegalSectionModel.swift */; };
+		D4A000022F8A000100BEE001 /* AccountSecuritySectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A000032F8A000100BEE001 /* AccountSecuritySectionModel.swift */; };
 		03652CE52DFC56830031DCAD /* MovieDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03652CE42DFC56830031DCAD /* MovieDetail.swift */; };
 		036623782E2065CD008FDE2E /* DiscoverPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036623772E2065CD008FDE2E /* DiscoverPreviewData.swift */; };
 		0366237A2E2065E2008FDE2E /* DiscoverSectionView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036623792E2065E2008FDE2E /* DiscoverSectionView+Previews.swift */; };
@@ -398,6 +400,8 @@
 		03618C422E6F3A0200D75D10 /* AccountInlineFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInlineFeedback.swift; sourceTree = "<group>"; };
 		03618C442E6F4A0100D75D10 /* AccountLegalStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLegalStatus.swift; sourceTree = "<group>"; };
 		03618C462E6F4A0200D75D10 /* AccountSecurityStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSecurityStatus.swift; sourceTree = "<group>"; };
+		D4A000012F8A000100BEE001 /* AccountLegalSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLegalSectionModel.swift; sourceTree = "<group>"; };
+		D4A000032F8A000100BEE001 /* AccountSecuritySectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSecuritySectionModel.swift; sourceTree = "<group>"; };
 		03623F222E2D6E6E00066528 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 		03652CE42DFC56830031DCAD /* MovieDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetail.swift; sourceTree = "<group>"; };
 		036623772E2065CD008FDE2E /* DiscoverPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPreviewData.swift; sourceTree = "<group>"; };
@@ -1190,7 +1194,9 @@
 				03618C442E6F4A0100D75D10 /* AccountLegalStatus.swift */,
 				03618C462E6F4A0200D75D10 /* AccountSecurityStatus.swift */,
 				03618C342E6F100200D75D10 /* GuestAccountSectionView.swift */,
+				D4A000032F8A000100BEE001 /* AccountSecuritySectionModel.swift */,
 				03618C362E6F100300D75D10 /* AccountSecuritySectionView.swift */,
+				D4A000012F8A000100BEE001 /* AccountLegalSectionModel.swift */,
 				03618C382E6F100400D75D10 /* AccountLegalSectionView.swift */,
 				03618C3A2E6F100500D75D10 /* AccountSessionSectionView.swift */,
 				0390F7DE2E5DE78200E89B82 /* AuthEmailField.swift */,
@@ -1944,7 +1950,9 @@
 				03618C452E6F4A0100D75D10 /* AccountLegalStatus.swift in Sources */,
 				03618C472E6F4A0200D75D10 /* AccountSecurityStatus.swift in Sources */,
 				03618C352E6F100200D75D10 /* GuestAccountSectionView.swift in Sources */,
+				D4A000022F8A000100BEE001 /* AccountSecuritySectionModel.swift in Sources */,
 				03618C372E6F100300D75D10 /* AccountSecuritySectionView.swift in Sources */,
+				D4A000002F8A000100BEE001 /* AccountLegalSectionModel.swift in Sources */,
 				03618C392E6F100400D75D10 /* AccountLegalSectionView.swift in Sources */,
 				03618C3B2E6F100500D75D10 /* AccountSessionSectionView.swift in Sources */,
 				0390F7DF2E5DE78200E89B82 /* AuthEmailField.swift in Sources */,
