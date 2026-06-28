@@ -7,16 +7,26 @@
 
 import SwiftUI
 
+/// Loads a poster image with fallback artwork and optional tap animation.
 struct PosterImageView: View {
     let url: URL?
     let title: String
-    let width: CGFloat
-    let height: CGFloat
-    var cornerRadius: CGFloat
-    var shadowRadius: CGFloat
+    let configuration: PosterImageConfiguration
     var onTap: (() -> Void)?
 
     @State private var isPressed = false
+
+    init(
+        url: URL?,
+        title: String,
+        configuration: PosterImageConfiguration,
+        onTap: (() -> Void)? = nil
+    ) {
+        self.url = url
+        self.title = title
+        self.configuration = configuration
+        self.onTap = onTap
+    }
 
     init(
         url: URL?,
@@ -27,13 +37,16 @@ struct PosterImageView: View {
         shadowRadius: CGFloat = 1,
         onTap: (() -> Void)? = nil
     ) {
-        self.url = url
-        self.title = title
-        self.width = width
-        self.height = height
-        self.cornerRadius = cornerRadius
-        self.shadowRadius = shadowRadius
-        self.onTap = onTap
+        self.init(
+            url: url,
+            title: title,
+            configuration: PosterImageConfiguration(
+                size: CGSize(width: width, height: height),
+                cornerRadius: cornerRadius,
+                shadowRadius: shadowRadius
+            ),
+            onTap: onTap
+        )
     }
 
     var body: some View {
@@ -56,9 +69,9 @@ struct PosterImageView: View {
 
     private var imageBody: some View {
         imageContent
-            .frame(width: width, height: height)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .shadow(radius: shadowRadius)
+            .frame(width: configuration.size.width, height: configuration.size.height)
+            .clipShape(RoundedRectangle(cornerRadius: configuration.cornerRadius, style: .continuous))
+            .shadow(radius: configuration.shadowRadius)
     }
 
     @ViewBuilder
