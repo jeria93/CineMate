@@ -107,10 +107,7 @@ struct MovieDetailView: View {
             PosterImageView(
                 url: movie.posterLargeURL,
                 title: movie.title,
-                width: SharedUI.Size.posterLarge.width,
-                height: SharedUI.Size.posterLarge.height,
-                cornerRadius: SharedUI.Radius.medium,
-                shadowRadius: 4
+                configuration: .large
             )
             .overlay(alignment: .topTrailing) {
                 MovieFavoriteButtonView(movie: movie, favoriteViewModel: favoriteViewModel)
@@ -167,6 +164,7 @@ struct MovieDetailView: View {
         }
     }
 
+    /// Loads detail and credits together, then caches the matching movie stub for later navigation.
     private func loadDetailScreen() async {
         async let detailLoad: Void = detailViewModel.load(movieId: movieId)
         async let creditsLoad: Void = castViewModel.loadCredits(for: movieId)
@@ -174,56 +172,6 @@ struct MovieDetailView: View {
 
         if let stub = detailViewModel.movieStub, stub.id == movieId {
             movieViewModel.cacheStub(stub)
-        }
-    }
-}
-
-private struct MovieCreditsSection: View {
-    let movieId: Int
-    @ObservedObject var castViewModel: CastViewModel
-    let onRetry: () -> Void
-
-    private var isCurrentMovie: Bool {
-        castViewModel.activeMovieID == movieId
-    }
-
-    private var currentCredits: MovieCredits? {
-        guard isCurrentMovie else { return nil }
-        return castViewModel.credits
-    }
-
-    private var hasAnyCredits: Bool {
-        guard let currentCredits else { return false }
-        return !currentCredits.cast.isEmpty || !currentCredits.crew.isEmpty
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if castViewModel.isLoading, currentCredits == nil {
-                ProgressView("Loading credits…")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else if let errorMessage = castViewModel.errorMessage, currentCredits == nil, isCurrentMovie {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Could not load credits")
-                        .font(.headline)
-                    Text(errorMessage)
-                        .font(.caption)
-                        .foregroundStyle(Color.appTextSecondary)
-                    Button("Retry Credits", action: onRetry)
-                        .buttonStyle(.bordered)
-                        .tint(.appPrimaryAction)
-                }
-            } else if hasAnyCredits, let currentCredits {
-                MovieCreditsView(credits: currentCredits)
-                if let director = currentCredits.crew.first(where: { $0.job == "Director" }) {
-                    DirectorView(director: director)
-                }
-                CastCarouselView(cast: currentCredits.cast)
-            } else if isCurrentMovie {
-                Text("No credits available.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.appTextSecondary)
-            }
         }
     }
 }

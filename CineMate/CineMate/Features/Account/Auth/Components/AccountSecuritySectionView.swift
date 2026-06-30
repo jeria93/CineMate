@@ -2,36 +2,27 @@
 //  AccountSecuritySectionView.swift
 //  CineMate
 //
-//  Created by OpenAI Codex on 2026-06-03.
+//  Created by Nicholas Samuelsson Jeria on 2026-06-03.
 //
 
 import SwiftUI
 
 /// Shows security status and local feedback while AccountView owns async auth actions.
 struct AccountSecuritySectionView: View {
-    let currentEmail: String?
-    let status: AccountSecurityStatus
-    let canChangeEmail: Bool
-    let canSendPasswordReset: Bool
-    let isAuthenticating: Bool
-    let changeEmailFeedbackMessage: String?
-    let changeEmailFeedbackColor: Color?
-    let passwordResetFeedbackMessage: String?
-    let passwordResetFeedbackColor: Color?
-    let isSendingPasswordReset: Bool
+    let model: AccountSecuritySectionModel
     let onChangeEmail: () -> Void
     let onChangePassword: () -> Void
     
     var body: some View {
         Section("Security") {
             statusHeader(
-                title: status.title,
-                detail: status.detail,
-                iconSystemName: status.iconSystemName,
-                tint: status.tint
+                title: model.status.title,
+                detail: model.status.detail,
+                iconSystemName: model.status.iconSystemName,
+                tint: model.status.tint
             )
             
-            if let currentEmail {
+            if let currentEmail = model.currentEmail {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Current email")
                         .font(.subheadline.weight(.medium))
@@ -44,19 +35,19 @@ struct AccountSecuritySectionView: View {
                 }
             }
             
-            if canChangeEmail {
+            if model.canChangeEmail {
                 Text("Send a verification link before changing your account email.")
                     .font(.footnote)
                     .foregroundStyle(Color.appTextSecondary)
                 
                 Button("Change email", action: onChangeEmail)
                     .buttonStyle(.bordered)
-                    .disabled(isAuthenticating)
+                    .disabled(model.isAuthenticating)
                 
-                if let changeEmailFeedbackMessage, let changeEmailFeedbackColor {
-                    Text(changeEmailFeedbackMessage)
+                if let feedback = model.changeEmailFeedback {
+                    Text(feedback.message)
                         .font(.footnote)
-                        .foregroundStyle(changeEmailFeedbackColor)
+                        .foregroundStyle(feedback.color)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             } else {
@@ -64,8 +55,8 @@ struct AccountSecuritySectionView: View {
                     .foregroundStyle(Color.appTextSecondary)
             }
             
-            if canSendPasswordReset {
-                if let currentEmail {
+            if model.canSendPasswordReset {
+                if let currentEmail = model.currentEmail {
                     Text("Password reset links are sent to \(currentEmail).")
                         .font(.footnote)
                         .foregroundStyle(Color.appTextSecondary)
@@ -73,7 +64,7 @@ struct AccountSecuritySectionView: View {
                 }
                 
                 Button(action: onChangePassword) {
-                    if isSendingPasswordReset {
+                    if model.isSendingPasswordReset {
                         HStack(spacing: SharedUI.Spacing.small) {
                             ProgressView()
                             Text("Sending reset link...")
@@ -83,12 +74,12 @@ struct AccountSecuritySectionView: View {
                     }
                 }
                 .buttonStyle(.bordered)
-                .disabled(isAuthenticating)
+                .disabled(model.isAuthenticating)
                 
-                if let passwordResetFeedbackMessage, let passwordResetFeedbackColor {
-                    Text(passwordResetFeedbackMessage)
+                if let feedback = model.passwordResetFeedback {
+                    Text(feedback.message)
                         .font(.footnote)
-                        .foregroundStyle(passwordResetFeedbackColor)
+                        .foregroundStyle(feedback.color)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             } else {

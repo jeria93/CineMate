@@ -7,36 +7,17 @@
 
 import SwiftUI
 
+/// Wraps PosterImageView with movie detail navigation and a grid poster style by default.
 struct MoviePosterView: View {
     let movie: Movie
-    let width: CGFloat
-    let height: CGFloat
-    let cornerRadius: CGFloat
-    let shadowRadius: CGFloat
+    var configuration: PosterImageConfiguration = .grid
     @EnvironmentObject private var navigator: AppNavigator
-
-    init(
-        movie: Movie,
-        width: CGFloat = SharedUI.Size.posterGrid.width,
-        height: CGFloat = SharedUI.Size.posterGrid.height,
-        cornerRadius: CGFloat = SharedUI.Radius.medium,
-        shadowRadius: CGFloat = 4
-    ) {
-        self.movie = movie
-        self.width = width
-        self.height = height
-        self.cornerRadius = cornerRadius
-        self.shadowRadius = shadowRadius
-    }
 
     var body: some View {
         PosterImageView(
             url: movie.posterSmallURL,
             title: movie.title,
-            width: width,
-            height: height,
-            cornerRadius: cornerRadius,
-            shadowRadius: shadowRadius,
+            configuration: configuration,
             onTap: { navigator.goToMovie(id: movie.id) }
         )
     }

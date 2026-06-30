@@ -1,93 +1,205 @@
 # CineMate
 
-CineMate is a SwiftUI iOS app for browsing, discovering, and saving movies powered by TMDB.
-It uses Firebase Auth + Firestore for user sessions and favorites.
+CineMate is a SwiftUI iOS app for browsing, discovering, and saving movies with data from TMDB. It combines a polished movie discovery experience with Firebase-backed authentication, real-time favorites, account controls, and Firestore security rules.
+
+The project is built to show production-oriented iOS fundamentals: clear feature boundaries, dependency injection, previewable SwiftUI screens, async networking, Firebase integration, and focused tests around validation and access rules.
 
 ## Demo
 
-- Vimeo demo: [Watch CineMate in action](https://vimeo.com/1117585898)
-
-| Browse -> Detail | Real-time Favorites | Search + Infinite Scroll |
+| Movie Lists | Movie Detail | Search |
 |---|---|---|
-| <img src="Assets/popular_to_detail.gif" width="260" alt="Browse list to movie detail" /> | <img src="Assets/favorites_realtime.gif" width="260" alt="Toggle favorites with real-time updates" /> | <img src="Assets/search_infinite_scroll.gif" width="260" alt="Search with infinite scroll" /> |
+| <img src="CineMate/Docs/Media/cinemate-movie-list.jpg" width="220" alt="CineMate movie list with category picker and poster rows" /> | <img src="CineMate/Docs/Media/cinemate-movie-detail.gif" width="220" alt="CineMate movie detail screen with poster, metadata, genres, and description" /> | <img src="CineMate/Docs/Media/cinemate-search.jpg" width="220" alt="CineMate search results for Star Wars with movie cards" /> |
 
-## Quick Start
+| Favorite Movies | Favorite People |
+|---|---|
+| <img src="CineMate/Docs/Media/cinemate-favorite-movies.jpg" width="220" alt="CineMate favorite movies list backed by Firestore" /> | <img src="CineMate/Docs/Media/cinemate-favorite-people.jpg" width="220" alt="CineMate favorite people grid backed by Firestore" /> |
 
-1. Clone the repo.
-2. Copy `CineMate/Secrets.example.plist` -> `CineMate/Secrets.plist` and add TMDB values.
-3. Add your real `GoogleService-Info.plist` to the app target in Xcode.
-4. In Firebase Console, enable `Anonymous`, `Email/Password`, and `Google` sign-in.
-5. Create Firestore and publish your security rules.
-6. Open `CineMate.xcodeproj`, choose an iOS 17.4+ simulator/device, and run.
+## Highlights
 
-## Prerequisites
+- SwiftUI app with tab-based navigation, typed routes, and shared navigation state.
+- TMDB-powered movie lists, detail pages, cast, crew, trailers, recommendations, genres, watch providers, and people pages.
+- Firebase Auth with email/password, Google Sign-In, anonymous guest mode, email verification, password reset, and account deletion.
+- Firestore-backed favorite movies and favorite people with real-time listeners.
+- Guest gating for protected discovery/search workflows with an upgrade path.
+- Legal acceptance flow for terms and privacy versions, enforced by Firestore rules.
+- Preview-first UI structure with reusable mock data and preview factories.
+- Focused XCTest coverage for search/auth validation and mapping behavior.
+- Firebase emulator tests for Firestore access rules.
 
-| File | Location | Purpose |
-|---|---|---|
-| `Secrets.plist` | `CineMate/Secrets.plist` | TMDB API keys/tokens |
-| `GoogleService-Info.plist` | Added to app target in Xcode | Firebase + Google Sign-In config |
+## Tech Stack
 
-Recommended setup: Xcode 15.3+.
+| Area | Tools |
+|---|---|
+| App | Swift, SwiftUI, MVVM, async/await |
+| Data | TMDB API, URLSession, Codable |
+| Auth | Firebase Auth, Google Sign-In |
+| Persistence | Cloud Firestore |
+| Testing | XCTest, Firebase Emulator Suite, Node test runner |
+| Tooling | Xcode project, Swift Package Manager, secret-scan script |
 
-## Feature Overview
+## Project Structure
 
-### Movies
-- Popular, top-rated, trending, upcoming, now-playing lists
-- Movie detail with credits, recommendations, trailers, and watch providers
-- Genre filtering and "See all" pagination flow
+```text
+.
+├── Assets/                           # Existing demo media
+├── CineMate/                         # iOS app project
+│   ├── CineMate/                     # App source
+│   │   ├── Core/                     # Networking, Firebase, config, models, navigation
+│   │   ├── Design/                   # Shared app styling
+│   │   └── Features/                 # Feature modules and shared UI components
+│   ├── CineMate.xcodeproj/           # Xcode project and shared scheme
+│   ├── CineMateTests/                # XCTest target
+│   ├── Docs/Media/                   # Optimized README screenshots and GIF
+│   ├── functions/                    # Firestore rules test harness
+│   ├── firestore.rules               # Firestore security rules
+│   └── firebase.json                 # Firebase config
+├── scripts/                          # Repository checks
+└── README.md                         # This file
+```
 
-### Search
-- Debounced query validation
-- Infinite scrolling with pagination and in-flight guards
+## Setup
 
-### Favorites
-- Favorite movies and favorite people
-- Firestore-backed real-time updates per signed-in user
+### Requirements
 
-### Auth & Account
-- Email/password sign up + verification email + sign-out policy
-- Email/password sign in (verification enforced)
-- Google Sign-In (Firebase credential exchange)
-- Guest mode (anonymous)
-- Reset password and resend verification
-- Account deletion with Firestore data cleanup
+- Xcode with Swift Package Manager support.
+- iOS 17.6+ simulator or device.
+- Firebase project with Authentication and Firestore enabled.
+- TMDB API credentials.
+- Node.js and Firebase CLI for Firestore rules tests.
 
-### Guest Gating
-- Discover and Search are visually available but interaction-locked for guests
-- Locked overlay CTA routes to Create Account
+### 1. TMDB Secrets
 
-## Architecture (Short)
+Create the local secrets plist used by the app target:
 
-- SwiftUI + MVVM
-- Init-based dependency injection for repositories/services/view models
-- Repository pattern for TMDB and preview mocks
-- Enum-based app navigation (`AppRoute` + `AppNavigator`) in signed-in flow
-- Preview-first structure (`PreviewFactory`, preview data, `ProcessInfo.isPreview` guards)
+```sh
+cp CineMate/CineMate/Secrets.example.plist CineMate/CineMate/Features/Resources/Secrets.plist
+```
 
-## Deep Dive Links
+Then fill in:
 
-- Firebase setup notes: [`CineMate.xcodeproj/FirebaseConfig-README.md`](CineMate.xcodeproj/FirebaseConfig-README.md)
-- App bootstrap and auth gate: [`CineMate/CineMateApp.swift`](CineMate/CineMateApp.swift)
-- Navigation core:
-  - [`CineMate/Core/Navigation/AppRoute.swift`](CineMate/Core/Navigation/AppRoute.swift)
-  - [`CineMate/Core/Navigation/AppNavigator.swift`](CineMate/Core/Navigation/AppNavigator.swift)
-  - [`CineMate/Core/Navigation/RootView.swift`](CineMate/Core/Navigation/RootView.swift)
-- Auth implementation:
-  - [`CineMate/Core/Firebase/Auth/Services/FirebaseAuthService.swift`](CineMate/Core/Firebase/Auth/Services/FirebaseAuthService.swift)
-  - [`CineMate/Core/Firebase/Auth/Services/FirebaseAuthService+Deletion.swift`](CineMate/Core/Firebase/Auth/Services/FirebaseAuthService+Deletion.swift)
-  - [`CineMate/Features/Account/Auth/`](CineMate/Features/Account/Auth/)
-- Preview architecture:
-  - [`CineMate/Features/Previews/`](CineMate/Features/Previews/)
-  - [`CineMate/Features/Account/Auth/PreviewData/`](CineMate/Features/Account/Auth/PreviewData/)
+- `TMDB_API_KEY`
+- `TMDB_BEARER_TOKEN`
+
+`Secrets.plist` is ignored by Git and should never be committed.
+
+### 2. Firebase + Google Sign-In
+
+Download `GoogleService-Info.plist` from Firebase Console and place it at:
+
+```text
+CineMate/CineMate/Core/Config/GoogleService-Info.plist
+```
+
+In Firebase Console, enable these sign-in providers:
+
+- Anonymous
+- Email/Password
+- Google
+
+Also verify that the URL scheme in `CineMate/CineMate/Info.plist` matches the `REVERSED_CLIENT_ID` from `GoogleService-Info.plist`.
+
+More Firebase setup notes live in [`CineMate/CineMate.xcodeproj/FirebaseConfig-README.md`](CineMate/CineMate.xcodeproj/FirebaseConfig-README.md).
+
+### 3. Run the App
+
+Open the Xcode project:
+
+```sh
+open CineMate/CineMate.xcodeproj
+```
+
+Select the shared `CineMate` scheme, choose an iOS simulator or device, and run.
+
+## Verification
+
+Run app tests from the repo root:
+
+```sh
+xcodebuild test \
+  -project CineMate/CineMate.xcodeproj \
+  -scheme CineMate \
+  -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
+Run Firestore rules tests:
+
+```sh
+cd CineMate/functions
+npm install
+npm run test:rules
+```
+
+Run the repository secret guard:
+
+```sh
+scripts/check-secrets.sh --all
+```
+
+## Architecture
+
+CineMate uses a lightweight MVVM structure with dependencies assembled at the app root. Shared services are created once, injected into long-lived view models, and reused across tab flows.
+
+Key patterns:
+
+- `CineMateApp.swift` owns bootstrap, dependency creation, auth gating, and shared environment objects.
+- `MovieRepository` wraps `TMDBService` behind `MovieProtocol` for production code and previews/tests.
+- `AppRoute` and `AppNavigator` provide typed navigation through a shared `NavigationStack`.
+- Firebase bootstrap is guarded so previews do not accidentally configure production SDKs.
+- Feature folders keep screens, view models, components, preview data, and mocks close to their domain.
+- Firestore rules enforce that protected writes require current terms/privacy acceptance.
+
+Useful entry points:
+
+- [`CineMate/CineMate/CineMateApp.swift`](CineMate/CineMate/CineMateApp.swift)
+- [`CineMate/CineMate/Core/Networking/TMDBService.swift`](CineMate/CineMate/Core/Networking/TMDBService.swift)
+- [`CineMate/CineMate/Core/Repository/MovieRepository.swift`](CineMate/CineMate/Core/Repository/MovieRepository.swift)
+- [`CineMate/CineMate/Core/Navigation/AppNavigator.swift`](CineMate/CineMate/Core/Navigation/AppNavigator.swift)
+- [`CineMate/CineMate/Core/Firebase/Auth/Services/FirebaseAuthService.swift`](CineMate/CineMate/Core/Firebase/Auth/Services/FirebaseAuthService.swift)
+- [`CineMate/CineMate/Core/Firebase/Firestore/FirestoreFavoritesRepository.swift`](CineMate/CineMate/Core/Firebase/Firestore/FirestoreFavoritesRepository.swift)
+- [`CineMate/functions/README.md`](CineMate/functions/README.md)
+
+## Firestore Rules and Legal Versions
+
+Firestore writes under protected user data require current legal acceptance metadata:
+
+- `termsVersion`
+- `privacyVersion`
+- `acceptedAt`
+
+When terms or privacy copy changes, keep these files in sync:
+
+- [`CineMate/CineMate/Core/Firebase/Auth/Validation/TermsContent.swift`](CineMate/CineMate/Core/Firebase/Auth/Validation/TermsContent.swift)
+- [`CineMate/firestore.rules`](CineMate/firestore.rules)
+- [`CineMate/functions/src/rules/firestore.rules.test.ts`](CineMate/functions/src/rules/firestore.rules.test.ts)
+
+Then run:
+
+```sh
+cd CineMate/functions
+npm run test:rules
+```
+
+## Security Notes
+
+The repo includes a local and CI secret scan for common accidental leaks:
+
+- Firebase plist files
+- TMDB secrets
+- environment files
+- private keys and provisioning files
+- common API token formats
+
+The GitHub workflow runs `scripts/check-secrets.sh --all` on pushes and pull requests.
 
 ## TMDB Attribution
 
 This product uses the TMDB API but is not endorsed or certified by TMDB.
 
-- TMDB API is free for non-commercial use with proper attribution.
-- Keep TMDB attribution visible in an in-app About/Credits section.
-- Use approved TMDB logos/branding if you display the TMDB mark.
+- TMDB API is used for movie metadata, people data, images, trailers, recommendations, and watch-provider availability.
+- TMDB attribution and API usage must follow TMDB's terms and branding guidance.
 
 Links:
+
 - [TMDB Developer FAQ](https://developer.themoviedb.org/docs/faq)
 - [TMDB API Terms of Use](https://www.themoviedb.org/api-terms-of-use?language=en-US)
+- [TMDB Terms of Use](https://www.themoviedb.org/terms-of-use)

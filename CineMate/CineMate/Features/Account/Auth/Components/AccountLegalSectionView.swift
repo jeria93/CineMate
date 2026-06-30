@@ -2,59 +2,51 @@
 //  AccountLegalSectionView.swift
 //  CineMate
 //
-//  Created by OpenAI Codex on 2026-06-03.
+//  Created by Nicholas Samuelsson Jeria on 2026-06-03.
 //
 
 import SwiftUI
 
 /// Shows legal acceptance status, stored versions, refresh metadata, and local feedback.
 struct AccountLegalSectionView: View {
-    let status: AccountLegalStatus
-    let acceptedTermsVersionText: String?
-    let acceptedPrivacyVersionText: String?
-    let lastCheckedText: String?
-    let shouldShowAcceptLatest: Bool
-    let isAuthenticating: Bool
-    let feedbackMessage: String?
-    let feedbackColor: Color?
-    let isAcceptingLatestTerms: Bool
+    let model: AccountLegalSectionModel
     let onViewTerms: () -> Void
     let onAcceptLatest: () -> Void
     
     var body: some View {
         Section("Legal") {
             statusHeader(
-                title: status.title,
-                detail: status.detail,
-                iconSystemName: status.iconSystemName,
-                tint: status.tint
+                title: model.status.title,
+                detail: model.status.detail,
+                iconSystemName: model.status.iconSystemName,
+                tint: model.status.tint
             )
             
             VStack(alignment: .leading, spacing: SharedUI.Spacing.xSmall) {
-                if let acceptedTermsVersionText {
+                if let acceptedTermsVersionText = model.acceptedTermsVersionText {
                     metadataRow(title: "Terms", value: acceptedTermsVersionText)
                 }
                 
-                if let acceptedPrivacyVersionText {
+                if let acceptedPrivacyVersionText = model.acceptedPrivacyVersionText {
                     metadataRow(title: "Privacy", value: acceptedPrivacyVersionText)
                 }
                 
-                if let acceptedAtText = status.acceptedAtText {
+                if let acceptedAtText = model.status.acceptedAtText {
                     metadataRow(title: "Accepted", value: acceptedAtText)
                 }
                 
-                if let lastCheckedText {
+                if let lastCheckedText = model.lastCheckedText {
                     metadataRow(title: "Last checked", value: lastCheckedText)
                 }
             }
             
             Button("View terms", action: onViewTerms)
                 .buttonStyle(.bordered)
-                .disabled(isAuthenticating)
+                .disabled(model.isAuthenticating)
             
-            if shouldShowAcceptLatest {
+            if model.shouldShowAcceptLatest {
                 Button(action: onAcceptLatest) {
-                    if isAcceptingLatestTerms {
+                    if model.isAcceptingLatestTerms {
                         HStack(spacing: SharedUI.Spacing.small) {
                             ProgressView()
                             Text("Saving acceptance...")
@@ -65,13 +57,13 @@ struct AccountLegalSectionView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Color.appPrimaryAction)
-                .disabled(isAuthenticating)
+                .disabled(model.isAuthenticating)
             }
             
-            if let feedbackMessage, let feedbackColor {
-                Text(feedbackMessage)
+            if let feedback = model.feedback {
+                Text(feedback.message)
                     .font(.footnote)
-                    .foregroundStyle(feedbackColor)
+                    .foregroundStyle(feedback.color)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

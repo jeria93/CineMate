@@ -22,18 +22,18 @@ struct TrailerHelper {
     }
 
     static func preferredTrailerURL(from videos: [MovieVideo]) -> URL? {
-        let youtubeVideos = videos.filter { $0.site.caseInsensitiveCompare("YouTube") == .orderedSame }
+        let youtubeVideos = videos.filter { VideoSite.youtube.matches($0.site) }
         guard !youtubeVideos.isEmpty else { return nil }
 
         if let officialTrailer = youtubeVideos.first(where: {
-            $0.type.caseInsensitiveCompare("Trailer") == .orderedSame &&
+            VideoType.trailer.matches($0.type) &&
             $0.name.localizedCaseInsensitiveContains("official")
         }) {
             return youtubeWatchURL(videoKey: officialTrailer.key)
         }
 
         if let trailer = youtubeVideos.first(where: {
-            $0.type.caseInsensitiveCompare("Trailer") == .orderedSame
+            VideoType.trailer.matches($0.type)
         }) {
             return youtubeWatchURL(videoKey: trailer.key)
         }
@@ -43,6 +43,22 @@ struct TrailerHelper {
 }
 
 private extension TrailerHelper {
+    enum VideoSite: String {
+        case youtube = "YouTube"
+
+        func matches(_ value: String) -> Bool {
+            value.caseInsensitiveCompare(rawValue) == .orderedSame
+        }
+    }
+
+    enum VideoType: String {
+        case trailer = "Trailer"
+
+        func matches(_ value: String) -> Bool {
+            value.caseInsensitiveCompare(rawValue) == .orderedSame
+        }
+    }
+
     static func youtubeWatchURL(videoKey: String) -> URL? {
         guard !videoKey.isEmpty else { return nil }
         return URL(string: "https://www.youtube.com/watch?v=\(videoKey)")

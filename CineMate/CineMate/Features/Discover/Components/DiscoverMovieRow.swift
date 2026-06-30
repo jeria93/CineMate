@@ -13,10 +13,7 @@ struct DiscoverMovieRow: View {
     var body: some View {
         MoviePosterView(
             movie: movie,
-            width: SharedUI.Size.posterCompact.width,
-            height: SharedUI.Size.posterCompact.height,
-            cornerRadius: SharedUI.Radius.medium,
-            shadowRadius: 4
+            configuration: .compact
         )
         .padding(.vertical, SharedUI.Spacing.small)
     }

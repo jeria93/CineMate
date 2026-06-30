@@ -2,7 +2,7 @@
 //  AccountErrorMessageView.swift
 //  CineMate
 //
-//  Created by OpenAI Codex on 2026-06-03.
+//  Created by Nicholas Samuelsson Jeria on 2026-06-03.
 //
 
 import SwiftUI
