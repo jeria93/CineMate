@@ -72,7 +72,19 @@ Open the Xcode project:
 open CineMate/CineMate.xcodeproj
 ```
 
-Select the shared `CineMate` scheme, choose an iOS simulator, and run. A clean clone automatically starts in demo mode without an Apple Developer account, Firebase project, or TMDB credentials.
+Select the shared `CineMate` scheme, choose an iOS simulator, and run. A clean clone automatically starts in portfolio demo mode without an Apple Developer account, Firebase project, or TMDB credentials.
+
+## Portfolio Demo Mode
+
+CineMate is designed to be easy to review from a clean clone. The shared scheme uses `CINEMATE_RUNTIME=auto`, so the app chooses the safest runtime at launch:
+
+- `auto` starts live mode only when both local plist files are present.
+- `demo` always uses local sample data.
+- `live` uses live services when the plist files are present, and falls back to demo when they are missing.
+
+In portfolio demo mode, the app does not configure Firebase or call the TMDB API. Movie data, people data, and favorites come from local sample fixtures. Favorites stay in memory for the current run, and the Account tab clearly shows that no account is connected.
+
+For portfolio review, no extra setup is needed: open the project, run the shared scheme, and browse the app. Add the ignored plist files only when you want to test live authentication, TMDB requests, and Firestore-backed favorites.
 
 ## Optional Live Setup
 
