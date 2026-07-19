@@ -68,7 +68,6 @@
 		033CAA062E623A55009514D0 /* GoogleAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033CAA052E623A55009514D0 /* GoogleAuthClient.swift */; };
 		033CAA082E624B0C009514D0 /* UIKit+TopMost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033CAA072E624B0C009514D0 /* UIKit+TopMost.swift */; };
 		033CAA0A2E6251D6009514D0 /* GoogleSignInBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033CAA092E6251D6009514D0 /* GoogleSignInBootstrap.swift */; };
-		033DE9762E0144B4009FB949 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 033DE9752E0144B4009FB949 /* Secrets.plist */; };
 		033DE9782E01FBFC009FB949 /* CastCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033DE9772E01FBFC009FB949 /* CastCarouselView.swift */; };
 		033EC7592E1D511A00B0BE08 /* SearchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033EC7582E1D511A00B0BE08 /* SearchError.swift */; };
 		034014FB2E31781200089026 /* MovieGenresView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034014FA2E31781200089026 /* MovieGenresView+Previews.swift */; };
@@ -142,7 +141,6 @@
 		036E06B22E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */; };
 		036E06B42E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */; };
 		0371433A2E7200F200A35E04 /* TermSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037143392E7200F200A35E04 /* TermSheet.swift */; };
-		03757F132E60F2A800C5C2C1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */; };
 		0381F4D32DFA261400AC2ABB /* MovieGenresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */; };
 		0384BD6D2E11318D00790AA5 /* PersonLinksView+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */; };
 		0384BD6F2E1177ED00790AA5 /* SocialLinkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384BD6E2E1177ED00790AA5 /* SocialLinkButtonView.swift */; };
@@ -356,7 +354,6 @@
 		033CAA052E623A55009514D0 /* GoogleAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuthClient.swift; sourceTree = "<group>"; };
 		033CAA072E624B0C009514D0 /* UIKit+TopMost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+TopMost.swift"; sourceTree = "<group>"; };
 		033CAA092E6251D6009514D0 /* GoogleSignInBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSignInBootstrap.swift; sourceTree = "<group>"; };
-		033DE9752E0144B4009FB949 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Secrets.plist; path = CineMate/Features/Resources/Secrets.plist; sourceTree = SOURCE_ROOT; };
 		033DE9772E01FBFC009FB949 /* CastCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastCarouselView.swift; sourceTree = "<group>"; };
 		033EC7582E1D511A00B0BE08 /* SearchError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchError.swift; sourceTree = "<group>"; };
 		034014FA2E31781200089026 /* MovieGenresView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieGenresView+Previews.swift"; sourceTree = "<group>"; };
@@ -428,7 +425,6 @@
 		036E06B12E5B9BAB006BBA92 /* PreviewFactory+ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewFactory+ResetPassword.swift"; sourceTree = "<group>"; };
 		036E06B32E5BA418006BBA92 /* ResetPasswordSheet+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ResetPasswordSheet+Previews.swift"; sourceTree = "<group>"; };
 		037143392E7200F200A35E04 /* TermSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermSheet.swift; sourceTree = "<group>"; };
-		03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0381F4D22DFA261400AC2ABB /* MovieGenresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieGenresView.swift; sourceTree = "<group>"; };
 		0384BD6C2E11318D00790AA5 /* PersonLinksView+Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonLinksView+Previews.swift"; sourceTree = "<group>"; };
 		0384BD6E2E1177ED00790AA5 /* SocialLinkButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLinkButtonView.swift; sourceTree = "<group>"; };
@@ -678,7 +674,6 @@
 			isa = PBXGroup;
 			children = (
 				030612242DF4BEB40013F7AF /* Assets.xcassets */,
-				033DE9752E0144B4009FB949 /* Secrets.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -835,7 +830,6 @@
 			isa = PBXGroup;
 			children = (
 				030612462DF4C05C0013F7AF /* SecretManager.swift */,
-				03757F122E60F2A800C5C2C1 /* GoogleService-Info.plist */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -1632,6 +1626,7 @@
 				030612002DF4BA4B0013F7AF /* Frameworks */,
 				03F7D0A92E73A00100A1B2C3 /* SwiftLint */,
 				030612012DF4BA4B0013F7AF /* Resources */,
+				D4A100002F8B000100C0FFEE /* Copy Local Configuration */,
 			);
 			buildRules = (
 			);
@@ -1716,8 +1711,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03757F132E60F2A800C5C2C1 /* GoogleService-Info.plist in Resources */,
-				033DE9762E0144B4009FB949 /* Secrets.plist in Resources */,
 				030612292DF4BEB40013F7AF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1750,6 +1743,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:${PATH}\"\n\nSWIFTLINT=\"\"\nif command -v swiftlint > /dev/null 2>&1\nthen\n  SWIFTLINT=\"$(command -v swiftlint)\"\nelif [ -x \"/opt/homebrew/bin/swiftlint\" ]\nthen\n  SWIFTLINT=\"/opt/homebrew/bin/swiftlint\"\nelif [ -x \"/usr/local/bin/swiftlint\" ]\nthen\n  SWIFTLINT=\"/usr/local/bin/swiftlint\"\nfi\n\nif [ -n \"${SWIFTLINT}\" ]\nthen\n  if ! \"${SWIFTLINT}\" lint --no-cache --config \"${SRCROOT}/.swiftlint.yml\"\n  then\n    echo \"warning: SwiftLint found violations. Build is not blocked\"\n  fi\nelse\n  echo \"warning: SwiftLint is not installed. Install with Homebrew using brew install swiftlint\"\nfi\n";
+		};
+		D4A100002F8B000100C0FFEE /* Copy Local Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Local Configuration";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/bash \"${SRCROOT}/tool/copy_local_config.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

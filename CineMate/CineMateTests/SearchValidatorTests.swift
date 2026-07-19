@@ -95,6 +95,52 @@ final class AuthValidatorTests: XCTestCase {
     }
 }
 
+final class AppRuntimeModeTests: XCTestCase {
+    func testMissingConfigurationDefaultsToDemo() {
+        XCTAssertEqual(
+            AppRuntimeMode.resolve(environment: [:], hasLiveConfiguration: false),
+            .demo
+        )
+    }
+
+    func testAvailableConfigurationDefaultsToLive() {
+        XCTAssertEqual(
+            AppRuntimeMode.resolve(environment: [:], hasLiveConfiguration: true),
+            .live
+        )
+    }
+
+    func testDemoOverrideWinsWhenConfigurationExists() {
+        XCTAssertEqual(
+            AppRuntimeMode.resolve(
+                environment: [AppRuntimeMode.environmentKey: "demo"],
+                hasLiveConfiguration: true
+            ),
+            .demo
+        )
+    }
+
+    func testLiveOverrideFallsBackToDemoWithoutConfiguration() {
+        XCTAssertEqual(
+            AppRuntimeMode.resolve(
+                environment: [AppRuntimeMode.environmentKey: "live"],
+                hasLiveConfiguration: false
+            ),
+            .demo
+        )
+    }
+
+    func testLiveOverrideUsesLiveWhenConfigurationExists() {
+        XCTAssertEqual(
+            AppRuntimeMode.resolve(
+                environment: [AppRuntimeMode.environmentKey: " LIVE "],
+                hasLiveConfiguration: true
+            ),
+            .live
+        )
+    }
+}
+
 final class EnumBackedMappingTests: XCTestCase {
     func testPersonDetailGenderTextKeepsKnownAndUnknownMappings() {
         XCTAssertEqual(personDetail(gender: 1).safeGenderText, "Female")

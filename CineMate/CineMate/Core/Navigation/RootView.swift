@@ -7,9 +7,6 @@
 
 import SwiftUI
 
-/// Root screen for tabs and app navigation.
-/// Uses one shared `NavigationStack` with `AppNavigator`.
-/// Shows lock overlays for guest users on protected tabs.
 private enum MainTab: String, Hashable {
     case movies
     case favorites
@@ -18,13 +15,14 @@ private enum MainTab: String, Hashable {
     case auth
 }
 
+/// Hosts shared tab navigation and keeps a separate route path for each tab.
+/// It syncs favorites with the auth session and gates protected features for guests.
 struct RootView: View {
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
     @State private var selectedTab: MainTab = .movies
     @State private var tabPaths: [MainTab: [AppRoute]] = [:]
 
-    // View models are injected from the app root.
     let movieVM: MovieViewModel
     let castVM: CastViewModel
     let favVM: FavoriteMoviesViewModel
@@ -33,7 +31,8 @@ struct RootView: View {
     let personVM: PersonViewModel
     let favoritePeopleVM: FavoritePeopleViewModel
     let authViewModel: AuthViewModel
-    let authService: FirebaseAuthService
+    let authService: FirebaseAuthService?
+    let isDemoMode: Bool
 
     var body: some View {
         NavigationStack(path: $navigator.path) {
@@ -50,12 +49,11 @@ struct RootView: View {
                 favoritePeopleVM.syncAuthState(uid: authViewModel.currentUID)
             }
 
-            // Save the path for the active tab.
+            // Preserve route history independently for each tab.
             .onChange(of: navigator.path) { _, newPath in
                 tabPaths[selectedTab] = newPath
             }
 
-            // Restore the path when the tab changes.
             .onChange(of: selectedTab) { oldTab, newTab in
                 guard oldTab != newTab else { return }
                 tabPaths[oldTab] = navigator.path
@@ -66,7 +64,6 @@ struct RootView: View {
                 )
             }
 
-            // Build a destination for each route.
             .navigationDestination(for: AppRoute.self) { route in
                 destination(for: route)
             }
@@ -77,7 +74,7 @@ struct RootView: View {
             tabPaths[selectedTab] = navigator.path
         }
         .onDisappear {
-            // RootView only exists in signed-in flow, so clear state on teardown.
+            // Release listeners and clear session-scoped favorites on teardown.
             favVM.stopFavoritesListenerIfNeeded(keepCurrentState: false)
             favoritePeopleVM.stopFavoritesListenerIfNeeded(keepCurrentState: false)
         }
@@ -131,7 +128,13 @@ extension RootView {
     }
 
     private var accountTab: some View {
-        AccountView(viewModel: authViewModel)
+        Group {
+            if isDemoMode {
+                DemoAccountView()
+            } else {
+                AccountView(viewModel: authViewModel)
+            }
+        }
             .tabItem { Label("Account", systemImage: "person.crop.circle") }
             .tag(MainTab.auth)
     }
@@ -173,16 +176,24 @@ extension RootView {
             )
 
         case .createAccount:
-            // Signed in users can still upgrade anonymous accounts.
-            CreateAccountView(
-                createViewModel: CreateAccountViewModel(
-                    service: authService,
-                    onVerificationEmailSent: {
-                        toastCenter.show("Check your inbox to verify your email")
-                        navigator.goBack()
-                    }
+            if let authService {
+                // Signed in users can still upgrade anonymous accounts.
+                CreateAccountView(
+                    createViewModel: CreateAccountViewModel(
+                        service: authService,
+                        onVerificationEmailSent: {
+                            toastCenter.show("Check your inbox to verify your email")
+                            navigator.goBack()
+                        }
+                    )
                 )
-            )
+            } else {
+                ContentUnavailableView(
+                    "Unavailable in Demo",
+                    systemImage: "person.crop.circle.badge.plus",
+                    description: Text("Account creation requires the local Firebase configuration.")
+                )
+            }
         }
     }
 
@@ -191,6 +202,29 @@ extension RootView {
         ?? castVM.crew.first(where: { $0.id == id }).map(CastMember.init(from:))
         ?? favoritePeopleVM.favorites.first(where: { $0.id == id }).map(CastMember.init(from:))
         ?? CastMember(id: id, name: "", character: nil, profilePath: nil)
+    }
+}
+
+private struct DemoAccountView: View {
+    var body: some View {
+        Form {
+            Section {
+                Label("Demo mode", systemImage: "sparkles")
+                    .font(.headline)
+
+                Text(
+                    "Explore CineMate with local sample data. "
+                    + "Favorites stay in memory and no account is connected."
+                )
+                .foregroundStyle(.secondary)
+            }
+
+            Section("Portfolio Demo") {
+                LabeledContent("Data", value: "Local samples")
+                LabeledContent("Account", value: "Not connected")
+            }
+        }
+        .navigationTitle("Account")
     }
 }
 
