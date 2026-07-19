@@ -14,6 +14,8 @@ The project is built to show production-oriented iOS fundamentals: clear feature
 |---|---|
 | <img src="CineMate/Docs/Media/cinemate-favorite-movies.jpg" width="220" alt="CineMate favorite movies list backed by Firestore" /> | <img src="CineMate/Docs/Media/cinemate-favorite-people.jpg" width="220" alt="CineMate favorite people grid backed by Firestore" /> |
 
+The shared `CineMate` scheme also includes a self-contained portfolio demo. It uses local sample data when the ignored Firebase and TMDB plist files are not available.
+
 ## Highlights
 
 - SwiftUI app with tab-based navigation, typed routes, and shared navigation state.
@@ -57,12 +59,37 @@ The project is built to show production-oriented iOS fundamentals: clear feature
 └── README.md                         # This file
 ```
 
-## Setup
+## Quick Start (No Secrets)
 
 ### Requirements
 
 - Xcode with Swift Package Manager support.
 - iOS 17.6+ simulator or device.
+
+Open the Xcode project:
+
+```sh
+open CineMate/CineMate.xcodeproj
+```
+
+Select the shared `CineMate` scheme, choose an iOS simulator, and run. A clean clone automatically starts in portfolio demo mode without an Apple Developer account, Firebase project, or TMDB credentials.
+
+## Portfolio Demo Mode
+
+CineMate is designed to be easy to review from a clean clone. The shared scheme uses `CINEMATE_RUNTIME=auto`, so the app chooses the safest runtime at launch:
+
+- `auto` starts live mode only when both local plist files are present.
+- `demo` always uses local sample data.
+- `live` uses live services when the plist files are present, and falls back to demo when they are missing.
+
+In portfolio demo mode, the app does not configure Firebase or call the TMDB API. Movie data, people data, and favorites come from local sample fixtures. Favorites stay in memory for the current run, and the Account tab clearly shows that no account is connected.
+
+For portfolio review, no extra setup is needed: open the project, run the shared scheme, and browse the app. Add the ignored plist files only when you want to test live authentication, TMDB requests, and Firestore-backed favorites.
+
+## Optional Live Setup
+
+Live services and Firestore rules tests additionally require:
+
 - Firebase project with Authentication and Firestore enabled.
 - TMDB API credentials.
 - Node.js and Firebase CLI for Firestore rules tests.
@@ -100,7 +127,7 @@ Also verify that the URL scheme in `CineMate/CineMate/Info.plist` matches the `R
 
 More Firebase setup notes live in [`CineMate/CineMate.xcodeproj/FirebaseConfig-README.md`](CineMate/CineMate.xcodeproj/FirebaseConfig-README.md).
 
-### 3. Run the App
+### 3. Run with Live Services
 
 Open the Xcode project:
 
@@ -108,7 +135,7 @@ Open the Xcode project:
 open CineMate/CineMate.xcodeproj
 ```
 
-Select the shared `CineMate` scheme, choose an iOS simulator or device, and run.
+Select the shared `CineMate` scheme, choose an iOS simulator or device, and run. When both local plist files exist, the scheme automatically starts the live dependencies.
 
 ## Verification
 

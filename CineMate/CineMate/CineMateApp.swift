@@ -9,37 +9,18 @@ import SwiftUI
 import Foundation
 import AppIntents
 
-/// CineMateApp — DI root & bootstrap
-///
-/// What this app struct is responsible for:
-/// - Configure SDKs **once** on launch (skips Xcode Previews).
-///   1) `FirebaseBootstrap.ensureConfigured()`
-///   2) `GoogleSignInBootstrap.ensureConfigured()` (uses Firebase clientID)
-/// - Build shared services as `let` (e.g. `MovieRepository`, `FirebaseAuthService`)
-/// - Create and own long-lived view models as `@StateObject`
-/// - Switch UI:
-///   • **Signed out** --> `LoginView` flow
-///   • **Signed in**  --> `RootView` (tab bar)
-/// - Inject environment objects intentionally:
-///   • both auth branches receive `ToastCenter`
-///   • `AppNavigator` is shared app-wide (used by signed-in flow)
-/// - Handle Google sign-in callback via `.handleGoogleSignInURL()`
-///
-/// Notes:
-/// - View models are created in `init()` so they keep identity across view reloads.
-/// - Services are injected into view models (Simple DI).
+/// Application composition root for live and demo dependencies.
+/// Live mode configures Firebase before Google Sign-In. Demo mode uses local
+/// repositories and bypasses authentication. Shared view models live for the
+/// app lifetime, and navigation resets when the authentication gate changes.
 @main
 struct CineMate: App {
-    // Global enum-based navigation (bound to `NavigationStack` in RootView)
     @StateObject private var navigator = AppNavigator()
-    
-    // Lightweight global toast service
     @StateObject private var toastCenter = ToastCenter()
-    
-    // Shared services (network/auth)
-    private let authService: FirebaseAuthService
-    
-    // Long-lived view models (owned by the App)
+
+    private let runtimeMode: AppRuntimeMode
+    private let authService: FirebaseAuthService?
+
     @StateObject private var movieViewModel: MovieViewModel
     @StateObject private var castViewModel: CastViewModel
     @StateObject private var searchViewModel: SearchViewModel
@@ -49,33 +30,53 @@ struct CineMate: App {
     @StateObject private var favoritePeopleViewModel: FavoritePeopleViewModel
     @StateObject private var authViewModel: AuthViewModel
     
-    /// Build the DI graph (services -> view models).
-    /// `@StateObject` ensures each VM is created once and reused.
+    /// Builds the dependency graph for the selected runtime mode.
+    /// State objects preserve the view models for the app lifetime.
     init() {
-        // Order is enforced once at app-level bootstrap.
-        AppBootstrap.ensureConfigured()
-        
-        let repo = MovieRepository()
-        let auth = FirebaseAuthService()
-        let authVM = AuthViewModel(service: auth)
+        let mode = AppRuntimeMode.current
+        let repo: MovieProtocol
+        let auth: FirebaseAuthService?
+        let authVM: AuthViewModel
+        let favoriteMoviesVM: FavoriteMoviesViewModel
+        let favoritePeopleVM: FavoritePeopleViewModel
+
+        switch mode {
+        case .demo:
+            repo = MockMovieRepository()
+            auth = nil
+            authVM = AuthViewModel(simulatedUID: AppRuntimeMode.demoUserID)
+            favoriteMoviesVM = .preview(
+                with: Array(SharedPreviewMovies.moviesList.prefix(2))
+            )
+            favoritePeopleVM = FavoritePeopleViewModel(
+                preview: FavoritePeoplePreviewData.few()
+            )
+
+        case .live:
+            // Firebase must be configured before auth services are created.
+            AppBootstrap.ensureConfigured()
+            let liveAuth = FirebaseAuthService()
+            repo = MovieRepository()
+            auth = liveAuth
+            authVM = AuthViewModel(service: liveAuth)
+            favoriteMoviesVM = FavoriteMoviesViewModel(authService: liveAuth)
+            favoritePeopleVM = FavoritePeopleViewModel(
+                auth: liveAuth,
+                repo: FirestoreFavoritePeopleRepository()
+            )
+        }
+
+        runtimeMode = mode
         self.authService = auth
-        
-        // Create VMs that depend on the shared services
+
         _movieViewModel          = StateObject(wrappedValue: MovieViewModel(repository: repo))
         _castViewModel           = StateObject(wrappedValue: CastViewModel(repository: repo))
         _discoverViewModel       = StateObject(wrappedValue: DiscoverViewModel(repository: repo))
         _personViewModel         = StateObject(wrappedValue: PersonViewModel(repository: repo))
-        _favoritePeopleViewModel = StateObject(
-            wrappedValue: FavoritePeopleViewModel(
-                auth: auth,
-                repo: FirestoreFavoritePeopleRepository()
-            )
-        )
+        _favoritePeopleViewModel = StateObject(wrappedValue: favoritePeopleVM)
         _authViewModel           = StateObject(wrappedValue: authVM)
         _searchViewModel         = StateObject(wrappedValue: SearchViewModel(repository: repo))
-        _favoriteMoviesViewModel = StateObject(
-            wrappedValue: FavoriteMoviesViewModel(authService: auth)
-        )
+        _favoriteMoviesViewModel = StateObject(wrappedValue: favoriteMoviesVM)
     }
     
     var body: some Scene {
@@ -86,17 +87,15 @@ struct CineMate: App {
                 .onChange(of: authViewModel.currentUID) { oldUID, newUID in
                     handleSessionTransition(from: oldUID, to: newUID)
                 }
-            // App-wide Google sign-in redirect handler
                 .handleGoogleSignInURL()
         }
     }
     
     @ViewBuilder
     private var appRoot: some View {
-        switch authGateState {
-        case .signedIn:
+        if runtimeMode == .demo || authGateState == .signedIn {
             signedInRoot
-        case .signedOut:
+        } else if let authService {
             SignedOutRootView(authService: authService, onSignedIn: handleSignIn)
         }
     }
@@ -115,7 +114,8 @@ struct CineMate: App {
             personVM: personViewModel,
             favoritePeopleVM: favoritePeopleViewModel,
             authViewModel: authViewModel,
-            authService: authService
+            authService: authService,
+            isDemoMode: runtimeMode == .demo
         )
     }
     
@@ -145,9 +145,51 @@ struct CineMate: App {
     }
 }
 
-private enum AuthGateState {
+private enum AuthGateState: Equatable {
     case signedOut
     case signedIn
+}
+
+/// Selects live dependencies only when both local configuration files are bundled.
+/// Demo mode always uses local data. Live mode falls back to demo when configuration is incomplete.
+enum AppRuntimeMode: Equatable {
+    case demo
+    case live
+
+    static let environmentKey = "CINEMATE_RUNTIME"
+    static let demoUserID = "cinemate-demo-user"
+
+    static var current: AppRuntimeMode {
+        resolve(
+            environment: ProcessInfo.processInfo.environment,
+            hasLiveConfiguration: LiveConfiguration.isAvailable
+        )
+    }
+
+    static func resolve(
+        environment: [String: String],
+        hasLiveConfiguration: Bool
+    ) -> AppRuntimeMode {
+        let requestedMode = environment[environmentKey]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+
+        switch requestedMode {
+        case "demo":
+            return .demo
+        case "live":
+            return hasLiveConfiguration ? .live : .demo
+        default:
+            return hasLiveConfiguration ? .live : .demo
+        }
+    }
+}
+
+private enum LiveConfiguration {
+    static var isAvailable: Bool {
+        Bundle.main.url(forResource: "Secrets", withExtension: "plist") != nil
+        && Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") != nil
+    }
 }
 
 private enum SignedOutRoute: Hashable {
