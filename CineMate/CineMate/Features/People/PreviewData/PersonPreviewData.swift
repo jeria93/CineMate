@@ -7,53 +7,16 @@
 
 import Foundation
 
-/// Mocked person detail and credits for previews
+/// Catalog-backed person details and movie credits for previews.
 enum PersonPreviewData {
 
-    static let markHamill = PersonDetail(
-        id: PreviewID.scoped(.people, 1),
-        name: "Mark Hamill",
-        birthday: "1951-09-25",
-        deathday: nil,
-        biography: "Mark Hamill is an American actor, best known for playing Luke Skywalker in the Star Wars film series.",
-        placeOfBirth: "Oakland, California, USA",
-        profilePath: "/zMKcrbRz0JzB7C2KQku8gsGCeFs.jpg",
-        imdbId: "nm0000434",
-        gender: 2,
-        knownForDepartment: "Acting",
-        alsoKnownAs: [
-            "Mark Richard Hamill",
-            "Luke",
-            "The Trickster"
-        ]
-    )
+    static var markHamill: PersonDetail {
+        DemoCatalog.personDetail(for: 2) ?? emptyDetail
+    }
 
-    static let movieCredits: [PersonMovieCredit] = [
-        PersonMovieCredit(
-            id: PreviewID.scoped(.people, 101),
-            title: "Star Wars: A New Hope",
-            character: "Luke Skywalker",
-            releaseDate: "1977-05-25",
-            posterPath: "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
-            popularity: 95.0
-        ),
-        PersonMovieCredit(
-            id: PreviewID.scoped(.people, 102),
-            title: "The Empire Strikes Back",
-            character: "Luke Skywalker",
-            releaseDate: "1980-05-21",
-            posterPath: "/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg",
-            popularity: 90.5
-        ),
-        PersonMovieCredit(
-            id: PreviewID.scoped(.people, 103),
-            title: "Return of the Jedi",
-            character: "Luke Skywalker",
-            releaseDate: "1983-05-25",
-            posterPath: "/jQYlydvHm3kUix1f8prMucrplhm.jpg",
-            popularity: 88.2
-        )
-    ]
+    static var movieCredits: [PersonMovieCredit] {
+        DemoCatalog.movieCredits(for: 2) ?? []
+    }
 
     static let emptyDetail = PersonDetail(
         id: PreviewID.scoped(.people, 999),

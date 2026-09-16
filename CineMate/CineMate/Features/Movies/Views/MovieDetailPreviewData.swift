@@ -7,34 +7,11 @@
 
 import Foundation
 
-/// Mocked MovieDetail data for previews.
+/// Catalog-backed movie details and isolated empty-state fixtures for previews.
 enum MovieDetailPreviewData {
 
     static var starWarsDetail: MovieDetail {
-        let movie = SharedPreviewMovies.starWars
-
-        return MovieDetail(
-            id: movie.id,
-            title: movie.title,
-            overview: movie.overview,
-            posterPath: movie.posterPath,
-            backdropPath: movie.backdropPath,
-            releaseDate: movie.releaseDate,
-            voteAverage: movie.voteAverage,
-            runtime: 121,
-            budget: 11_000_000,
-            revenue: 775_398_007,
-            homepage: "https://www.starwars.com/films/star-wars-episode-iv-a-new-hope",
-            status: "Released",
-            productionCompanies: [
-                ProductionCompany(name: "Lucasfilm Ltd."),
-                ProductionCompany(name: "Twentieth Century Fox")
-            ],
-            productionCountries: [
-                ProductionCountry(name: "United States of America")
-            ],
-            genres: Genre.all
-        )
+        DemoCatalog.detail(for: DemoCatalog.starWars.id) ?? emptyDetail
     }
 
     static var emptyDetail: MovieDetail {
