@@ -7,30 +7,27 @@
 
 import Foundation
 
-/// Shared sanitize and validation rules for auth input.
+/// Shared validation rules and email normalization for auth input.
 enum AuthValidator {
 
     // MARK: - Policy
 
-    /// Password limits used by auth forms.
     enum Policy {
-        /// Minimum password length.
         static let minLength = 12
     }
 
     enum Message {
         static let invalidEmail = "Enter a valid email address"
-        static let invalidPassword = "Password must be at least \(Policy.minLength) chars and include A-Z, a-z, 0-9"
+        static let invalidPassword = "Use at least \(Policy.minLength) characters with uppercase, lowercase, and a number"
         static let missingPassword = "Enter your password"
         static let passwordMismatch = "Passwords don't match"
         static let termsRequired = "You must accept the terms to continue"
         static let privacyPolicyRequired = "You must accept the privacy policy to continue"
     }
 
-    // MARK: - Character policy
     private static let allowedEmailCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789@._+-")
 
-    // MARK: - Sanitizers
+    // MARK: - Normalization
 
     /// Lowercases input and keeps only supported email characters.
     static func sanitizedEmail(from email: String) -> String {
@@ -39,24 +36,6 @@ enum AuthValidator {
             allowedEmailCharacters.contains(scalar)
         }
         return String(String.UnicodeScalarView(filteredScalars))
-    }
-
-    /// Trims edge whitespace and keeps printable ASCII only.
-    /// This removes emoji and smart punctuation.
-    static func sanitizedPassword(from password: String) -> String {
-        let trimmed = password.trimmingCharacters(in: .whitespacesAndNewlines)
-        let filteredScalars = trimmed.unicodeScalars.filter { scalar in
-            scalar.isASCII && (0x20...0x7E).contains(scalar.value)
-        }
-        return String(String.UnicodeScalarView(filteredScalars))
-    }
-
-    /// Sanitizes password fields with the same rules.
-    static func sanitizedPasswordPair(password: String, confirmPassword: String) -> (password: String, confirmPassword: String) {
-        (
-            password: sanitizedPassword(from: password),
-            confirmPassword: sanitizedPassword(from: confirmPassword)
-        )
     }
 
     // MARK: - Validators
@@ -68,17 +47,21 @@ enum AuthValidator {
         && cleaned.wholeMatch(of: /[a-z0-9._+-]+@[a-z0-9.-]+\.[a-z]{2,64}/) != nil
     }
 
-    /// Password check for account creation.
-    /// Requires one digit, one lowercase, one uppercase, and min length.
+    /// Validates new passwords without modifying them.
+    /// Requires an ASCII digit, lowercase letter, uppercase letter, and minimum length.
     static func isValidPassword(_ password: String) -> Bool {
-        let cleaned = sanitizedPassword(from: password)
-        let pattern = #"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{\#(Policy.minLength),}$"#
-        return !cleaned.isEmpty && cleaned.wholeMatch(of: try! Regex(pattern)) != nil
+        guard password.count >= Policy.minLength else { return false }
+
+        let scalars = password.unicodeScalars
+        let hasUppercase = scalars.contains { (0x41...0x5A).contains($0.value) }
+        let hasLowercase = scalars.contains { (0x61...0x7A).contains($0.value) }
+        let hasNumber = scalars.contains { (0x30...0x39).contains($0.value) }
+        return hasUppercase && hasLowercase && hasNumber
     }
 
-    /// Login only checks that password is not empty after sanitize.
+    /// Login accepts any non-empty password and preserves it exactly.
     static func isValidLoginPassword(_ password: String) -> Bool {
-        !sanitizedPassword(from: password).isEmpty
+        !password.isEmpty
     }
 
     static func emailHelperText(email: String, hasTriedSubmit: Bool) -> String? {
@@ -98,9 +81,8 @@ enum AuthValidator {
         confirmPassword: String,
         hasTriedSubmit: Bool
     ) -> String? {
-        let sanitized = sanitizedPasswordPair(password: password, confirmPassword: confirmPassword)
-        let isMatch = !sanitized.password.isEmpty && sanitized.password == sanitized.confirmPassword
-        return (hasTriedSubmit || !sanitized.confirmPassword.isEmpty) && !isMatch ? Message.passwordMismatch : nil
+        let isMatch = !password.isEmpty && password == confirmPassword
+        return (hasTriedSubmit || !confirmPassword.isEmpty) && !isMatch ? Message.passwordMismatch : nil
     }
 
     static func termsHelperText(acceptedTerms: Bool, hasTriedSubmit: Bool) -> String? {

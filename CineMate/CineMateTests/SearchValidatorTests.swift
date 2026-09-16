@@ -71,27 +71,64 @@ final class AuthValidatorTests: XCTestCase {
         XCTAssertTrue(AuthValidator.isValidEmail("user_name-1+tag@example-domain.com"))
     }
 
-    func testSanitizedPasswordRemovesEmojiAndSmartQuotesAndTrimsEdges() {
-        let sanitized = AuthValidator.sanitizedPassword(from: "  Abc🙂123“x”!  ")
-        XCTAssertEqual(sanitized, "Abc123x!")
+    func testCreatePasswordAllowsUnicodeAndEdgeWhitespace() {
+        XCTAssertTrue(AuthValidator.isValidPassword("  PasswordA1🙂  "))
     }
 
-    func testSanitizedPasswordKeepsCommonAsciiSymbols() {
-        let sanitized = AuthValidator.sanitizedPassword(from: "Abc123!@#$%^&*()[]{}_-+=/?.,:;")
-        XCTAssertEqual(sanitized, "Abc123!@#$%^&*()[]{}_-+=/?.,:;")
+    func testCreatePasswordStillRequiresLengthAndCharacterGroups() {
+        XCTAssertFalse(AuthValidator.isValidPassword("Password🙂"))
+        XCTAssertFalse(AuthValidator.isValidPassword("password1234🙂"))
+        XCTAssertFalse(AuthValidator.isValidPassword("PASSWORD1234🙂"))
+        XCTAssertFalse(AuthValidator.isValidPassword("PasswordOnly🙂"))
     }
 
-    func testLoginPasswordRejectsOnlyEmojiAndWhitespace() {
-        XCTAssertFalse(AuthValidator.isValidLoginPassword("🙂 \n\t"))
+    func testLoginPasswordAcceptsAnyNonEmptyValue() {
+        XCTAssertTrue(AuthValidator.isValidLoginPassword("🙂 \n\t"))
+        XCTAssertFalse(AuthValidator.isValidLoginPassword(""))
     }
 
-    func testConfirmPasswordMatchingUsesSameInputRules() {
+    func testConfirmPasswordRequiresExactMatch() {
         let helper = AuthValidator.confirmPasswordHelperText(
             password: "  Pa🙂sswordA1!  ",
             confirmPassword: "PasswordA1!",
             hasTriedSubmit: true
         )
+        XCTAssertEqual(helper, AuthValidator.Message.passwordMismatch)
+    }
+
+    func testConfirmPasswordAcceptsExactUnicodeAndWhitespaceMatch() {
+        let password = "  Pa🙂sswordA1!  "
+        let helper = AuthValidator.confirmPasswordHelperText(
+            password: password,
+            confirmPassword: password,
+            hasTriedSubmit: true
+        )
         XCTAssertNil(helper)
+    }
+}
+
+@MainActor
+final class PasswordInputPreservationTests: XCTestCase {
+    func testLoginSubmissionPreservesPasswordInput() async {
+        let viewModel = LoginViewModel(previewEmail: "person@example.com")
+        let password = "  Pa🙂sswordA1!  "
+        viewModel.password = password
+
+        await viewModel.login()
+
+        XCTAssertEqual(viewModel.password, password)
+    }
+
+    func testCreateAccountSubmissionPreservesBothPasswordFields() async {
+        let viewModel = CreateAccountViewModel()
+        let password = "  Pa🙂sswordA1!  "
+        viewModel.password = password
+        viewModel.confirmPassword = password
+
+        await viewModel.submit()
+
+        XCTAssertEqual(viewModel.password, password)
+        XCTAssertEqual(viewModel.confirmPassword, password)
     }
 }
 

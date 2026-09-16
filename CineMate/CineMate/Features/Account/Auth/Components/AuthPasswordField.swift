@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AuthPasswordField: View {
-    // MARK: - API
     enum Mode { case login, create }
 
     var title: String = "Password"
@@ -20,32 +19,24 @@ struct AuthPasswordField: View {
     var onCleared: () -> Void = {}
     var isFocused: FocusState<Bool>.Binding?
 
-    // MARK: - Local UI state
     @State private var isRevealed = false
 
-    // MARK: - Body
     var body: some View {
         RoundedField(icons: trailingIcons) {
             passwordField
                 .submitLabel(submitLabel)
                 .onSubmit(onSubmit)
-                .onChange(of: text) { _, new in
-                    let cleaned = AuthValidator.sanitizedPassword(from: new)
-                    if cleaned != new { text = cleaned }
-                }
                 .applyFocus(isFocused)
                 .disabled(isDisabled)
         }
     }
 }
 
-// MARK: - Helpers
 private extension AuthPasswordField {
     var hasText: Bool { !text.isEmpty }
 
     var revealIconName: String { isRevealed ? "eye.slash.fill" : "eye.fill" }
 
-    /// Shows clear and reveal icons only when text exists.
     var trailingIcons: [TrailingIcon] {
         guard hasText && !isDisabled else { return [] }
         return [clearIcon, revealIcon]
@@ -72,7 +63,6 @@ private extension AuthPasswordField {
         }
     }
 
-    /// Uses TextField when revealed and SecureField when hidden.
     @ViewBuilder
     var passwordField: some View {
         if isRevealed {
@@ -83,13 +73,10 @@ private extension AuthPasswordField {
     }
 }
 
-// MARK: - Input traits
 private extension View {
-    /// Applies text traits for each password mode.
     @ViewBuilder
     func applyContentType(mode: AuthPasswordField.Mode) -> some View {
         let baseInputPolicy = self
-            .keyboardType(.asciiCapable)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled(true)
 
