@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-/// State and actions for the login screen.
+/// Coordinates email, Google, and guest sign-in flows for the login screen.
 @MainActor
 final class LoginViewModel: ObservableObject {
 
@@ -86,7 +86,7 @@ final class LoginViewModel: ObservableObject {
         self.onSuccess = onSuccess
     }
 
-    /// Preview initializer.
+    /// Creates local preview state without calling authentication services.
     init(previewEmail: String = "", previewIsAuthenticating: Bool = false, previewError: String? = nil) {
         self.service = nil
         self.googleClient = PreviewGoogleAuthClient()
@@ -98,10 +98,10 @@ final class LoginViewModel: ObservableObject {
 
     // MARK: - Actions (Email/Password)
 
+    /// Normalizes the email and forwards the password unchanged.
     func login() async {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
-        password = AuthValidator.sanitizedPassword(from: password)
         guard canSubmit, let service else { return }
         logAuth("login start email=\(maskedEmail(email))")
 
@@ -121,11 +121,11 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
+    /// Reuses the exact password to request another verification email.
     @discardableResult
     func resendVerification() async -> Bool {
         guard let service else { return false }
         email = AuthValidator.sanitizedEmail(from: email)
-        password = AuthValidator.sanitizedPassword(from: password)
         guard !email.isEmpty, !password.isEmpty else {
             appError = .invalidCredentials
             return false

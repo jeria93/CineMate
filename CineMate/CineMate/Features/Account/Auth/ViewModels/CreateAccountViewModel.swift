@@ -7,9 +7,8 @@
 
 import Foundation
 
-/// View model for CreateAccountView.
-/// Uses one policy for new account and guest upgrade.
-/// It sends verification email and signs out.
+/// Manages the shared form flow for new accounts and anonymous account upgrades.
+/// The auth service sends verification and signs the user out after submission.
 @MainActor
 final class CreateAccountViewModel: ObservableObject {
     // MARK: - Form state
@@ -33,8 +32,7 @@ final class CreateAccountViewModel: ObservableObject {
     var isEmailValid: Bool { AuthValidator.isValidEmail(email) }
     var isPasswordValid: Bool { AuthValidator.isValidPassword(password) }
     var isPasswordMatch: Bool {
-        let sanitized = AuthValidator.sanitizedPasswordPair(password: password, confirmPassword: confirmPassword)
-        return !sanitized.password.isEmpty && sanitized.password == sanitized.confirmPassword
+        !password.isEmpty && password == confirmPassword
     }
     var canSubmit: Bool { !isAuthenticating }
     private var isFormValid: Bool {
@@ -72,7 +70,7 @@ final class CreateAccountViewModel: ObservableObject {
         self.onVerificationEmailSent = onVerificationEmailSent
     }
     
-    /// Preview init with static values.
+    /// Creates local preview state without an auth service.
     init(
         previewEmail: String = "",
         previewIsAuthenticating: Bool = false,
@@ -87,13 +85,10 @@ final class CreateAccountViewModel: ObservableObject {
     
     // MARK: - Actions
     
-    /// Validates and submits the form.
+    /// Normalizes the email, validates the form, and forwards the password unchanged.
     func submit() async {
         hasTriedSubmit = true
         email = AuthValidator.sanitizedEmail(from: email)
-        let sanitized = AuthValidator.sanitizedPasswordPair(password: password, confirmPassword: confirmPassword)
-        password = sanitized.password
-        confirmPassword = sanitized.confirmPassword
         
         guard let service else { return }
         guard isFormValid else { return }
