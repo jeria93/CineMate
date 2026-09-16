@@ -42,14 +42,14 @@ struct CineMate: App {
 
         switch mode {
         case .demo:
-            repo = MockMovieRepository()
+            repo = DemoMovieRepository()
             auth = nil
             authVM = AuthViewModel(simulatedUID: AppRuntimeMode.demoUserID)
             favoriteMoviesVM = .preview(
-                with: Array(SharedPreviewMovies.moviesList.prefix(2))
+                with: DemoCatalog.seedFavoriteMovies
             )
             favoritePeopleVM = FavoritePeopleViewModel(
-                preview: FavoritePeoplePreviewData.few()
+                preview: DemoCatalog.seedFavoritePeople
             )
 
         case .live:

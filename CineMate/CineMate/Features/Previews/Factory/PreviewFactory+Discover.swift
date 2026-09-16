@@ -11,16 +11,16 @@ import SwiftUI
 @MainActor
 extension PreviewFactory {
 
-    /// Fully populated DiscoverViewModel for default layout previews.
+    /// Curated catalog data for default layout previews.
     static func discoverViewModel() -> DiscoverViewModel {
         return configuredViewModel {
             $0.applyPreviewSections([
-                .topRated: SharedPreviewMovies.moviesList,
-                .popular: SharedPreviewMovies.moviesList.shuffled(),
-                .nowPlaying: Array(SharedPreviewMovies.moviesList.reversed()),
-                .trending: SharedPreviewMovies.moviesList.shuffled(),
-                .upcoming: SharedPreviewMovies.moviesList,
-                .horror: DiscoverHorrorPreviewData.horrorMovies
+                .topRated: DemoCatalog.movies(for: .topRated),
+                .popular: DemoCatalog.movies(for: .popular),
+                .nowPlaying: DemoCatalog.nowPlayingMovies,
+                .trending: DemoCatalog.movies(for: .trending),
+                .upcoming: DemoCatalog.movies(for: .upcoming),
+                .horror: [DemoCatalog.getOut]
             ])
         }
     }
@@ -57,12 +57,12 @@ extension PreviewFactory {
     static func horrorOnlyDiscoverViewModel() -> DiscoverViewModel {
         return configuredViewModel {
             $0.applyPreviewSections([
-                .horror: DiscoverHorrorPreviewData.horrorMovies
+                .horror: [DemoCatalog.getOut]
             ])
         }
     }
 
-    /// Shared builder for consistent setup with mock repository.
+    /// Shared builder using the demo repository.
     private static func configuredViewModel(_ configure: ((DiscoverViewModel) -> Void)? = nil) -> DiscoverViewModel {
         let viewModel = DiscoverViewModel(repository: repository)
         configure?(viewModel)

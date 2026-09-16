@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+/// Loads genre-aware sections and prevents stale requests from replacing the current selection.
 @MainActor
 final class DiscoverViewModel: ObservableObject {
 
@@ -89,11 +90,6 @@ final class DiscoverViewModel: ObservableObject {
 
     private func loadSections(for genreId: Int?, forceReload: Bool) async {
         guard !ProcessInfo.processInfo.isPreview else { return }
-        guard SecretManager.hasBearerToken else {
-            error = .custom("Missing API token.")
-            isLoading = false
-            return
-        }
 
         let cacheKey = sectionCacheKey(for: genreId)
         if forceReload {

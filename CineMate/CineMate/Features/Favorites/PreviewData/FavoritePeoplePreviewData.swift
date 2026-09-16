@@ -7,21 +7,17 @@
 
 import Foundation
 
-/// Static mock data for favorite people used in SwiftUI previews.
-/// Keeps preview IDs deterministic via `PreviewID`.
+/// Favorite-person fixtures for SwiftUI previews.
+/// Uses the demo catalog for realistic samples and scoped IDs for grid stress data.
 enum FavoritePeoplePreviewData {
 
     /// Empty data set (drives empty state UIs).
     static func empty() -> [PersonRef] { [] }
 
     /// A small, human-readable set of sample people.
-    /// - Returns: 3 well-known names for quick visual checks.
+    /// - Returns: The same 3 people seeded in the portfolio demo.
     static func few() -> [PersonRef] {
-        [
-            .init(id: PreviewID.scoped(.favorites, 1), name: "Emma Stone", profilePath: nil),
-            .init(id: PreviewID.scoped(.favorites, 2), name: "Leonardo DiCaprio", profilePath: nil),
-            .init(id: PreviewID.scoped(.favorites, 3), name: "Greta Gerwig", profilePath: nil)
-        ]
+        DemoCatalog.seedFavoritePeople
     }
 
     /// A larger list to stress-test grid layout and scrolling.

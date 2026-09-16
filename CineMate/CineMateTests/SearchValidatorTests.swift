@@ -248,3 +248,67 @@ final class EnumBackedMappingTests: XCTestCase {
         )
     }
 }
+
+final class DemoMovieRepositoryContractTests: XCTestCase {
+    private let repository = DemoMovieRepository()
+
+    func testEveryDemoMovieOpensItsOwnDetailAndCredits() async throws {
+        for movie in DemoCatalog.moviesList {
+            let detail = try await repository.fetchMovieDetails(for: movie.id)
+            let credits = try await repository.fetchMovieCredits(for: movie.id)
+
+            XCTAssertEqual(detail.id, movie.id, "Wrong detail ID for \(movie.title)")
+            XCTAssertEqual(detail.title, movie.title, "Wrong detail title for \(movie.title)")
+            XCTAssertEqual(detail.overview, movie.overview)
+            XCTAssertEqual(detail.posterPath, movie.posterPath)
+            XCTAssertEqual(Set(detail.genreNames), Set(movie.genres ?? []))
+            XCTAssertEqual(credits.id, movie.id, "Wrong credits for \(movie.title)")
+        }
+    }
+
+    func testEveryVisibleCreditPersonResolvesBackToTheSameMovie() async throws {
+        for movie in DemoCatalog.moviesList {
+            let credits = try await repository.fetchMovieCredits(for: movie.id)
+            let people = credits.cast.map { ($0.id, $0.name) }
+                + credits.crew.map { ($0.id, $0.name) }
+
+            for (personID, expectedName) in people {
+                let detail = try await repository.fetchPersonDetail(for: personID)
+                let filmography = try await repository.fetchPersonMovieCredits(for: personID)
+
+                XCTAssertEqual(detail.id, personID)
+                XCTAssertEqual(detail.name, expectedName)
+                XCTAssertTrue(
+                    filmography.contains { $0.id == movie.id && $0.title == movie.title },
+                    "\(expectedName) is missing \(movie.title) from the demo filmography"
+                )
+            }
+        }
+    }
+
+    func testRecommendationsAndSearchOnlyReturnCatalogMovies() async throws {
+        let catalogIDs = Set(DemoCatalog.moviesList.map(\.id))
+
+        for movie in DemoCatalog.moviesList {
+            let recommendations = try await repository.fetchRecommendedMovies(for: movie.id)
+            XCTAssertFalse(recommendations.isEmpty)
+            XCTAssertFalse(recommendations.contains { $0.id == movie.id })
+            XCTAssertTrue(recommendations.allSatisfy { catalogIDs.contains($0.id) })
+        }
+
+        let search = try await repository.searchMovies(query: "inception", page: 1)
+        XCTAssertEqual(search.results.map(\.id), [DemoCatalog.inception.id])
+        XCTAssertEqual(search.results.map(\.title), [DemoCatalog.inception.title])
+    }
+
+    func testDemoCategoriesAreCuratedInsteadOfIdenticalCopies() async throws {
+        var categoryIDs = [[Int]]()
+
+        for category in MovieCategory.allCases {
+            let result = try await repository.fetchMovies(category: category, page: 1)
+            categoryIDs.append(result.results.map(\.id))
+        }
+
+        XCTAssertEqual(Set(categoryIDs).count, MovieCategory.allCases.count)
+    }
+}
