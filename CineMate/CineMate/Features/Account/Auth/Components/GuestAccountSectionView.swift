@@ -25,8 +25,8 @@ struct GuestAccountSectionView: View {
                 
                 VStack(alignment: .leading, spacing: SharedUI.Spacing.small) {
                     benefitRow(
-                        iconSystemName: "safari.fill",
-                        title: "Unlock Discover"
+                        iconSystemName: "line.3.horizontal.decrease.circle.fill",
+                        title: "Explore movies by genre"
                     )
                     benefitRow(
                         iconSystemName: "magnifyingglass",

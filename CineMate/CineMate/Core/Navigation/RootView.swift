@@ -7,12 +7,29 @@
 
 import SwiftUI
 
-private enum MainTab: String, Hashable {
-    case movies
-    case favorites
-    case discover
+enum MainTab: String, CaseIterable, Hashable {
+    case browse
     case search
-    case auth
+    case favorites
+    case account
+
+    var title: String {
+        switch self {
+        case .browse: "Browse"
+        case .search: "Search"
+        case .favorites: "Favorites"
+        case .account: "Account"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .browse: "square.grid.2x2.fill"
+        case .search: "magnifyingglass"
+        case .favorites: "heart.fill"
+        case .account: "person.crop.circle"
+        }
+    }
 }
 
 /// Hosts shared tab navigation and keeps a separate route path for each tab.
@@ -20,7 +37,7 @@ private enum MainTab: String, Hashable {
 struct RootView: View {
     @EnvironmentObject private var navigator: AppNavigator
     @EnvironmentObject private var toastCenter: ToastCenter
-    @State private var selectedTab: MainTab = .movies
+    @State private var selectedTab: MainTab = .browse
     @State private var tabPaths: [MainTab: [AppRoute]] = [:]
 
     let movieVM: MovieViewModel
@@ -37,11 +54,11 @@ struct RootView: View {
     var body: some View {
         NavigationStack(path: $navigator.path) {
             TabView(selection: $selectedTab) {
-                moviesTab
-                favoritesTab
-                discoverTab
-                searchTab
-                accountTab
+                ForEach(MainTab.allCases, id: \.self) { tab in
+                    tabContent(for: tab)
+                        .tabItem { Label(tab.title, systemImage: tab.systemImage) }
+                        .tag(tab)
+                }
             }
             // Keep favorites listeners aligned with current auth session.
             .task(id: authViewModel.currentUID) {
@@ -83,30 +100,28 @@ struct RootView: View {
 }
 
 extension RootView {
-    private var moviesTab: some View {
-        MovieListView(viewModel: movieVM, favoriteViewModel: favVM)
-            .tabItem { Label("Movies", systemImage: "film") }
-            .tag(MainTab.movies)
-    }
-
-    private var favoritesTab: some View {
-        FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
-            .tabItem { Label("Favorites", systemImage: "heart.fill") }
-            .tag(MainTab.favorites)
-    }
-
-    private var discoverTab: some View {
-        ZStack {
-            let isLocked = authViewModel.isGuest
-            DiscoverView(viewModel: discoverVM)
-                .allowsHitTesting(!isLocked)
-            if isLocked {
-                LockedFeatureOverlay(onCTA: { navigator.goToCreateAccount() })
-                    .zIndex(1)
-            }
+    @ViewBuilder
+    private func tabContent(for tab: MainTab) -> some View {
+        switch tab {
+        case .browse:
+            browseTab
+        case .search:
+            searchTab
+        case .favorites:
+            FavoritesView(moviesVM: favVM, peopleVM: favoritePeopleVM)
+        case .account:
+            accountTab
         }
-        .tabItem { Label("Discover", systemImage: "safari") }
-        .tag(MainTab.discover)
+    }
+
+    @ViewBuilder
+    private var browseTab: some View {
+        if authViewModel.isGuest {
+            // Preserve the movie browsing that was available before the tabs were merged.
+            MovieListView(viewModel: movieVM, favoriteViewModel: favVM)
+        } else {
+            DiscoverView(viewModel: discoverVM)
+        }
     }
 
     private var searchTab: some View {
@@ -123,8 +138,6 @@ extension RootView {
                     .zIndex(1)
             }
         }
-        .tabItem { Label("Search", systemImage: "magnifyingglass") }
-        .tag(MainTab.search)
     }
 
     private var accountTab: some View {
@@ -135,8 +148,6 @@ extension RootView {
                 AccountView(viewModel: authViewModel)
             }
         }
-            .tabItem { Label("Account", systemImage: "person.crop.circle") }
-            .tag(MainTab.auth)
     }
 
     @ViewBuilder

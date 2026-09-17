@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Main Discover screen.
+/// Main Browse screen backed by the discover sections and genre filters.
 /// - Shows loading, error, empty state or movie sections depending on state.
 /// - Supports pull-to-refresh and async data fetching.
 struct DiscoverView: View {
@@ -17,7 +17,7 @@ struct DiscoverView: View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color.appBackground.ignoresSafeArea())
-            .navigationTitle("Discover")
+            .navigationTitle("Browse")
             .task {
                 await viewModel.refreshCurrentSelection()
             }

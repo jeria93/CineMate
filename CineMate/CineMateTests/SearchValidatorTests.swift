@@ -349,3 +349,10 @@ final class DemoMovieRepositoryContractTests: XCTestCase {
         XCTAssertEqual(Set(categoryIDs).count, MovieCategory.allCases.count)
     }
 }
+
+final class MainTabNavigationTests: XCTestCase {
+    func testMainTabsUseTaskFocusedOrderAndLabels() {
+        XCTAssertEqual(MainTab.allCases, [.browse, .search, .favorites, .account])
+        XCTAssertEqual(MainTab.allCases.map(\.title), ["Browse", "Search", "Favorites", "Account"])
+    }
+}
